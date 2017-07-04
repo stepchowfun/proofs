@@ -1,0 +1,3 @@
+coq/*.vo
+coq/*.vo.aux
+coq/*.glob
