@@ -3,6 +3,7 @@
 .PHONY: all lint clean docker-deps docker-build
 
 all: \
+  coq/kleene.vo \
   coq/intro.vo \
   coq/reflection.vo \
   coq/stlc.vo \
@@ -41,6 +42,9 @@ docker-build:
 	  sh -c 'cd /root && make'
 
 # The Coq scripts
+
+coq/kleene.vo: coq/kleene.v
+	COQPATH="$$(pwd)" coqc coq/kleene.v
 
 coq/intro.vo: coq/intro.v
 	COQPATH="$$(pwd)" coqc coq/intro.v
