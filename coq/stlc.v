@@ -47,6 +47,42 @@ Inductive freeVar : term -> id -> Prop :=
 
 Definition closed e := forall x, ~ freeVar e x.
 
+(**********)
+(* Typing *)
+(**********)
+
+Inductive context :=
+| cEmpty : context
+| cExtend : context -> id -> type -> context.
+
+Fixpoint lookupVar c1 x1 :=
+  match c1 with
+  | cEmpty => None
+  | cExtend c2 x2 t =>
+    match idEqDec x1 x2 with
+    | left _ => Some t
+    | right _ => lookupVar c2 x1
+    end
+  end.
+
+Inductive hasType : context -> term -> type -> Prop :=
+| htUnit :
+  forall c,
+  hasType c eUnit tUnit
+| htVar :
+  forall x t c,
+  lookupVar c x = Some t ->
+  hasType c (eVar x) t
+| htAbs :
+  forall e x t1 t2 c,
+  hasType (cExtend c x t1) e t2 ->
+  hasType c (eAbs x t1 e) (tArrow t1 t2)
+| htApp :
+  forall e1 e2 t1 t2 c,
+  hasType c e1 t1 ->
+  hasType c e2 (tArrow t1 t2) ->
+  hasType c (eApp e2 e1) t2.
+
 (*************************)
 (* Operational semantics *)
 (*************************)
@@ -99,42 +135,6 @@ Inductive stepStar : term -> term -> Prop :=
   stepStar e1 e3.
 
 Definition normalForm e1 := ~ exists e2, step e1 e2.
-
-(**********)
-(* Typing *)
-(**********)
-
-Inductive context :=
-| cEmpty : context
-| cExtend : context -> id -> type -> context.
-
-Fixpoint lookupVar c1 x1 :=
-  match c1 with
-  | cEmpty => None
-  | cExtend c2 x2 t =>
-    match idEqDec x1 x2 with
-    | left _ => Some t
-    | right _ => lookupVar c2 x1
-    end
-  end.
-
-Inductive hasType : context -> term -> type -> Prop :=
-| htUnit :
-  forall c,
-  hasType c eUnit tUnit
-| htVar :
-  forall x t c,
-  lookupVar c x = Some t ->
-  hasType c (eVar x) t
-| htAbs :
-  forall e x t1 t2 c,
-  hasType (cExtend c x t1) e t2 ->
-  hasType c (eAbs x t1 e) (tArrow t1 t2)
-| htApp :
-  forall e1 e2 t1 t2 c,
-  hasType c e1 t1 ->
-  hasType c e2 (tArrow t1 t2) ->
-  hasType c (eApp e2 e1) t2.
 
 (************)
 (* Progress *)
