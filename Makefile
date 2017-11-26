@@ -46,13 +46,13 @@ docker-build:
 # The Coq scripts
 
 coq/intro.vo: coq/intro.v
-	COQPATH="$$(pwd)" coqc coq/intro.v
+	COQPATH="$$(pwd)/coq" coqc coq/intro.v
 
 coq/kleene.vo: coq/kleene.v
-	COQPATH="$$(pwd)" coqc coq/kleene.v
+	COQPATH="$$(pwd)/coq" coqc coq/kleene.v
 
 coq/reflection.vo: coq/reflection.v
-	COQPATH="$$(pwd)" coqc coq/reflection.v
+	COQPATH="$$(pwd)/coq" coqc coq/reflection.v
 
 coq/stlc.vo: coq/stlc.v
-	COQPATH="$$(pwd)" coqc coq/stlc.v
+	COQPATH="$$(pwd)/coq" coqc coq/stlc.v
