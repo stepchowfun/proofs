@@ -34,7 +34,7 @@ clean:
 	  \) -print)
 
 docker-deps:
-	docker build -t stephanmisc/coq:4.6 .
+	docker build -t stephanmisc/coq:4.6 scripts
 
 docker-build:
 	docker run \
