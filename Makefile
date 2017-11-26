@@ -3,8 +3,8 @@
 .PHONY: all lint clean docker-deps docker-build
 
 all: \
-  coq/kleene.vo \
   coq/intro.vo \
+  coq/kleene.vo \
   coq/reflection.vo \
   coq/stlc.vo \
   lint
@@ -27,9 +27,11 @@ lint:
 
 clean:
 	rm -rf \
-	  coq/*.glob \
-	  coq/*.vo \
-	  coq/.*.vo.aux
+	  $(shell find . -type f \( \
+	    -name '*.glob' -o \
+	    -name '*.vo' -o \
+	    -name '*.vo.aux' \
+	  \) -print)
 
 docker-deps:
 	docker build -t stephanmisc/coq:4.6 .
@@ -43,11 +45,11 @@ docker-build:
 
 # The Coq scripts
 
-coq/kleene.vo: coq/kleene.v
-	COQPATH="$$(pwd)" coqc coq/kleene.v
-
 coq/intro.vo: coq/intro.v
 	COQPATH="$$(pwd)" coqc coq/intro.v
+
+coq/kleene.vo: coq/kleene.v
+	COQPATH="$$(pwd)" coqc coq/kleene.v
 
 coq/reflection.vo: coq/reflection.v
 	COQPATH="$$(pwd)" coqc coq/reflection.v
