@@ -1,4 +1,5 @@
 FROM debian:stretch
+
 RUN \
   DEBIAN_FRONTEND=noninteractive apt-get -y update && \
   DEBIAN_FRONTEND=noninteractive apt-get -y install \
