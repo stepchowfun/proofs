@@ -1,13 +1,14 @@
-# Phony targets
-
 .PHONY: all lint clean docker-deps docker-build
 
-all: \
-  coq/intro.vo \
-  coq/kleene.vo \
-  coq/reflection.vo \
-  coq/stlc.vo \
-  lint
+all: main lint
+
+main:
+	rm -f CoqMakefile _CoqProject
+	echo '-R coq Main' > _CoqProject
+	find coq -type f -name '*.v' >> _CoqProject
+	coq_makefile -f _CoqProject -o CoqMakefile
+	make -f CoqMakefile
+	rm -f CoqMakefile _CoqProject
 
 lint:
 	./scripts/check-line-lengths.sh \
@@ -26,33 +27,20 @@ lint:
 	  )
 
 clean:
-	rm -rf \
+	rm -f _CoqProject CoqMakefile \
 	  $(shell find . -type f \( \
 	    -name '*.glob' -o \
+	    -name '*.v.d' -o \
 	    -name '*.vo' -o \
 	    -name '*.vo.aux' \
 	  \) -print)
 
 docker-deps:
-	docker build -t stephanmisc/coq:4.6 scripts
+	docker build -t stephanmisc/coq:8.6-4 scripts
 
 docker-build:
 	docker run \
 	  --rm \
 	  -v $$(pwd):/root \
-	  stephanmisc/coq:4.6 \
+	  stephanmisc/coq:8.6-4 \
 	  sh -c 'cd /root && make'
-
-# The Coq scripts
-
-coq/intro.vo: coq/intro.v
-	COQPATH="$$(pwd)/coq" coqc coq/intro.v
-
-coq/kleene.vo: coq/kleene.v
-	COQPATH="$$(pwd)/coq" coqc coq/kleene.v
-
-coq/reflection.vo: coq/reflection.v
-	COQPATH="$$(pwd)/coq" coqc coq/reflection.v
-
-coq/stlc.vo: coq/stlc.v
-	COQPATH="$$(pwd)/coq" coqc coq/stlc.v
