@@ -6,7 +6,6 @@ main:
 	rm -f CoqMakefile _CoqProjectFull
 	echo '-R coq Main' > _CoqProjectFull
 	find coq -type f -name '*.v' >> _CoqProjectFull
-	cat _CoqProjectFull
 	coq_makefile -f _CoqProjectFull -o CoqMakefile
 	make -f CoqMakefile
 	rm -f CoqMakefile _CoqProjectFull
