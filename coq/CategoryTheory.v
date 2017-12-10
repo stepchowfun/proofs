@@ -180,7 +180,7 @@ Module RightWhisker'
     (Eta : NaturalTransformation C D F G).
   Module HAfterF := FunctorComposition C D E H F.
   Module HAfterG := FunctorComposition C D E H G.
-  Module RightWhisker : NaturalTransformation C E HAfterF HAfterG.
+  Module RightWhisker <: NaturalTransformation C E HAfterF HAfterG.
     Definition eta X := H.fMap (Eta.eta X).
 
     Theorem naturality :
@@ -213,7 +213,7 @@ Module LeftWhisker'
     (Eta : NaturalTransformation D E F G).
   Module FAfterH := FunctorComposition C D E F H.
   Module GAfterH := FunctorComposition C D E G H.
-  Module LeftWhisker : NaturalTransformation C E FAfterH GAfterH.
+  Module LeftWhisker <: NaturalTransformation C E FAfterH GAfterH.
     Definition eta X := Eta.eta (H.oMap X).
 
     Theorem naturality :
@@ -228,3 +228,34 @@ Module LeftWhisker'
     Qed.
   End LeftWhisker.
 End LeftWhisker'.
+
+(**********)
+(* Monads *)
+(**********)
+
+Module Type Monad' (C : Category) (T : Functor C C).
+  Module Id := IdentityFunctor C.
+  Module Square := FunctorComposition C C C T T.
+  Module Type Monad
+      (Eta : NaturalTransformation C C Id T)
+      (Mu : NaturalTransformation C C Square T).
+    Module TMu' := LeftWhisker' C C C Square T T Mu.
+    Module TMu := TMu'.LeftWhisker.
+    Module MuT' := RightWhisker' C C C Square T T Mu.
+    Module MuT := MuT'.RightWhisker.
+    Module TEta' := LeftWhisker' C C C Id T T Eta.
+    Module TEta := TEta'.LeftWhisker.
+    Module EtaT' := RightWhisker' C C C Id T T Eta.
+    Module EtaT := EtaT'.RightWhisker.
+    Module TAfterSquare := FunctorComposition C C C T Square.
+    Module MuAfterTMu := VerticalComposition C C TAfterSquare Square T Mu TMu.
+    Module MuAfterMuT := VerticalComposition C C TAfterSquare Square T Mu MuT.
+    Module MuAfterTEta := VerticalComposition C C T Square T Mu TEta.
+    Module MuAfterEtaT := VerticalComposition C C T Square T Mu EtaT.
+    Module IdT := IdentityNaturalTransformation C C T.
+
+    Axiom assoc : MuAfterTMu.eta = MuAfterMuT.eta.
+    Axiom ident1 : MuAfterTEta.eta = MuAfterEtaT.eta.
+    Axiom ident2 : MuAfterTEta.eta = IdT.eta.
+  End Monad.
+End Monad'.
