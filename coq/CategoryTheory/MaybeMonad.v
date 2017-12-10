@@ -48,9 +48,9 @@ Module MaybeFunctor <: Functor SetCategory SetCategory.
   Qed.
 End MaybeFunctor.
 
-(**********************************************************************)
-(* The polymorphic eta function for Maybe is a NaturalTransformation. *)
-(**********************************************************************)
+(*************************************************************)
+(* The return function for Maybe is a NaturalTransformation. *)
+(*************************************************************)
 
 Module SetIdentityFunctor := IdentityFunctor SetCategory.
 
@@ -72,9 +72,9 @@ Module MaybeEtaNaturalTransformation <: NaturalTransformation
   Qed.
 End MaybeEtaNaturalTransformation.
 
-(*********************************************************************)
-(* The polymorphic mu function for Maybe is a NaturalTransformation. *)
-(*********************************************************************)
+(***********************************************************)
+(* The bind function for Maybe is a NaturalTransformation. *)
+(***********************************************************)
 
 Module SquareMaybeFunctor := FunctorComposition
   SetCategory
