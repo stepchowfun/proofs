@@ -85,31 +85,24 @@ Inductive eq (X : Set) : X -> X -> Prop :=
 (* Let's prove that two is even. First, we have to define what "even" means. *)
 
 Inductive even : nat -> Prop :=
-| even_zero : even zero
-| even_succ : forall n, odd n -> even (succ n)
-
-(* We also have to define what "odd" means. *)
-
-with odd : nat -> Prop :=
-  odd_succ : forall n, even n -> odd (succ n).
+| evenZero : even zero
+| evenSS : forall n, even n -> even (succ (succ n)).
 
 (* We can manually write out the proof term as follows: *)
 
-Definition two_even_a : even (succ (succ zero)) :=
-  even_succ (succ zero) (odd_succ zero even_zero).
+Definition twoEvenA : even (succ (succ zero)) := evenSS zero evenZero.
 
 (* Alternatively, we can prove it using tactics: *)
 
-Theorem two_even_b : even (succ (succ zero)).
+Theorem twoEvenB : even (succ (succ zero)).
 Proof.
-  apply even_succ.
-  apply odd_succ.
-  apply even_zero.
+  apply evenSS.
+  apply evenZero.
 Qed.
 
 (* Let's prove that addition is associative. *)
 
-Theorem plus_assoc : forall n m p : nat,
+Theorem plusAssoc : forall n m p : nat,
   plus n (plus m p) = plus (plus n m) p.
 Proof.
   intros n m p.

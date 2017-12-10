@@ -51,8 +51,8 @@ Qed.
 *)
 
 Inductive even : nat -> Prop :=
-| even_0 : even 0
-| even_SS : forall n : nat, even n -> even (S (S n)).
+| evenZero : even 0
+| evenSS : forall n : nat, even n -> even (S (S n)).
 
 Fixpoint isEven n :=
   match n with
@@ -92,7 +92,7 @@ Proof.
     + apply evenInd.
       * unfold P.
         intros H.
-        apply even_0.
+        apply evenZero.
       * unfold P.
         intros H.
         simpl in H.
@@ -100,7 +100,7 @@ Proof.
       * unfold P.
         intros n H1 H3.
         destruct H1 as [H1 H2].
-        apply even_SS.
+        apply evenSS.
         simpl in H3.
         apply H1 in H3.
         auto.
