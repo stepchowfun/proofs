@@ -70,17 +70,17 @@ Inductive and P Q : Prop :=
 Definition iff P Q := and (P -> Q) (Q -> P).
 
 Inductive or P Q : Prop :=
-| or_introl : P -> or P Q
-| or_intror : Q -> or P Q.
+| orIntroL : P -> or P Q
+| orIntroR : Q -> or P Q.
 
 Definition not A := A -> False.
 
 Inductive eq (X : Set) : X -> X -> Prop :=
-| refl_equal : forall x, eq X x x.
+| reflEqual : forall x, eq X x x.
 
-(*********************)
-(* Let's do a proof! *)
-(*********************)
+(*************************)
+(* Let's do some proofs! *)
+(*************************)
 
 (* Let's prove that two is even. First, we have to define what "even" means. *)
 
@@ -100,15 +100,40 @@ Proof.
   apply evenZero.
 Qed.
 
+(* Let's prove that a number is either even or odd. *)
+
+Inductive odd : nat -> Prop :=
+| oddOne : odd (succ zero)
+| oddSS : forall n, odd n -> odd (succ (succ n)).
+
+Lemma doubleInd :
+  forall P : nat -> Prop,
+  P zero ->
+  P (succ zero) ->
+  (forall n, P n /\ P (succ n) -> P (succ (succ n))) ->
+  forall n,
+  P n /\ P (succ n).
+Proof.
+  intros.
+  induction n; try destruct IHn; auto.
+Qed.
+
+Theorem evenOrOdd : forall n, even n \/ odd n.
+Proof.
+  apply doubleInd.
+  - left; apply evenZero.
+  - right; apply oddOne.
+  - intros; destruct H; destruct H; destruct H0;
+      left + right; apply evenSS + apply oddSS; assumption.
+Qed.
+
 (* Let's prove that addition is associative. *)
 
 Theorem plusAssoc : forall n m p : nat,
   plus n (plus m p) = plus (plus n m) p.
 Proof.
-  intros n m p.
+  intros.
   induction n.
   - reflexivity.
-  - simpl.
-    rewrite -> IHn.
-    reflexivity.
+  - simpl; rewrite -> IHn; reflexivity.
 Qed.
