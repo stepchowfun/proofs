@@ -3,12 +3,13 @@
 all: main lint
 
 main:
-	rm -f CoqMakefile _CoqProject
-	echo '-R coq Main' > _CoqProject
-	find coq -type f -name '*.v' >> _CoqProject
-	coq_makefile -f _CoqProject -o CoqMakefile
+	rm -f CoqMakefile _CoqProjectFull
+	echo '-R coq Main' > _CoqProjectFull
+	find coq -type f -name '*.v' >> _CoqProjectFull
+	cat _CoqProjectFull
+	coq_makefile -f _CoqProjectFull -o CoqMakefile
 	make -f CoqMakefile
-	rm -f CoqMakefile _CoqProject
+	rm -f CoqMakefile _CoqProjectFull
 
 lint:
 	./scripts/check-line-lengths.sh \
@@ -27,7 +28,7 @@ lint:
 	  )
 
 clean:
-	rm -f _CoqProject CoqMakefile \
+	rm -f _CoqProjectFull CoqMakefile \
 	  $(shell find . -type f \( \
 	    -name '*.glob' -o \
 	    -name '*.v.d' -o \
