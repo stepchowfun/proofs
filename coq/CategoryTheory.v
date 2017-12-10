@@ -29,9 +29,9 @@ End Category.
 (* Example category: Set *)
 (*************************)
 
-Module SetCategory : Category.
+Module SetCategory <: Category.
   Definition Object := Set.
-  Definition Arrow (X : Object) (Y : Object) := forall (_ : X), Y.
+  Definition Arrow (X : Object) (Y : Object) := X -> Y.
   Definition compose {X Y Z} (f : Arrow Y Z) (g : Arrow X Y) x := f (g x).
   Definition id {X : Object} := fun (x : X) => x.
 
@@ -65,7 +65,7 @@ Module Type Functor (C D : Category).
     fMap (C.compose g f) = D.compose (fMap g) (fMap f).
 End Functor.
 
-Module IdentityFunctor (C : Category) : Functor C C.
+Module IdentityFunctor (C : Category) <: Functor C C.
   Definition oMap (X : C.Object) := X.
   Definition fMap {X Y} (f : C.Arrow X Y) := f.
 
@@ -85,7 +85,7 @@ End IdentityFunctor.
 Module FunctorComposition
     (C D E : Category)
     (F : Functor D E)
-    (G : Functor C D) :
+    (G : Functor C D) <:
     Functor C E.
   Definition oMap (X : C.Object) := F.oMap (G.oMap X).
   Definition fMap {X Y} (f : C.Arrow X Y) := F.fMap (G.fMap f).
@@ -125,7 +125,7 @@ End NaturalTransformation.
 
 Module IdentityNaturalTransformation
     (C D : Category)
-    (F : Functor C D) :
+    (F : Functor C D) <:
     NaturalTransformation C D F F.
   Definition eta X := @D.id (F.oMap X).
 
@@ -145,7 +145,7 @@ Module VerticalComposition
     (C D : Category)
     (F G H : Functor C D)
     (Eta : NaturalTransformation C D G H)
-    (Mu : NaturalTransformation C D F G) :
+    (Mu : NaturalTransformation C D F G) <:
     NaturalTransformation C D F H.
   Definition eta X := D.compose (Eta.eta X) (Mu.eta X).
 
@@ -158,9 +158,9 @@ Module VerticalComposition
     replace (D.compose (D.compose (Eta.eta Y) (Mu.eta Y)) (F.fMap f)) with
       (D.compose (Eta.eta Y) (D.compose (Mu.eta Y) (F.fMap f))).
     - replace (D.compose (H.fMap f) (D.compose (Eta.eta X) (Mu.eta X))) with
-      (D.compose (D.compose (H.fMap f) (Eta.eta X)) (Mu.eta X)).
+        (D.compose (D.compose (H.fMap f) (Eta.eta X)) (Mu.eta X)).
       + replace (D.compose (Mu.eta Y) (F.fMap f)) with
-        (D.compose (G.fMap f) (Mu.eta X)).
+          (D.compose (G.fMap f) (Mu.eta X)).
         * {
           replace (D.compose (H.fMap f) (Eta.eta X)) with
             (D.compose (Eta.eta Y) (G.fMap f)).
@@ -172,3 +172,59 @@ Module VerticalComposition
     - apply D.assoc.
   Qed.
 End VerticalComposition.
+
+Module RightWhisker'
+    (C D E : Category)
+    (F G : Functor C D)
+    (H : Functor D E)
+    (Eta : NaturalTransformation C D F G).
+  Module HAfterF := FunctorComposition C D E H F.
+  Module HAfterG := FunctorComposition C D E H G.
+  Module RightWhisker : NaturalTransformation C E HAfterF HAfterG.
+    Definition eta X := H.fMap (Eta.eta X).
+
+    Theorem naturality :
+      forall X Y (f : C.Arrow X Y),
+      E.compose (eta Y) (HAfterF.fMap f) = E.compose (HAfterG.fMap f) (eta X).
+    Proof.
+      intros.
+      unfold eta.
+      unfold HAfterF.fMap.
+      unfold HAfterG.fMap.
+      replace (E.compose (H.fMap (Eta.eta Y)) (H.fMap (F.fMap f))) with
+        (H.fMap (D.compose (Eta.eta Y) (F.fMap f))).
+      - replace (E.compose (H.fMap (G.fMap f)) (H.fMap (Eta.eta X))) with
+          (H.fMap (D.compose (G.fMap f) (Eta.eta X))).
+        + assert (
+            D.compose (Eta.eta Y) (F.fMap f) = D.compose (G.fMap f) (Eta.eta X)
+          ).
+          * apply Eta.naturality.
+          * rewrite H; auto.
+        + apply H.comp.
+      - apply H.comp.
+    Qed.
+  End RightWhisker.
+End RightWhisker'.
+
+Module LeftWhisker'
+    (C D E : Category)
+    (F G : Functor D E)
+    (H : Functor C D)
+    (Eta : NaturalTransformation D E F G).
+  Module FAfterH := FunctorComposition C D E F H.
+  Module GAfterH := FunctorComposition C D E G H.
+  Module LeftWhisker : NaturalTransformation C E FAfterH GAfterH.
+    Definition eta X := Eta.eta (H.oMap X).
+
+    Theorem naturality :
+      forall X Y (f : C.Arrow X Y),
+      E.compose (eta Y) (FAfterH.fMap f) = E.compose (GAfterH.fMap f) (eta X).
+    Proof.
+      intros.
+      unfold eta.
+      unfold FAfterH.fMap.
+      unfold GAfterH.fMap.
+      apply Eta.naturality.
+    Qed.
+  End LeftWhisker.
+End LeftWhisker'.
