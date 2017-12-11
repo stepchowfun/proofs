@@ -13,8 +13,8 @@ Require Import Omega.
   resolve and rewrite hints from the "core" database.
 *)
 
-Ltac magic := try (
-    simpl;
+Ltac magic := repeat (
+    cbn;
     intros + idtac;
     autorewrite with core in * + idtac;
     solve [omega | congruence | dintuition]
