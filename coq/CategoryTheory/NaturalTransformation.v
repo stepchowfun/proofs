@@ -10,7 +10,7 @@ Require Import Main.CategoryTheory.Category.
 Require Import Main.CategoryTheory.Functor.
 Require Import Main.Tactics.
 
-(* Metavariables for natural transformations: Eta Mu *)
+(* Metavariables for natural transformations: Eta, Mu *)
 
 Record naturalTransformation
     {C D : category}
