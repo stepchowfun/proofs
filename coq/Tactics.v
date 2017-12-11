@@ -10,15 +10,16 @@ Require Import Omega.
 
 (*
   This tactic tries a variety of approaches to solve a goal. It uses the
-  resolve and rewrite hints from the "core" database.
+  resolve, rewrite, and unfold hints from the "core" database.
 *)
 
-Ltac magic := repeat (
-    cbn;
-    intros + idtac;
-    autorewrite with core in * + idtac;
-    solve [omega | congruence | dintuition]
-  ).
+Ltac magic := try solve [
+    idtac + intros;
+    idtac + cbn;
+    idtac + autounfold with core in *;
+    idtac + autorewrite with core in *;
+    omega + congruence + dintuition eauto with *
+  ].
 
 (*
   This tactic is useful if you have a hypothesis H : P -> Q and you want to

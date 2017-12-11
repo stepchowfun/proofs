@@ -85,13 +85,12 @@ Proof.
   refine (
     newMonad setCategory maybeFunctor maybeEta maybeMu
     _ _ _
-  ).
+  ); magic.
   - simpl.
     apply functional_extensionality_dep.
     intros.
     apply functional_extensionality.
     intro x0; destruct x0; magic.
-  - magic.
   - simpl.
     apply functional_extensionality_dep.
     intros.

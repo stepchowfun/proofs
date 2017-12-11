@@ -66,8 +66,7 @@ Proof.
     newNaturalTransformation C E (compFunctor H F) (compFunctor H G)
     (fun x => fMap H (eta Eta x))
     _
-  ).
-  magic.
+  ); magic.
 Defined.
 
 Definition leftWhisker
@@ -81,6 +80,5 @@ Proof.
     newNaturalTransformation C E (compFunctor F H) (compFunctor G H)
     (fun x => eta Eta (oMap H x))
     _
-  ).
-  magic.
+  ); magic.
 Defined.
