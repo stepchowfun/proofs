@@ -34,7 +34,7 @@ Proof.
       end
     )
     _ _
-  ); intros; apply functional_extensionality; destruct x0; magic.
+  ); intros; apply functional_extensionality; intro x0; destruct x0; magic.
 Defined.
 
 (* This is the "return" natural transformation for maybe. *)
@@ -75,7 +75,7 @@ Proof.
   intros.
   simpl.
   apply functional_extensionality.
-  destruct x0; magic.
+  intro x0; destruct x0; magic.
 Defined.
 
 (* Now we can prove that maybe is a monad. *)
@@ -90,11 +90,11 @@ Proof.
     apply functional_extensionality_dep.
     intros.
     apply functional_extensionality.
-    destruct x0; magic.
+    intro x0; destruct x0; magic.
   - magic.
   - simpl.
     apply functional_extensionality_dep.
     intros.
     apply functional_extensionality.
-    destruct x0; magic.
+    intro x0; destruct x0; magic.
 Defined.
