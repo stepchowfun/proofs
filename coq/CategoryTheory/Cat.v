@@ -12,6 +12,8 @@ Require Import Main.CategoryTheory.Category.
 Require Import Main.CategoryTheory.Functor.
 Require Import Main.Tactics.
 
+Hint Resolve proof_irrelevance.
+
 Definition catCategory : category.
 Proof.
   refine (
@@ -27,15 +29,12 @@ Proof.
     destruct h.
     unfold compFunctor.
     cbn.
-    f_equal.
-    apply proof_irrelevance.
-    do 5 (apply functional_extensionality_dep; intros).
-    apply proof_irrelevance.
+    f_equal; magic.
   - split;
       intros;
       destruct f;
       unfold compFunctor;
       cbn;
       f_equal;
-      apply proof_irrelevance.
+      magic.
 Defined.
