@@ -8,8 +8,8 @@
 
 (* Metavariables for categories: C, D, E *)
 
-Record category := newCategory {
-  object : Type; (* Metavariables for objects: w, x, y, z *)
+Polymorphic Record category := newCategory {
+  object :> Type; (* Metavariables for objects: w, x, y, z *)
   arrow : object -> object -> Type; (* Metavariables for arrows: f, g, h *)
   compose : forall {x y z}, arrow y z -> arrow x y -> arrow x z;
   id : forall {x}, arrow x x;
@@ -23,9 +23,9 @@ Record category := newCategory {
     (forall (f : arrow y x), compose f id = f);
 }.
 
-Hint Resolve cAssoc.
-Hint Resolve (fun C x y => proj1 (cIdent C x y)).
-Hint Resolve (fun C x y => proj2 (cIdent C x y)).
-Hint Rewrite cAssoc.
-Hint Rewrite (fun C x y => proj1 (cIdent C x y)).
-Hint Rewrite (fun C x y => proj2 (cIdent C x y)).
+Polymorphic Hint Resolve cAssoc.
+Polymorphic Hint Resolve (fun C x y => proj1 (cIdent C x y)).
+Polymorphic Hint Resolve (fun C x y => proj2 (cIdent C x y)).
+Polymorphic Hint Rewrite cAssoc.
+Polymorphic Hint Rewrite (fun C x y => proj1 (cIdent C x y)).
+Polymorphic Hint Rewrite (fun C x y => proj2 (cIdent C x y)).
