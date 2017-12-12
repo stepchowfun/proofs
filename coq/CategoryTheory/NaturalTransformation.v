@@ -49,10 +49,7 @@ Proof.
     newNaturalTransformation C D F H
     (fun x => compose D (eta Eta x) (eta Mu x))
     _
-  ).
-  intros.
-  replace (compose D (compose D (eta Eta y) (eta Mu y)) (fMap F f)) with
-    (compose D (eta Eta y) (compose D (eta Mu y) (fMap F f))); magic.
+  ); intros; rewrite <- cAssoc; magic.
 Defined.
 
 Definition rightWhisker

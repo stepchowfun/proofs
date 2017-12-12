@@ -29,12 +29,10 @@ Proof.
     destruct h.
     unfold compFunctor.
     cbn.
-    f_equal; magic.
+    magic.
   - split;
       intros;
       destruct f;
       unfold compFunctor;
-      cbn;
-      f_equal;
       magic.
 Defined.
