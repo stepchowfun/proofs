@@ -72,10 +72,8 @@ Proof.
     )
     _
   ).
-  intros.
-  simpl.
-  apply functional_extensionality.
-  intro x0; destruct x0; magic.
+  intros; cbn; apply functional_extensionality.
+  destruct x0; magic.
 Defined.
 
 (* Now we can prove that maybe is a monad. *)
@@ -85,15 +83,11 @@ Proof.
   refine (
     newMonad setCategory maybeFunctor maybeEta maybeMu
     _ _ _
-  ); magic.
-  - simpl.
-    apply functional_extensionality_dep.
-    intros.
-    apply functional_extensionality.
-    intro x0; destruct x0; magic.
-  - simpl.
-    apply functional_extensionality_dep.
-    intros.
-    apply functional_extensionality.
-    intro x0; destruct x0; magic.
+  );
+    magic;
+    apply functional_extensionality_dep;
+    intros;
+    apply functional_extensionality;
+    destruct x0;
+    magic.
 Defined.
