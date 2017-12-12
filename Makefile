@@ -43,7 +43,7 @@ docker-deps:
 docker-build:
 	CONTAINER="$$( \
 	      docker create --rm --user=root stephanmisc/coq:8.6-4 bash -c \
-	      'chown -R user:user . && su user -c "make clean && make"' \
+		'chown -R user:user . && su user -c "make clean && make"' \
 	    )" && \
 	  docker cp . "$$CONTAINER:/home/user/." && \
 	  docker start --attach "$$CONTAINER"
