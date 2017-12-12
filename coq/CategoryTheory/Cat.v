@@ -24,15 +24,6 @@ Proof.
     (fun x => idFunctor)
     _ _
   ); intros.
-  - destruct f.
-    destruct g.
-    destruct h.
-    unfold compFunctor.
-    cbn.
-    magic.
-  - split;
-      intros;
-      destruct f;
-      unfold compFunctor;
-      magic.
+  - unfold compFunctor; cbn; magic.
+  - split; unfold compFunctor; destruct f; magic.
 Defined.
