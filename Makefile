@@ -41,8 +41,9 @@ docker-deps:
 	docker build -t stephanmisc/coq:8.6-4 scripts
 
 docker-build:
-	docker run \
-	  --rm \
-	  -v $$(pwd):/root \
-	  stephanmisc/coq:8.6-4 \
-	  sh -c 'cd /root && make'
+	CONTAINER="$$( \
+	      docker create --rm --user=root stephanmisc/coq:8.6-4 bash -c \
+	      'chown -R user:user . && su user -c "make clean && make"' \
+	    )" && \
+	  docker cp . "$$CONTAINER:/home/user/." && \
+	  docker start --attach "$$CONTAINER"
