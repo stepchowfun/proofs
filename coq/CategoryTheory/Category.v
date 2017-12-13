@@ -6,6 +6,8 @@
 (************************)
 (************************)
 
+Require Import Main.Tactics.
+
 (* Metavariables for categories: C, D, E *)
 
 Polymorphic Record category := newCategory {
@@ -29,3 +31,14 @@ Polymorphic Hint Resolve (fun C x y => proj2 (cIdent C x y)).
 Polymorphic Hint Rewrite cAssoc.
 Polymorphic Hint Rewrite (fun C x y => proj1 (cIdent C x y)).
 Polymorphic Hint Rewrite (fun C x y => proj2 (cIdent C x y)).
+
+Definition opCategory (C : category) : @category.
+Proof.
+  refine (newCategory
+    (object C)
+    (fun x y => arrow C y x)
+    (fun {x y z} f g => compose C g f)
+    (fun {x} => id C)
+    _ _
+  ); magic.
+Defined.
