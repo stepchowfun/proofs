@@ -22,8 +22,5 @@ Proof.
     (fun x y z => compFunctor)
     (fun x => idFunctor)
     _ _ _
-  ); intros.
-  - unfold compFunctor; cbn; magic.
-  - unfold compFunctor; destruct f; magic.
-  - unfold compFunctor; destruct f; magic.
+  ); unfold compFunctor; try destruct f; magic.
 Defined.

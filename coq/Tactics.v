@@ -14,11 +14,11 @@ Require Import Omega.
 *)
 
 Ltac magic := try solve [
-  idtac + intros;
-  idtac + cbn;
-  idtac + f_equal;
-  idtac + autounfold with core in *;
-  idtac + autorewrite with core in *;
+  cbn;
+  intros;
+  f_equal;
+  autounfold with core in *;
+  autorewrite with core in *;
   omega + congruence + dintuition eauto with *
 ].
 
