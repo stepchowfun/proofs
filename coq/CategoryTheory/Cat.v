@@ -6,7 +6,6 @@
 (******************************************************************)
 (******************************************************************)
 
-Require Import Coq.Logic.FunctionalExtensionality.
 Require Import Coq.Logic.ProofIrrelevance.
 Require Import Main.CategoryTheory.Category.
 Require Import Main.CategoryTheory.Functor.
