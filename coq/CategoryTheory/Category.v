@@ -43,6 +43,18 @@ Defined.
 Definition thin (C : category) :=
   forall x y (f g : arrow C x y), f = g.
 
+(* Objects *)
+
+Definition initial {C} x :=
+  forall y,
+  exists f,
+  forall (g : arrow C x y), f = g.
+
+Definition terminal {C} x :=
+  forall y,
+  exists f,
+  forall (g : arrow C y x), f = g.
+
 (* Morphisms *)
 
 Definition epimorphism {C x y} (f : arrow C x y) :=
