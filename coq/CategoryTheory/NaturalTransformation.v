@@ -10,12 +10,14 @@ Require Import Main.CategoryTheory.Category.
 Require Import Main.CategoryTheory.Functor.
 Require Import Main.Tactics.
 
+Set Universe Polymorphism.
+
 (* Metavariables for natural transformations: Eta, Mu *)
 
 Record naturalTransformation
-    {C D : category}
-    {F G : @functor C D} :=
-    newNaturalTransformation {
+  {C D : category}
+  {F G : @functor C D} :=
+newNaturalTransformation {
   eta : forall x, arrow D (oMap F x) (oMap G x);
 
   naturality :
@@ -27,9 +29,9 @@ Hint Resolve @naturality.
 Hint Rewrite @naturality.
 
 Definition idNaturalTransformation
-    {C D : category}
-    {F : @functor C D} :
-    @naturalTransformation C D F F.
+  {C D : category}
+  {F : @functor C D} :
+  @naturalTransformation C D F F.
 Proof.
   refine (
     newNaturalTransformation C D F F
@@ -39,11 +41,11 @@ Proof.
 Defined.
 
 Definition compNaturalTransformation
-    {C D : category}
-    {F G H : @functor C D}
-    (Eta : @naturalTransformation C D G H)
-    (Mu : @naturalTransformation C D F G) :
-    @naturalTransformation C D F H.
+  {C D : category}
+  {F G H : @functor C D}
+  (Eta : @naturalTransformation C D G H)
+  (Mu : @naturalTransformation C D F G) :
+  @naturalTransformation C D F H.
 Proof.
   refine (
     newNaturalTransformation C D F H
@@ -53,11 +55,11 @@ Proof.
 Defined.
 
 Definition rightWhisker
-    {C D E : category}
-    {F G : @functor C D}
-    (H : @functor D E)
-    (Eta : @naturalTransformation C D F G) :
-    @naturalTransformation C E (compFunctor H F) (compFunctor H G).
+  {C D E : category}
+  {F G : @functor C D}
+  (H : @functor D E)
+  (Eta : @naturalTransformation C D F G) :
+  @naturalTransformation C E (compFunctor H F) (compFunctor H G).
 Proof.
   refine (
     newNaturalTransformation C E (compFunctor H F) (compFunctor H G)
@@ -67,11 +69,11 @@ Proof.
 Defined.
 
 Definition leftWhisker
-    {C D E : category}
-    {F G : @functor D E}
-    (H : @functor C D)
-    (Eta : @naturalTransformation D E F G) :
-    @naturalTransformation C E (compFunctor F H) (compFunctor G H).
+  {C D E : category}
+  {F G : @functor D E}
+  (H : @functor C D)
+  (Eta : @naturalTransformation D E F G) :
+  @naturalTransformation C E (compFunctor F H) (compFunctor G H).
 Proof.
   refine (
     newNaturalTransformation C E (compFunctor F H) (compFunctor G H)
@@ -79,3 +81,8 @@ Proof.
     _
   ); magic.
 Defined.
+
+Definition naturalIsomorphism
+  {C D F G}
+  (Eta : @naturalTransformation C D F G) :=
+  forall x, isomorphism (eta Eta x).

@@ -14,13 +14,13 @@ Require Import Omega.
 *)
 
 Ltac magic := try solve [
-    idtac + intros;
-    idtac + cbn;
-    idtac + f_equal;
-    idtac + autounfold with core in *;
-    idtac + autorewrite with core in *;
-    omega + congruence + dintuition eauto with *
-  ].
+  idtac + intros;
+  idtac + cbn;
+  idtac + f_equal;
+  idtac + autounfold with core in *;
+  idtac + autorewrite with core in *;
+  omega + congruence + dintuition eauto with *
+].
 
 (*
   This tactic is useful if you have a hypothesis H : P -> Q and you want to

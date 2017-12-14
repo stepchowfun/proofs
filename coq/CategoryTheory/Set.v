@@ -17,6 +17,6 @@ Proof.
     (fun x y => x -> y)
     (fun x y z f g e => f (g e))
     (fun x e => e)
-    _ _
+    _ _ _
   ); magic.
 Defined.

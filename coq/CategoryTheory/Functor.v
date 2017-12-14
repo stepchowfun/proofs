@@ -9,6 +9,8 @@
 Require Import Main.CategoryTheory.Category.
 Require Import Main.Tactics.
 
+Set Universe Polymorphism.
+
 (* Metavariables for functors: F, G, H *)
 
 Record functor {C D : category} := newFunctor {
