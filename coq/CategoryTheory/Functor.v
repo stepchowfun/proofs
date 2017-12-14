@@ -23,8 +23,6 @@ Record functor {C D : category} := newFunctor {
     compose D (fMap g) (fMap f) = fMap (compose C g f);
 }.
 
-Hint Resolve @fIdent.
-Hint Resolve @fComp.
 Hint Rewrite @fIdent.
 Hint Rewrite @fComp.
 

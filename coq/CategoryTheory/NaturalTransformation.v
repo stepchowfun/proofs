@@ -25,7 +25,6 @@ newNaturalTransformation {
     compose D (eta y) (fMap F f) = compose D (fMap G f) (eta x);
 }.
 
-Hint Resolve @naturality.
 Hint Rewrite @naturality.
 
 Definition idNaturalTransformation
