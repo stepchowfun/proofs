@@ -25,9 +25,6 @@ Record category := newCategory {
   cIdentRight : forall x y (f : arrow x y), compose f id = f;
 }.
 
-Hint Resolve cAssoc.
-Hint Resolve cIdentLeft.
-Hint Resolve cIdentRight.
 Hint Rewrite cAssoc.
 Hint Rewrite cIdentLeft.
 Hint Rewrite cIdentRight.
@@ -62,11 +59,11 @@ Theorem isoImpliesEpi :
 Proof.
   unfold isomorphism.
   unfold epimorphism.
-  intros C x y f H z g h H0.
+  intros.
   destruct H as [fInv H]; destruct H.
   assert (
     compose C (compose C g f) fInv = compose C (compose C h f) fInv
-  ) as H2; magic; clear H0.
+  ); magic.
   repeat rewrite <- cAssoc in H2.
   repeat rewrite H in H2.
   magic.
@@ -77,11 +74,11 @@ Theorem isoImpliesMono :
 Proof.
   unfold isomorphism.
   unfold monomorphism.
-  intros C x y f H z g h H0.
+  intros.
   destruct H as [fInv H]; destruct H.
   assert (
     compose C fInv (compose C f g) = compose C fInv (compose C f h)
-  ) as H2; magic; clear H0.
+  ); magic.
   repeat rewrite cAssoc in H2.
   repeat rewrite H1 in H2.
   magic.
