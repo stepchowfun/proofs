@@ -33,8 +33,8 @@ newMonad {
 }.
 
 Hint Resolve @mAssoc.
-Hint Resolve @mIdent1.
-Hint Resolve @mIdent2.
 Hint Rewrite @mAssoc.
+Hint Resolve @mIdent1.
 Hint Rewrite @mIdent1.
+Hint Resolve @mIdent2.
 Hint Rewrite @mIdent2.

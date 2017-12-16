@@ -13,14 +13,14 @@ Require Import Omega.
   resolve, rewrite, and unfold hints from the "core" database.
 *)
 
-Ltac magic := try solve [
+Ltac magic := try abstract (
   cbn;
   intros;
   f_equal;
-  autounfold with core in *;
-  autorewrite with core in *;
+  idtac + autounfold with core in *;
+  idtac + autorewrite with core in *;
   omega + congruence + dintuition eauto with *
-].
+).
 
 (*
   This tactic is useful if you have a hypothesis H : P -> Q and you want to

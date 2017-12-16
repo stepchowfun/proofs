@@ -23,7 +23,9 @@ Record functor {C D : category} := newFunctor {
     compose D (fMap g) (fMap f) = fMap (compose C g f);
 }.
 
+Hint Resolve @fIdent.
 Hint Rewrite @fIdent.
+Hint Resolve @fComp.
 Hint Rewrite @fComp.
 
 Definition idFunctor {C : category} : @functor C C.
@@ -37,13 +39,13 @@ Defined.
 
 Definition compFunctor
   {C D E : category}
-  (F : @functor D E)
-  (G : @functor C D) :
+  (G : @functor D E)
+  (F : @functor C D) :
   @functor C E.
 Proof.
   refine (newFunctor C E
-    (fun (x : object C) => oMap F (oMap G x))
-    (fun {x y : object C} (f : arrow C x y) => fMap F (fMap G f))
+    (fun (x : object C) => oMap G (oMap F x))
+    (fun {x y : object C} (f : arrow C x y) => fMap G (fMap F f))
     _ _
   ); magic.
 Defined.
