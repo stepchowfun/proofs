@@ -46,7 +46,8 @@ Proof.
     newNaturalTransformation setCategory setCategory idFunctor maybeFunctor
     (@just)
     _
-  ); magic.
+  ).
+  magic.
 Defined.
 
 (* This is the "join" natural transformation for maybe. *)
@@ -84,10 +85,10 @@ Proof.
     newMonad setCategory maybeFunctor maybeEta maybeMu
     _ _ _
   );
-    magic;
-    apply functional_extensionality_dep;
-    intros;
-    apply functional_extensionality;
-    destruct x0;
-    magic.
+  magic;
+  apply functional_extensionality_dep;
+  intros;
+  apply functional_extensionality;
+  destruct x0;
+  magic.
 Defined.

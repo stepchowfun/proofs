@@ -26,7 +26,6 @@ newNaturalTransformation {
 }.
 
 Hint Resolve @naturality.
-Hint Rewrite @naturality.
 
 Definition idNaturalTransformation
   {C D : category}
@@ -37,7 +36,8 @@ Proof.
     newNaturalTransformation C D F F
     (fun x => id D)
     _
-  ); magic.
+  ).
+  magic.
 Defined.
 
 Definition compNaturalTransformation
@@ -51,7 +51,14 @@ Proof.
     newNaturalTransformation C D F H
     (fun x => compose D (eta Eta x) (eta Mu x))
     _
-  ); intros; rewrite <- cAssoc; magic.
+  ).
+  intros.
+  rewrite cAssoc.
+  rewrite <- cAssoc.
+  replace (compose D (eta Mu y) (fMap F f)) with
+    (compose D (fMap G f) (eta Mu x)); magic.
+  replace (compose D (fMap H f) (eta Eta x)) with
+    (compose D (eta Eta y) (fMap G f)); magic.
 Defined.
 
 Definition rightWhisker
@@ -65,7 +72,12 @@ Proof.
     newNaturalTransformation C E (compFunctor H F) (compFunctor H G)
     (fun x => fMap H (eta Eta x))
     _
-  ); magic.
+  ).
+  intros.
+  cbn.
+  repeat rewrite fComp.
+  rewrite naturality.
+  magic.
 Defined.
 
 Definition leftWhisker
@@ -79,7 +91,8 @@ Proof.
     newNaturalTransformation C E (compFunctor F H) (compFunctor G H)
     (fun x => eta Eta (oMap H x))
     _
-  ); magic.
+  ).
+  magic.
 Defined.
 
 Definition naturalIsomorphism
