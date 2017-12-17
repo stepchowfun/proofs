@@ -26,7 +26,6 @@ Record category := newCategory {
 }.
 
 Hint Resolve cAssoc.
-Hint Rewrite cAssoc.
 Hint Resolve cIdentLeft.
 Hint Rewrite cIdentLeft.
 Hint Resolve cIdentRight.
@@ -62,7 +61,9 @@ Theorem leftIdUnique :
   (forall y (g : arrow C y x), compose C f g = g) ->
   f = id C.
 Proof.
-  intros; specialize (H x (id C)); magic.
+  intros.
+  specialize (H x (id C)).
+  magic.
 Qed.
 
 Hint Resolve leftIdUnique.
@@ -72,7 +73,9 @@ Theorem rightIdUnique :
   (forall y (g : arrow C x y), compose C g f = g) ->
   f = id C.
 Proof.
-  intros; specialize (H x (id C)); magic.
+  intros.
+  specialize (H x (id C)).
+  magic.
 Qed.
 
 Hint Resolve rightIdUnique.
@@ -190,7 +193,8 @@ Theorem terminalUnique :
 Proof.
   intros.
   rewrite opTerminalInitial in *.
-  apply opIso; apply initialUnique; magic.
+  apply opIso.
+  apply initialUnique; magic.
 Qed.
 
 Hint Resolve terminalUnique.
