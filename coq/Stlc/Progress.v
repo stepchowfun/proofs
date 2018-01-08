@@ -19,6 +19,9 @@ Proof.
   remember cEmpty.
   intros.
   induction H; magic.
+  - feed IHhasType1; magic; destruct IHhasType1.
+    + inversion H2; inversion H; magic.
+    + destruct H2; right; exists (eIf x e2 e3); magic.
   - rewrite Heqc in H; inversion H.
   - feed IHhasType1; magic; feed IHhasType2; magic.
     destruct IHhasType1; destruct IHhasType2.

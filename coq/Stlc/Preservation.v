@@ -19,6 +19,8 @@ Lemma contextInvariance :
 Proof.
   intros. generalize dependent c2.
   induction H; magic; intros.
+  - apply htIf; apply IHhasType1 + apply IHhasType2 + apply IHhasType3;
+      intros; apply H2; magic.
   - apply htVar; rewrite <- H0; magic.
   - apply htAbs; apply IHhasType; intros; cbn;
       destruct (String.string_dec x0 x); magic; apply H0; magic.
@@ -84,9 +86,10 @@ Proof.
   remember cEmpty.
   intros; generalize dependent e2.
   induction H; intros; try abstract (inversion H0).
-  inversion H1; magic.
-  inversion H0; magic.
-  apply substitutionPreservesTyping with (t1 := t1); magic.
+  - inversion H2; magic.
+  - inversion H1; magic.
+    inversion H0; magic.
+    apply substitutionPreservesTyping with (t1 := t1); magic.
 Qed.
 
 Hint Resolve preservation.

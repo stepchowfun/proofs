@@ -9,12 +9,23 @@
 Require Import Main.Stlc.Syntax.
 
 Inductive value : term -> Prop :=
-| vUnit : value eUnit
+| vTrue : value eTrue
+| vFalse : value eFalse
 | vAbs : forall e x t, value (eAbs x t e).
 
 Hint Constructors value.
 
 Inductive step : term -> term -> Prop :=
+| sIf1 :
+  forall e1 e2 e3 e4,
+  step e1 e4 ->
+  step (eIf e1 e2 e3) (eIf e4 e2 e3)
+| sIf2 :
+  forall e1 e2,
+  step (eIf eTrue e1 e2) e1
+| sIf3 :
+  forall e1 e2,
+  step (eIf eFalse e1 e2) e2
 | sBeta :
   forall e1 e2 x t,
   value e2 ->
