@@ -21,9 +21,18 @@ Fixpoint lookupVar c1 x1 :=
   end.
 
 Inductive hasType : context -> term -> type -> Prop :=
-| htUnit :
+| htTrue :
   forall c,
-  hasType c eUnit tUnit
+  hasType c eTrue tBool
+| htFalse :
+  forall c,
+  hasType c eFalse tBool
+| htIf :
+  forall c e1 e2 e3 t,
+  hasType c e1 tBool ->
+  hasType c e2 t ->
+  hasType c e3 t ->
+  hasType c (eIf e1 e2 e3) t
 | htVar :
   forall x t c,
   lookupVar c x = Some t ->
