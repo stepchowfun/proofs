@@ -15,27 +15,27 @@ main:
 lint:
 	./scripts/check-line-lengths.sh \
 	  $(shell \
-	    find . \
-	      -type d \( \
-	        -path ./.git \
-	      \) -prune -o \
-	      \( \
-		-name '*.sh' -o \
-		-name '*.v' -o \
-		-name '*.yml' -o \
-		-name 'Dockerfile' -o \
-		-name 'Makefile' \
-	      \) -print \
+	    find . \ -type d \( \
+	      -path ./.git \
+	    \) -prune -o \( \
+	      -name '*.sh' -o \
+	      -name '*.v' -o \
+	      -name '*.yml' -o \
+	      -name 'Dockerfile' -o \
+	      -name 'Makefile' \
+	    \) -print \
 	  )
 
 clean:
 	rm -f _CoqProjectFull Makefile.coq \
-	  $(shell find . -type f \( \
-	    -name '*.glob' -o \
-	    -name '*.v.d' -o \
-	    -name '*.vo' -o \
-	    -name '*.vo.aux' \
-	  \) -print)
+	  $(shell \
+	    find . -type f \( \
+	      -name '*.glob' -o \
+	      -name '*.v.d' -o \
+	      -name '*.vo' -o \
+	      -name '*.vo.aux' \
+	    \) -print \
+	  )
 
 docker-deps:
 	docker build -t stephanmisc/coq:8.6-4 scripts
