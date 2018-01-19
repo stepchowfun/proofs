@@ -1,4 +1,4 @@
-.PHONY: all lint clean docker-deps docker-build
+.PHONY: all main lint clean docker-deps docker-build
 
 all: main lint
 
@@ -15,7 +15,7 @@ main:
 lint:
 	./scripts/check-line-lengths.sh \
 	  $(shell \
-	    find . \ -type d \( \
+	    find . -type d \( \
 	      -path ./.git \
 	    \) -prune -o \( \
 	      -name '*.sh' -o \
@@ -42,8 +42,10 @@ docker-deps:
 
 docker-build:
 	CONTAINER="$$( \
-	      docker create --rm --user=root stephanmisc/coq:8.6-4 bash -c \
-		'chown -R user:user . && su user -c "make clean && make"' \
-	    )" && \
-	  docker cp . "$$CONTAINER:/home/user/." && \
-	  docker start --attach "$$CONTAINER"
+	  docker create --rm --user=root stephanmisc/coq:8.6-4 bash -c ' \
+	    chown -R user:user repo && \
+	    su user -s /bin/bash -l -c "cd repo && make clean && make" \
+	  ' \
+	)" && \
+	docker cp . "$$CONTAINER:/home/user/repo" && \
+	docker start --attach "$$CONTAINER"
