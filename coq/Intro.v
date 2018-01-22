@@ -49,8 +49,8 @@ Check succ (succ zero).
 
 Fixpoint plus n m :=
   match n with
-    | zero => m
-    | succ p => succ (plus p m)
+  | zero => m
+  | succ p => succ (plus p m)
   end.
 
 Compute plus (succ zero) (succ zero).
