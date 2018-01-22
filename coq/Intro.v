@@ -10,7 +10,7 @@
 (* Ordinary functional programming *)
 (***********************************)
 
-(* In Haskell, we would write: data Bool = True | False *)
+(* In Haskell, we would write `data Bool = True | False`. *)
 
 Inductive bool : Set :=
 | true : bool
@@ -21,6 +21,11 @@ Definition negb b :=
   | true => false
   | false => true
   end.
+
+(*
+  Let's compute some examples. In general, it's bad practice to have vernacular
+  commands like these in the proof script. But it's fine for teaching.
+*)
 
 Compute negb true.
 Compute negb false.
@@ -37,11 +42,13 @@ Definition orb b1 b2 :=
   | false => b2
   end.
 
-(* In Haskell, we would write: data Nat = Zero | Succ n *)
+(* In Haskell, we would write `data Nat = Zero | Succ n`. *)
 
 Inductive nat : Set :=
 | zero : nat
 | succ : nat -> nat.
+
+(* The `Check` command tells us the type of a given term. *)
 
 Check zero.
 Check succ zero.
@@ -52,6 +59,8 @@ Fixpoint plus n m :=
   | zero => m
   | succ p => succ (plus p m)
   end.
+
+(* Let's show that 1 + 1 = 2. *)
 
 Compute plus (succ zero) (succ zero).
 
@@ -89,7 +98,10 @@ Inductive even : nat -> Prop :=
 
 Definition twoEvenA : even (succ (succ zero)) := evenSS zero evenZero.
 
-(* Alternatively, we can prove it using tactics: *)
+(*
+  Alternatively, we can prove it using tactics in proof mode. This is generally
+  easier than writing proof terms by hand.
+*)
 
 Theorem twoEvenB : even (succ (succ zero)).
 Proof.
@@ -103,6 +115,11 @@ Inductive odd : nat -> Prop :=
 | oddOne : odd (succ zero)
 | oddSS : forall n, odd n -> odd (succ (succ n)).
 
+(*
+  First, we need to prove this lemma so we can do induction on n and n + 1 at 
+  the same time.
+*)
+
 Lemma doubleInd :
   forall P : nat -> Prop,
   P zero ->
@@ -114,6 +131,8 @@ Proof.
   intros.
   induction n; try destruct IHn; auto.
 Qed.
+
+(* Now we can prove the main result: forall n, even n \/ odd n. *)
 
 Theorem evenOrOdd : forall n, even n \/ odd n.
 Proof.
