@@ -65,7 +65,7 @@ Inductive True : Prop :=
 Inductive False : Prop := .
 
 Inductive and P Q : Prop :=
-| conj : P -> Q -> (and P Q).
+| conj : P -> Q -> and P Q.
 
 Definition iff P Q := and (P -> Q) (Q -> P).
 
@@ -74,9 +74,6 @@ Inductive or P Q : Prop :=
 | orIntroR : Q -> or P Q.
 
 Definition not A := A -> False.
-
-Inductive eq (X : Set) : X -> X -> Prop :=
-| reflEqual : forall x, eq X x x.
 
 (*************************)
 (* Let's do some proofs! *)
@@ -135,5 +132,5 @@ Proof.
   intros.
   induction n.
   - reflexivity.
-  - simpl; rewrite -> IHn; reflexivity.
+  - cbn; rewrite IHn; reflexivity.
 Qed.
