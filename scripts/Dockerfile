@@ -7,7 +7,7 @@ RUN \
     coq=8.6-4 && \
   rm -rf /var/lib/apt/lists/*
 
-RUN  useradd --user-group --create-home user
+RUN useradd --user-group --create-home user
 
 USER user:user
 
