@@ -6,6 +6,8 @@
 (************************************************************************)
 (************************************************************************)
 
+Require Import Main.Tactics.
+
 (**********************)
 (* General reflection *)
 (**********************)
@@ -14,31 +16,17 @@ Inductive reflect (P : Prop) : bool -> Prop :=
 | reflectT : P -> reflect P true
 | reflectF : ~ P -> reflect P false.
 
+Hint Constructors reflect.
+
 Theorem reflectIff : forall P b, (P <-> b = true) <-> reflect P b.
 Proof.
-  intros P b.
-  split.
-  - intros H1.
-    destruct b.
-    + apply reflectT.
-      apply (proj2 H1).
-      reflexivity.
-    + apply reflectF.
-      unfold not.
-      intros H2.
-      apply (proj1 H1) in H2.
-      inversion H2.
-  - intros H1.
-    split.
-    + intros H2.
-      destruct H1 as [H3 H4 | H3 H4].
-      * reflexivity.
-      * contradiction.
-    + intros H2.
-      destruct H1 as [H3 H4 | H3 H4].
-      * auto.
-      * inversion H2.
+  split; intros.
+  - destruct b; magic.
+  - split; intros; destruct H; magic.
 Qed.
+
+Hint Resolve -> reflectIff.
+Hint Resolve <- reflectIff.
 
 (*********************)
 (* Example: evenness *)
@@ -53,6 +41,8 @@ Qed.
 Inductive even : nat -> Prop :=
 | evenZero : even 0
 | evenSS : forall n : nat, even n -> even (S (S n)).
+
+Hint Constructors even.
 
 Fixpoint isEven n :=
   match n with
@@ -71,57 +61,33 @@ Lemma evenInd :
   forall n,
   P n /\ P (S n).
 Proof.
-  intros P H1 H2 H3.
-  induction n as [| n H4].
-  - auto.
-  - destruct H4 as [H4 H5].
-    auto.
+  induction n; magic.
 Qed.
+
+Hint Resolve evenInd.
 
 Theorem evenIffIsEven : forall n, even n <-> isEven n = true.
 Proof.
-  intros n.
-  split.
-  - intros H1.
-    induction H1 as [| n H1 H2].
-    + reflexivity.
-    + auto.
+  intros; split.
+  - intros; induction H; magic.
   - generalize dependent n.
     set (P := fun n => isEven n = true -> even n).
-    assert (forall n, P n /\ P (S n)) as H1.
-    + apply evenInd.
-      * unfold P.
-        intros H.
-        apply evenZero.
-      * unfold P.
-        intros H.
-        simpl in H.
-        inversion H.
-      * unfold P.
-        intros n H1 H3.
-        destruct H1 as [H1 H2].
-        apply evenSS.
-        simpl in H3.
-        apply H1 in H3.
-        auto.
-    + intros n.
-      set (H2 := H1 n).
-      destruct H2 as [H2 H3].
-      unfold P in H2.
-      auto.
+    assert (forall n, P n /\ P (S n)).
+    + apply evenInd; unfold P; magic.
+    + intros; specialize (H n); magic.
 Qed.
+
+Hint Resolve -> evenIffIsEven.
+Hint Resolve <- evenIffIsEven.
 
 Theorem evenRefl : forall n, reflect (even n) (isEven n).
 Proof.
-  intros n.
-  apply reflectIff.
-  apply evenIffIsEven.
+  magic.
 Qed.
 
 (* A proof by reflection of (even 1000) *)
 
 Lemma evenOneThousand : even 1000.
 Proof.
-  apply evenIffIsEven.
-  reflexivity.
+  magic.
 Qed.

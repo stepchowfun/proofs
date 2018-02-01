@@ -129,7 +129,13 @@ Lemma doubleInd :
   P n /\ P (succ n).
 Proof.
   intros.
-  induction n; try destruct IHn; auto.
+  induction n.
+  - split; assumption.
+  - destruct IHn.
+    split.
+    + assumption.
+    + apply H1.
+      split; assumption.
 Qed.
 
 (* Now we can prove the main result: forall n, even n \/ odd n. *)
@@ -137,9 +143,13 @@ Qed.
 Theorem evenOrOdd : forall n, even n \/ odd n.
 Proof.
   apply doubleInd.
-  - left; apply evenZero.
-  - right; apply oddOne.
-  - intros; destruct H; destruct H; destruct H0;
+  - left.
+    apply evenZero.
+  - right.
+    apply oddOne.
+  - intros.
+    destruct H.
+    destruct H; destruct H0;
       left + right; apply evenSS + apply oddSS; assumption.
 Qed.
 
@@ -151,5 +161,7 @@ Proof.
   intros.
   induction n.
   - reflexivity.
-  - cbn; rewrite IHn; reflexivity.
+  - cbn.
+    rewrite IHn.
+    reflexivity.
 Qed.
