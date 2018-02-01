@@ -7,8 +7,6 @@
 (********************************************************)
 
 Require Import Main.Tactics.
-Require Import Nat.
-Require Import Omega.
 
 Module Type Kleene.
   (***************)
@@ -27,6 +25,10 @@ Module Type Kleene.
   Axiom refl : forall x, leq x x.
   Axiom trans : forall x y z, leq x y -> leq y z -> leq x z.
   Axiom antisym : forall x y, leq x y -> leq y x -> x = y.
+
+  Hint Resolve refl.
+  Hint Resolve trans.
+  Hint Resolve antisym.
 
   (*
     A supremum of a subset of T is a least element of T which is greater than
@@ -57,6 +59,8 @@ Module Type Kleene.
     directed P ->
     exists x, supremum P x.
 
+  Hint Resolve directedComplete.
+
   (*
     Assumption: Let T have a least element called bottom. This makes our
     partial order a pointed directed-complete partial order.
@@ -65,6 +69,8 @@ Module Type Kleene.
   Parameter bottom : T.
 
   Axiom bottomLeast : forall x, leq bottom x.
+
+  Hint Resolve bottomLeast.
 
   (*
     A monotone function is one which preserves order. We only need to consider
@@ -102,16 +108,18 @@ Module Type Kleene.
 
   (* We will need this simple lemma about pairs of natural numbers. *)
 
-  Lemma natDiff : forall n1 n2, exists n3, n1 = add n2 n3 \/ n2 = add n1 n3.
+  Lemma natDiff : forall n1 n2, exists n3, n1 = n2 + n3 \/ n2 = n1 + n3.
   Proof.
     induction n1; intros.
-    - exists n2; right; auto.
+    - exists n2; magic.
     - specialize (IHn1 n2); destruct IHn1; destruct H.
-      + exists (S x); left; rewrite H; omega.
+      + exists (S x); magic.
       + destruct x.
-        * exists 1; left; omega.
-        * exists x; right; rewrite H; omega.
+        * exists 1; magic.
+        * exists x; magic.
   Qed.
+
+  Hint Resolve natDiff.
 
   (* The supremum of a subset of T, if it exists, is unique. *)
 
@@ -122,12 +130,12 @@ Module Type Kleene.
     x1 = x2.
   Proof.
     intros.
-    unfold supremum in H; destruct H.
-    unfold supremum in H0; destruct H0.
-    apply H1 in H0.
-    apply H2 in H.
-    apply antisym; auto.
+    unfold supremum in H.
+    unfold supremum in H0.
+    magic.
   Qed.
+
+  Hint Resolve supremumUniqueness.
 
   (* Scott-continuity implies monotonicity. *)
 
@@ -140,46 +148,39 @@ Module Type Kleene.
     feed H.
     - unfold directed.
       split.
-      + exists x1; auto.
+      + exists x1; magic.
       + intros.
         destruct H1;
           rewrite H1;
           exists x2;
           split;
-          [ auto | | try apply refl | ].
+          magic.
         * {
           destruct H2; rewrite H2.
-          - auto.
+          - magic.
           - split.
             + apply refl.
-            + right; auto.
+            + right; magic.
         }
         * {
           split.
-          - destruct H2; rewrite H2.
-            + auto.
-            + apply refl.
-          - right; auto.
+          - destruct H2; magic.
+          - magic.
         }
     - feed H.
       + unfold supremum.
         split.
-        * {
-          intros.
-          destruct H1; rewrite H1; auto || apply refl.
-        }
-        * {
-          intros.
-          specialize (H1 x2).
-          feed H1; auto.
-        }
+        * intros; destruct H1; magic.
+        * magic.
       + unfold supremum in H.
         destruct H.
         specialize (H (f x1)).
         feed H.
-        * exists x1; auto.
-        * auto.
+        * exists x1; magic.
+        * magic.
   Qed.
+
+  Hint Resolve continuousImpliesMonotone.
 
   (*
     Iterated applications of a monotone function f to bottom form an ω-chain,
@@ -195,21 +196,11 @@ Module Type Kleene.
     intros.
     fact (natDiff n m).
     destruct H0; destruct H0.
-    - right.
-      rewrite H0; clear H0.
-      generalize x.
-      induction m; intros.
-      + cbn; apply bottomLeast.
-      + specialize (IHm x0); apply H in IHm.
-        cbn; auto.
-    - left.
-      rewrite H0; clear H0.
-      generalize x.
-      induction n; intros.
-      + cbn; apply bottomLeast.
-      + specialize (IHn x0); apply H in IHn.
-        cbn; auto.
+    - right; subst n; induction m; magic.
+    - left; subst m; induction n; magic.
   Qed.
+
+  Hint Resolve omegaChain.
 
   (* The ascending Kleene chain of f is directed. *)
 
@@ -222,7 +213,7 @@ Module Type Kleene.
     set (P := fun x2 : T => exists n : nat, x2 = approx f n).
     unfold directed.
     split.
-    - exists bottom; unfold P; exists 0; auto.
+    - exists bottom; unfold P; exists 0; magic.
     - intros.
       unfold P in H0; destruct H0.
       unfold P in H1; destruct H1.
@@ -230,23 +221,25 @@ Module Type Kleene.
       destruct H2.
       + exists x2.
         split.
-        * rewrite H0; rewrite H1; auto.
+        * magic.
         * {
           split.
           - apply refl.
           - unfold P.
-            exists x0; auto.
+            exists x0; magic.
         }
       + exists x1.
         split.
-        * apply refl.
+        * magic.
         * {
           split.
-          - rewrite H0; rewrite H1; auto.
+          - magic.
           - unfold P.
-            exists x; auto.
+            exists x; magic.
         }
   Qed.
+
+  Hint Resolve kleeneChainDirected.
 
   (**********************************)
   (* The Kleene fixed-point theorem *)
@@ -269,10 +262,10 @@ Module Type Kleene.
     intros.
     set (P := fun x2 : T => exists n : nat, x2 = approx f n).
     assert (directed P).
-    - apply kleeneChainDirected; apply continuousImpliesMonotone in H; auto.
+    - apply kleeneChainDirected; apply continuousImpliesMonotone in H; magic.
     - fact (directedComplete P H0); destruct H1.
       exists x.
-      split; auto.
+      split; magic.
       split.
       + unfold continuous in H.
         specialize (H P x H0 H1).
@@ -291,10 +284,10 @@ Module Type Kleene.
                 exists (approx f x0).
                 split.
                 - unfold P.
-                  exists x0; auto.
-                - cbn in H2; auto.
+                  exists x0; magic.
+                - magic.
               }
-              * apply H; auto.
+              * magic.
           - unfold supremum in H; destruct H.
             apply H3.
             intros.
@@ -304,9 +297,9 @@ Module Type Kleene.
             unfold P in H4; destruct H4.
             rewrite H4 in H5.
             exists (S x1).
-            cbn; auto.
+            magic.
         }
-        * apply (supremumUniqueness P); auto.
+        * apply (supremumUniqueness P); magic.
       + intros.
         assert (forall x3, P x3 -> leq x3 x2).
         * {
@@ -314,17 +307,16 @@ Module Type Kleene.
           unfold P in H3; destruct H3.
           generalize dependent x3.
           induction x0; intros.
-          - cbn in H3; rewrite H3; apply bottomLeast.
-          - specialize (IHx0 (approx f x0)); feed IHx0; auto.
+          - cbn in H3; subst x3; magic.
+          - specialize (IHx0 (approx f x0)); feed IHx0; magic.
             rewrite H3; clear H3.
             cbn.
             rewrite <- H2.
             fact (continuousImpliesMonotone f H).
-            apply H3; auto.
+            magic.
         }
-        * {
-          unfold supremum in H1; destruct H1.
-          apply H4; auto.
-        }
+        * unfold supremum in H1; magic.
   Qed.
+
+  Hint Resolve kleene.
 End Kleene.

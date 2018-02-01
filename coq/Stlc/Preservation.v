@@ -17,7 +17,7 @@ Lemma contextInvariance :
   (forall x, freeVar e x -> lookupVar c1 x = lookupVar c2 x) ->
   hasType c2 e t.
 Proof.
-  intros. generalize dependent c2.
+  intros; generalize dependent c2.
   induction H; magic; intros.
   - apply htIf; apply IHhasType1 + apply IHhasType2 + apply IHhasType3;
       intros; apply H2; magic.
@@ -35,10 +35,12 @@ Theorem typingJudgmentClosed :
   freeVar e x ->
   exists t2, lookupVar c x = Some t2.
 Proof.
-  intros; induction H; inversion H0; magic.
+  intros; induction H; inversion H0; clean; magic.
   - exists t; magic.
-  - feed IHhasType; magic; destruct IHhasType; cbn in H7;
-      destruct (String.string_dec x x0); magic.
+  - feed IHhasType; magic.
+    destruct IHhasType; cbn in H1.
+    destruct (String.string_dec x x0); magic.
+    exists x1; magic.
 Qed.
 
 Hint Resolve typingJudgmentClosed.
@@ -50,29 +52,28 @@ Theorem substitutionPreservesTyping :
   hasType c (sub e2 x e1) t2.
 Proof.
   intros; generalize dependent c; generalize dependent t2.
-  induction e2; intros; try abstract (inversion H; magic).
-  - destruct (String.string_dec x s).
-    + rewrite <- e in *.
-      inversion H.
-      cbn in H3; cbn; destruct (String.string_dec x x); magic.
-      inversion H3; rewrite H6 in *.
-      apply contextInvariance with (c1 := cEmpty); magic.
-      intros.
-      fact (typingJudgmentClosed cEmpty e1 x1 t2); repeat (feed H7; magic).
-      destruct H7; inversion H7.
-    + cbn; inversion H; inversion H3; destruct (String.string_dec x s);
-        destruct (String.string_dec s x); magic.
-  - cbn; destruct (String.string_dec x s).
-    + rewrite e in *.
-      apply contextInvariance with (c1 := cExtend c s t1); magic; intros.
-      inversion H1.
-      cbn; destruct (String.string_dec x0 s); magic.
-    + inversion H. clear H.
-      assert (hasType (cExtend (cExtend c s t) x t1) e2 t3); magic.
+  induction e2; intros; inversion H; clear H; clean; magic.
+  - cbn; cbn in H3.
+    destruct (String.string_dec x s);
+      destruct (String.string_dec s x);
+      destruct (String.string_dec s s);
+      clean; magic.
+    apply contextInvariance with (c1 := cEmpty); magic.
+    intros.
+    fact (typingJudgmentClosed cEmpty e1 x0 t1); repeat (feed H1; magic).
+    destruct H1; inversion H1.
+  - cbn.
+    destruct (String.string_dec x s); clean; apply htAbs.
+    + apply contextInvariance with (c1 := cExtend (cExtend c s t1) s t); magic.
+      intros; cbn.
+      destruct (String.string_dec x s); magic.
+    + apply IHe2.
       apply contextInvariance with (c1 := cExtend (cExtend c x t1) s t); magic.
-      intros.
-      cbn; destruct (String.string_dec x1 s);
-        destruct (String.string_dec x1 x); magic.
+      intros; cbn.
+      destruct (String.string_dec x0 s);
+        destruct (String.string_dec x0 x);
+        magic.
+  - cbn; apply htApp with (t1 := t0); magic.
 Qed.
 
 Hint Resolve substitutionPreservesTyping.
@@ -86,10 +87,12 @@ Proof.
   remember cEmpty.
   intros; generalize dependent e2.
   induction H; intros; try abstract (inversion H0).
-  - inversion H2; magic.
-  - inversion H1; magic.
-    inversion H0; magic.
+  - inversion H2; clean; magic.
+  - inversion H1; clean; magic.
+    inversion H0; clean; magic.
     apply substitutionPreservesTyping with (t1 := t1); magic.
+    + apply htApp with (t1 := t1); magic.
+    + apply htApp with (t1 := t1); magic.
 Qed.
 
 Hint Resolve preservation.

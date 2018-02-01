@@ -8,18 +8,28 @@
 
 Require Import Omega.
 
+(* This tactic removes superfluous hypotheses. *)
+
+Ltac clean := repeat (
+  match goal with
+  | [ H : ?x = ?y |- _ ] => (is_var y; subst x) || (is_var x; subst y)
+  | [ H : ?x = ?x |- _ ] => clear H
+  end
+).
+
 (*
   This tactic tries a variety of approaches to solve a goal. It uses the
   resolve, rewrite, and unfold hints from the "core" database.
 *)
 
 Ltac magic := try abstract (
+  clean;
   cbn;
   intros;
   f_equal;
   idtac + autounfold with core in *;
   idtac + autorewrite with core in *;
-  omega + congruence + dintuition eauto with *
+  omega + congruence + dintuition
 ).
 
 (*

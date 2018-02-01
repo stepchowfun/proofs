@@ -3,4 +3,7 @@ dist: trusty
 language: generic
 sudo: required
 services: docker
-script: make docker-build
+script:
+  - while sleep 1m; do echo "=====[ still running ]====="; done &
+  - make docker-build
+  - kill %1
