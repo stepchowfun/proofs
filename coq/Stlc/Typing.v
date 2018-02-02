@@ -6,18 +6,18 @@
 (**************************************************************)
 (**************************************************************)
 
-Require Import Coq.Strings.String.
+Require Import Main.Stlc.Name.
 Require Import Main.Stlc.Syntax.
 
 Inductive context :=
 | cEmpty : context
-| cExtend : context -> string -> type -> context.
+| cExtend : context -> name -> type -> context.
 
 Fixpoint lookupVar c1 x1 :=
   match c1 with
   | cEmpty => None
   | cExtend c2 x2 t =>
-    if string_dec x1 x2 then Some t else lookupVar c2 x1
+    if nameEq x1 x2 then Some t else lookupVar c2 x1
   end.
 
 Inductive hasType : context -> term -> type -> Prop :=
