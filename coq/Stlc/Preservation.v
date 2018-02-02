@@ -6,6 +6,7 @@
 (***************************************************************************)
 (***************************************************************************)
 
+Require Import Main.Stlc.Name.
 Require Import Main.Stlc.Semantics.
 Require Import Main.Stlc.Syntax.
 Require Import Main.Stlc.Typing.
@@ -23,7 +24,7 @@ Proof.
       intros; apply H2; magic.
   - apply htVar; rewrite <- H0; magic.
   - apply htAbs; apply IHhasType; intros; cbn;
-      destruct (String.string_dec x0 x); magic; apply H0; magic.
+      destruct (nameEq x0 x); magic; apply H0; magic.
   - apply htApp with (t1 := t1); magic.
 Qed.
 
@@ -39,7 +40,7 @@ Proof.
   - exists t; magic.
   - feed IHhasType; magic.
     destruct IHhasType; cbn in H1.
-    destruct (String.string_dec x x0); magic.
+    destruct (nameEq x x0); magic.
     exists x1; magic.
 Qed.
 
@@ -54,25 +55,20 @@ Proof.
   intros; generalize dependent c; generalize dependent t2.
   induction e2; intros; inversion H; clear H; clean; magic.
   - cbn; cbn in H3.
-    destruct (String.string_dec x s);
-      destruct (String.string_dec s x);
-      destruct (String.string_dec s s);
-      clean; magic.
+    destruct (nameEq x n); destruct (nameEq n x); clean; magic.
     apply contextInvariance with (c1 := cEmpty); magic.
     intros.
-    fact (typingJudgmentClosed cEmpty e1 x0 t1); repeat (feed H1; magic).
+    fact (typingJudgmentClosed cEmpty e1 x t1); repeat (feed H1; magic).
     destruct H1; inversion H1.
   - cbn.
-    destruct (String.string_dec x s); clean; apply htAbs.
-    + apply contextInvariance with (c1 := cExtend (cExtend c s t1) s t); magic.
+    destruct (nameEq x n); clean; apply htAbs.
+    + apply contextInvariance with (c1 := cExtend (cExtend c n t1) n t); magic.
       intros; cbn.
-      destruct (String.string_dec x s); magic.
+      destruct (nameEq x n); magic.
     + apply IHe2.
-      apply contextInvariance with (c1 := cExtend (cExtend c x t1) s t); magic.
+      apply contextInvariance with (c1 := cExtend (cExtend c x t1) n t); magic.
       intros; cbn.
-      destruct (String.string_dec x0 s);
-        destruct (String.string_dec x0 x);
-        magic.
+      destruct (nameEq x0 n); destruct (nameEq x0 x); magic.
   - cbn; apply htApp with (t1 := t0); magic.
 Qed.
 
