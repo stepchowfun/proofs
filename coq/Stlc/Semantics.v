@@ -27,7 +27,7 @@ Inductive step : term -> term -> Prop :=
   forall e1 e2,
   step (eIf eFalse e1 e2) e2
 | sBeta :
-  forall e1 e2 x t,
+  forall e1 e2 t x,
   value e2 ->
   step (eApp (eAbs x t e1) e2) (sub e1 x e2)
 | sApp1 :

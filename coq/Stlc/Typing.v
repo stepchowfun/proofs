@@ -34,15 +34,15 @@ Inductive hasType : context -> term -> type -> Prop :=
   hasType c e3 t ->
   hasType c (eIf e1 e2 e3) t
 | htVar :
-  forall x t c,
+  forall c t x,
   lookupVar c x = Some t ->
   hasType c (eVar x) t
 | htAbs :
-  forall e x t1 t2 c,
+  forall c e t1 t2 x,
   hasType (cExtend c x t1) e t2 ->
   hasType c (eAbs x t1 e) (tArrow t1 t2)
 | htApp :
-  forall e1 e2 t1 t2 c,
+  forall c e1 e2 t1 t2,
   hasType c e1 t1 ->
   hasType c e2 (tArrow t1 t2) ->
   hasType c (eApp e2 e1) t2.
