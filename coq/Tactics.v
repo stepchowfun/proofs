@@ -8,9 +8,8 @@
 
 Require Import Omega.
 
-(* This tactic removes superfluous hypotheses. *)
-
-Ltac clean := repeat (
+(* This is like the `inversion` tactic, but leaves less junk around. *)
+Ltac invert H := inversion H; clear H; repeat (
   match goal with
   | [ H : ?x = ?y |- _ ] => (is_var y; subst x) || (is_var x; subst y)
   | [ H : ?x = ?x |- _ ] => clear H
@@ -23,7 +22,6 @@ Ltac clean := repeat (
 *)
 
 Ltac magic := try abstract (
-  clean;
   cbn;
   intros;
   f_equal;

@@ -164,13 +164,13 @@ Module Type Kleene.
         }
         * {
           split.
-          - destruct H2; magic.
+          - destruct H2; subst x3; magic.
           - magic.
         }
     - feed H.
       + unfold supremum.
         split.
-        * intros; destruct H1; magic.
+        * intros; destruct H1; subst x0; magic.
         * magic.
       + unfold supremum in H.
         destruct H.

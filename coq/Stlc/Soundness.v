@@ -19,8 +19,8 @@ Theorem soundness :
   stepStar e1 e2 ->
   (value e2 \/ exists e3, step e2 e3).
 Proof.
-  intros; induction H0.
-  - apply progress with (t := t); magic.
+  intros. induction H0.
+  - apply progress with (t := t). magic.
   - feed IHstepStar.
     + apply preservation with (e1 := e1); magic.
     + magic.
