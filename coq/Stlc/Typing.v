@@ -39,12 +39,12 @@ Inductive hasType : context -> term -> type -> Prop :=
   hasType c (eVar x) t
 | htAbs :
   forall c e t1 t2 x,
-  hasType (cExtend c x t1) e t2 ->
-  hasType c (eAbs x t1 e) (tArrow t1 t2)
+  hasType (cExtend c x t2) e t1 ->
+  hasType c (eAbs x t2 e) (tArrow t2 t1)
 | htApp :
   forall c e1 e2 t1 t2,
-  hasType c e1 t1 ->
-  hasType c e2 (tArrow t1 t2) ->
-  hasType c (eApp e2 e1) t2.
+  hasType c e1 (tArrow t2 t1) ->
+  hasType c e2 t2 ->
+  hasType c (eApp e1 e2) t1.
 
 Hint Constructors hasType.
