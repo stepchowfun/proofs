@@ -81,9 +81,8 @@ Theorem preservation :
   step e1 e2 ->
   hasType cEmpty e2 t.
 Proof.
-  remember cEmpty.
   intros. generalize dependent e2.
-  induction H; intros; try abstract (invert H0).
+  remember cEmpty. induction H; subst c; intros; try abstract (invert H0).
   - invert H2; magic.
   - invert H1; magic.
     + apply substitutionPreservesTyping with (t1 := t2); magic.
