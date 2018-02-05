@@ -25,3 +25,5 @@ Proof.
     + apply preservation with (e1 := e1); magic.
     + magic.
 Qed.
+
+Hint Resolve soundness.
