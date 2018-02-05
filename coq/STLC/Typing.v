@@ -6,8 +6,8 @@
 (**************************************************************)
 (**************************************************************)
 
-Require Import Main.Stlc.Name.
-Require Import Main.Stlc.Syntax.
+Require Import Main.STLC.Name.
+Require Import Main.STLC.Syntax.
 
 Inductive context :=
 | cEmpty : context

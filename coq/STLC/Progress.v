@@ -6,9 +6,9 @@
 (***********************************************************************)
 (***********************************************************************)
 
-Require Import Main.Stlc.Semantics.
-Require Import Main.Stlc.Syntax.
-Require Import Main.Stlc.Typing.
+Require Import Main.STLC.Semantics.
+Require Import Main.STLC.Syntax.
+Require Import Main.STLC.Typing.
 Require Import Main.Tactics.
 
 Theorem progress :
