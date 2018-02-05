@@ -6,7 +6,7 @@
 (***********************************************************)
 (***********************************************************)
 
-Require Import Main.Stlc.Syntax.
+Require Import Main.STLC.Syntax.
 
 Inductive value : term -> Prop :=
 | vTrue : value eTrue

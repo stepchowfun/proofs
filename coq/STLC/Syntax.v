@@ -6,7 +6,7 @@
 (********************************************************)
 (********************************************************)
 
-Require Import Main.Stlc.Name.
+Require Import Main.STLC.Name.
 
 Inductive term : Set :=
 | eTrue : term
