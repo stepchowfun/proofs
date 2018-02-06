@@ -31,12 +31,27 @@ fi
 
 if test "$(cat "$1" | wc -c)" -ne 0; then
   if test "$(tail -c 1 "$1" | wc -l)" -ne 1; then
-    echo "Error: $1 is not terminated with exactly one blank line."
+    echo "Error: $1 is not terminated with a blank line."
     exit 1
   fi
 
   if test "$(tail -c 2 "$1" | wc -l)" -ne 1; then
-    echo "Error: $1 is not terminated with exactly one blank line."
+    echo "Error: $1 is terminated with multiple blank lines."
+    exit 1
+  fi
+fi
+
+# Check that there are no tabs, with more permissive behavior if the file is
+# called `Makefile`.
+
+if test "$(basename "$1")" = Makefile; then
+  if grep -E -n $'.\t' "$1"; then
+    echo "Error: $1 has a tab in a non-required position."
+    exit 1
+  fi
+else
+  if grep -E -n $'\t' "$1"; then
+    echo "Error: $1 has a tab."
     exit 1
   fi
 fi
