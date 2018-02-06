@@ -8,6 +8,8 @@
 
 Require Import Main.STLC.Name.
 
+Import Name.
+
 Inductive term : Set :=
 | eTrue : term
 | eFalse : term
