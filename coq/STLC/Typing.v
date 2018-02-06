@@ -9,6 +9,8 @@
 Require Import Main.STLC.Name.
 Require Import Main.STLC.Syntax.
 
+Import Name.
+
 Inductive context :=
 | cEmpty : context
 | cExtend : context -> name -> type -> context.
