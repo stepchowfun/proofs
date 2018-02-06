@@ -116,7 +116,7 @@ Inductive odd : nat -> Prop :=
 | oddSS : forall n, odd n -> odd (succ (succ n)).
 
 (*
-  First, we need to prove this lemma so we can do induction on n and n + 1 at 
+  First, we need to prove this lemma so we can do induction on n and n + 1 at
   the same time.
 *)
 
@@ -149,8 +149,11 @@ Proof.
     apply oddOne.
   - intros.
     destruct H.
-    destruct H; destruct H0;
-      left + right; apply evenSS + apply oddSS; assumption.
+    destruct H;
+      destruct H0;
+      left + right;
+      apply evenSS + apply oddSS;
+      assumption.
 Qed.
 
 (* Let's prove that addition is associative. *)
