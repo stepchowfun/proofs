@@ -27,7 +27,8 @@ if grep -E -n '[[:space:]]$$' "$1"; then
   exit 1
 fi
 
-# Check that there is a blank line at the end of the file.
+# Check that there is exactly one blank line at the end of the file, unless
+# the file is empty.
 
 if test "$(cat "$1" | wc -c)" -ne 0; then
   if test "$(tail -c 1 "$1" | wc -l)" -ne 1; then
