@@ -9,6 +9,7 @@
 Require Import Main.Tactics.
 
 Module Type Kleene.
+
   (***************)
   (* Definitions *)
   (***************)
@@ -111,12 +112,12 @@ Module Type Kleene.
   Lemma natDiff : forall n1 n2, exists n3, n1 = n2 + n3 \/ n2 = n1 + n3.
   Proof.
     induction n1; intros.
-    - exists n2; magic.
-    - specialize (IHn1 n2); destruct IHn1; destruct H.
-      + exists (S x); magic.
+    - exists n2. magic.
+    - specialize (IHn1 n2). destruct IHn1. destruct H.
+      + exists (S x). magic.
       + destruct x.
-        * exists 1; magic.
-        * exists x; magic.
+        * exists 1. magic.
+        * exists x. magic.
   Qed.
 
   Hint Resolve natDiff.
@@ -129,9 +130,7 @@ Module Type Kleene.
     supremum P x2 ->
     x1 = x2.
   Proof.
-    intros.
-    unfold supremum in H.
-    unfold supremum in H0.
+    unfold supremum.
     magic.
   Qed.
 
@@ -148,20 +147,10 @@ Module Type Kleene.
     feed H.
     - unfold directed.
       split.
-      + exists x1; magic.
+      + exists x1. magic.
       + intros.
-        destruct H1;
-          rewrite H1;
-          exists x2;
-          split;
-          magic.
-        * {
-          destruct H2; rewrite H2.
-          - magic.
-          - split.
-            + apply refl.
-            + right; magic.
-        }
+        destruct H1; subst x0; exists x2; split; magic.
+        * destruct H2; subst x3; magic.
         * {
           split.
           - destruct H2; subst x3; magic.
@@ -170,13 +159,10 @@ Module Type Kleene.
     - feed H.
       + unfold supremum.
         split.
-        * intros; destruct H1; subst x0; magic.
+        * intros. destruct H1; subst x0; magic.
         * magic.
-      + unfold supremum in H.
-        destruct H.
-        specialize (H (f x1)).
-        feed H.
-        * exists x1; magic.
+      + unfold supremum in H. destruct H. specialize (H (f x1)). feed H.
+        * exists x1. magic.
         * magic.
   Qed.
 
@@ -193,11 +179,9 @@ Module Type Kleene.
     monotone f ->
     leq (approx f n) (approx f m) \/ leq (approx f m) (approx f n).
   Proof.
-    intros.
-    fact (natDiff n m).
-    destruct H0; destruct H0.
-    - right; subst n; induction m; magic.
-    - left; subst m; induction n; magic.
+    intros. fact (natDiff n m). destruct H0. destruct H0.
+    - right. subst n. induction m; magic.
+    - left. subst m. induction n; magic.
   Qed.
 
   Hint Resolve omegaChain.
@@ -213,29 +197,25 @@ Module Type Kleene.
     set (P := fun x2 : T => exists n : nat, x2 = approx f n).
     unfold directed.
     split.
-    - exists bottom; unfold P; exists 0; magic.
+    - exists bottom. unfold P. exists 0. magic.
     - intros.
-      unfold P in H0; destruct H0.
-      unfold P in H1; destruct H1.
+      unfold P in H0. destruct H0.
+      unfold P in H1. destruct H1.
       fact (omegaChain f x x0 H).
       destruct H2.
-      + exists x2.
-        split.
-        * magic.
-        * {
-          split.
-          - apply refl.
-          - unfold P.
-            exists x0; magic.
-        }
-      + exists x1.
-        split.
+      + exists x2. split.
         * magic.
         * {
           split.
           - magic.
-          - unfold P.
-            exists x; magic.
+          - unfold P. exists x0. magic.
+        }
+      + exists x1. split.
+        * magic.
+        * {
+          split.
+          - magic.
+          - unfold P. exists x. magic.
         }
   Qed.
 
@@ -262,40 +242,33 @@ Module Type Kleene.
     intros.
     set (P := fun x2 : T => exists n : nat, x2 = approx f n).
     assert (directed P).
-    - apply kleeneChainDirected; apply continuousImpliesMonotone in H; magic.
-    - fact (directedComplete P H0); destruct H1.
-      exists x.
-      split; magic.
-      split.
+    - apply kleeneChainDirected. apply continuousImpliesMonotone in H. magic.
+    - fact (directedComplete P H0). destruct H1. exists x. split; magic. split.
       + unfold continuous in H.
         specialize (H P x H0 H1).
         set (Q := fun x2 : T => exists x3 : T, P x3 /\ x2 = f x3) in H.
         assert (supremum P (f x)).
         * {
-          unfold supremum.
-          split; intros.
-          - unfold supremum in H; destruct H.
-            unfold P in H2; destruct H2.
+          unfold supremum. split; intros.
+          - unfold supremum in H. destruct H.
+            unfold P in H2. destruct H2.
             destruct x0.
-            + cbn in H2; rewrite H2; apply bottomLeast.
+            + cbn in H2. subst x2. magic.
             + assert (Q x2).
               * {
-                unfold Q.
-                exists (approx f x0).
-                split.
-                - unfold P.
-                  exists x0; magic.
+                unfold Q. exists (approx f x0). split.
+                - unfold P. exists x0. magic.
                 - magic.
               }
               * magic.
-          - unfold supremum in H; destruct H.
+          - unfold supremum in H. destruct H.
             apply H3.
             intros.
             apply H2.
             unfold P.
-            unfold Q in H4; destruct H4; destruct H4.
-            unfold P in H4; destruct H4.
-            rewrite H4 in H5.
+            unfold Q in H4. do 2 (destruct H4).
+            unfold P in H4. destruct H4.
+            subst x0.
             exists (S x1).
             magic.
         }
@@ -304,19 +277,20 @@ Module Type Kleene.
         assert (forall x3, P x3 -> leq x3 x2).
         * {
           intros.
-          unfold P in H3; destruct H3.
+          unfold P in H3. destruct H3.
           generalize dependent x3.
           induction x0; intros.
-          - cbn in H3; subst x3; magic.
-          - specialize (IHx0 (approx f x0)); feed IHx0; magic.
-            rewrite H3; clear H3.
+          - cbn in H3. subst x3. magic.
+          - specialize (IHx0 (approx f x0)). feed IHx0; magic.
+            subst x3.
             cbn.
             rewrite <- H2.
             fact (continuousImpliesMonotone f H).
             magic.
         }
-        * unfold supremum in H1; magic.
+        * unfold supremum in H1. magic.
   Qed.
 
   Hint Resolve kleene.
+
 End Kleene.

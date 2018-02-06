@@ -13,18 +13,17 @@ main:
 	rm -f Makefile.coq _CoqProjectFull
 
 lint:
-	./scripts/check-line-lengths.sh \
-	  $(shell \
-	    find . -type d \( \
-	      -path ./.git \
-	    \) -prune -o \( \
-	      -name '*.sh' -o \
-	      -name '*.v' -o \
-	      -name '*.yml' -o \
-	      -name 'Dockerfile' -o \
-	      -name 'Makefile' \
-	    \) -print \
-	  )
+	for file in $(shell \
+	  find . -type d \( \
+	    -path ./.git \
+	  \) -prune -o \( \
+	    -name '*.sh' -o \
+	    -name '*.v' -o \
+	    -name '*.yml' -o \
+	    -name 'Dockerfile' -o \
+	    -name 'Makefile' \
+	  \) -print \
+	); do ./scripts/general-lint.sh "$$file" || exit 1; done
 
 clean:
 	rm -f _CoqProjectFull Makefile.coq \

@@ -16,17 +16,20 @@ Inductive reflect (P : Prop) : bool -> Prop :=
 | reflectT : P -> reflect P true
 | reflectF : ~ P -> reflect P false.
 
-Hint Constructors reflect.
-
 Theorem reflectIff : forall P b, (P <-> b = true) <-> reflect P b.
 Proof.
   split; intros.
-  - destruct b; magic.
+  - destruct b; constructor; magic.
   - split; intros; destruct H; magic.
 Qed.
 
 Hint Resolve -> reflectIff.
 Hint Resolve <- reflectIff.
+
+Ltac reflect H1 :=
+  let H2 := fresh "H" in
+    let H3 := fresh "H" in
+      abstract (pose (H2 := H1); inversion H2 as [ H3 | H3 ]; exact H3).
 
 (*********************)
 (* Example: evenness *)
@@ -69,12 +72,12 @@ Hint Resolve evenInd.
 Theorem evenIffIsEven : forall n, even n <-> isEven n = true.
 Proof.
   intros; split.
-  - intros; induction H; magic.
+  - intros. induction H; magic.
   - generalize dependent n.
     set (P := fun n => isEven n = true -> even n).
     assert (forall n, P n /\ P (S n)).
     + apply evenInd; unfold P; magic.
-    + intros; specialize (H n); magic.
+    + intros. specialize (H n). magic.
 Qed.
 
 Hint Resolve -> evenIffIsEven.
@@ -89,5 +92,5 @@ Qed.
 
 Lemma evenOneThousand : even 1000.
 Proof.
-  magic.
+  reflect (evenRefl 1000).
 Qed.

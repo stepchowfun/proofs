@@ -14,6 +14,26 @@ Require Import Main.Tactics.
 
 Import Name.
 
+Inductive freeVar : term -> name -> Prop :=
+| fIf :
+  forall e1 e2 e3 x,
+  freeVar e1 x \/ freeVar e2 x \/ freeVar e3 x ->
+  freeVar (eIf e1 e2 e3) x
+| fVar :
+  forall x,
+  freeVar (eVar x) x
+| fAbs :
+  forall e t x1 x2,
+  freeVar e x1 ->
+  x1 <> x2 ->
+  freeVar (eAbs x2 t e) x1
+| fApp :
+  forall e1 e2 x,
+  freeVar e1 x \/ freeVar e2 x ->
+  freeVar (eApp e1 e2) x.
+
+Hint Constructors freeVar.
+
 Lemma contextInvariance :
   forall c1 c2 e t,
   hasType c1 e t ->
@@ -23,8 +43,8 @@ Proof.
   intros. generalize dependent c2.
   induction H; magic; intros.
   - apply htIf;
-    apply IHhasType1 + apply IHhasType2 + apply IHhasType3;
-    intros; apply H2; magic.
+      apply IHhasType1 + apply IHhasType2 + apply IHhasType3;
+      intros; apply H2; magic.
   - apply htVar. rewrite <- H0; magic.
   - apply htAbs. apply IHhasType. intros. cbn.
     destruct (nameEq x0 x); magic. apply H0. magic.
