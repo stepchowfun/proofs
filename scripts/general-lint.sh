@@ -6,8 +6,8 @@ set -eu -o pipefail
 # Usage:
 #   ./genera-lint.sh file
 
-# Check that lines in the given file(s) are at most 80 bytes, including
-# line breaks.
+# Check that lines in the given file are at most 80 bytes, including line
+# breaks.
 
 LINE_LENGTH_VIOLATIONS="$( \
   awk '{ if (length > 79) { print length, FILENAME, "@", FNR }}' "$1" \
