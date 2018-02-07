@@ -13,17 +13,18 @@ main:
 	rm -f Makefile.coq _CoqProjectFull
 
 lint:
-	for file in $(shell \
+	./scripts/general-lint.rb $(shell \
 	  find . -type d \( \
 	    -path ./.git \
 	  \) -prune -o \( \
+	    -name '*.rb' -o \
 	    -name '*.sh' -o \
 	    -name '*.v' -o \
 	    -name '*.yml' -o \
 	    -name 'Dockerfile' -o \
 	    -name 'Makefile' \
 	  \) -print \
-	); do ./scripts/general-lint.sh "$$file" || exit 1; done
+	)
 
 clean:
 	rm -f _CoqProjectFull Makefile.coq \
@@ -37,11 +38,11 @@ clean:
 	  )
 
 docker-deps:
-	docker build -t stephanmisc/coq:8.6-4 scripts
+	docker build -t stephanmisc/coq:8.6 scripts
 
 docker-build:
 	CONTAINER="$$( \
-	  docker create --rm --user=root stephanmisc/coq:8.6-4 bash -c ' \
+	  docker create --rm --user=root stephanmisc/coq:8.6 bash -c ' \
 	    chown -R user:user repo && \
 	    su user -s /bin/bash -l -c "cd repo && make clean && make" \
 	  ' \
