@@ -32,7 +32,7 @@ Ltac magic := try abstract (
 
 (*
   This tactic is useful if you have a hypothesis H : P -> Q and you want to
-  use Q. You can just write `feed H`. A new proof obligation for P will be
+  use Q. You can just write `feed H`. A new proof obligation for P may be
   generated, and then the hypothesis will be specialized to H : Q.
 *)
 
