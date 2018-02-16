@@ -39,7 +39,7 @@ Ltac magic := try abstract (
 Ltac feed H1 := let H2 := fresh "H" in
   match type of H1 with
   | ?T -> _ => assert (H2 : T); [ | specialize (H1 H2); clear H2 ]
-  end.
+  end; magic.
 
 (*
   This tactic takes a given term and adds its type to the context as a new
