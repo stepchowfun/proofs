@@ -22,8 +22,7 @@ Proof.
   intros. induction H0.
   - apply progress with (t := t). magic.
   - feed IHstepStar.
-    + apply preservation with (e1 := e1); magic.
-    + magic.
+    apply preservation with (e1 := e1); magic.
 Qed.
 
 Hint Resolve soundness.

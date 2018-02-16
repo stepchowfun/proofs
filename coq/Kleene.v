@@ -162,8 +162,7 @@ Module Type Kleene.
         * intros. destruct H1; subst x0; magic.
         * magic.
       + unfold supremum in H. destruct H. specialize (H (f x1)). feed H.
-        * exists x1. magic.
-        * magic.
+        exists x1. magic.
   Qed.
 
   Hint Resolve continuousImpliesMonotone.
@@ -281,7 +280,7 @@ Module Type Kleene.
           generalize dependent x3.
           induction x0; intros.
           - cbn in H3. subst x3. magic.
-          - specialize (IHx0 (approx f x0)). feed IHx0; magic.
+          - specialize (IHx0 (approx f x0)). feed IHx0.
             subst x3.
             cbn.
             rewrite <- H2.

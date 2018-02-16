@@ -43,7 +43,7 @@ Theorem typingJudgmentClosed :
 Proof.
   intros. induction H; invert H0; magic.
   - exists t. magic.
-  - feed IHhasType; magic.
+  - feed IHhasType.
     destruct IHhasType. cbn in H0.
     destruct (nameEq x x0); magic.
     exists x1. magic.
@@ -64,7 +64,7 @@ Proof.
     apply contextInvariance with (c1 := cEmpty); magic.
     intros.
     fact (typingJudgmentClosed cEmpty e1 x0 t1).
-    do 2 (feed H1; magic).
+    do 2 (feed H1).
     destruct H1. invert H1.
   - cbn.
     destruct (nameEq x n); apply htAbs.
