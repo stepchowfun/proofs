@@ -24,9 +24,6 @@ Lemma contextInvariance :
 Proof.
   intros. generalize dependent c2.
   induction H; magic; intros.
-  - apply htIf;
-      apply IHhasType1 + apply IHhasType2 + apply IHhasType3;
-      intros; apply H2; magic.
   - apply htVar. rewrite <- H0; magic.
   - apply htAbs. apply IHhasType. intros. cbn.
     destruct (nameEq x0 x); magic. apply H0. magic.

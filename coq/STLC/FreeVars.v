@@ -12,9 +12,17 @@ Require Import Main.STLC.Syntax.
 Import Name.
 
 Inductive freeVar : term -> name -> Prop :=
-| fIf :
+| fIf1 :
   forall e1 e2 e3 x,
-  freeVar e1 x \/ freeVar e2 x \/ freeVar e3 x ->
+  freeVar e1 x ->
+  freeVar (eIf e1 e2 e3) x
+| fIf2 :
+  forall e1 e2 e3 x,
+  freeVar e2 x ->
+  freeVar (eIf e1 e2 e3) x
+| fIf3 :
+  forall e1 e2 e3 x,
+  freeVar e3 x ->
   freeVar (eIf e1 e2 e3) x
 | fVar :
   forall x,
