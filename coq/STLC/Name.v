@@ -28,4 +28,6 @@ Module Name : NameSig.
     magic.
   Qed.
 
+  Hint Resolve nameEq.
+
 End Name.
