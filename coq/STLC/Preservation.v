@@ -6,7 +6,7 @@
 (**************************************)
 (**************************************)
 
-Require Import Main.STLC.FreeVars.
+Require Import Main.STLC.FreeVar.
 Require Import Main.STLC.Name.
 Require Import Main.STLC.Semantics.
 Require Import Main.STLC.Substitution.
