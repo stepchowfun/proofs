@@ -34,9 +34,7 @@ Ltac magic :=
     auto with *;
     try abstract (dintuition (simplify; auto with *));
     try congruence;
-    try omega;
-    eauto with *;
-    dintuition (simplify; eauto with *)
+    try omega
   in try abstract (
     simplify;
     idtac + f_equal;
