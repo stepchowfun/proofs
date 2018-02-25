@@ -22,10 +22,7 @@ Module Name : NameSig.
 
   Theorem nameEq : forall x1 x2 : nat, { x1 = x2 } + { x1 <> x2 }.
   Proof.
-    intro.
-    induction x1; intro; destruct x2; magic.
-    specialize (IHx1 x2).
-    magic.
+    induction x1; magic.
   Qed.
 
   Hint Resolve nameEq.
