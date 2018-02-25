@@ -150,19 +150,12 @@ Module Type Kleene.
       + exists x1. magic.
       + intros.
         destruct H1; subst x0; exists x2; split; magic.
-        * destruct H2; subst x3; magic.
-        * {
-          split.
-          - destruct H2; subst x3; magic.
-          - magic.
-        }
     - feed H.
       + unfold supremum.
         split.
         * intros. destruct H1; subst x0; magic.
         * magic.
       + unfold supremum in H. destruct H. specialize (H (f x1)). feed H.
-        exists x1. magic.
   Qed.
 
   Hint Resolve continuousImpliesMonotone.
