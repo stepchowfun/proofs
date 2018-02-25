@@ -9,6 +9,7 @@
 Require Import Omega.
 
 (* This is like the `inversion` tactic, but leaves less junk around. *)
+
 Ltac invert H := inversion H; try (clear H); repeat (
   match goal with
   | [ H : ?x = ?y |- _ ] => (is_var y; subst x) || (is_var x; subst y)
