@@ -74,7 +74,7 @@ Proof.
   intros; split.
   - intros. induction H; magic.
   - generalize dependent n.
-    set (P := fun n => isEven n = true -> even n).
+    pose (P := fun n => isEven n = true -> even n).
     assert (forall n, P n /\ P (S n)).
     + apply evenInd; unfold P; magic.
     + intros. specialize (H n). magic.
