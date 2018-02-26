@@ -34,7 +34,7 @@ Proof.
       end
     )
     _ _
-  ); intros; apply functional_extensionality; intro x0; destruct x0; magic.
+  ); clean; apply functional_extensionality; intro; destruct x0; magic.
 Defined.
 
 (* This is the "return" natural transformation for maybe. *)
@@ -73,7 +73,7 @@ Proof.
     )
     _
   ).
-  intros; cbn; apply functional_extensionality.
+  clean; apply functional_extensionality.
   destruct x0; magic.
 Defined.
 
@@ -87,7 +87,7 @@ Proof.
   );
   magic;
   apply functional_extensionality_dep;
-  intros;
+  clean;
   apply functional_extensionality;
   destruct x0;
   magic.

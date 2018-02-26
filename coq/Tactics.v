@@ -8,28 +8,37 @@
 
 Require Import Omega.
 
-(* This tactic does a variety of simplifications on the goal and hypotheses. *)
+(*
+  This tactic does a variety of simplifications on the goal and hypotheses.
+  This is used by the `magic` tactics below. If you want to just clean up the
+  hypothesis for easier reading, use the `clean` tactic below.
+*)
 
-Ltac simplify :=
-  let rec reorderContext :=
-    try match goal with
-    | [ H : ?T |- _ ] =>
-      match type of T with
-        | context[Prop] => revert H; reorderContext; intro H
-      end
-    | [ H : context[Prop] |- _ ] => revert H; reorderContext; intro H
-    end
-  in repeat (
+Ltac simplify tactic :=
+  repeat (
     intros;
     cbn in *;
     subst;
     try (autorewrite with core in *);
-    repeat (
+    try (
       match goal with
       | [ H : ex _ |- _ ] => destruct H
+      | [ H : _ /\ _ |- _ ] => destruct H
       end
+    );
+    try (
+      let H2 := fresh "H"
+      in
+        match goal with
+        | [ H1 : ?T -> _ |- _ ] =>
+          match type of T with
+          | context[Prop] =>
+            assert (H2 : T);
+            [ solve [ tactic ] | specialize (H1 H2); clear H2 ]
+          end
+        end
     )
-  ); reorderContext.
+  ).
 
 (*
   The `magic` tactic tries a variety of approaches to solve a goal. It uses the
@@ -39,23 +48,37 @@ Ltac simplify :=
 *)
 
 Ltac magicWith tactic :=
-  try abstract (
-    simplify;
-    try abstract (
+  let magicWith := magicWith
+  in try solve [
+    simplify tactic;
+    try solve [tactic];
+    try solve [dintuition (simplify tactic; tactic)];
+    try solve [progress f_equal; magicWith tactic];
+    try solve [congruence];
+    try solve [omega];
+    try solve [
       match goal with
       | [ H : _ |- _ ] => inversion H; fail
       end
-    );
-    try abstract tactic;
-    try abstract (dintuition (simplify; tactic));
-    try abstract (progress f_equal; magicWith tactic);
-    try abstract congruence;
-    try abstract omega
-  ).
+    ]
+  ].
 
 Ltac magic := let autoStar := auto with * in magicWith autoStar.
 
 Ltac eMagic := let eautoStar := eauto with * in magicWith eautoStar.
+
+(* This tactic cleans up the context for easier reading. *)
+
+Ltac clean :=
+  let rec reorderContext :=
+    try match goal with
+    | [ H : ?T |- _ ] =>
+      match type of T with
+        | context[Prop] => revert H; reorderContext; intro H
+      end
+    | [ H : context[Prop] |- _ ] => revert H; reorderContext; intro H
+    end
+  in simplify magic; reorderContext.
 
 (*
   This tactic takes a given term and adds it to the context as a new
@@ -70,10 +93,12 @@ Ltac fact E := let H := fresh "H" in pose (H := E); clearbody H.
   generated, and then the hypothesis will be specialized to H : Q.
 *)
 
-Ltac feed H1 := let H2 := fresh "H" in
-  match type of H1 with
-  | ?T -> _ => assert (H2 : T); [ | specialize (H1 H2); clear H2 ]
-  end; magic.
+Ltac feed H1 :=
+  let H2 := fresh "H"
+  in
+    match type of H1 with
+    | ?T -> _ => assert (H2 : T); [ | specialize (H1 H2); clear H2 ]
+    end; magic.
 
 (* This is like the `inversion` tactic, but leaves less junk around. *)
 

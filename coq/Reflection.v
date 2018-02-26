@@ -18,7 +18,7 @@ Inductive reflect (P : Prop) : bool -> Prop :=
 
 Theorem reflectIff : forall P b, (P <-> b = true) <-> reflect P b.
 Proof.
-  split; intros.
+  split; clean.
   - destruct b; constructor; magic.
   - split; intros; destruct H; magic.
 Qed.
@@ -29,7 +29,7 @@ Hint Resolve <- reflectIff.
 Ltac reflect H1 :=
   let H2 := fresh "H" in
   let H3 := fresh "H" in
-  abstract (pose (H2 := H1); inversion H2 as [ H3 | H3 ]; exact H3).
+  solve [pose (H2 := H1); inversion H2 as [ H3 | H3 ]; exact H3].
 
 (*********************)
 (* Example: evenness *)
@@ -71,13 +71,13 @@ Hint Resolve evenInd.
 
 Theorem evenIffIsEven : forall n, even n <-> isEven n = true.
 Proof.
-  intros; split.
-  - intros. induction H; magic.
+  clean; split; clean.
+  - induction H; magic.
   - generalize dependent n.
     pose (P := fun n => isEven n = true -> even n).
     assert (forall n, P n /\ P (S n)).
     + apply evenInd; unfold P; magic.
-    + intros. specialize (H n). magic.
+    + clean. specialize (H n). magic.
 Qed.
 
 Hint Resolve -> evenIffIsEven.

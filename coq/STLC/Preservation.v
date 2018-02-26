@@ -22,11 +22,10 @@ Lemma contextInvariance :
   (forall x, freeVar e x -> lookupVar c1 x = lookupVar c2 x) ->
   hasType c2 e t.
 Proof.
-  intros. generalize dependent c2.
-  induction H; magic; intros.
+  clean. generalize dependent c2.
+  induction H; magic; clean.
   - apply htVar. rewrite <- H0; magic.
-  - apply htAbs. apply IHhasType. intros. cbn.
-    destruct (nameEq x0 x); magic.
+  - apply htAbs. apply IHhasType. clean. destruct (nameEq x0 x); magic.
   - apply htApp with (t2 := t2); magic.
 Qed.
 
@@ -38,9 +37,8 @@ Theorem typingJudgmentClosed :
   freeVar e x ->
   exists t2, lookupVar c x = Some t2.
 Proof.
-  intros. induction H; invert H0; eMagic.
-  feed IHhasType. destruct IHhasType. cbn in H0.
-  destruct (nameEq x x0); eMagic.
+  clean. induction H; invert H0; eMagic.
+  clean. destruct (nameEq x x0); eMagic.
 Qed.
 
 Hint Resolve typingJudgmentClosed.
@@ -51,22 +49,20 @@ Theorem substitutionPreservesTyping :
   hasType cEmpty e1 t1 ->
   hasType c (sub e2 x e1) t2.
 Proof.
-  intros. generalize dependent c. generalize dependent t2.
-  induction e2; intros; invert H; eMagic.
-  - cbn. cbn in H3.
-    destruct (nameEq x n); destruct (nameEq n x); magic.
+  clean. generalize dependent c. generalize dependent t2.
+  induction e2; clean; invert H; eMagic; clean.
+  - destruct (nameEq x n); destruct (nameEq n x); magic.
     apply contextInvariance with (c1 := cEmpty); magic.
-    intros.
+    clean.
     fact (typingJudgmentClosed cEmpty e1 x0 t1).
-    do 2 (feed H1).
-  - cbn.
-    destruct (nameEq x n); apply htAbs.
+    repeat (feed H1).
+  - destruct (nameEq x n); apply htAbs.
     + apply contextInvariance with (c1 := cExtend (cExtend c n t1) n t); magic.
-      intros. cbn.
+      clean.
       destruct (nameEq x0 n); magic.
     + apply IHe2.
       apply contextInvariance with (c1 := cExtend (cExtend c x t1) n t); magic.
-      intros. cbn.
+      clean.
       destruct (nameEq x0 n); destruct (nameEq x0 x); magic.
 Qed.
 
@@ -78,8 +74,8 @@ Theorem preservation :
   step e1 e2 ->
   hasType cEmpty e2 t.
 Proof.
-  intros. generalize dependent e2.
-  remember cEmpty. induction H; subst c; intros; try abstract (invert H0).
+  clean. generalize dependent e2.
+  remember cEmpty. induction H; clean; try solve [invert H0].
   - invert H2; magic.
   - invert H1; eMagic.
     apply substitutionPreservesTyping with (t1 := t2); magic.
