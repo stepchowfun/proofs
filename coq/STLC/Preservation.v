@@ -38,11 +38,9 @@ Theorem typingJudgmentClosed :
   freeVar e x ->
   exists t2, lookupVar c x = Some t2.
 Proof.
-  intros. induction H; invert H0; magic.
-  - exists t. magic.
-  - feed IHhasType. destruct IHhasType. cbn in H0.
-    destruct (nameEq x x0); magic.
-    exists x1. magic.
+  intros. induction H; invert H0; eMagic.
+  feed IHhasType. destruct IHhasType. cbn in H0.
+  destruct (nameEq x x0); eMagic.
 Qed.
 
 Hint Resolve typingJudgmentClosed.
@@ -54,7 +52,7 @@ Theorem substitutionPreservesTyping :
   hasType c (sub e2 x e1) t2.
 Proof.
   intros. generalize dependent c. generalize dependent t2.
-  induction e2; intros; invert H; magic.
+  induction e2; intros; invert H; eMagic.
   - cbn. cbn in H3.
     destruct (nameEq x n); destruct (nameEq n x); magic.
     apply contextInvariance with (c1 := cEmpty); magic.
@@ -70,7 +68,6 @@ Proof.
       apply contextInvariance with (c1 := cExtend (cExtend c x t1) n t); magic.
       intros. cbn.
       destruct (nameEq x0 n); destruct (nameEq x0 x); magic.
-  - apply htApp with (t2 := t3); magic.
 Qed.
 
 Hint Resolve substitutionPreservesTyping.
@@ -84,11 +81,9 @@ Proof.
   intros. generalize dependent e2.
   remember cEmpty. induction H; subst c; intros; try abstract (invert H0).
   - invert H2; magic.
-  - invert H1; magic.
-    + apply substitutionPreservesTyping with (t1 := t2); magic.
-      invert H; magic.
-    + apply htApp with (t2 := t2); magic.
-    + apply htApp with (t2 := t2); magic.
+  - invert H1; eMagic.
+    apply substitutionPreservesTyping with (t1 := t2); magic.
+    invert H; magic.
 Qed.
 
 Hint Resolve preservation.

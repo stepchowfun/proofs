@@ -120,13 +120,12 @@ Theorem opIso :
   (exists f, @isomorphism (opCategory C) x y f).
 Proof.
   split;
-    intros;
-    destruct H as [f H];
-    destruct H as [g H];
-    exists g;
-    unfold isomorphism;
-    exists f;
-    magic.
+  intros;
+  destruct H as [f H];
+  destruct H as [g H];
+  exists g;
+  unfold isomorphism;
+  eMagic.
 Qed.
 
 Hint Resolve opIso.

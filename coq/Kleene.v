@@ -111,11 +111,9 @@ Module Type Kleene.
 
   Lemma natDiff : forall n1 n2, exists n3, n1 = n2 + n3 \/ n2 = n1 + n3.
   Proof.
-    induction n1; intros.
-    - exists n2. magic.
-    - specialize (IHn1 n2). destruct IHn1. destruct H.
-      + exists (S x). magic.
-      + destruct x; [exists 1 | exists x]; magic.
+    induction n1; intros; eMagic.
+    specialize (IHn1 n2). destruct IHn1. destruct H; eMagic.
+    destruct x; eMagic.
   Qed.
 
   Hint Resolve natDiff.
@@ -143,18 +141,11 @@ Module Type Kleene.
     intros.
     specialize (H (fun x => x = x1 \/ x = x2) x2).
     feed H.
-    - unfold directed.
-      split.
-      + exists x1. magic.
-      + intros.
-        destruct H1; subst x0; exists x2; split; magic.
+    - unfold directed. split; eMagic.
     - feed H.
-      + unfold supremum.
-        split.
-        * intros. destruct H1; subst x0; magic.
-        * magic.
+      + unfold supremum. split; magic.
       + unfold supremum in H. destruct H. specialize (H (f x1)). feed H.
-        exists x1. magic.
+        eMagic.
   Qed.
 
   Hint Resolve continuousImpliesMonotone.
@@ -196,10 +187,10 @@ Module Type Kleene.
       destruct H2.
       + exists x2.
         repeat (split; magic).
-        unfold P. exists x0. magic.
+        unfold P. eMagic.
       + exists x1.
         repeat (split; magic).
-        unfold P. exists x. magic.
+        unfold P. eMagic.
   Qed.
 
   Hint Resolve kleeneChainDirected.
@@ -258,14 +249,12 @@ Module Type Kleene.
           intros.
           unfold P in H3. destruct H3.
           generalize dependent x3.
-          induction x0; intros.
-          - cbn in H3. subst x3. magic.
-          - specialize (IHx0 (approx f x0)). feed IHx0.
-            subst x3.
-            cbn.
-            rewrite <- H2.
-            fact (continuousImpliesMonotone f H).
-            magic.
+          induction x0; intros; magic.
+          specialize (IHx0 (approx f x0)). feed IHx0.
+          simplify.
+          rewrite <- H2.
+          fact (continuousImpliesMonotone f H).
+          magic.
         }
         * unfold supremum in H1. magic.
   Qed.
