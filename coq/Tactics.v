@@ -10,8 +10,8 @@ Require Import Omega.
 
 (*
   This tactic does a variety of simplifications on the goal and hypotheses.
-  This is used by the `magic` tactics below. If you want to just clean up the
-  hypothesis for easier reading, use the `clean` tactic below.
+  It's used by the `magic` tactics below. If you just want to clean up the goal
+  and context for easier reading, use the `clean` tactic below.
 *)
 
 Ltac simplify tactic :=
@@ -67,7 +67,7 @@ Ltac magic := let autoStar := auto with * in magicWith autoStar.
 
 Ltac eMagic := let eautoStar := eauto with * in magicWith eautoStar.
 
-(* This tactic cleans up the context for easier reading. *)
+(* This tactic cleans up the goal and context for easier reading. *)
 
 Ltac clean :=
   let rec reorderContext :=
