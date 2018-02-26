@@ -24,19 +24,18 @@ Ltac simplify tactic :=
       match goal with
       | [ H : ex _ |- _ ] => destruct H
       | [ H : _ /\ _ |- _ ] => destruct H
-      end
-    );
-    try (
-      let H2 := fresh "H"
-      in
-        match goal with
-        | [ H1 : ?T -> _ |- _ ] =>
-          match type of T with
-          | context[Prop] =>
-            assert (H2 : T);
-            [ solve [ tactic ] | specialize (H1 H2); clear H2 ]
-          end
+      | [ H : _ <-> _ |- _ ] => destruct H
+      | [ H : ?T = ?T |- _ ] => clear H
+      | [ H1 : ?T -> _ |- _ ] =>
+        match type of T with
+        | context[Prop] =>
+          let H2 := fresh "H"
+          in assert (H2 : T); [
+            solve [ tactic ] |
+            specialize (H1 H2); clear H2
+          ]
         end
+      end
     )
   ).
 
