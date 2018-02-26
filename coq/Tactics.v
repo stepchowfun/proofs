@@ -8,39 +8,39 @@
 
 Require Import Omega.
 
+(* This tactic does a variety of simplifications on the goal and hypotheses. *)
+
+Ltac simplify := repeat (
+  cbn in *;
+  intros;
+  try subst;
+  try (autorewrite with core in *);
+  repeat (
+    match goal with
+    | [ H : ex _ |- _ ] => destruct H
+    end
+  )
+).
+
 (*
   This tactic tries a variety of approaches to solve a goal. It uses the
   resolve hints from all databases and the rewrite hints from the "core"
   database.
 *)
 
-Ltac magic :=
-  let simplify := repeat (
-    cbn in *;
-    intros;
-    try subst;
-    try (autorewrite with core in *);
-    repeat (
-      match goal with
-      | [ H : ex _ |- _ ] => destruct H
-      end
-    )
-  ) in let discharge :=
-    try (
-      match goal with
-      | [ H : _ |- _ ] => inversion H; fail
-      end
-    );
-    auto with *;
-    try abstract (dintuition (simplify; auto with *));
-    try congruence;
-    try omega
-  in try abstract (
-    simplify;
-    idtac + f_equal;
-    simplify;
-    discharge
-  ).
+Ltac magic := try abstract (
+  simplify;
+  try (
+    match goal with
+    | [ H : _ |- _ ] => inversion H; fail
+    end
+  );
+  auto with *;
+  try abstract (progress f_equal; magic);
+  try abstract (dintuition (simplify; auto with *));
+  try congruence;
+  try omega
+).
 
 (*
   This tactic takes a given term and adds it to the context as a new

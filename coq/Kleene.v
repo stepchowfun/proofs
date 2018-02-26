@@ -115,9 +115,7 @@ Module Type Kleene.
     - exists n2. magic.
     - specialize (IHn1 n2). destruct IHn1. destruct H.
       + exists (S x). magic.
-      + destruct x.
-        * exists 1. magic.
-        * exists x. magic.
+      + destruct x; [exists 1 | exists x]; magic.
   Qed.
 
   Hint Resolve natDiff.
@@ -196,20 +194,12 @@ Module Type Kleene.
       unfold P in H1. destruct H1.
       fact (omegaChain f x x0 H).
       destruct H2.
-      + exists x2. split.
-        * magic.
-        * {
-          split.
-          - magic.
-          - unfold P. exists x0. magic.
-        }
-      + exists x1. split.
-        * magic.
-        * {
-          split.
-          - magic.
-          - unfold P. exists x. magic.
-        }
+      + exists x2.
+        repeat (split; magic).
+        unfold P. exists x0. magic.
+      + exists x1.
+        repeat (split; magic).
+        unfold P. exists x. magic.
   Qed.
 
   Hint Resolve kleeneChainDirected.
@@ -233,7 +223,7 @@ Module Type Kleene.
     (forall x2, f x2 = x2 -> leq x1 x2).
   Proof.
     intros.
-    set (P := fun x2 : T => exists n : nat, x2 = approx f n).
+    pose (P := fun x2 : T => exists n : nat, x2 = approx f n).
     assert (directed P).
     - apply kleeneChainDirected. apply continuousImpliesMonotone in H. magic.
     - fact (directedComplete P H0). destruct H1. exists x. split; magic. split.
@@ -247,13 +237,10 @@ Module Type Kleene.
             unfold P in H2. destruct H2.
             destruct x0.
             + cbn in H2. subst x2. magic.
-            + assert (Q x2).
-              * {
-                unfold Q. exists (approx f x0). split.
-                - unfold P. exists x0. magic.
-                - magic.
-              }
-              * magic.
+            + assert (Q x2); magic.
+              unfold Q. exists (approx f x0).
+              split; magic.
+              unfold P. exists x0. magic.
           - unfold supremum in H. destruct H.
             apply H3.
             intros.
@@ -261,7 +248,6 @@ Module Type Kleene.
             unfold P.
             unfold Q in H4. do 2 (destruct H4).
             unfold P in H4. destruct H4.
-            subst x0.
             exists (S x1).
             magic.
         }
