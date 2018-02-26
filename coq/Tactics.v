@@ -11,9 +11,9 @@ Require Import Omega.
 (* This tactic does a variety of simplifications on the goal and hypotheses. *)
 
 Ltac simplify := repeat (
-  cbn in *;
   intros;
-  try subst;
+  cbn in *;
+  subst;
   try (autorewrite with core in *);
   repeat (
     match goal with
@@ -30,16 +30,16 @@ Ltac simplify := repeat (
 
 Ltac magic := try abstract (
   simplify;
-  try (
+  try abstract (
     match goal with
     | [ H : _ |- _ ] => inversion H; fail
     end
   );
-  auto with *;
-  try abstract (progress f_equal; magic);
+  try abstract auto with *;
   try abstract (dintuition (simplify; auto with *));
-  try congruence;
-  try omega
+  try abstract (progress f_equal; magic);
+  try abstract congruence;
+  try abstract omega
 ).
 
 (*
