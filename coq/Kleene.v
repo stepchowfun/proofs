@@ -111,8 +111,8 @@ Module Type Kleene.
 
   Lemma natDiff : forall n1 n2, exists n3, n1 = n2 + n3 \/ n2 = n1 + n3.
   Proof.
-    induction n1; intros; eMagic.
-    specialize (IHn1 n2). destruct IHn1. destruct H; eMagic.
+    induction n1; eMagic; clean.
+    specialize (IHn1 n2). destruct IHn1.
     destruct x; eMagic.
   Qed.
 
@@ -138,14 +138,13 @@ Module Type Kleene.
   Proof.
     unfold continuous.
     unfold monotone.
-    intros.
+    clean.
     specialize (H (fun x => x = x1 \/ x = x2) x2).
     feed H.
     - unfold directed. split; eMagic.
     - feed H.
       + unfold supremum. split; magic.
-      + unfold supremum in H. destruct H. specialize (H (f x1)). feed H.
-        eMagic.
+      + unfold supremum in H. eMagic.
   Qed.
 
   Hint Resolve continuousImpliesMonotone.
@@ -161,9 +160,9 @@ Module Type Kleene.
     monotone f ->
     leq (approx f n) (approx f m) \/ leq (approx f m) (approx f n).
   Proof.
-    intros. fact (natDiff n m). destruct H0. destruct H0.
-    - right. subst n. induction m; magic.
-    - left. subst m. induction n; magic.
+    clean. fact (natDiff n m). do 2 (destruct H0).
+    - right. clean. induction m; magic.
+    - left. clean. induction n; magic.
   Qed.
 
   Hint Resolve omegaChain.
@@ -175,22 +174,16 @@ Module Type Kleene.
     monotone f ->
     directed (fun x2 => exists n, x2 = approx f n).
   Proof.
-    intros.
-    set (P := fun x2 : T => exists n : nat, x2 = approx f n).
+    clean.
+    pose (P := fun x2 : T => exists n : nat, x2 = approx f n).
     unfold directed.
     split.
-    - exists bottom. unfold P. exists 0. magic.
-    - intros.
-      unfold P in H0. destruct H0.
-      unfold P in H1. destruct H1.
+    - exists bottom. exists 0. magic.
+    - clean.
       fact (omegaChain f x x0 H).
-      destruct H2.
-      + exists x2.
-        repeat (split; magic).
-        unfold P. eMagic.
-      + exists x1.
-        repeat (split; magic).
-        unfold P. eMagic.
+      destruct H0.
+      + exists (approx f x0). eMagic.
+      + exists (approx f x). eMagic.
   Qed.
 
   Hint Resolve kleeneChainDirected.
@@ -213,45 +206,44 @@ Module Type Kleene.
     f x1 = x1 /\
     (forall x2, f x2 = x2 -> leq x1 x2).
   Proof.
-    intros.
+    clean.
     pose (P := fun x2 : T => exists n : nat, x2 = approx f n).
     assert (directed P).
     - apply kleeneChainDirected. apply continuousImpliesMonotone in H. magic.
-    - fact (directedComplete P H0). destruct H1. exists x. split; magic. split.
+    - fact (directedComplete P H0). clean. exists x. split; magic. split.
       + unfold continuous in H.
         specialize (H P x H0 H1).
         set (Q := fun x2 : T => exists x3 : T, P x3 /\ x2 = f x3) in H.
         assert (supremum P (f x)).
         * {
-          unfold supremum. split; intros.
+          unfold supremum. split; clean.
           - unfold supremum in H. destruct H.
-            unfold P in H2. destruct H2.
-            destruct x0.
-            + cbn in H2. subst x2. magic.
-            + assert (Q x2); magic.
-              unfold Q. exists (approx f x0).
-              split; magic.
-              unfold P. exists x0. magic.
-          - unfold supremum in H. destruct H.
+            unfold P in H2. clean.
+            destruct x0; magic.
+            assert (Q (approx f (S x0))); magic.
+            unfold Q. exists (approx f x0).
+            split; magic.
+            unfold P. eMagic.
+          - unfold supremum in H.
+            clean.
             apply H3.
-            intros.
+            clean.
             apply H2.
             unfold P.
-            unfold Q in H4. do 2 (destruct H4).
-            unfold P in H4. destruct H4.
+            unfold Q in H4. clean.
+            unfold P in H4. clean.
             exists (S x1).
             magic.
         }
         * apply (supremumUniqueness P); magic.
-      + intros.
-        assert (forall x3, P x3 -> leq x3 x2).
+      + clean. assert (forall x3, P x3 -> leq x3 x2).
         * {
-          intros.
+          clean.
           unfold P in H3. destruct H3.
           generalize dependent x3.
-          induction x0; intros; magic.
-          specialize (IHx0 (approx f x0)). feed IHx0.
-          simplify.
+          induction x0; magic.
+          specialize (IHx0 (approx f x0)).
+          clean.
           rewrite <- H2.
           fact (continuousImpliesMonotone f H).
           magic.

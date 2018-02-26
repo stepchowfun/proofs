@@ -52,7 +52,7 @@ Proof.
     (fun x => compose D (eta Eta x) (eta Mu x))
     _
   ).
-  intros.
+  clean.
   rewrite cAssoc.
   rewrite <- cAssoc.
   replace (compose D (eta Mu y) (fMap F f)) with
@@ -72,12 +72,7 @@ Proof.
     newNaturalTransformation C E (compFunctor H F) (compFunctor H G)
     (fun x => fMap H (eta Eta x))
     _
-  ).
-  intros.
-  cbn.
-  repeat rewrite fComp.
-  rewrite naturality.
-  magic.
+  ). clean. magic.
 Defined.
 
 Definition leftWhisker

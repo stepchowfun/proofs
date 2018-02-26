@@ -61,7 +61,7 @@ Theorem leftIdUnique :
   (forall y (g : arrow C y x), compose C f g = g) ->
   f = id C.
 Proof.
-  intros.
+  clean.
   specialize (H x (id C)).
   magic.
 Qed.
@@ -73,7 +73,7 @@ Theorem rightIdUnique :
   (forall y (g : arrow C x y), compose C g f = g) ->
   f = id C.
 Proof.
-  intros.
+  clean.
   specialize (H x (id C)).
   magic.
 Qed.
@@ -85,10 +85,9 @@ Theorem isoImpliesEpi :
 Proof.
   unfold isomorphism.
   unfold epimorphism.
-  intros.
-  destruct H as [fInv H]; destruct H.
+  clean.
   assert (
-    compose C (compose C g f) fInv = compose C (compose C h f) fInv
+    compose C (compose C g f) x0 = compose C (compose C h f) x0
   ); magic.
   repeat rewrite <- cAssoc in H2.
   repeat rewrite H1 in H2.
@@ -102,10 +101,9 @@ Theorem isoImpliesMono :
 Proof.
   unfold isomorphism.
   unfold monomorphism.
-  intros.
-  destruct H as [fInv H]; destruct H.
+  clean.
   assert (
-    compose C fInv (compose C f g) = compose C fInv (compose C f h)
+    compose C x0 (compose C f g) = compose C x0 (compose C f h)
   ); magic.
   repeat rewrite cAssoc in H2.
   repeat rewrite H in H2.
@@ -119,13 +117,7 @@ Theorem opIso :
   (exists f, @isomorphism C x y f) <->
   (exists f, @isomorphism (opCategory C) x y f).
 Proof.
-  split;
-  intros;
-  destruct H as [f H];
-  destruct H as [g H];
-  exists g;
-  unfold isomorphism;
-  eMagic.
+  unfold isomorphism; split; clean; exists x1; eMagic.
 Qed.
 
 Hint Resolve opIso.
@@ -170,14 +162,13 @@ Theorem initialUnique :
   @isomorphism C x y f.
 Proof.
   unfold initial.
-  intros.
-  fact (H y); destruct H1 as [f H1].
-  fact (H0 x); destruct H2 as [g H2].
-  exists f.
+  clean.
+  fact (H x). specialize (H y).
+  fact (H0 x). specialize (H0 y).
+  clean.
+  exists x3.
   unfold isomorphism.
-  exists g.
-  specialize (H x); destruct H as [h H3].
-  specialize (H0 y); destruct H0 as [i H4].
+  exists x0.
   split; magic.
 Qed.
 
@@ -190,7 +181,7 @@ Theorem terminalUnique :
   exists f,
   @isomorphism C x y f.
 Proof.
-  intros.
+  clean.
   rewrite opTerminalInitial in *.
   apply opIso.
   apply initialUnique; magic.
