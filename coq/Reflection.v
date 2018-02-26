@@ -28,8 +28,8 @@ Hint Resolve <- reflectIff.
 
 Ltac reflect H1 :=
   let H2 := fresh "H" in
-    let H3 := fresh "H" in
-      abstract (pose (H2 := H1); inversion H2 as [ H3 | H3 ]; exact H3).
+  let H3 := fresh "H" in
+  abstract (pose (H2 := H1); inversion H2 as [ H3 | H3 ]; exact H3).
 
 (*********************)
 (* Example: evenness *)

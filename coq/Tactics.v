@@ -10,37 +10,52 @@ Require Import Omega.
 
 (* This tactic does a variety of simplifications on the goal and hypotheses. *)
 
-Ltac simplify := repeat (
-  intros;
-  cbn in *;
-  subst;
-  try (autorewrite with core in *);
-  repeat (
-    match goal with
-    | [ H : ex _ |- _ ] => destruct H
+Ltac simplify :=
+  let rec reorderContext :=
+    try match goal with
+    | [ H : ?T |- _ ] =>
+      match type of T with
+        | context[Prop] => revert H; reorderContext; intro H
+      end
+    | [ H : context[Prop] |- _ ] => revert H; reorderContext; intro H
     end
-  )
-).
+  in repeat (
+    intros;
+    cbn in *;
+    subst;
+    try (autorewrite with core in *);
+    repeat (
+      match goal with
+      | [ H : ex _ |- _ ] => destruct H
+      end
+    )
+  ); reorderContext.
 
 (*
-  This tactic tries a variety of approaches to solve a goal. It uses the
+  The `magic` tactic tries a variety of approaches to solve a goal. It uses the
   resolve hints from all databases and the rewrite hints from the "core"
-  database.
+  database. The `eMagic` tactic does everything `magic` does but uses `eauto`
+  instead of `auto`.
 *)
 
-Ltac magic := try abstract (
-  simplify;
+Ltac magicWith tactic :=
   try abstract (
-    match goal with
-    | [ H : _ |- _ ] => inversion H; fail
-    end
-  );
-  try abstract auto with *;
-  try abstract (dintuition (simplify; auto with *));
-  try abstract (progress f_equal; magic);
-  try abstract congruence;
-  try abstract omega
-).
+    simplify;
+    try abstract (
+      match goal with
+      | [ H : _ |- _ ] => inversion H; fail
+      end
+    );
+    try abstract tactic;
+    try abstract (dintuition (simplify; tactic));
+    try abstract (progress f_equal; magicWith tactic);
+    try abstract congruence;
+    try abstract omega
+  ).
+
+Ltac magic := let autoStar := auto with * in magicWith autoStar.
+
+Ltac eMagic := let eautoStar := eauto with * in magicWith eautoStar.
 
 (*
   This tactic takes a given term and adds it to the context as a new
