@@ -10,7 +10,6 @@ Require Import Main.STLC.FreeVar.
 Require Import Main.STLC.Name.
 Require Import Main.STLC.Semantics.
 Require Import Main.STLC.Substitution.
-Require Import Main.STLC.Syntax.
 Require Import Main.STLC.Typing.
 Require Import Main.Tactics.
 

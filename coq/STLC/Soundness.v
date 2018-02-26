@@ -9,7 +9,6 @@
 Require Import Main.STLC.Preservation.
 Require Import Main.STLC.Progress.
 Require Import Main.STLC.Semantics.
-Require Import Main.STLC.Syntax.
 Require Import Main.STLC.Typing.
 Require Import Main.Tactics.
 
