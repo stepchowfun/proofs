@@ -40,10 +40,9 @@ Ltac simplify tactic :=
   ).
 
 (*
-  The `magic` tactic tries a variety of approaches to solve a goal. It uses the
-  resolve hints from all databases and the rewrite hints from the "core"
-  database. The `eMagic` tactic does everything `magic` does but uses `eauto`
-  instead of `auto`.
+  The `magic` tactic tries a variety of approaches to solve a goal. The
+  `eMagic` tactic does everything `magic` does but uses `eauto` instead of
+  `auto`.
 *)
 
 Ltac magicWith tactic :=
