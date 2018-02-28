@@ -57,12 +57,8 @@ Proof.
     repeat (feed H1).
   - destruct (nameEq x n); apply htAbs.
     + apply contextInvariance with (c1 := cExtend (cExtend c n t1) n t); magic.
-      clean.
-      destruct (nameEq x0 n); magic.
     + apply IHe2.
       apply contextInvariance with (c1 := cExtend (cExtend c x t1) n t); magic.
-      clean.
-      destruct (nameEq x0 n); destruct (nameEq x0 x); magic.
 Qed.
 
 Hint Resolve substitutionPreservesTyping.
