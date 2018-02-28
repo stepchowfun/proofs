@@ -55,17 +55,10 @@ Ltac magicWith tactic :=
     try solve [omega];
     try solve [
       match goal with
+      | [ |- context[if ?X then _ else _] ] =>
+        destruct X; magicWith tactic; fail
       | [ _ : context[if ?X then _ else _] |- _ ] =>
         destruct X; magicWith tactic; fail
-      end
-    ];
-    try solve [
-      match goal with
-      | [ |- context[if ?X then _ else _] ] => destruct X; magicWith tactic
-      end
-    ];
-    try solve [
-      match goal with
       | [ H : _ |- _ ] => inversion H; fail
       end
     ]
