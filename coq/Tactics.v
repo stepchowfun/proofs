@@ -46,8 +46,7 @@ Ltac simplify tactic :=
 *)
 
 Ltac magicWith tactic :=
-  let magicWith := magicWith
-  in try solve [
+  try solve [
     simplify tactic;
     try solve [tactic];
     try solve [dintuition (simplify tactic; tactic)];
@@ -72,7 +71,7 @@ Ltac clean :=
     try match goal with
     | [ H : ?T |- _ ] =>
       match type of T with
-        | context[Prop] => revert H; reorderContext; intro H
+      | context[Prop] => revert H; reorderContext; intro H
       end
     | [ H : context[Prop] |- _ ] => revert H; reorderContext; intro H
     end
