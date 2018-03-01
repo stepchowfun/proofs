@@ -240,8 +240,7 @@ Module Type Kleene.
         * {
           clean.
           unfold P in H3. destruct H3.
-          generalize dependent x3.
-          induction x0; magic.
+          gen x3. induction x0; magic.
           specialize (IHx0 (approx f x0)).
           clean.
           rewrite <- H2.

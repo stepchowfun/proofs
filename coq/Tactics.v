@@ -101,6 +101,29 @@ Ltac feed H1 :=
     | ?T -> _ => assert (H2 : T); [ | specialize (H1 H2); clear H2 ]
     end; magic.
 
+(* This notation performs `generalize dependent` on multiple terms at once. *)
+
+Tactic Notation "gen" constr(e1) :=
+  generalize dependent e1.
+Tactic Notation "gen" constr(e1) constr(e2) :=
+  generalize dependent e1;
+  generalize dependent e2.
+Tactic Notation "gen" constr(e1) constr(e2) constr(e3) :=
+  generalize dependent e1;
+  generalize dependent e2;
+  generalize dependent e3.
+Tactic Notation "gen" constr(e1) constr(e2) constr(e3) constr(e4) :=
+  generalize dependent e1;
+  generalize dependent e2;
+  generalize dependent e3;
+  generalize dependent e4.
+Tactic Notation "gen" constr(e1) constr(e2) constr(e3) constr(e4) constr(e5) :=
+  generalize dependent e1;
+  generalize dependent e2;
+  generalize dependent e3;
+  generalize dependent e4;
+  generalize dependent e5.
+
 (* This is like the `inversion` tactic, but leaves less junk around. *)
 
-Ltac invert H := inversion H; clear H; try subst.
+Ltac invert H := inversion H; try clear H; subst.

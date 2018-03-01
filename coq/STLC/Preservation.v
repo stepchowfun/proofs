@@ -21,8 +21,7 @@ Lemma contextInvariance :
   (forall x, freeVar e x -> lookupVar c1 x = lookupVar c2 x) ->
   hasType c2 e t.
 Proof.
-  clean. generalize dependent c2.
-  induction H; magic; clean.
+  clean. gen c2. induction H; magic; clean.
   - apply htVar. rewrite <- H0; magic.
   - apply htAbs. apply IHhasType. magic.
   - eapply htApp; magic.
@@ -47,8 +46,7 @@ Theorem substitutionPreservesTyping :
   hasType cEmpty e1 t1 ->
   hasType c (sub e2 x e1) t2.
 Proof.
-  clean. generalize dependent c. generalize dependent t2.
-  induction e2; clean; invert H; eMagic; clean.
+  clean. gen c t2. induction e2; clean; invert H; eMagic; clean.
   - destruct (nameEq x n); destruct (nameEq n x); magic.
     eapply contextInvariance with (c1 := cEmpty); magic.
     clean. fact (typingJudgmentClosed cEmpty e1 x0 t1). magic.
@@ -66,7 +64,7 @@ Theorem preservation :
   step e1 e2 ->
   hasType cEmpty e2 t.
 Proof.
-  clean. generalize dependent e2. remember cEmpty. induction H; magic; clean.
+  clean. gen e2. remember cEmpty. induction H; magic; clean.
   - invert H2; magic.
   - invert H1; eMagic.
     apply substitutionPreservesTyping with (t1 := t2); magic.
