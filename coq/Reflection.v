@@ -73,7 +73,7 @@ Theorem evenIffIsEven : forall n, even n <-> isEven n = true.
 Proof.
   clean; split; clean.
   - induction H; magic.
-  - generalize dependent n.
+  - gen n.
     pose (P := fun n => isEven n = true -> even n).
     assert (forall n, P n /\ P (S n)).
     + apply evenInd; unfold P; magic.
