@@ -46,9 +46,9 @@ Ltac simplify tactic :=
 *)
 
 Ltac magicWith tactic :=
+  try solve [tactic];
   try solve [
     simplify tactic;
-    try solve [tactic];
     try solve [dintuition (simplify tactic; tactic)];
     try solve [progress f_equal; magicWith tactic];
     try solve [congruence];
