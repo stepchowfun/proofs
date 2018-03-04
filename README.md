@@ -1,5 +1,5 @@
-# Coq fun
+# Proofs
 
-A selection of Coq developments.
+A selection of formal developments in Coq.
 
-[![Build Status](https://travis-ci.org/stepchowfun/coq-fun.svg?branch=master)](https://travis-ci.org/stepchowfun/coq-fun)
+[![Build Status](https://travis-ci.org/stepchowfun/proofs.svg?branch=master)](https://travis-ci.org/stepchowfun/proofs)
