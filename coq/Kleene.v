@@ -27,10 +27,6 @@ Section Kleene.
   Hypothesis trans : forall x y z, leq x y -> leq y z -> leq x z.
   Hypothesis antisym : forall x y, leq x y -> leq y x -> x = y.
 
-  Hint Resolve refl.
-  Hint Resolve trans.
-  Hint Resolve antisym.
-
   (*
     A supremum of a subset of T is a least element of T which is greater than
     or equal to every element in the subset. This is also called a join or
@@ -60,8 +56,6 @@ Section Kleene.
     directed P ->
     exists x, supremum P x.
 
-  Hint Resolve directedComplete.
-
   (*
     Assumption: Let T have a least element called bottom. This makes our
     partial order a pointed directed-complete partial order.
@@ -70,8 +64,6 @@ Section Kleene.
   Variable bottom : T.
 
   Hypothesis bottomLeast : forall x, leq bottom x.
-
-  Hint Resolve bottomLeast.
 
   (*
     A monotone function is one which preserves order. We only need to consider
@@ -109,45 +101,35 @@ Section Kleene.
 
   (* We will need this simple lemma about pairs of natural numbers. *)
 
-  Lemma natDiff : forall n1 n2, exists n3, n1 = n2 + n3 \/ n2 = n1 + n3.
+  Local Theorem natDiff :
+    forall n1 n2,
+    exists n3,
+    n1 = n2 + n3 \/ n2 = n1 + n3.
   Proof.
-    induction n1; eMagic; clean.
-    specialize (IHn1 n2). destruct IHn1.
+    clean. induction n1; eMagic. clean.
     destruct x; eMagic.
   Qed.
 
-  Hint Resolve natDiff.
-
   (* The supremum of a subset of T, if it exists, is unique. *)
 
-  Lemma supremumUniqueness :
+  Theorem supremumUniqueness :
     forall P x1 x2,
     supremum P x1 ->
     supremum P x2 ->
     x1 = x2.
   Proof.
-    unfold supremum.
-    magic.
+    unfold supremum. magic.
   Qed.
-
-  Hint Resolve supremumUniqueness.
 
   (* Scott-continuity implies monotonicity. *)
 
-  Lemma continuousImpliesMonotone : forall f, continuous f -> monotone f.
+  Theorem continuousImpliesMonotone : forall f, continuous f -> monotone f.
   Proof.
-    unfold continuous.
-    unfold monotone.
-    clean.
-    specialize (H (fun x => x = x1 \/ x = x2) x2).
-    feed H.
-    - unfold directed. split; eMagic.
-    - feed H.
-      + unfold supremum. split; magic.
-      + unfold supremum in H. eMagic.
+    unfold continuous. unfold monotone. clean.
+    specialize (H (fun x => x = x1 \/ x = x2) x2). feed H.
+    - unfold directed in H. split; eMagic.
+    - unfold supremum in H. feed H; eMagic.
   Qed.
-
-  Hint Resolve continuousImpliesMonotone.
 
   (*
     Iterated applications of a monotone function f to bottom form an ω-chain,
@@ -155,21 +137,19 @@ Section Kleene.
     the ascending Kleene chain of f.
   *)
 
-  Lemma omegaChain :
+  Theorem omegaChain :
     forall f n m,
     monotone f ->
     leq (approx f n) (approx f m) \/ leq (approx f m) (approx f n).
   Proof.
-    clean. fact (natDiff n m). do 2 (destruct H0).
+    clean. fact (natDiff n m). clean. destruct H0.
     - right. clean. induction m; magic.
     - left. clean. induction n; magic.
   Qed.
 
-  Hint Resolve omegaChain.
-
   (* The ascending Kleene chain of f is directed. *)
 
-  Lemma kleeneChainDirected :
+  Theorem kleeneChainDirected :
     forall f,
     monotone f ->
     directed (fun x2 => exists n, x2 = approx f n).
@@ -177,16 +157,12 @@ Section Kleene.
     clean.
     pose (P := fun x2 : T => exists n : nat, x2 = approx f n).
     unfold directed.
-    split.
+    split; clean.
     - exists bottom. exists 0. magic.
-    - clean.
-      fact (omegaChain f x x0 H).
-      destruct H0.
+    - fact (omegaChain f x x0 H). destruct H0.
       + exists (approx f x0). eMagic.
       + exists (approx f x). eMagic.
   Qed.
-
-  Hint Resolve kleeneChainDirected.
 
   (**********************************)
   (* The Kleene fixed-point theorem *)
@@ -216,40 +192,35 @@ Section Kleene.
         set (Q := fun x2 : T => exists x3 : T, P x3 /\ x2 = f x3) in H.
         assert (supremum P (f x)).
         * {
-          unfold supremum. split; clean.
-          - unfold supremum in H. destruct H.
-            unfold P in H2. clean.
+          unfold supremum. split; unfold supremum in H; clean.
+          - unfold P in H2. clean.
             destruct x0; magic.
             assert (Q (approx f (S x0))); magic.
             unfold Q. exists (approx f x0).
             split; magic.
             unfold P. eMagic.
-          - unfold supremum in H.
-            clean.
-            apply H3.
-            clean.
-            apply H2.
-            unfold P.
-            unfold Q in H4. clean.
-            unfold P in H4. clean.
-            exists (S x1).
-            magic.
+          - apply H3. clean.
+            apply H2. unfold P.
+            unfold Q in H4. unfold P in H4. clean.
+            exists (S x1). magic.
         }
         * apply (supremumUniqueness P); magic.
-      + clean. assert (forall x3, P x3 -> leq x3 x2).
-        * {
-          clean.
-          unfold P in H3. destruct H3.
-          gen x3. induction x0; magic.
-          specialize (IHx0 (approx f x0)).
-          clean.
-          rewrite <- H2.
-          fact (continuousImpliesMonotone f H).
-          magic.
-        }
+      + clean. assert (forall x3, P x3 -> leq x3 x2); clean.
+        * unfold P in H3. clean.
+          induction x0; magic.
+          clean. rewrite <- H2.
+          fact (continuousImpliesMonotone f H). magic.
         * unfold supremum in H1. magic.
   Qed.
 
-  Hint Resolve kleene.
-
 End Kleene.
+
+Hint Resolve supremumUniqueness.
+
+Hint Resolve continuousImpliesMonotone.
+
+Hint Resolve omegaChain.
+
+Hint Resolve kleeneChainDirected.
+
+Hint Resolve kleene.
