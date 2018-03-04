@@ -21,6 +21,8 @@ RUN \
   ./configure -prefix /usr/local && \
   make && \
   make install && \
+  cd .. && \
+  rm -rf coq-8.7.2 && \
   DEBIAN_FRONTEND=noninteractive apt-get -y purge --auto-remove \
     'camlp5' \
     'curl' \
