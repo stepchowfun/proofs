@@ -8,7 +8,7 @@
 
 Require Import Main.Tactics.
 
-Module Type Kleene.
+Section Kleene.
 
   (***************)
   (* Definitions *)
@@ -20,12 +20,12 @@ Module Type Kleene.
     antisymmetric.
   *)
 
-  Parameter T : Set.
-  Parameter leq : T -> T -> Prop.
+  Variable T : Set.
+  Variable leq : T -> T -> Prop.
 
-  Axiom refl : forall x, leq x x.
-  Axiom trans : forall x y z, leq x y -> leq y z -> leq x z.
-  Axiom antisym : forall x y, leq x y -> leq y x -> x = y.
+  Hypothesis refl : forall x, leq x x.
+  Hypothesis trans : forall x y z, leq x y -> leq y z -> leq x z.
+  Hypothesis antisym : forall x y, leq x y -> leq y x -> x = y.
 
   Hint Resolve refl.
   Hint Resolve trans.
@@ -55,7 +55,7 @@ Module Type Kleene.
     directed subset has a supremum.
   *)
 
-  Axiom directedComplete :
+  Hypothesis directedComplete :
     forall P,
     directed P ->
     exists x, supremum P x.
@@ -67,9 +67,9 @@ Module Type Kleene.
     partial order a pointed directed-complete partial order.
   *)
 
-  Parameter bottom : T.
+  Variable bottom : T.
 
-  Axiom bottomLeast : forall x, leq bottom x.
+  Hypothesis bottomLeast : forall x, leq bottom x.
 
   Hint Resolve bottomLeast.
 
