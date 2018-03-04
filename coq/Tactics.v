@@ -105,18 +105,22 @@ Ltac feed H1 :=
 
 Tactic Notation "gen" constr(e1) :=
   generalize dependent e1.
+
 Tactic Notation "gen" constr(e1) constr(e2) :=
   generalize dependent e1;
   generalize dependent e2.
+
 Tactic Notation "gen" constr(e1) constr(e2) constr(e3) :=
   generalize dependent e1;
   generalize dependent e2;
   generalize dependent e3.
+
 Tactic Notation "gen" constr(e1) constr(e2) constr(e3) constr(e4) :=
   generalize dependent e1;
   generalize dependent e2;
   generalize dependent e3;
   generalize dependent e4.
+
 Tactic Notation "gen" constr(e1) constr(e2) constr(e3) constr(e4) constr(e5) :=
   generalize dependent e1;
   generalize dependent e2;
