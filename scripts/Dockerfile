@@ -4,9 +4,27 @@ RUN \
   DEBIAN_FRONTEND=noninteractive apt-get -y update && \
   DEBIAN_FRONTEND=noninteractive apt-get -y install \
     'build-essential=12.3' \
-    'coq=8.6-*' \
     'ruby=1:2.3.*' && \
   rm -rf /var/lib/apt/lists/*
+
+RUN \
+  DEBIAN_FRONTEND=noninteractive apt-get -y update && \
+  DEBIAN_FRONTEND=noninteractive apt-get -y install \
+    'camlp5=6.16-*' \
+    'curl=7.52.*' \
+    'ocaml=4.02.*' && \
+  rm -rf /var/lib/apt/lists/* && \
+  curl -fsSLo coq.tar.gz https://github.com/coq/coq/archive/V8.7.2.tar.gz && \
+  tar -xzf coq.tar.gz && \
+  rm coq.tar.gz && \
+  cd coq-8.7.2 && \
+  ./configure -prefix /usr/local && \
+  make && \
+  make install && \
+  DEBIAN_FRONTEND=noninteractive apt-get -y purge --auto-remove \
+    'camlp5' \
+    'curl' \
+    'ocaml'
 
 RUN useradd --user-group --create-home user
 
