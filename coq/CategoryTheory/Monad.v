@@ -9,7 +9,6 @@
 Require Import Main.CategoryTheory.Category.
 Require Import Main.CategoryTheory.Functor.
 Require Import Main.CategoryTheory.NaturalTransformation.
-Require Import Main.Tactics.
 
 Set Universe Polymorphism.
 
