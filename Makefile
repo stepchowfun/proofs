@@ -11,7 +11,7 @@ main:
 	rm -f _CoqProjectFull Makefile.coq Makefile.coq.conf
 
 lint: main
-	./scripts/general-lint.rb $(shell \
+	./scripts/lint-general.rb $(shell \
 	  find . -type d \( \
 	    -path ./.git \
 	  \) -prune -o \( \
@@ -22,38 +22,18 @@ lint: main
 	    -name 'Dockerfile' -o \
 	    -name 'Makefile' \
 	  \) -print \
-	)
-	for FILE in $(shell \
+	); \
+	LINT_GENERAL_EXIT_CODE=$$?; \
+	./scripts/lint-imports.rb '^Require ' 'coqc -R coq Main ?' $(shell \
 	  find . -type d \( \
 	    -path ./.git \
 	  \) -prune -o \( \
 	    -name '*.v' \
 	  \) -print \
-	); do \
-	  echo "Checking for unused or unsorted imports: $$FILE"; \
-	  TEMP_IMPORTS_FILE="$$(mktemp)"; \
-	  grep 'Require' "$$FILE" > "$$TEMP_IMPORTS_FILE"; \
-	  if ! sort --check "$$TEMP_IMPORTS_FILE" > /dev/null 2>&1; then \
-	    echo "Unsorted imports in $$FILE:" 1>&2; \
-	    echo 1>&2; \
-	    cat "$$TEMP_IMPORTS_FILE" 1>&2; \
-	    rm "$$TEMP_IMPORTS_FILE"; \
-	    exit 1; \
-	  fi; \
-	  while read -r LINE; do \
-	    TEMP_COQ_FILE="$${FILE%.*}Temp.v"; \
-	    grep -v -x "$$LINE" "$$FILE" > "$$TEMP_COQ_FILE"; \
-	    if coqc -R coq Main "$$TEMP_COQ_FILE" > /dev/null 2>&1; then \
-	      echo "Unused import in $$FILE:" 1>&2; \
-	      echo "  $$LINE" 1>&2; \
-	      rm "$$TEMP_COQ_FILE"; \
-	      rm "$$TEMP_IMPORTS_FILE"; \
-	      exit 1; \
-	    fi; \
-	    rm "$$TEMP_COQ_FILE"; \
-	  done < "$$TEMP_IMPORTS_FILE"; \
-	  rm "$$TEMP_IMPORTS_FILE"; \
-	done
+	); \
+	LINT_IMPORTS_EXIT_CODE=$$?; \
+	test "$$LINT_GENERAL_EXIT_CODE" -eq 0 && \
+	test "$$LINT_IMPORTS_EXIT_CODE" -eq 0
 
 clean:
 	rm -f _CoqProjectFull Makefile.coq \
@@ -64,7 +44,6 @@ clean:
 	      -name '*.aux' -o \
 	      -name '*.glob' -o \
 	      -name '*.v.d' -o \
-	      -name '*.tmp.v' -o \
 	      -name '*.vo' -o \
 	      -name '*.vo.aux' -o \
 	      -name 'Makefile.coq.conf' \
