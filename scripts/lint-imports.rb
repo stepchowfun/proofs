@@ -1,13 +1,13 @@
 #!/usr/bin/env ruby
 
-require 'open3'
-require 'securerandom'
-
 # This script checks for unused or unsorted imports. The build command should
 # have a '?' indicating where the path should be inserted.
 #
 # Usage:
 #   ./lint-imports.rb import-regex build-command path1 path2 path3 ...
+
+require 'open3'
+require 'securerandom'
 
 # Make sure we got enough arguments.
 if ARGV.size < 2
