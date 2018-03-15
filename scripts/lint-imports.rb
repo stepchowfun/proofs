@@ -41,8 +41,8 @@ paths.each do |path|
   # Get the imports.
   imports = lines.map.with_index do |line, index|
     [line, index]
-  end.select do
-    |line, index| line =~ importRegex
+  end.select do |line, index|
+    line =~ importRegex
   end
 
   # Check that the imports are sorted.
