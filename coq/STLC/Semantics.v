@@ -6,7 +6,6 @@
 (***********************)
 (***********************)
 
-Require Import Main.STLC.Name.
 Require Import Main.STLC.Substitution.
 Require Import Main.STLC.Syntax.
 
