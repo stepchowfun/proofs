@@ -3,10 +3,16 @@
 # This script applies basic general linting to a list of source files.
 #
 # Usage:
-#   ./general-lint.rb path1 path2 path3 ...
+#   ./lint-general.rb path1 path2 path3 ...
+
+# Keep track of whether we failed.
+failed = false
 
 # Iterate over the input files.
 ARGV.each do |path|
+  # Print a helpful message.
+  puts("Linting file: #{path}")
+
   # Read the contents of the file.
   lines = File.read(path).split("\n", -1)
 
@@ -20,7 +26,7 @@ ARGV.each do |path|
           "Error: Line #{index + 1} of #{path} has a tab in a non-required " \
             "position."
         )
-        exit(1)
+        failed = true
       end
     else
       # Check for any tabs.
@@ -28,7 +34,7 @@ ARGV.each do |path|
         STDERR.puts(
           "Error: Line #{index + 1} of #{path} has a tab."
         )
-        exit(1)
+        failed = true
       end
     end
 
@@ -38,7 +44,7 @@ ARGV.each do |path|
         "Error: Line #{index + 1} of #{path} has #{line.bytesize} bytes, " \
           "which is more than 79."
       )
-      exit(1)
+      failed = true
     end
 
     # Check for trailing whitespace.
@@ -46,7 +52,7 @@ ARGV.each do |path|
       STDERR.puts(
         "Error: Line #{index + 1} of #{path} has trailing whitespace."
       )
-      exit(1)
+      failed = true
     end
   end
 
@@ -57,7 +63,7 @@ ARGV.each do |path|
       STDERR.puts(
         "Error: #{path} is not terminated by a blank line."
       )
-      exit(1)
+      failed = true
     end
 
     # Check that there are not multiple blank lines at the end of the file.
@@ -66,8 +72,11 @@ ARGV.each do |path|
         STDERR.puts(
           "Error: #{path} is terminated by more than one blank line."
         )
-        exit(1)
+        failed = true
       end
     end
   end
 end
+
+# Fail if necessary.
+exit(1) if failed
