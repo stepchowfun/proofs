@@ -9,8 +9,6 @@
 Require Import Main.STLC.Substitution.
 Require Import Main.STLC.Syntax.
 
-Import Name.
-
 Inductive value : term -> Prop :=
 | vTrue : value eTrue
 | vFalse : value eFalse

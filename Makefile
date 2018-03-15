@@ -24,7 +24,15 @@ lint: main
 	  \) -print \
 	); \
 	LINT_GENERAL_EXIT_CODE=$$?; \
-	./scripts/lint-imports.rb '^Require ' 'coqc -R coq Main ?' $(shell \
+	./scripts/lint-imports.rb '^\s*Require ' 'coqc -R coq Main ?' $(shell \
+	  find . -type d \( \
+	    -path ./.git \
+	  \) -prune -o \( \
+	    -name '*.v' \
+	  \) -print \
+	); \
+	LINT_REQUIRES_EXIT_CODE=$$?; \
+	./scripts/lint-imports.rb '^\s*Import ' 'coqc -R coq Main ?' $(shell \
 	  find . -type d \( \
 	    -path ./.git \
 	  \) -prune -o \( \
@@ -33,6 +41,7 @@ lint: main
 	); \
 	LINT_IMPORTS_EXIT_CODE=$$?; \
 	test "$$LINT_GENERAL_EXIT_CODE" -eq 0 && \
+	test "$$LINT_REQUIRES_EXIT_CODE" -eq 0 && \
 	test "$$LINT_IMPORTS_EXIT_CODE" -eq 0
 
 clean:
