@@ -6,7 +6,7 @@
 (*******************************************)
 (*******************************************)
 
-Require Import Coq.Logic.FunctionalExtensionality.
+Require Import FunctionalExtensionality.
 Require Import Main.CategoryTheory.Functor.
 Require Import Main.CategoryTheory.Monad.
 Require Import Main.CategoryTheory.NaturalTransformation.
