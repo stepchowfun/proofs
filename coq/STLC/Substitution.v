@@ -9,8 +9,6 @@
 Require Import Main.STLC.Name.
 Require Import Main.STLC.Syntax.
 
-Import Name.
-
 Fixpoint sub e1 x1 e2 :=
   match e1 with
   | eTrue => e1

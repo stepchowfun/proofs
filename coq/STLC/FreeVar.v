@@ -9,8 +9,6 @@
 Require Import Main.STLC.Name.
 Require Import Main.STLC.Syntax.
 
-Import Name.
-
 Inductive freeVar : term -> name -> Prop :=
 | fIf1 :
   forall e1 e2 e3 x,

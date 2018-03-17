@@ -13,8 +13,6 @@ Require Import Main.STLC.Substitution.
 Require Import Main.STLC.Typing.
 Require Import Main.Tactics.
 
-Import Name.
-
 Lemma contextInvariance :
   forall c1 c2 e t,
   hasType c1 e t ->
