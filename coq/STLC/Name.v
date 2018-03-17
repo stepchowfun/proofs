@@ -28,3 +28,5 @@ Module Name : NameSig.
   Hint Resolve nameEq.
 
 End Name.
+
+Export Name.
