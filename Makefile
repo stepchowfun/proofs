@@ -11,6 +11,10 @@ main:
 	rm -f _CoqProjectFull Makefile.coq Makefile.coq.conf
 
 lint: main
+	if grep --recursive --line-number --include '*.v' Admitted coq; then \
+	  echo "Error: 'Admitted' found in proofs." 1>&2; \
+	  exit 1; \
+	fi
 	./scripts/lint-general.rb $(shell \
 	  find . -type d \( \
 	    -path ./.git \
