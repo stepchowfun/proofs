@@ -11,10 +11,6 @@ main:
 	rm -f _CoqProjectFull Makefile.coq Makefile.coq.conf
 
 lint: main
-	if grep --recursive --line-number --include '*.v' Admitted coq; then \
-	  echo "Error: 'Admitted' found in proofs." 1>&2; \
-	  exit 1; \
-	fi
 	./scripts/lint-general.rb $(shell \
 	  find . -type d \( \
 	    -path ./.git \
@@ -47,6 +43,10 @@ lint: main
 	test "$$LINT_GENERAL_EXIT_CODE" -eq 0 && \
 	test "$$LINT_REQUIRES_EXIT_CODE" -eq 0 && \
 	test "$$LINT_IMPORTS_EXIT_CODE" -eq 0
+	if grep --recursive --line-number --include '*.v' Admitted coq; then \
+	  echo "Error: 'Admitted' found in proofs." 1>&2; \
+	  exit 1; \
+	fi
 
 clean:
 	rm -f _CoqProjectFull Makefile.coq \
@@ -71,7 +71,7 @@ docker-build:
 	  docker create --rm --user=root stephanmisc/coq:8.7.2 bash -c ' \
 	    chown -R user:user repo && \
 	    su user -s /bin/bash -l -c \
-	      "cd repo && make clean && make main lint" \
+	      "cd repo && make clean main lint" \
 	  ' \
 	)" && \
 	docker cp . "$$CONTAINER:/home/user/repo" && \
