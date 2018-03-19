@@ -71,7 +71,7 @@ docker-build:
 	  docker create --rm --user=root stephanmisc/coq:8.7.2 bash -c ' \
 	    chown -R user:user repo && \
 	    su user -s /bin/bash -l -c \
-	      "cd repo && make clean main lint" \
+	      "cd repo && make clean && make main lint" \
 	  ' \
 	)" && \
 	docker cp . "$$CONTAINER:/home/user/repo" && \
