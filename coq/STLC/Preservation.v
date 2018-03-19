@@ -13,6 +13,17 @@ Require Import Main.STLC.Substitution.
 Require Import Main.STLC.Typing.
 Require Import Main.Tactics.
 
+Theorem typingJudgmentClosed :
+  forall c e x t1,
+  hasType c e t1 ->
+  freeVar e x ->
+  exists t2, lookupVar c x = Some t2.
+Proof.
+  clean. induction H; invert H0; eMagic.
+Qed.
+
+Hint Resolve typingJudgmentClosed.
+
 Lemma contextInvariance :
   forall c1 c2 e t,
   hasType c1 e t ->
@@ -26,17 +37,6 @@ Proof.
 Qed.
 
 Hint Resolve contextInvariance.
-
-Theorem typingJudgmentClosed :
-  forall c e x t1,
-  hasType c e t1 ->
-  freeVar e x ->
-  exists t2, lookupVar c x = Some t2.
-Proof.
-  clean. induction H; invert H0; eMagic.
-Qed.
-
-Hint Resolve typingJudgmentClosed.
 
 Theorem substitutionPreservesTyping :
   forall c x e1 e2 t1 t2,
