@@ -120,7 +120,7 @@ Inductive odd : nat -> Prop :=
   the same time.
 *)
 
-Lemma doubleInd :
+Theorem doubleInd :
   forall P : nat -> Prop,
   P zero ->
   P (succ zero) ->
