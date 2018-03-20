@@ -24,7 +24,7 @@ Qed.
 
 Hint Resolve typingJudgmentClosed.
 
-Lemma contextInvariance :
+Theorem contextInvariance :
   forall c1 c2 e t,
   hasType c1 e t ->
   (forall x, freeVar e x -> lookupVar c1 x = lookupVar c2 x) ->

@@ -56,7 +56,7 @@ Fixpoint isEven n :=
 
 (* A proof that (even n) is reflected in (isEven n) *)
 
-Lemma evenInd :
+Theorem evenInd :
   forall P : nat -> Prop,
   P 0 ->
   P 1 ->
@@ -90,7 +90,7 @@ Qed.
 
 (* A proof by reflection of (even 1000) *)
 
-Lemma evenOneThousand : even 1000.
+Theorem evenOneThousand : even 1000.
 Proof.
   reflect (evenRefl 1000).
 Qed.
