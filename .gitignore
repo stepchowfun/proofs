@@ -3,4 +3,3 @@ coq/**/*.aux
 coq/**/*.glob
 coq/**/*.v.d
 coq/**/*.vo
-coq/**/*.vo.aux
