@@ -12,7 +12,7 @@
 
 (* In Haskell, we would write `data Bool = True | False`. *)
 
-Inductive bool : Set :=
+Inductive bool :=
 | true : bool
 | false : bool.
 
@@ -44,7 +44,7 @@ Definition orb b1 b2 :=
 
 (* In Haskell, we would write `data Nat = Zero | Succ n`. *)
 
-Inductive nat : Set :=
+Inductive nat :=
 | zero : nat
 | succ : nat -> nat.
 
