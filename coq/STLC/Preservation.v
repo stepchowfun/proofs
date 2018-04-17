@@ -17,7 +17,7 @@ Theorem typingJudgmentClosed :
   forall c e x t1,
   hasType c e t1 ->
   freeVar e x ->
-  exists t2, lookupVar c x = Some t2.
+  exists t2, lookup c x = Some t2.
 Proof.
   clean. induction H; invert H0; eMagic.
 Qed.
@@ -27,7 +27,7 @@ Hint Resolve typingJudgmentClosed.
 Theorem contextInvariance :
   forall c1 c2 e t,
   hasType c1 e t ->
-  (forall x, freeVar e x -> lookupVar c1 x = lookupVar c2 x) ->
+  (forall x, freeVar e x -> lookup c1 x = lookup c2 x) ->
   hasType c2 e t.
 Proof.
   clean. gen c2. induction H; magic; clean.
@@ -46,7 +46,7 @@ Theorem substitutionPreservesTyping :
 Proof.
   clean. gen c t2. induction e2; clean; invert H; eMagic; clean.
   - destruct (nameEq x n); destruct (nameEq n x); magic.
-    eapply contextInvariance with (c1 := cEmpty); magic.
+    apply contextInvariance with (c1 := cEmpty); magic.
     clean. fact (typingJudgmentClosed cEmpty e1 x0 t1). magic.
   - destruct (nameEq x n); apply htAbs.
     + apply contextInvariance with (c1 := cExtend (cExtend c n t1) n t); magic.
