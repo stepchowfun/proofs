@@ -13,10 +13,10 @@ Inductive context :=
 | cEmpty : context
 | cExtend : context -> name -> type -> context.
 
-Fixpoint lookupVar c1 x1 :=
+Fixpoint lookup c1 x1 :=
   match c1 with
   | cEmpty => None
-  | cExtend c2 x2 t => if nameEq x1 x2 then Some t else lookupVar c2 x1
+  | cExtend c2 x2 t => if nameEq x1 x2 then Some t else lookup c2 x1
   end.
 
 Inductive hasType : context -> term -> type -> Prop :=
@@ -34,7 +34,7 @@ Inductive hasType : context -> term -> type -> Prop :=
   hasType c (eIf e1 e2 e3) t
 | htVar :
   forall c t x,
-  lookupVar c x = Some t ->
+  lookup c x = Some t ->
   hasType c (eVar x) t
 | htAbs :
   forall c e t1 t2 x,
