@@ -30,7 +30,7 @@ Theorem contextInvariance :
   (forall x, freeVar e x -> lookup c1 x = lookup c2 x) ->
   hasType c2 e t.
 Proof.
-  clean. gen c2. induction H; magic; clean.
+  clean. gen c2. induction H; magic 7; clean.
   - apply htVar. rewrite <- H0; magic.
   - apply htAbs. apply IHhasType. magic.
   - eapply htApp; magic.
