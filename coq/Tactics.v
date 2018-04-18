@@ -71,12 +71,12 @@ Tactic Notation "magic" := magic.
 Tactic Notation "magic" integer(n) :=
   let autoStar := auto n with * in magicWith autoStar.
 
-Ltac eMagic := let autoStar := eauto with * in magicWith autoStar.
+Ltac eMagic := let eautoStar := eauto with * in magicWith eautoStar.
 
 Tactic Notation "eMagic" := eMagic.
 
 Tactic Notation "eMagic" integer(n) :=
-  let autoStar := eauto n with * in magicWith autoStar.
+  let eautoStar := eauto n with * in magicWith eautoStar.
 
 (* This tactic cleans up the goal and context for easier reading. *)
 
