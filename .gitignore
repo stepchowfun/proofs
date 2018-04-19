@@ -1,5 +1,7 @@
+.coqdeps.d
+Makefile.coq
 Makefile.coq.conf
+_CoqProjectFull
 coq/**/*.aux
 coq/**/*.glob
-coq/**/*.v.d
 coq/**/*.vo
