@@ -5,10 +5,10 @@ main:
 	echo '-R coq Main' > _CoqProjectFull
 	find coq -type f -name '*.v' >> _CoqProjectFull
 	coq_makefile -f _CoqProjectFull -o Makefile.coq || \
-	  (rm .coqdeps.d Makefile.coq Makefile.coq.conf _CoqProjectFull; exit 1)
+	  (rm -f .coqdeps.d Makefile.coq Makefile.coq.conf _CoqProjectFull; exit 1)
 	make -f Makefile.coq || \
-	  (rm .coqdeps.d Makefile.coq Makefile.coq.conf _CoqProjectFull; exit 1)
-	rm .coqdeps.d Makefile.coq Makefile.coq.conf _CoqProjectFull
+	  (rm -f .coqdeps.d Makefile.coq Makefile.coq.conf _CoqProjectFull; exit 1)
+	rm -f .coqdeps.d Makefile.coq Makefile.coq.conf _CoqProjectFull
 
 lint: main
 	./scripts/lint-general.rb $(shell \
