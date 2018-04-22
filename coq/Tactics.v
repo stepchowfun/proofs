@@ -64,19 +64,15 @@ Ltac magicWith tactic :=
     ]
   ].
 
-Ltac magic := let autoStar := auto with * in magicWith autoStar.
-
-Tactic Notation "magic" := magic.
-
 Tactic Notation "magic" integer(n) :=
   let autoStar := auto n with * in magicWith autoStar.
 
-Ltac eMagic := let eautoStar := eauto with * in magicWith eautoStar.
-
-Tactic Notation "eMagic" := eMagic.
+Tactic Notation "magic" := magic 5.
 
 Tactic Notation "eMagic" integer(n) :=
   let eautoStar := eauto n with * in magicWith eautoStar.
+
+Tactic Notation "eMagic" := eMagic 5.
 
 (* This tactic cleans up the goal and context for easier reading. *)
 
@@ -89,7 +85,9 @@ Ltac clean :=
       end
     | [ H : context[Prop] |- _ ] => revert H; reorderContext; intro H
     end
-  in simplify magic; reorderContext.
+  in
+    let magicTactic := magic
+    in simplify magicTactic; reorderContext.
 
 (*
   This tactic takes a given term and adds it to the context as a new
