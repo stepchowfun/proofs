@@ -33,9 +33,9 @@ Module Name : NameSig.
   Theorem nameFresh : forall l : list nat, exists x, ~ In x l.
   Proof.
     clean. exists (S (fold_right max 0 l)). unfold not. clean.
-    assert (forall n, In n l -> n <= (fold_right Nat.max 0 l)).
+    assert (forall n, In n l -> n < S (fold_right Nat.max 0 l)).
     - clear H. clean. induction l; magic.
-      assert ((fold_right max 0 l) <= max a (fold_right max 0 l)); magic.
+      assert ((fold_right max 0 l) < S (max a (fold_right max 0 l))); magic.
     - specialize (H0 (S (fold_right Nat.max 0 l))). magic.
   Qed.
 
