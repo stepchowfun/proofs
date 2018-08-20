@@ -29,7 +29,7 @@ Definition true_and_true_1 : and True True :=
 
 Theorem true_and_true_2 : and True True.
 Proof.
-  (* Our first example of a tactic: apply. *)
+  (* Our first example of a tactic: apply *)
   apply conj.
   - apply trivial.
   - apply trivial.
@@ -37,7 +37,7 @@ Qed.
 
 Print true_and_true_2.
 
-(* The same proof, but written using the `;` tactical. *)
+(* The same proof, but written using the `;` tactical *)
 
 Theorem true_and_true_3 : and True True.
 Proof.

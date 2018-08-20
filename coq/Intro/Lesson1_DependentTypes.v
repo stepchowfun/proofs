@@ -8,14 +8,14 @@
 
 Require Import String.
 
-(* A length-indexed list of strings. *)
+(* A length-indexed list of strings *)
 
 Inductive slist : nat -> Set :=
 | snil : slist O
 | scons :
-    forall {n}, (* length of the tail, implicit *)
-    string ->   (* head *)
-    slist n ->  (* tail *)
+    forall {n}, (* Length of the tail, implicit *)
+    string ->   (* Head *)
+    slist n ->  (* Tail *)
     slist (S n).
 
 (* Let's construct some slists. *)
