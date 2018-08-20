@@ -1,53 +1,33 @@
-(******************************************)
-(* Ordinary functional programming in Coq *)
-(******************************************)
+(****************************************************)
+(****************************************************)
+(****                                            ****)
+(****   Ordinary functional programming in Coq   ****)
+(****                                            ****)
+(****************************************************)
+(****************************************************)
 
-(*
-  Let's define a data type for Booleans.
-  In Haskell, we'd write:
-
-    data Bool = True | False
-
-  Haskell also lets us define this as a
-  GADT, which will look similar to the
-  Coq definition:
-
-    data Bool where
-      True :: Bool
-      False :: Bool
-*)
+(* Let's define a data type for Booleans. *)
 
 Inductive bool : Set :=
 | true : bool
 | false : bool.
 
 (*
-  Here's a more interesting example of
-  an inductive data type. In Haskell:
-
-    data Nat = Zero | Succ Nat
+  Here's a more interesting example of an inductive data type: a natural number
+  is either zero or the successor of another natural number.
 *)
 
 Inductive nat : Set :=
 | O : nat
 | S : nat -> nat.
 
-(*
-  The `Check` command tells us the type
-  of a given term.
-*)
+(* The `Check` command tells us the type of a given term. *)
 
 Check O.
 Check S O.
 Check S (S O).
 
-(*
-  Here's a simple function. In Haskell:
-
-    negb :: Bool -> Bool
-    negb True = False
-    negb False = True
-*)
+(* Here's a simple function on Bools. *)
 
 Definition negb b :=
   match b with
@@ -61,8 +41,7 @@ Compute negb true.
 Compute negb false.
 
 (*
-  Recursive definitions use the `Fixpoint`
-  keyword instead of `Definition`.
+  Recursive definitions use the `Fixpoint` keyword instead of `Definition`.
 *)
 
 Fixpoint add n m :=

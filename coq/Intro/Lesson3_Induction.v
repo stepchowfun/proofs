@@ -1,13 +1,14 @@
-(*************)
-(* Induction *)
-(*************)
+(*********************************)
+(*********************************)
+(****                         ****)
+(****   Proofs by induction   ****)
+(****                         ****)
+(*********************************)
+(*********************************)
 
 Require Import Nat.
 
-(*
-  Let's prove that zero is a left identity
-  for addition.
-*)
+(* Let's prove that zero is a left identity for addition. *)
 
 Theorem zero_plus_n : forall n, 0 + n = n.
 Proof.
@@ -16,10 +17,7 @@ Proof.
   reflexivity.
 Qed.
 
-(*
-  Great, that was easy! Now let's prove
-  that zero is also a right identity.
-*)
+(* Great, that was easy! Now let's prove that zero is also a right identity. *)
 
 Theorem n_plus_zero : forall n, n + 0 = n.
 Proof.
@@ -32,17 +30,15 @@ Abort.
 Print add.
 
 (*
-  From this, it's clear why 0 + n = n.
-  But how do we prove n + 0 = n?
-  We need induction.
+  From this, it's clear why 0 + n = n. But how do we prove n + 0 = n? We need
+  induction.
 *)
 
 Check nat_ind.
 
 (*
-  Let's use that induction principle to
-  prove that zero is a neutral element
-  of addition.
+  Let's use that induction principle to prove that zero is a neutral element of
+  addition.
 *)
 
 Theorem n_plus_zero : forall n, n + 0 = n.
@@ -50,8 +46,7 @@ Proof.
   intro.
 
   (*
-    Instead of applying `nat_ind` directly,
-    it is easier to use the `induction`
+    Instead of applying `nat_ind` directly, it is easier to use the `induction`
     tactic.
   *)
   induction n.
