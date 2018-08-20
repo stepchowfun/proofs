@@ -17,7 +17,7 @@ Inductive False : Prop := .
 
 (* Logical conjunction *)
 
-Inductive and P Q : Prop :=
+Inductive and P Q : Prop := (* Notation: P /\ Q *)
 | conj : P -> Q -> and P Q.
 
 (* A proof of True AND True *)
@@ -56,22 +56,25 @@ Abort.
 
 (* If and only if *)
 
-Definition iff P Q := and (P -> Q) (Q -> P).
+Definition iff P Q := and (P -> Q) (Q -> P). (* Notation: P <-> Q *)
 
 (* Logical disjunction *)
 
-Inductive or P Q : Prop :=
+Inductive or P Q : Prop := (* Notation: P \/ Q *)
 | orIntroL : P -> or P Q
 | orIntroR : Q -> or P Q.
 
 (* Let's prove True OR False. *)
 
-Definition true_or_false : or True False :=
-  orIntroL True False trivial.
+Theorem true_or_false : or True False.
+Proof.
+  left. (* Equivalent to `apply orIntroL.` *)
+  apply trivial.
+Qed.
 
 (* Logical negation *)
 
-Definition not A := A -> False.
+Definition not A := A -> False. (* Notation: ~ A *)
 
 (* A proof of NOT False *)
 
@@ -91,12 +94,14 @@ Print not_false.
 
 (* Propositional equality *)
 
-Inductive eq (A : Type) (x : A) : A -> Prop :=
+Inductive eq (A : Type) (x : A) : A -> Prop := (* Notation: x = x *)
 | eq_refl : eq A x x. (* A dependent type! *)
 
 (* A simple proof that 0 = 0. *)
-Definition zero_eq_zero : eq nat 0 0 :=
-  eq_refl nat 0.
+Definition zero_eq_zero : eq nat 0 0.
+Proof.
+  reflexivity. (* Equivalent to: `apply eq_refl.` *)
+Qed.
 
 (*
   Here we show that this definition of propositional equality is "Leibniz
@@ -121,3 +126,21 @@ Definition leibniz (A : Type)
 
 Check leibniz.
 Check eq_ind.
+
+(*
+  Universal quantification (forall) is built into the language. Existential
+  quantification, however, is definable as follows:
+*)
+
+Inductive ex (A : Type)
+             (P : A -> Prop) :
+             Prop := (* Notation: exists x, P x *)
+  ex_intro : forall x : A, P x -> ex A P.
+
+(* A simple existence proof *)
+
+Theorem reflexive_value_exists : ex nat (fun x => x = x).
+Proof.
+  exists 0. (* Equivalent to `apply ex_intro with (x := 0).` *)
+  reflexivity.
+Qed.

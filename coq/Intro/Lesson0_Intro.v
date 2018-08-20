@@ -12,20 +12,10 @@ Inductive bool : Set :=
 | true : bool
 | false : bool.
 
-(*
-  Here's a more interesting example of an inductive data type: a natural number
-  is either zero or the successor of another natural number.
-*)
-
-Inductive nat : Set :=
-| O : nat
-| S : nat -> nat.
-
 (* The `Check` command tells us the type of a given term. *)
 
-Check O.
-Check S O.
-Check S (S O).
+Check true.
+Check false.
 
 (* Here's a simple function on Bools. *)
 
@@ -39,6 +29,27 @@ Definition negb b :=
 
 Compute negb true.
 Compute negb false.
+
+(*
+  Here's a more interesting inductive data type: a natural number is either
+  zero or the successor of another natural number.
+*)
+
+Inductive nat : Set :=
+| O : nat
+| S : nat -> nat.
+
+(* Here are some natural numbers: *)
+
+Check O.
+Check S O.
+Check S (S O).
+
+(* Numeric literals can also be used to construct natural numbers. *)
+
+Check 0.
+Check 1.
+Check 2.
 
 (*
   Recursive definitions use the `Fixpoint` keyword instead of `Definition`.
