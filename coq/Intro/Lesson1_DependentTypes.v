@@ -13,7 +13,7 @@ Require Import String.
 Inductive slist : nat -> Set :=
 | snil : slist O
 | scons :
-    forall {n}, (* Length of the tail, implicit *)
+    forall {n}, (* Length of the tail, implicit due to the curly braces *)
     string ->   (* Head *)
     slist n ->  (* Tail *)
     slist (S n).
