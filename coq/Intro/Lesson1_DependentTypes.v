@@ -1,6 +1,10 @@
-(************************************)
-(* Programming with dependent types *)
-(************************************)
+(**********************************************)
+(**********************************************)
+(****                                      ****)
+(****   Programming with dependent types   ****)
+(****                                      ****)
+(**********************************************)
+(**********************************************)
 
 Require Import String.
 
@@ -21,8 +25,8 @@ Check scons "foo" snil.
 Check scons "hello" (scons "world" snil).
 
 (*
-  Here's a function which produces an slist
-  of a given length containing empty strings.
+  Here's a function which produces an slist of a given length containing empty
+  strings.
 *)
 
 Fixpoint empty_strings n1 : slist n1 :=
@@ -32,9 +36,8 @@ Fixpoint empty_strings n1 : slist n1 :=
   end.
 
 (*
-  Here's a function which concatenates
-  two slists. This demonstrates how to
-  do dependent pattern matching.
+  Here's a function which concatenates two slists. This demonstrates how to do
+  dependent pattern matching.
 *)
 
 Fixpoint concat {n1 n2}

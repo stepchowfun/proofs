@@ -1,6 +1,10 @@
-(*********)
-(* Logic *)
-(*********)
+(*************************************************)
+(*************************************************)
+(****                                         ****)
+(****   Encoding logic with dependent types   ****)
+(****                                         ****)
+(*************************************************)
+(*************************************************)
 
 (* A proposition which is trivially provable *)
 
@@ -41,10 +45,7 @@ Proof.
   apply conj; apply trivial.
 Qed.
 
-(*
-  Let's see what happens when we try to prove
-  True AND False.
-*)
+(* Let's see what happens when we try to prove True AND False. *)
 
 Theorem true_and_false : and True False.
 Proof.
@@ -76,22 +77,13 @@ Definition not A := A -> False.
 
 Theorem not_false : not False.
 Proof.
-  (*
-    `unfold` replaces a name with
-    its definition.
-  *)
+  (* `unfold` replaces a name with its definition. *)
   unfold not.
 
-  (*
-    `intro` moves a premise of the goal
-    into the context.
-  *)
+  (* `intro` moves a premise of the goal into the context. *)
   intro.
 
-  (*
-    H is a proof of the goal;
-    let's use it!
-  *)
+  (* H is a proof of the goal; let's use it! *)
   exact H.
 Qed.
 
@@ -107,8 +99,8 @@ Definition zero_eq_zero : eq nat 0 0 :=
   eq_refl nat 0.
 
 (*
-  Here we show that this definition of propositional
-  equality is "Leibniz equaltiy".
+  Here we show that this definition of propositional equality is "Leibniz
+  equaltiy".
 *)
 
 Definition leibniz (A : Type)
@@ -123,9 +115,8 @@ Definition leibniz (A : Type)
   end.
 
 (*
-  And guess what: the above definition of `leibniz`
-  is automatically generated for us as the induction
-  principle for `eq`.
+  And guess what: the above definition of `leibniz` is automatically generated
+  for us as the induction principle for `eq`.
 *)
 
 Check leibniz.
