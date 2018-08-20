@@ -98,7 +98,7 @@ Inductive eq (A : Type) (x : A) : A -> Prop := (* Notation: x = x *)
 | eq_refl : eq A x x. (* A dependent type! *)
 
 (* A simple proof that 0 = 0. *)
-Definition zero_eq_zero : eq nat 0 0.
+Theorem zero_eq_zero : eq nat 0 0.
 Proof.
   reflexivity. (* Equivalent to: `apply eq_refl.` *)
 Qed.
