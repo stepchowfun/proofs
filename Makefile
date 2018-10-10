@@ -65,11 +65,11 @@ clean:
 	  )
 
 docker-deps:
-	docker build -t stephanmisc/coq:8.8.0 scripts
+	docker build -t stephanmisc/coq:8.8.2 scripts
 
 docker-build:
 	CONTAINER="$$( \
-	  docker create --rm --user=root stephanmisc/coq:8.8.0 bash -c ' \
+	  docker create --rm --user=root stephanmisc/coq:8.8.2 bash -c ' \
 	    chown -R user:user repo && \
 	    su user -s /bin/bash -l -c \
 	      "cd repo && make clean && make main lint" \
