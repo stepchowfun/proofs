@@ -7,10 +7,10 @@
 (*******************************************)
 
 Require Import FunctionalExtensionality.
+Require Import Main.CategoryTheory.Examples.Set.
 Require Import Main.CategoryTheory.Functor.
 Require Import Main.CategoryTheory.Monad.
 Require Import Main.CategoryTheory.NaturalTransformation.
-Require Import Main.CategoryTheory.Set.
 Require Import Main.Tactics.
 
 (* A maybe is a wrapper for value that might be missing. *)
