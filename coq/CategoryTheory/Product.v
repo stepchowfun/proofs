@@ -48,3 +48,5 @@ Proof.
   - apply H0; magic.
     split; rewrite cAssoc; magic.
 Qed.
+
+Hint Resolve productUnique.
