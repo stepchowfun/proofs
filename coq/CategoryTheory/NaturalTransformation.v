@@ -6,6 +6,7 @@
 (*************************************)
 (*************************************)
 
+Require Import Main.CategoryTheory.Arrow.
 Require Import Main.CategoryTheory.Category.
 Require Import Main.CategoryTheory.Functor.
 Require Import Main.Tactics.
