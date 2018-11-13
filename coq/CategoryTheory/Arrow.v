@@ -42,6 +42,8 @@ Proof.
   magic.
 Qed.
 
+Hint Resolve inverseUnique.
+
 Theorem rightIdUnique :
   forall C x, arrowUnique (
     fun (f : arrow C x x) => forall y (g : arrow C x y), compose C g f = g
