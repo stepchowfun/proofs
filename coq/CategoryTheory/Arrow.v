@@ -31,6 +31,17 @@ Definition monomorphism {C x y} (f : arrow C x y) :=
 Definition isomorphism {C x y} (f : arrow C x y) :=
   exists g, compose C g f = id C /\ compose C f g = id C.
 
+Theorem inverseUnique {C x y} (f : arrow C x y) :
+  arrowUnique (fun g => compose C f g = id C /\ compose C g f = id C).
+Proof.
+  unfold arrowUnique.
+  clean.
+  assert (compose C f0 (compose C f g) = compose C (compose C f0 f) g); magic.
+  rewrite H0 in H3.
+  rewrite H2 in H3.
+  magic.
+Qed.
+
 Theorem rightIdUnique :
   forall C x, arrowUnique (
     fun (f : arrow C x x) => forall y (g : arrow C x y), compose C g f = g
