@@ -74,20 +74,22 @@ Tactic Notation "eMagic" integer(n) :=
 
 Tactic Notation "eMagic" := eMagic 5.
 
+(*
+  This tactic reorders the context such that variables come before hypotheses.
+*)
+
+Ltac sort :=
+  try match goal with
+  | [ H : ?T |- _ ] =>
+    match type of T with
+    | context[Prop] => revert H; sort; intro H
+    end
+  | [ H : context[Prop] |- _ ] => revert H; sort; intro H
+  end.
+
 (* This tactic cleans up the goal and context for easier reading. *)
 
-Ltac clean :=
-  let rec reorderContext :=
-    try match goal with
-    | [ H : ?T |- _ ] =>
-      match type of T with
-      | context[Prop] => revert H; reorderContext; intro H
-      end
-    | [ H : context[Prop] |- _ ] => revert H; reorderContext; intro H
-    end
-  in
-    let magicTactic := magic
-    in simplify magicTactic; reorderContext.
+Ltac clean := let magicTactic := magic in simplify magicTactic; sort.
 
 (*
   This tactic takes a given term and adds it to the context as a new
