@@ -41,6 +41,3 @@ Proof.
     _ _ _
   ); magic.
 Defined.
-
-Definition thin (C : category) :=
-  forall x y (f g : arrow C x y), f = g.

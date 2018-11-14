@@ -28,21 +28,11 @@ Defined.
 Definition productCategoryProj1 (C D : category) :
   @functor (productCategory C D) C.
 Proof.
-  refine (newFunctor (productCategory C D) C
-    fst
-    (fun _ _ => fst)
-    _
-    _
-  ); magic.
+  refine (newFunctor (productCategory C D) C fst (fun _ _ => fst) _ _); magic.
 Defined.
 
 Definition productCategoryProj2 (C D : category) :
   @functor (productCategory C D) D.
 Proof.
-  refine (newFunctor (productCategory C D) D
-    snd
-    (fun _ _ => snd)
-    _
-    _
-  ); magic.
+  refine (newFunctor (productCategory C D) D snd (fun _ _ => snd) _ _); magic.
 Defined.
