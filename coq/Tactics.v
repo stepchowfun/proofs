@@ -75,7 +75,8 @@ Tactic Notation "eMagic" integer(n) :=
 Tactic Notation "eMagic" := eMagic 5.
 
 (*
-  This tactic reorders the context such that variables come before hypotheses.
+  This tactic reorders the context such that definitions come before
+  assumptions.
 *)
 
 Ltac sort :=
