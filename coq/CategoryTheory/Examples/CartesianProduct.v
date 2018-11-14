@@ -13,6 +13,8 @@ Require Import Main.CategoryTheory.Examples.Set.
 Require Import Main.CategoryTheory.Product.
 Require Import Main.Tactics.
 
+Open Scope type. (* Parse `*` as `prod` rather than `mul`. *)
+
 Theorem cartesianProduct (x y : Set) :
   @product setCategory x y (x * y) fst snd.
 Proof.
