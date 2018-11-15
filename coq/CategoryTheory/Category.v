@@ -7,6 +7,9 @@
 (************************)
 
 Require Import Main.Tactics.
+Require Import ProofIrrelevance.
+
+Hint Resolve proof_irrelevance.
 
 Set Universe Polymorphism.
 
@@ -41,3 +44,16 @@ Proof.
     _ _ _
   ); magic.
 Defined.
+
+(* The following proof depends on proof irrelevance. *)
+
+Theorem oppositeInvolution :
+  forall C, oppositeCategory (oppositeCategory C) = C.
+Proof.
+  unfold oppositeCategory.
+  clean.
+  destruct C.
+  magic.
+Qed.
+
+Hint Resolve oppositeInvolution.
