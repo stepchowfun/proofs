@@ -9,9 +9,6 @@
 Require Import Main.CategoryTheory.Category.
 Require Import Main.CategoryTheory.Functor.
 Require Import Main.Tactics.
-Require Import ProofIrrelevance.
-
-Hint Resolve proof_irrelevance.
 
 Definition catCategory : category.
 Proof.

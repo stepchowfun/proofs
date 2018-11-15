@@ -45,8 +45,6 @@ Proof.
   ); magic.
 Defined.
 
-(* The following proof depends on proof irrelevance. *)
-
 Theorem oppositeInvolution :
   forall C, oppositeCategory (oppositeCategory C) = C.
 Proof.
