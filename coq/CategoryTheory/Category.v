@@ -9,8 +9,6 @@
 Require Import Main.Tactics.
 Require Import ProofIrrelevance.
 
-Hint Resolve proof_irrelevance.
-
 Set Universe Polymorphism.
 
 (* Metavariables for categories: C, D, E *)
@@ -45,13 +43,17 @@ Proof.
   ); magic.
 Defined.
 
-Theorem oppositeInvolution :
-  forall C, oppositeCategory (oppositeCategory C) = C.
-Proof.
-  unfold oppositeCategory.
-  clean.
-  destruct C.
-  magic.
-Qed.
+Section ProofIrrelevance.
+  Hint Resolve proof_irrelevance.
+
+  Theorem oppositeInvolution :
+    forall C, oppositeCategory (oppositeCategory C) = C.
+  Proof.
+    unfold oppositeCategory.
+    clean.
+    destruct C.
+    magic.
+  Qed.
+End ProofIrrelevance.
 
 Hint Resolve oppositeInvolution.
