@@ -22,6 +22,9 @@ Definition arrowUnique {C : category} {x y} (P : arrow C x y -> Prop) :=
 Definition universal {C : category} {x y} (P : arrow C x y -> Prop) :=
   arrowExists P /\ arrowUnique P.
 
+Definition inverse {C x y} (f : arrow C x y) (g : arrow C y x) :=
+  compose C f g = id C /\ compose C g f = id C.
+
 Definition epimorphism {C x y} (f : arrow C x y) :=
   forall z (g h : arrow C y z), compose C g f = compose C h f -> g = h.
 
@@ -29,7 +32,7 @@ Definition monomorphism {C x y} (f : arrow C x y) :=
   forall z (g h : arrow C z x), compose C f g = compose C f h -> g = h.
 
 Definition isomorphism {C x y} (f : arrow C x y) :=
-  exists g, compose C g f = id C /\ compose C f g = id C.
+  exists g, inverse f g.
 
 Definition retraction {C x y} (f : arrow C x y) :=
   exists g, compose C f g = id C.
@@ -37,14 +40,12 @@ Definition retraction {C x y} (f : arrow C x y) :=
 Definition section {C x y} (f : arrow C x y) :=
   exists g, compose C g f = id C.
 
-Definition inverse {C x y} (f : arrow C x y) (g : arrow C y x) :=
-  compose C f g = id C /\ compose C g f = id C.
-
 Theorem opIsomorphism :
   forall C x y f,
   @isomorphism C x y f <-> @isomorphism (oppositeCategory C) y x f.
 Proof.
   unfold isomorphism.
+  unfold inverse.
   split; clean; exists x0; magic.
 Qed.
 
@@ -146,12 +147,13 @@ Theorem isoImpliesEpi :
 Proof.
   unfold isomorphism.
   unfold epimorphism.
+  unfold inverse.
   clean.
   assert (
     compose C (compose C g f) x0 = compose C (compose C h f) x0
   ); magic.
   repeat rewrite <- cAssoc in H2.
-  repeat rewrite H1 in H2.
+  repeat rewrite H in H2.
   magic.
 Qed.
 
@@ -203,6 +205,7 @@ Proof.
   unfold monomorphism.
   unfold retraction.
   unfold isomorphism.
+  unfold inverse.
   split; clean.
   - exists x0.
     split; magic.
@@ -217,7 +220,7 @@ Proof.
       compose C x0 (compose C f g) = compose C x0 (compose C f h)
     ); magic.
     repeat rewrite cAssoc in H2.
-    rewrite H in H2.
+    rewrite H0 in H2.
     magic.
 Qed.
 

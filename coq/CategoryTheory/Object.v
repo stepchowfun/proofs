@@ -35,6 +35,7 @@ Theorem isomorphicRefl :
 Proof.
   unfold isomorphic.
   unfold isomorphism.
+  unfold inverse.
   eMagic.
 Qed.
 
@@ -48,17 +49,18 @@ Theorem isomorphicTrans :
 Proof.
   unfold isomorphic.
   unfold isomorphism.
+  unfold inverse.
   clean.
   exists (compose C x0 x2).
   exists (compose C x3 x1).
   split.
-  - replace (compose C (compose C x3 x1) (compose C x0 x2))
-      with (compose C (compose C x3 (compose C x1 x0)) x2).
-    + rewrite H0. magic.
-    + repeat rewrite cAssoc. magic.
   - replace (compose C (compose C x0 x2) (compose C x3 x1))
       with (compose C (compose C x0 (compose C x2 x3)) x1).
-    + rewrite H2. magic.
+    + rewrite H. magic.
+    + repeat rewrite cAssoc. magic.
+  - replace (compose C (compose C x3 x1) (compose C x0 x2))
+      with (compose C (compose C x3 (compose C x1 x0)) x2).
+    + rewrite H1. magic.
     + repeat rewrite cAssoc. magic.
 Qed.
 
@@ -72,6 +74,7 @@ Theorem isomorphicSymm :
 Proof.
   unfold isomorphic.
   unfold isomorphism.
+  unfold inverse.
   eMagic.
 Qed.
 

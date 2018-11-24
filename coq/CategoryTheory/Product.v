@@ -38,12 +38,12 @@ Proof.
   clear H H0.
   unfold universal in *. clean. clear H H3 H5 H6.
   unfold arrowExists in *. destruct H1. destruct H. destruct H2. destruct H2.
-  unfold isomorphic. unfold isomorphism. exists x6. exists x5.
+  unfold isomorphic. unfold isomorphism. unfold inverse. exists x6. exists x5.
   unfold arrowUnique in *.
   split.
-  - apply H4; magic.
-    split; rewrite cAssoc; magic.
   - apply H0; magic.
+    split; rewrite cAssoc; magic.
+  - apply H4; magic.
     split; rewrite cAssoc; magic.
 Qed.
 
