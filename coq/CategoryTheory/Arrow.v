@@ -37,6 +37,9 @@ Definition retraction {C x y} (f : arrow C x y) :=
 Definition section {C x y} (f : arrow C x y) :=
   exists g, compose C g f = id C.
 
+Definition inverse {C x y} (f : arrow C x y) (g : arrow C y x) :=
+  compose C f g = id C /\ compose C g f = id C.
+
 Theorem opIsomorphism :
   forall C x y f,
   @isomorphism C x y f <-> @isomorphism (oppositeCategory C) y x f.
@@ -111,10 +114,10 @@ Qed.
 
 Hint Resolve leftIdUnique.
 
-Theorem inverseUnique {C x y} (f : arrow C x y) :
-  arrowUnique (fun g => compose C f g = id C /\ compose C g f = id C).
+Theorem inverseUnique {C x y} (f : arrow C x y) : arrowUnique (inverse f).
 Proof.
   unfold arrowUnique.
+  unfold inverse.
   clean.
   assert (compose C f0 (compose C f g) = compose C (compose C f0 f) g); magic.
   rewrite H0 in H3.
@@ -123,6 +126,20 @@ Proof.
 Qed.
 
 Hint Resolve inverseUnique.
+
+Theorem inverseInvolution {C x y} (f h : arrow C x y) (g : arrow C y x) :
+  inverse f g -> inverse g h -> f = h.
+Proof.
+  unfold inverse.
+  clean.
+  assert (f = compose C f (compose C g h)).
+  - rewrite H0. magic.
+  - assert (h = compose C f (compose C g h)).
+    + rewrite cAssoc. rewrite H. magic.
+    + magic.
+Qed.
+
+Hint Resolve inverseInvolution.
 
 Theorem isoImpliesEpi :
   forall C x y f, @isomorphism C x y f -> @epimorphism C x y f.
