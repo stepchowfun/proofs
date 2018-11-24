@@ -79,8 +79,8 @@ Defined.
 Definition leftWhisker
   {C D E : category}
   {F G : @functor D E}
-  (H : @functor C D)
-  (Eta : @naturalTransformation D E F G) :
+  (Eta : @naturalTransformation D E F G)
+  (H : @functor C D) :
   @naturalTransformation C E (compFunctor F H) (compFunctor G H).
 Proof.
   refine (
