@@ -30,7 +30,44 @@ Definition terminal {C} x :=
   exists f,
   forall (g : arrow C y x), f = g.
 
-Theorem isomorphicSymmetric :
+Theorem isomorphicRefl :
+  forall C x, @isomorphic C x x.
+Proof.
+  unfold isomorphic.
+  unfold isomorphism.
+  eMagic.
+Qed.
+
+Hint Resolve isomorphicRefl.
+
+Theorem isomorphicTrans :
+  forall C x y z,
+  @isomorphic C x y ->
+  @isomorphic C y z ->
+  @isomorphic C x z.
+Proof.
+  unfold isomorphic.
+  unfold isomorphism.
+  clean.
+  exists (compose C x0 x2).
+  exists (compose C x3 x1).
+  split.
+  - replace (compose C (compose C x3 x1) (compose C x0 x2))
+      with (compose C (compose C x3 (compose C x1 x0)) x2).
+    + rewrite H0. magic.
+    + repeat rewrite cAssoc. magic.
+  - replace (compose C (compose C x0 x2) (compose C x3 x1))
+      with (compose C (compose C x0 (compose C x2 x3)) x1).
+    + rewrite H2. magic.
+    + repeat rewrite cAssoc. magic.
+Qed.
+
+(*
+  We deliberately avoid adding a resolve hint for isomorphicTrans because doing
+  so could lead to nonterminating searches.
+*)
+
+Theorem isomorphicSymm :
   forall C x y, @isomorphic C x y <-> @isomorphic C y x.
 Proof.
   unfold isomorphic.
@@ -39,8 +76,8 @@ Proof.
 Qed.
 
 (*
-  We deliberately avoid adding a resolve hint for isomorphicSymmetric because
-  doing so would lead to nonterminating searches.
+  We deliberately avoid adding a resolve hint for isomorphicSymm because doing
+  so could lead to nonterminating searches.
 *)
 
 Theorem opIsomorphic :
