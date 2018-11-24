@@ -57,7 +57,7 @@ Proof.
   clean.
   rewrite opCoproductProduct in *.
   rewrite opIsomorphic.
-  rewrite isomorphicSymmetric.
+  rewrite isomorphicSymm.
   fact (productUnique (oppositeCategory C) x y x0 y0).
   eMagic.
 Qed.
