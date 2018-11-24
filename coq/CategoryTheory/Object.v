@@ -30,10 +30,26 @@ Definition terminal {C} x :=
   exists f,
   forall (g : arrow C y x), f = g.
 
-Theorem opIsomorphic :
-  forall C x y, @isomorphic C x y <-> @isomorphic (oppositeCategory C) x y.
+Theorem isomorphicSymmetric :
+  forall C x y, @isomorphic C x y <-> @isomorphic C y x.
 Proof.
-  apply opIsomorphism.
+  unfold isomorphic.
+  unfold isomorphism.
+  eMagic.
+Qed.
+
+(*
+  We deliberately avoid adding a resolve hint for isomorphicSymmetric because
+  doing so would lead to nonterminating searches.
+*)
+
+Theorem opIsomorphic :
+  forall C x y, @isomorphic C x y <-> @isomorphic (oppositeCategory C) y x.
+Proof.
+  unfold isomorphic.
+  split; clean; exists x0; [
+    rewrite <- opIsomorphism | rewrite opIsomorphism
+  ]; magic.
 Qed.
 
 Hint Resolve opIsomorphic.
