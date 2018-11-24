@@ -104,7 +104,7 @@ Qed.
 
 Hint Resolve isoImpliesMono.
 
-Theorem opIso :
+Theorem opIsomorphism :
   forall C x y,
   (exists f, @isomorphism C x y f) <->
   (exists f, @isomorphism (oppositeCategory C) x y f).
@@ -112,4 +112,4 @@ Proof.
   unfold isomorphism; split; clean; exists x1; eMagic.
 Qed.
 
-Hint Resolve opIso.
+Hint Resolve opIsomorphism.

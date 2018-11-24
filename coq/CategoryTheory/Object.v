@@ -30,6 +30,14 @@ Definition terminal {C} x :=
   exists f,
   forall (g : arrow C y x), f = g.
 
+Theorem opIsomorphic :
+  forall C x y, @isomorphic C x y <-> @isomorphic (oppositeCategory C) x y.
+Proof.
+  apply opIsomorphism.
+Qed.
+
+Hint Resolve opIsomorphic.
+
 Theorem opInitialTerminal :
   forall C x,
   @initial C x <->
@@ -72,7 +80,7 @@ Proof.
   unfold uniqueUpToIsomorphism.
   clean.
   rewrite opTerminalInitial in *.
-  apply opIso.
+  rewrite opIsomorphic.
   apply initialUnique; magic.
 Qed.
 
