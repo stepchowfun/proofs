@@ -31,18 +31,57 @@ Definition monomorphism {C x y} (f : arrow C x y) :=
 Definition isomorphism {C x y} (f : arrow C x y) :=
   exists g, compose C g f = id C /\ compose C f g = id C.
 
-Theorem inverseUnique {C x y} (f : arrow C x y) :
-  arrowUnique (fun g => compose C f g = id C /\ compose C g f = id C).
+Definition retraction {C x y} (f : arrow C x y) :=
+  exists g, compose C f g = id C.
+
+Definition section {C x y} (f : arrow C x y) :=
+  exists g, compose C g f = id C.
+
+Theorem opIsomorphism :
+  forall C x y f,
+  @isomorphism C x y f <-> @isomorphism (oppositeCategory C) y x f.
 Proof.
-  unfold arrowUnique.
-  clean.
-  assert (compose C f0 (compose C f g) = compose C (compose C f0 f) g); magic.
-  rewrite H0 in H3.
-  rewrite H2 in H3.
+  unfold isomorphism.
+  split; clean; exists x0; magic.
+Qed.
+
+Hint Resolve opIsomorphism.
+
+Theorem opMonoEpi :
+  forall C x y f,
+  @monomorphism C x y f <-> @epimorphism (oppositeCategory C) y x f.
+Proof.
   magic.
 Qed.
 
-Hint Resolve inverseUnique.
+Hint Resolve opMonoEpi.
+
+Theorem opEpiMono :
+  forall C x y f,
+  @epimorphism C x y f <-> @monomorphism (oppositeCategory C) y x f.
+Proof.
+  magic.
+Qed.
+
+Hint Resolve opEpiMono.
+
+Theorem opRetSec :
+  forall C x y f,
+  @retraction C x y f <-> @section (oppositeCategory C) y x f.
+Proof.
+  magic.
+Qed.
+
+Hint Resolve opRetSec.
+
+Theorem opSecRet :
+  forall C x y f,
+  @section C x y f <-> @retraction (oppositeCategory C) y x f.
+Proof.
+  magic.
+Qed.
+
+Hint Resolve opSecRet.
 
 Theorem rightIdUnique :
   forall C x, arrowUnique (
@@ -72,6 +111,19 @@ Qed.
 
 Hint Resolve leftIdUnique.
 
+Theorem inverseUnique {C x y} (f : arrow C x y) :
+  arrowUnique (fun g => compose C f g = id C /\ compose C g f = id C).
+Proof.
+  unfold arrowUnique.
+  clean.
+  assert (compose C f0 (compose C f g) = compose C (compose C f0 f) g); magic.
+  rewrite H0 in H3.
+  rewrite H2 in H3.
+  magic.
+Qed.
+
+Hint Resolve inverseUnique.
+
 Theorem isoImpliesEpi :
   forall C x y f, @isomorphism C x y f -> @epimorphism C x y f.
 Proof.
@@ -91,25 +143,78 @@ Hint Resolve isoImpliesEpi.
 Theorem isoImpliesMono :
   forall C x y f, @isomorphism C x y f -> @monomorphism C x y f.
 Proof.
-  unfold isomorphism.
-  unfold monomorphism.
   clean.
-  assert (
-    compose C x0 (compose C f g) = compose C x0 (compose C f h)
-  ); magic.
-  repeat rewrite cAssoc in H2.
-  repeat rewrite H in H2.
+  rewrite opMonoEpi.
+  apply isoImpliesEpi.
+  rewrite <- opIsomorphism.
   magic.
 Qed.
 
 Hint Resolve isoImpliesMono.
 
-Theorem opIsomorphism :
-  forall C x y,
-  (exists f, @isomorphism C x y f) <->
-  (exists f, @isomorphism (oppositeCategory C) x y f).
+Theorem secImpliesMono :
+  forall C x y f, @section C x y f -> @monomorphism C x y f.
 Proof.
-  unfold isomorphism; split; clean; exists x1; eMagic.
+  unfold section.
+  unfold monomorphism.
+  clean.
+  assert (
+    compose C x0 (compose C f g) = compose C x0 (compose C f h)
+  ); magic.
+  repeat rewrite cAssoc in H1.
+  repeat rewrite H in H1.
+  magic.
 Qed.
 
-Hint Resolve opIsomorphism.
+Hint Resolve secImpliesMono.
+
+Theorem retImpliesEpi :
+  forall C x y f, @retraction C x y f -> @epimorphism C x y f.
+Proof.
+  clean.
+  rewrite opRetSec in H.
+  rewrite opEpiMono.
+  magic.
+Qed.
+
+Hint Resolve retImpliesEpi.
+
+Theorem monoRetEquivIso :
+  forall C x y f,
+  @monomorphism C x y f /\ @retraction C x y f <-> @isomorphism C x y f.
+Proof.
+  unfold monomorphism.
+  unfold retraction.
+  unfold isomorphism.
+  split; clean.
+  - exists x0.
+    split; magic.
+    specialize (H x (compose C x0 f) (id C)).
+    feed H.
+    rewrite cAssoc.
+    rewrite H0.
+    magic.
+  - split; eMagic.
+    clean.
+    assert (
+      compose C x0 (compose C f g) = compose C x0 (compose C f h)
+    ); magic.
+    repeat rewrite cAssoc in H2.
+    rewrite H in H2.
+    magic.
+Qed.
+
+Hint Resolve monoRetEquivIso.
+
+Theorem epiSecEquivIso :
+  forall C x y f,
+  @epimorphism C x y f /\ @section C x y f <-> @isomorphism C x y f.
+Proof.
+  clean.
+  rewrite opEpiMono.
+  rewrite opSecRet.
+  rewrite opIsomorphism.
+  magic.
+Qed.
+
+Hint Resolve epiSecEquivIso.
