@@ -26,9 +26,7 @@ Definition coproduct
     (z : object C)
     (qx : arrow C x z)
     (qy : arrow C y z),
-  arrowExistsUnique (
-    fun f => qx = compose C f ix /\ qy = compose C f iy
-  ).
+  universal (fun f => qx = compose C f ix /\ qy = compose C f iy).
 
 Theorem opProductCoproduct :
   forall C x y xy px py,
