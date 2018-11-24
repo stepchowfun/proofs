@@ -17,13 +17,8 @@ Set Universe Polymorphism.
 Definition isomorphic {C : category} (x y : object C) :=
   exists (f : arrow C x y), isomorphism f.
 
-Definition objectExists {C : category} (P : object C -> Prop) := exists x, P x.
-
-Definition objectUnique {C : category} (P : object C -> Prop) :=
+Definition uniqueUpToIsomorphism {C : category} (P : object C -> Prop) :=
   forall x y, P x -> P y -> isomorphic x y.
-
-Definition objectExistsUnique {C : category} (P : object C -> Prop) :=
-  objectExists P /\ objectUnique P.
 
 Definition initial {C} x :=
   forall y,
@@ -55,9 +50,9 @@ Qed.
 
 Hint Resolve opTerminalInitial.
 
-Theorem initialUnique : forall C, objectUnique (@initial C).
+Theorem initialUnique : forall C, uniqueUpToIsomorphism (@initial C).
 Proof.
-  unfold objectUnique.
+  unfold uniqueUpToIsomorphism.
   unfold initial.
   unfold isomorphic.
   unfold isomorphism.
@@ -72,9 +67,9 @@ Qed.
 
 Hint Resolve initialUnique.
 
-Theorem terminalUnique : forall C, objectUnique (@terminal C).
+Theorem terminalUnique : forall C, uniqueUpToIsomorphism (@terminal C).
 Proof.
-  unfold objectUnique.
+  unfold uniqueUpToIsomorphism.
   clean.
   rewrite opTerminalInitial in *.
   apply opIso.

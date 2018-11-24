@@ -35,7 +35,7 @@ Theorem cartesianProduct (x y : Set) :
 Proof.
   unfold product.
   clean.
-  unfold arrowExistsUnique.
+  unfold universal.
   split.
   - exists (fun w => (qx w, qy w)). magic.
   - unfold arrowUnique.

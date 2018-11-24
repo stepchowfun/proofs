@@ -19,7 +19,7 @@ Definition arrowExists {C : category} {x y} (P : arrow C x y -> Prop) :=
 Definition arrowUnique {C : category} {x y} (P : arrow C x y -> Prop) :=
   forall f g, P f -> P g -> f = g.
 
-Definition arrowExistsUnique {C : category} {x y} (P : arrow C x y -> Prop) :=
+Definition universal {C : category} {x y} (P : arrow C x y -> Prop) :=
   arrowExists P /\ arrowUnique P.
 
 Definition epimorphism {C x y} (f : arrow C x y) :=
