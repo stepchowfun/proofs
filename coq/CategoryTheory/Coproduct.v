@@ -29,28 +29,23 @@ Definition coproduct
     (qy : arrow C y z),
   universal (fun f => qx = compose C f ix /\ qy = compose C f iy).
 
-Theorem opCoproductProduct :
-  forall C x y xy px py,
-  @coproduct C x y xy px py <->
-  @product (oppositeCategory C) x y xy px py.
+Theorem opCoproductProduct C x y xy px py :
+  @coproduct C x y xy px py <-> @product (oppositeCategory C) x y xy px py.
 Proof.
   magic.
 Qed.
 
 Hint Resolve opCoproductProduct.
 
-Theorem opProductCoproduct :
-  forall C x y xy px py,
-  @product C x y xy px py <->
-  @coproduct (oppositeCategory C) x y xy px py.
+Theorem opProductCoproduct C x y xy px py :
+  @product C x y xy px py <-> @coproduct (oppositeCategory C) x y xy px py.
 Proof.
   magic.
 Qed.
 
 Hint Resolve opProductCoproduct.
 
-Theorem coproductUnique :
-  forall C (x y : object C),
+Theorem coproductUnique C (x y : object C) :
   uniqueUpToIsomorphism (fun x_y => exists ix iy, coproduct x y x_y ix iy).
 Proof.
   unfold uniqueUpToIsomorphism.

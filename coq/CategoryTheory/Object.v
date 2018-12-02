@@ -30,8 +30,7 @@ Definition terminal {C} x :=
   exists f,
   forall (g : arrow C y x), f = g.
 
-Theorem isomorphicRefl :
-  forall C x, @isomorphic C x x.
+Theorem isomorphicRefl C x : @isomorphic C x x.
 Proof.
   unfold isomorphic.
   unfold isomorphism.
@@ -41,11 +40,8 @@ Qed.
 
 Hint Resolve isomorphicRefl.
 
-Theorem isomorphicTrans :
-  forall C x y z,
-  @isomorphic C x y ->
-  @isomorphic C y z ->
-  @isomorphic C x z.
+Theorem isomorphicTrans C x y z :
+  @isomorphic C x y -> @isomorphic C y z -> @isomorphic C x z.
 Proof.
   unfold isomorphic.
   unfold isomorphism.
@@ -69,8 +65,7 @@ Qed.
   so could lead to nonterminating searches.
 *)
 
-Theorem isomorphicSymm :
-  forall C x y, @isomorphic C x y <-> @isomorphic C y x.
+Theorem isomorphicSymm C x y : @isomorphic C x y <-> @isomorphic C y x.
 Proof.
   unfold isomorphic.
   unfold isomorphism.
@@ -83,8 +78,8 @@ Qed.
   so could lead to nonterminating searches.
 *)
 
-Theorem opIsomorphic :
-  forall C x y, @isomorphic C x y <-> @isomorphic (oppositeCategory C) y x.
+Theorem opIsomorphic C x y :
+  @isomorphic C x y <-> @isomorphic (oppositeCategory C) y x.
 Proof.
   unfold isomorphic.
   split; clean; exists x0; [
@@ -94,18 +89,15 @@ Qed.
 
 Hint Resolve opIsomorphic.
 
-Theorem opInitialTerminal :
-  forall C x,
-  @initial C x <->
-  @terminal (oppositeCategory C) x.
+Theorem opInitialTerminal C x :
+  @initial C x <-> @terminal (oppositeCategory C) x.
 Proof.
   magic.
 Qed.
 
 Hint Resolve opInitialTerminal.
 
-Theorem opTerminalInitial :
-  forall C x,
+Theorem opTerminalInitial C x :
   @terminal C x <->
   @initial (oppositeCategory C) x.
 Proof.
@@ -114,7 +106,7 @@ Qed.
 
 Hint Resolve opTerminalInitial.
 
-Theorem initialUnique : forall C, uniqueUpToIsomorphism (@initial C).
+Theorem initialUnique C : uniqueUpToIsomorphism (@initial C).
 Proof.
   unfold uniqueUpToIsomorphism.
   unfold initial.
@@ -131,7 +123,7 @@ Qed.
 
 Hint Resolve initialUnique.
 
-Theorem terminalUnique : forall C, uniqueUpToIsomorphism (@terminal C).
+Theorem terminalUnique C : uniqueUpToIsomorphism (@terminal C).
 Proof.
   unfold uniqueUpToIsomorphism.
   clean.

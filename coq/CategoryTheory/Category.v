@@ -16,14 +16,13 @@ Set Universe Polymorphism.
 Record category := newCategory {
   object : Type; (* Metavariables for objects: w, x, y, z *)
   arrow : object -> object -> Type; (* Metavariables for arrows: f, g, h *)
-  compose : forall {x y z}, arrow y z -> arrow x y -> arrow x z;
-  id : forall {x}, arrow x x;
+  compose {x y z} : arrow y z -> arrow x y -> arrow x z;
+  id {x}: arrow x x;
 
-  cAssoc :
-    forall w x y z (f : arrow w x) (g : arrow x y) (h : arrow y z),
+  cAssoc w x y z (f : arrow w x) (g : arrow x y) (h : arrow y z) :
     compose h (compose g f) = compose (compose h g) f;
-  cIdentLeft : forall x y (f : arrow x y), compose id f = f;
-  cIdentRight : forall x y (f : arrow x y), compose f id = f;
+  cIdentLeft x y (f : arrow x y) : compose id f = f;
+  cIdentRight x y (f : arrow x y) : compose f id = f;
 }.
 
 Hint Resolve cAssoc.
@@ -32,28 +31,43 @@ Hint Rewrite cIdentLeft.
 Hint Resolve cIdentRight.
 Hint Rewrite cIdentRight.
 
-Definition oppositeCategory (C : category) : category.
+Let opCAssoc
+  {C : category}
+  (w x y z : object C)
+  (f : arrow C x w)
+  (g : arrow C y x)
+  (h : arrow C z y)
+: compose C (compose C f g) h = compose C f (compose C g h).
 Proof.
-  refine (newCategory
-    (object C)
-    (fun x y => arrow C y x)
-    (fun {x y z} f g => compose C g f)
-    (fun {x} => id C)
-    _ _ _
-  ); magic.
-Defined.
+  magic.
+Qed.
 
-Section ProofIrrelevance.
-  Hint Resolve proof_irrelevance.
+Let opCIdentLeft {C : category} (x y : object C) (f : arrow C y x) :
+  compose C f (id C) = f.
+Proof.
+  magic.
+Qed.
 
-  Theorem oppositeInvolution :
-    forall C, oppositeCategory (oppositeCategory C) = C.
-  Proof.
-    unfold oppositeCategory.
-    clean.
-    destruct C.
-    magic.
-  Qed.
-End ProofIrrelevance.
+Let opCIdentRight {C : category} (x y : object C) (f : arrow C y x) :
+  compose C (id C) f = f.
+Proof.
+  magic.
+Qed.
+
+Definition oppositeCategory (C : category) : category := newCategory
+  (object C)
+  (fun x y => arrow C y x)
+  (fun {x y z} f g => compose C g f)
+  (fun {x} => id C)
+  opCAssoc
+  opCIdentLeft
+  opCIdentRight.
+
+Theorem oppositeInvolution C : oppositeCategory (oppositeCategory C) = C.
+Proof.
+  unfold oppositeCategory.
+  destruct C.
+  f_equal; apply proof_irrelevance.
+Qed.
 
 Hint Resolve oppositeInvolution.

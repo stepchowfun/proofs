@@ -16,17 +16,23 @@ Open Scope type. (* Parse `*` as `prod` rather than `mul`. *)
 
 (* Sets and functions form a category. *)
 
-Definition setCategory : category.
+Let setCAssoc (w x y z : Set) (f : w -> x) (g : x -> y) (h : y -> z):
+  (fun e : w => h (g (f e))) = (fun e : w => h (g (f e))).
 Proof.
-  refine (
-    newCategory
-    Set
-    (fun x y => x -> y)
-    (fun x y z f g e => f (g e))
-    (fun x e => e)
-    _ _ _
-  ); magic.
-Defined.
+  magic.
+Qed.
+
+Let setCIdent (x y : Set) (f : x -> y) : (fun e : x => f e) = f.
+Proof.
+  magic.
+Qed.
+
+Definition setCategory : category := newCategory
+  Set
+  (fun x y => x -> y)
+  (fun x y z f g e => f (g e))
+  (fun x e => e)
+  setCAssoc setCIdent setCIdent.
 
 (* Cartesian products are categorical products in this category. *)
 
