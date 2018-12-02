@@ -40,8 +40,7 @@ Definition retraction {C x y} (f : arrow C x y) :=
 Definition section {C x y} (f : arrow C x y) :=
   exists g, compose C g f = id C.
 
-Theorem opIsomorphism :
-  forall C x y f,
+Theorem opIsomorphism C x y f :
   @isomorphism C x y f <-> @isomorphism (oppositeCategory C) y x f.
 Proof.
   unfold isomorphism.
@@ -51,8 +50,7 @@ Qed.
 
 Hint Resolve opIsomorphism.
 
-Theorem opMonoEpi :
-  forall C x y f,
+Theorem opMonoEpi C x y f :
   @monomorphism C x y f <-> @epimorphism (oppositeCategory C) y x f.
 Proof.
   magic.
@@ -60,8 +58,7 @@ Qed.
 
 Hint Resolve opMonoEpi.
 
-Theorem opEpiMono :
-  forall C x y f,
+Theorem opEpiMono C x y f :
   @epimorphism C x y f <-> @monomorphism (oppositeCategory C) y x f.
 Proof.
   magic.
@@ -69,8 +66,7 @@ Qed.
 
 Hint Resolve opEpiMono.
 
-Theorem opRetSec :
-  forall C x y f,
+Theorem opRetSec C x y f :
   @retraction C x y f <-> @section (oppositeCategory C) y x f.
 Proof.
   magic.
@@ -78,8 +74,7 @@ Qed.
 
 Hint Resolve opRetSec.
 
-Theorem opSecRet :
-  forall C x y f,
+Theorem opSecRet C x y f :
   @section C x y f <-> @retraction (oppositeCategory C) y x f.
 Proof.
   magic.
@@ -87,8 +82,8 @@ Qed.
 
 Hint Resolve opSecRet.
 
-Theorem rightIdUnique :
-  forall C x, arrowUnique (
+Theorem rightIdUnique C x:
+  arrowUnique (
     fun (f : arrow C x x) => forall y (g : arrow C x y), compose C g f = g
   ).
 Proof.
@@ -101,8 +96,8 @@ Qed.
 
 Hint Resolve rightIdUnique.
 
-Theorem leftIdUnique :
-  forall C x, arrowUnique (
+Theorem leftIdUnique C x:
+  arrowUnique (
     fun (f : arrow C x x) => forall y (g : arrow C y x), compose C f g = g
   ).
 Proof.
@@ -115,7 +110,7 @@ Qed.
 
 Hint Resolve leftIdUnique.
 
-Theorem inverseUnique {C x y} (f : arrow C x y) : arrowUnique (inverse f).
+Theorem inverseUnique C x y (f : arrow C x y) : arrowUnique (inverse f).
 Proof.
   unfold arrowUnique.
   unfold inverse.
@@ -128,7 +123,7 @@ Qed.
 
 Hint Resolve inverseUnique.
 
-Theorem inverseInvolution {C x y} (f h : arrow C x y) (g : arrow C y x) :
+Theorem inverseInvolution C x y (f h : arrow C x y) (g : arrow C y x) :
   inverse f g -> inverse g h -> f = h.
 Proof.
   unfold inverse.
@@ -142,8 +137,7 @@ Qed.
 
 Hint Resolve inverseInvolution.
 
-Theorem isoImpliesEpi :
-  forall C x y f, @isomorphism C x y f -> @epimorphism C x y f.
+Theorem isoImpliesEpi C x y f : @isomorphism C x y f -> @epimorphism C x y f.
 Proof.
   unfold isomorphism.
   unfold epimorphism.
@@ -159,8 +153,7 @@ Qed.
 
 Hint Resolve isoImpliesEpi.
 
-Theorem isoImpliesMono :
-  forall C x y f, @isomorphism C x y f -> @monomorphism C x y f.
+Theorem isoImpliesMono C x y f : @isomorphism C x y f -> @monomorphism C x y f.
 Proof.
   clean.
   rewrite opMonoEpi.
@@ -171,8 +164,7 @@ Qed.
 
 Hint Resolve isoImpliesMono.
 
-Theorem secImpliesMono :
-  forall C x y f, @section C x y f -> @monomorphism C x y f.
+Theorem secImpliesMono C x y f : @section C x y f -> @monomorphism C x y f.
 Proof.
   unfold section.
   unfold monomorphism.
@@ -187,8 +179,7 @@ Qed.
 
 Hint Resolve secImpliesMono.
 
-Theorem retImpliesEpi :
-  forall C x y f, @retraction C x y f -> @epimorphism C x y f.
+Theorem retImpliesEpi C x y f : @retraction C x y f -> @epimorphism C x y f.
 Proof.
   clean.
   rewrite opRetSec in H.
@@ -198,8 +189,7 @@ Qed.
 
 Hint Resolve retImpliesEpi.
 
-Theorem monoRetEquivIso :
-  forall C x y f,
+Theorem monoRetEquivIso C x y f :
   @monomorphism C x y f /\ @retraction C x y f <-> @isomorphism C x y f.
 Proof.
   unfold monomorphism.
@@ -226,8 +216,7 @@ Qed.
 
 Hint Resolve monoRetEquivIso.
 
-Theorem epiSecEquivIso :
-  forall C x y f,
+Theorem epiSecEquivIso C x y f :
   @epimorphism C x y f /\ @section C x y f <-> @isomorphism C x y f.
 Proof.
   clean.

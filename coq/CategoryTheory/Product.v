@@ -28,8 +28,7 @@ Definition product
     (qy : arrow C z y),
   universal (fun f => qx = compose C px f /\ qy = compose C py f).
 
-Theorem productUnique :
-  forall C (x y : object C),
+Theorem productUnique C (x y : object C) :
   uniqueUpToIsomorphism (fun xy => exists px py, product x y xy px py).
 Proof.
   clean.
