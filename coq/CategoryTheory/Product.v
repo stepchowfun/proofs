@@ -47,3 +47,42 @@ Proof.
 Qed.
 
 Hint Resolve productUnique.
+
+Theorem productCommutator
+  {C : category}
+  (x y xy : object C)
+  (px : arrow C xy x)
+  (py : arrow C xy y)
+: product x y xy px py -> product y x xy py px.
+Proof.
+  unfold product.
+  unfold universal.
+  unfold arrowExists.
+  unfold arrowUnique.
+  clean.
+  specialize (H z qy qx).
+  eMagic.
+Qed.
+
+(*
+  We deliberately avoid adding a resolve hint for productCommutator because
+  doing so could lead to nonterminating searches.
+*)
+
+Theorem productCommutative
+  {C : category}
+  (x y xy yx : object C)
+  (px1 : arrow C xy x)
+  (py1 : arrow C xy y)
+  (px2 : arrow C yx x)
+  (py2 : arrow C yx y)
+: product x y xy px1 py1 -> product y x yx py2 px2 -> isomorphic xy yx.
+Proof.
+  clean.
+  apply productCommutator in H0.
+  fact (productUnique C x y).
+  unfold uniqueUpToIsomorphism in H1.
+  apply H1; eMagic.
+Qed.
+
+Hint Resolve productCommutative.
