@@ -11,8 +11,6 @@ Require Import Main.Tactics.
 
 Set Universe Polymorphism.
 
-(* Arrows *)
-
 Definition arrowExists {C : category} {x y} (P : arrow C x y -> Prop) :=
   exists f, P f.
 
