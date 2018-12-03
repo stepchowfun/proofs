@@ -11,8 +11,6 @@ Require Import Main.Tactics.
 
 Set Universe Polymorphism.
 
-(* Arrows *)
-
 Definition arrowExists {C : category} {x y} (P : arrow C x y -> Prop) :=
   exists f, P f.
 
@@ -130,9 +128,8 @@ Proof.
   clean.
   assert (f = compose C f (compose C g h)).
   - rewrite H0. magic.
-  - assert (h = compose C f (compose C g h)).
-    + rewrite cAssoc. rewrite H. magic.
-    + magic.
+  - assert (h = compose C f (compose C g h)); magic.
+    rewrite cAssoc. rewrite H. magic.
 Qed.
 
 Hint Resolve inverseInvolution.

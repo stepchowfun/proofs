@@ -58,3 +58,19 @@ Proof.
 Qed.
 
 Hint Resolve coproductUnique.
+
+Theorem coproductCommutative
+  {C : category}
+  (x y x_y y_x : object C)
+  (ix1 : arrow C x x_y)
+  (iy1 : arrow C y x_y)
+  (ix2 : arrow C x y_x)
+  (iy2 : arrow C y y_x)
+: coproduct x y x_y ix1 iy1 -> coproduct y x y_x iy2 ix2 -> isomorphic y_x x_y.
+Proof.
+  repeat rewrite opCoproductProduct.
+  rewrite opIsomorphic.
+  apply productCommutative.
+Qed.
+
+Hint Resolve coproductCommutative.
