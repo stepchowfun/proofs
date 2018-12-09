@@ -20,9 +20,9 @@ Inductive slist : nat -> Set :=
 
 (* Let's construct some slists. *)
 
-Check snil.
-Check scons "foo" snil.
-Check scons "hello" (scons "world" snil).
+Check snil. (* slist 0 *)
+Check scons "foo" snil. (* slist 1 *)
+Check scons "hello" (scons "world" snil). (* slist 2 *)
 
 (*
   Here's a function which produces an slist of a given length containing empty

@@ -35,7 +35,7 @@ Proof.
   - apply trivial.
 Qed.
 
-Print true_and_true_2.
+Print true_and_true_2. (* conj True True trivial trivial *)
 
 (* The same proof, but written using the `;` tactical *)
 
@@ -44,6 +44,8 @@ Proof.
   (* Our first example of a tactic: apply. *)
   apply conj; apply trivial.
 Qed.
+
+Print true_and_true_3. (* conj True True trivial trivial *)
 
 (* Let's see what happens when we try to prove True AND False. *)
 
@@ -90,7 +92,7 @@ Proof.
   exact H.
 Qed.
 
-Print not_false.
+Print not_false. (* fun H : False => H *)
 
 (* Propositional equality *)
 
@@ -125,7 +127,18 @@ Definition leibniz (A : Type)
 *)
 
 Check leibniz.
+
+(*
+  forall (A : Type) (x : A) (P : A -> Prop),
+  P x -> forall y : A, eq A x y -> P y
+*)
+
 Check eq_ind.
+
+(*
+  forall (A : Type) (x : A) (P : A -> Prop),
+  P x -> forall y : A, eq A x y -> P y
+*)
 
 (*
   Universal quantification (forall) is built into the language. Existential
