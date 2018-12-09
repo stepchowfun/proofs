@@ -14,8 +14,8 @@ Inductive bool : Set :=
 
 (* The `Check` command tells us the type of a given term. *)
 
-Check true.
-Check false.
+Check true. (* bool *)
+Check false. (* bool *)
 
 (* Here's a simple function on Bools. *)
 
@@ -27,8 +27,8 @@ Definition negb b :=
 
 (* Let's compute some examples. *)
 
-Compute negb true.
-Compute negb false.
+Compute negb true. (* false *)
+Compute negb false. (* true *)
 
 (*
   Here's a more interesting inductive data type: a natural number is either
@@ -41,15 +41,15 @@ Inductive nat : Set :=
 
 (* Here are some natural numbers: *)
 
-Check O.
-Check S O.
-Check S (S O).
+Check O. (* nat *)
+Check S O. (* nat *)
+Check S (S O). (* nat *)
 
 (* Numeric literals can also be used to construct natural numbers. *)
 
-Check 0.
-Check 1.
-Check 2.
+Check 0. (* Datatypes.nat *)
+Check 1. (* Datatypes.nat *)
+Check 2. (* Datatypes.nat *)
 
 (*
   Recursive definitions use the `Fixpoint` keyword instead of `Definition`.
@@ -63,4 +63,4 @@ Fixpoint add n m :=
 
 (* Let's compute 1 + 1. *)
 
-Compute add (S O) (S O).
+Compute add (S O) (S O). (* S (S O) *)
