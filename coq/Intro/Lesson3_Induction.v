@@ -87,7 +87,7 @@ Print n_plus_zero.
 
 (* Let's prove addition is associative. *)
 
-Theorem plus_assoc :
+Theorem add_assoc :
   forall n m p,
   n + (m + p) = (n + m) + p.
 Proof.
