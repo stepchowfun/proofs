@@ -20,7 +20,7 @@ Section Kleene.
     antisymmetric.
   *)
 
-  Variable T : Set.
+  Variable T : Type.
   Variable leq : T -> T -> Prop.
 
   Hypothesis refl : forall x, leq x x.

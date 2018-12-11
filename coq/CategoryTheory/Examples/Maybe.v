@@ -16,11 +16,11 @@ Require Import Main.Tactics.
 
 (* A maybe is a wrapper for value that might be missing. *)
 
-Inductive maybe {x : Set} : Set :=
+Inductive maybe {x} : Type :=
 | nothing : @maybe x
 | just : x -> @maybe x.
 
-(* Here is a proof that maybe is a functor. *)
+(* Here's a proof that maybe is a functor. *)
 
 Let maybeFIdent (x : object setCategory) :
   (

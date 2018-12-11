@@ -8,7 +8,7 @@
 
 Require Import Main.STLC.Name.
 
-Inductive term : Set :=
+Inductive term :=
 | eTrue : term
 | eFalse : term
 | eIf : term -> term -> term -> term
@@ -16,6 +16,6 @@ Inductive term : Set :=
 | eAbs : name -> type -> term -> term
 | eApp : term -> term -> term
 
-with type : Set :=
+with type :=
 | tBool : type
 | tArrow : type -> type -> type.

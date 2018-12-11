@@ -8,7 +8,7 @@
 
 (* Let's define a data type for Booleans. *)
 
-Inductive bool : Set :=
+Inductive bool :=
 | true : bool
 | false : bool.
 
@@ -35,7 +35,7 @@ Compute negb false. (* true *)
   zero or the successor of another natural number.
 *)
 
-Inductive nat : Set :=
+Inductive nat :=
 | O : nat
 | S : nat -> nat.
 

@@ -10,7 +10,7 @@ Require Import String.
 
 (* A length-indexed list of strings *)
 
-Inductive slist : nat -> Set :=
+Inductive slist : nat -> Type :=
 | snil : slist O
 | scons :
     forall {n}, (* Length of the tail, implicit due to the curly braces *)

@@ -63,7 +63,7 @@ Definition idUniverse (t : universe) (x : t) := x.
 (*
   The following is not allowed:
 
-  Inductive bad : Set :=
+  Inductive bad :=
   | makeBad : (bad -> bool) -> bad.
 
   Suppose bad were allowed. Consider the following function:
