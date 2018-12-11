@@ -8,7 +8,7 @@
 
 Require Import Main.SystemF.Name.
 
-Inductive term : Set :=
+Inductive term :=
 | eFreeVar : name -> term
 | eBoundVar : nat -> term
 | eAbs : type -> term -> term
@@ -16,7 +16,7 @@ Inductive term : Set :=
 | eTAbs : term -> term
 | eTApp : term -> type -> term
 
-with type : Set :=
+with type :=
 | tFreeVar : name -> type
 | tBoundVar : nat -> type
 | tArrow : type -> type -> type

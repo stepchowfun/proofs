@@ -10,7 +10,7 @@ Require Import Main.Tactics.
 
 Module Type NameSig.
 
-  Parameter name : Set.
+  Parameter name : Type.
 
   Axiom nameEq : forall x1 x2 : name, { x1 = x2 } + { x1 <> x2 }.
 

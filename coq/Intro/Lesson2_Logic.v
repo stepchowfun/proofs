@@ -96,7 +96,7 @@ Print not_false. (* fun H : False => H *)
 
 (* Propositional equality *)
 
-Inductive eq (A : Type) (x : A) : A -> Prop := (* Notation: x = x *)
+Inductive eq A (x : A) : A -> Prop := (* Notation: x = x *)
 | eq_refl : eq A x x. (* A dependent type! *)
 
 (* A simple proof that 0 = 0. *)
@@ -110,7 +110,7 @@ Qed.
   equaltiy".
 *)
 
-Definition leibniz (A : Type)
+Definition leibniz A
                    (x : A)
                    (P : A -> Prop)
                    (f : P x)
@@ -145,7 +145,7 @@ Check eq_ind.
   quantification, however, is definable as follows:
 *)
 
-Inductive ex (A : Type)
+Inductive ex A
              (P : A -> Prop) :
              Prop := (* Notation: exists x, P x *)
   ex_intro : forall x : A, P x -> ex A P.
