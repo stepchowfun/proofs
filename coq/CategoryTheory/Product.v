@@ -139,9 +139,7 @@ Proof.
         compose C xy_z_to_xy (compose C x_yz_to_xy_z xy_z_to_x_yz)
       ) = compose C xy_to_y xy_z_to_xy
     ).
-    + replace (compose C xy_z_to_xy (compose C x_yz_to_xy_z xy_z_to_x_yz))
-        with (compose C (compose C xy_z_to_xy x_yz_to_xy_z) xy_z_to_x_yz);
-          magic.
+    + rewrite (cAssoc C xy_z x_yz xy_z xy).
       rewrite <- H8.
       rewrite cAssoc.
       rewrite <- H5.
@@ -152,9 +150,7 @@ Proof.
           compose C xy_z_to_xy (compose C x_yz_to_xy_z xy_z_to_x_yz)
         ) = compose C xy_to_x xy_z_to_xy
       ).
-      * replace (compose C xy_z_to_xy (compose C x_yz_to_xy_z xy_z_to_x_yz))
-          with (compose C (compose C xy_z_to_xy x_yz_to_xy_z) xy_z_to_x_yz);
-            magic.
+      * rewrite (cAssoc C xy_z x_yz xy_z xy).
         rewrite <- H8.
         rewrite cAssoc.
         magic.
@@ -198,9 +194,7 @@ Proof.
           compose C x_yz_to_yz (compose C xy_z_to_x_yz x_yz_to_xy_z)
         ) = compose C yz_to_y x_yz_to_yz
       ).
-      * replace (compose C x_yz_to_yz (compose C xy_z_to_x_yz x_yz_to_xy_z))
-          with (compose C (compose C x_yz_to_yz xy_z_to_x_yz) x_yz_to_xy_z);
-            magic.
+      * rewrite (cAssoc C x_yz xy_z x_yz yz).
         rewrite <- H9.
         rewrite cAssoc.
         rewrite <- H4.
@@ -212,9 +206,7 @@ Proof.
             compose C x_yz_to_yz (compose C xy_z_to_x_yz x_yz_to_xy_z)
           ) = compose C yz_to_z x_yz_to_yz
         ).
-        - replace (compose C x_yz_to_yz (compose C xy_z_to_x_yz x_yz_to_xy_z))
-            with (compose C (compose C x_yz_to_yz xy_z_to_x_yz) x_yz_to_xy_z);
-              magic.
+        - rewrite (cAssoc C x_yz xy_z x_yz yz).
           rewrite <- H9.
           rewrite cAssoc.
           magic.
