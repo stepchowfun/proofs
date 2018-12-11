@@ -13,7 +13,7 @@ Require Import Nat.
 Theorem zero_plus_n : forall n, 0 + n = n.
 Proof.
   intro.
-  simpl.
+  cbn.
   reflexivity.
 Qed.
 
@@ -22,7 +22,7 @@ Qed.
 Theorem n_plus_zero : forall n, n + 0 = n.
 Proof.
   intro.
-  simpl. (* Uh oh, nothing happened! *)
+  cbn. (* Uh oh, nothing happened! *)
 Abort.
 
 (* Recall the definition of addition. *)
@@ -65,9 +65,9 @@ Proof.
   induction n.
 
   (* Two subgoals are generated: *)
-  - simpl.
+  - cbn.
     reflexivity.
-  - simpl.
+  - cbn.
     rewrite IHn.
     reflexivity.
 Qed.
@@ -93,9 +93,9 @@ Theorem plus_assoc :
 Proof.
   intros.
   induction n.
-  - simpl.
+  - cbn.
     reflexivity.
-  - simpl.
+  - cbn.
     rewrite IHn.
     reflexivity.
 Qed.
