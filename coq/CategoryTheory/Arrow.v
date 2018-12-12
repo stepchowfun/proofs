@@ -11,32 +11,37 @@ Require Import Main.Tactics.
 
 Set Universe Polymorphism.
 
-Definition arrowExists {C : category} {x y} (P : arrow C x y -> Prop) :=
+Definition endomorphism {C} x := @arrow C x x.
+
+Definition arrowExists {C} {x y : object C} (P : arrow x y -> Prop) :=
   exists f, P f.
 
-Definition arrowUnique {C : category} {x y} (P : arrow C x y -> Prop) :=
+Definition arrowUnique {C} {x y : object C} (P : arrow x y -> Prop) :=
   forall f g, P f -> P g -> f = g.
 
-Definition universal {C : category} {x y} (P : arrow C x y -> Prop) :=
+Definition universal {C} {x y : object C} (P : arrow x y -> Prop) :=
   arrowExists P /\ arrowUnique P.
 
-Definition inverse {C x y} (f : arrow C x y) (g : arrow C y x) :=
-  compose C f g = id C /\ compose C g f = id C.
+Definition inverse {C} {x y : object C} (f : arrow x y) (g : arrow y x) :=
+  compose f g = id /\ compose g f = id.
 
-Definition epimorphism {C x y} (f : arrow C x y) :=
-  forall z (g h : arrow C y z), compose C g f = compose C h f -> g = h.
+Definition epimorphism {C} {x y : object C} (f : arrow x y) :=
+  forall z (g h : arrow y z), compose g f = compose h f -> g = h.
 
-Definition monomorphism {C x y} (f : arrow C x y) :=
-  forall z (g h : arrow C z x), compose C f g = compose C f h -> g = h.
+Definition monomorphism {C} {x y : object C} (f : arrow x y) :=
+  forall z (g h : arrow z x), compose f g = compose f h -> g = h.
 
-Definition isomorphism {C x y} (f : arrow C x y) :=
+Definition isomorphism {C} {x y : object C} (f : arrow x y) :=
   exists g, inverse f g.
 
-Definition retraction {C x y} (f : arrow C x y) :=
-  exists g, compose C f g = id C.
+Definition automorphism {C} {x : object C} (f : endomorphism x) :=
+  isomorphism f.
 
-Definition section {C x y} (f : arrow C x y) :=
-  exists g, compose C g f = id C.
+Definition retraction {C} {x y : object C} (f : arrow x y) :=
+  exists g, compose f g = id.
+
+Definition section {C} {x y : object C} (f : arrow x y) :=
+  exists g, compose g f = id.
 
 Theorem opIsomorphism C x y f :
   @isomorphism C x y f <-> @isomorphism (oppositeCategory C) y x f.
@@ -80,40 +85,41 @@ Qed.
 
 Hint Resolve opSecRet.
 
-Theorem rightIdUnique C x:
+Theorem rightIdUnique C (x : object C):
   arrowUnique (
-    fun (f : arrow C x x) => forall y (g : arrow C x y), compose C g f = g
+    fun (f : arrow x x) => forall y (g : arrow x y), compose g f = g
   ).
 Proof.
   unfold arrowUnique.
   clean.
-  specialize (H x (id C)).
-  specialize (H0 x (id C)).
+  specialize (H x id).
+  specialize (H0 x id).
   magic.
 Qed.
 
 Hint Resolve rightIdUnique.
 
-Theorem leftIdUnique C x:
+Theorem leftIdUnique C (x : object C):
   arrowUnique (
-    fun (f : arrow C x x) => forall y (g : arrow C y x), compose C f g = g
+    fun (f : arrow x x) => forall y (g : arrow y x), compose f g = g
   ).
 Proof.
   unfold arrowUnique.
   clean.
-  specialize (H x (id C)).
-  specialize (H0 x (id C)).
+  specialize (H x id).
+  specialize (H0 x id).
   magic.
 Qed.
 
 Hint Resolve leftIdUnique.
 
-Theorem inverseUnique C x y (f : arrow C x y) : arrowUnique (inverse f).
+Theorem inverseUnique C (x y : object C) (f : arrow x y) :
+  arrowUnique (inverse f).
 Proof.
   unfold arrowUnique.
   unfold inverse.
   clean.
-  assert (compose C f0 (compose C f g) = compose C (compose C f0 f) g); magic.
+  assert (compose f0 (compose f g) = compose (compose f0 f) g); magic.
   rewrite H0 in H3.
   rewrite H2 in H3.
   magic.
@@ -121,14 +127,14 @@ Qed.
 
 Hint Resolve inverseUnique.
 
-Theorem inverseInvolution C x y (f h : arrow C x y) (g : arrow C y x) :
+Theorem inverseInvolution C (x y : object C) (f h : arrow x y) g :
   inverse f g -> inverse g h -> f = h.
 Proof.
   unfold inverse.
   clean.
-  assert (f = compose C f (compose C g h)).
+  assert (f = compose f (compose g h)).
   - rewrite H0. magic.
-  - assert (h = compose C f (compose C g h)); magic.
+  - assert (h = compose f (compose g h)); magic.
     rewrite cAssoc. rewrite H. magic.
 Qed.
 
@@ -141,7 +147,7 @@ Proof.
   unfold inverse.
   clean.
   assert (
-    compose C (compose C g f) x0 = compose C (compose C h f) x0
+    compose (compose g f) x0 = compose (compose h f) x0
   ); magic.
   repeat rewrite <- cAssoc in H2.
   repeat rewrite H in H2.
@@ -167,7 +173,7 @@ Proof.
   unfold monomorphism.
   clean.
   assert (
-    compose C x0 (compose C f g) = compose C x0 (compose C f h)
+    compose x0 (compose f g) = compose x0 (compose f h)
   ); magic.
   repeat rewrite cAssoc in H1.
   repeat rewrite H in H1.
@@ -196,7 +202,7 @@ Proof.
   split; clean.
   - exists x0.
     split; magic.
-    specialize (H x (compose C x0 f) (id C)).
+    specialize (H x (compose x0 f) id).
     feed H.
     rewrite cAssoc.
     rewrite H0.
@@ -204,7 +210,7 @@ Proof.
   - split; eMagic.
     clean.
     assert (
-      compose C x0 (compose C f g) = compose C x0 (compose C f h)
+      compose x0 (compose f g) = compose x0 (compose f h)
     ); magic.
     repeat rewrite cAssoc in H2.
     rewrite H0 in H2.

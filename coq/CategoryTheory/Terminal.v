@@ -13,10 +13,8 @@ Require Import Main.Tactics.
 
 Set Universe Polymorphism.
 
-Definition terminal {C} x :=
-  forall y,
-  exists f,
-  forall (g : arrow C y x), f = g.
+Definition terminal {C} (x : object C) :=
+  forall y, exists f, forall (g : arrow y x), f = g.
 
 Theorem opInitialTerminal C x :
   @initial C x <-> @terminal (oppositeCategory C) x.
@@ -27,8 +25,7 @@ Qed.
 Hint Resolve opInitialTerminal.
 
 Theorem opTerminalInitial C x :
-  @terminal C x <->
-  @initial (oppositeCategory C) x.
+  @terminal C x <-> @initial (oppositeCategory C) x.
 Proof.
   magic.
 Qed.

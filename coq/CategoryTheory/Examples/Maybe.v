@@ -29,7 +29,7 @@ Let maybeFIdent (x : object setCategory) :
       | nothing => nothing
       | just e0 => just (@id setCategory x e0)
       end
-  ) = id setCategory.
+  ) = @id setCategory maybe.
 Proof.
   clean.
   apply functional_extensionality.
@@ -38,9 +38,9 @@ Qed.
 
 Let maybeFComp
   (x y z : object setCategory)
-  (f : arrow setCategory x y)
-  (g : arrow setCategory y z)
-: compose setCategory
+  (f : arrow x y)
+  (g : arrow y z)
+: @compose setCategory _ _ _
     (
       fun e : maybe =>
         match e with
@@ -59,7 +59,7 @@ Let maybeFComp
     fun e : maybe =>
       match e with
       | nothing => nothing
-      | just e0 => just (compose setCategory g f e0)
+      | just e0 => just (compose g f e0)
       end
   ).
 Proof.
@@ -68,7 +68,7 @@ Proof.
   destruct x0; magic.
 Qed.
 
-Definition maybeFunctor : @functor setCategory setCategory := newFunctor
+Definition maybeFunctor : functor setCategory setCategory := newFunctor
   setCategory
   setCategory
   (@maybe)
@@ -83,28 +83,25 @@ Definition maybeFunctor : @functor setCategory setCategory := newFunctor
 
 (* This is the "return" natural transformation for maybe. *)
 
-Let maybeEtaNaturality (x y : object setCategory) (f : arrow setCategory x y) :
-  compose setCategory just (fMap idFunctor f) =
-  compose setCategory (fMap maybeFunctor f) just.
+Let maybeEtaNaturality (x y : object setCategory) (f : arrow x y) :
+  @compose setCategory _ _ _ just (fMap idFunctor f) =
+  @compose setCategory _ _ _ (fMap maybeFunctor f) just.
 Proof.
   magic.
 Qed.
 
-Definition maybeEta :
-  @naturalTransformation setCategory setCategory idFunctor maybeFunctor
-:= newNaturalTransformation
-  setCategory
-  setCategory
-  idFunctor
-  maybeFunctor
-  (@just)
-  maybeEtaNaturality.
+Definition maybeEta : naturalTransformation idFunctor maybeFunctor :=
+  newNaturalTransformation
+    idFunctor
+    maybeFunctor
+    (@just)
+    maybeEtaNaturality.
 
 (* This is the "join" natural transformation for maybe. *)
 
-Let maybeMuNaturality (x y : object setCategory) (f : arrow setCategory x y) :
-  compose
-    setCategory
+Let maybeMuNaturality (x y : object setCategory) (f : arrow x y) :
+  @compose
+    setCategory _ _ _
     (
       fun e1 : oMap (compFunctor maybeFunctor maybeFunctor) y =>
         match e1 with
@@ -114,7 +111,6 @@ Let maybeMuNaturality (x y : object setCategory) (f : arrow setCategory x y) :
     )
     (fMap (compFunctor maybeFunctor maybeFunctor) f) =
   compose
-    setCategory
     (fMap maybeFunctor f)
     (
       fun e1 : oMap (compFunctor maybeFunctor maybeFunctor) x =>
@@ -129,14 +125,9 @@ Proof.
   destruct x0; magic.
 Qed.
 
-Definition maybeMu : @naturalTransformation
-  setCategory
-  setCategory
-  (compFunctor maybeFunctor maybeFunctor)
-  maybeFunctor
+Definition maybeMu :
+  naturalTransformation (compFunctor maybeFunctor maybeFunctor) maybeFunctor
 := newNaturalTransformation
-  setCategory
-  setCategory
   (compFunctor maybeFunctor maybeFunctor)
   maybeFunctor
   (

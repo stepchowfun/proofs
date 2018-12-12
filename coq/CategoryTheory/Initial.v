@@ -13,10 +13,8 @@ Require Import Main.Tactics.
 
 Set Universe Polymorphism.
 
-Definition initial {C} x :=
-  forall y,
-  exists f,
-  forall (g : arrow C x y), f = g.
+Definition initial {C} (x : object C) :=
+  forall y, exists f, forall (g : arrow x y), f = g.
 
 Theorem initialUnique C : uniqueUpToIsomorphism (@initial C).
 Proof.

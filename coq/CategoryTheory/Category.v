@@ -19,46 +19,53 @@ Record category := newCategory {
   compose {x y z} : arrow y z -> arrow x y -> arrow x z;
   id {x}: arrow x x;
 
-  cAssoc w x y z (f : arrow w x) (g : arrow x y) (h : arrow y z) :
+  cAssoc {w x y z} (f : arrow w x) (g : arrow x y) (h : arrow y z) :
     compose h (compose g f) = compose (compose h g) f;
-  cIdentLeft x y (f : arrow x y) : compose id f = f;
-  cIdentRight x y (f : arrow x y) : compose f id = f;
+  cIdentLeft {x y} (f : arrow x y) : compose id f = f;
+  cIdentRight {x y} (f : arrow x y) : compose f id = f;
 }.
 
-Hint Resolve cAssoc.
-Hint Resolve cIdentLeft.
-Hint Rewrite cIdentLeft.
-Hint Resolve cIdentRight.
-Hint Rewrite cIdentRight.
+Arguments arrow {_}.
+Arguments compose {_} {_} {_} {_}.
+Arguments id {_} {_}.
+Arguments cAssoc {_} {_} {_} {_} {_}.
+Arguments cIdentLeft {_} {_} {_}.
+Arguments cIdentRight {_} {_} {_}.
+
+Hint Resolve @cAssoc.
+Hint Resolve @cIdentLeft.
+Hint Rewrite @cIdentLeft.
+Hint Resolve @cIdentRight.
+Hint Rewrite @cIdentRight.
 
 Let opCAssoc
-  {C : category}
+  {C}
   (w x y z : object C)
-  (f : arrow C x w)
-  (g : arrow C y x)
-  (h : arrow C z y)
-: compose C (compose C f g) h = compose C f (compose C g h).
+  (f : arrow x w)
+  (g : arrow y x)
+  (h : arrow z y)
+: compose (compose f g) h = compose f (compose g h).
 Proof.
   magic.
 Qed.
 
-Let opCIdentLeft {C : category} (x y : object C) (f : arrow C y x) :
-  compose C f (id C) = f.
+Let opCIdentLeft {C} (x y : object C) (f : arrow y x) :
+  compose f id = f.
 Proof.
   magic.
 Qed.
 
-Let opCIdentRight {C : category} (x y : object C) (f : arrow C y x) :
-  compose C (id C) f = f.
+Let opCIdentRight {C} (x y : object C) (f : arrow y x) :
+  compose id f = f.
 Proof.
   magic.
 Qed.
 
-Definition oppositeCategory (C : category) : category := newCategory
+Definition oppositeCategory C : category := newCategory
   (object C)
-  (fun x y => arrow C y x)
-  (fun {x y z} f g => compose C g f)
-  (fun {x} => id C)
+  (fun x y => arrow y x)
+  (fun _ _ _ f g => compose g f)
+  (fun _ => id)
   opCAssoc
   opCIdentLeft
   opCIdentRight.

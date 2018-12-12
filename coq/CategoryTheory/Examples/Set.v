@@ -30,7 +30,7 @@ Qed.
 Definition setCategory : category := newCategory
   Type
   (fun x y => x -> y)
-  (fun x y z f g e => f (g e))
+  (fun _ _ _ f g e => f (g e))
   (fun x e => e)
   setCAssoc setCIdent setCIdent.
 
