@@ -8,6 +8,7 @@
 
 Require Import Main.CategoryTheory.Category.
 Require Import Main.Tactics.
+Require Import ProofIrrelevance.
 
 Set Universe Polymorphism.
 
@@ -33,23 +34,6 @@ Hint Resolve @fComp.
 Hint Rewrite @fComp.
 
 Definition endofunctor C := functor C C.
-
-Let idFIdent {C} (x : object C) : @id C x = id.
-Proof.
-  magic.
-Qed.
-
-Let idFComp {C} (x y z : object C) (f : arrow x y) (g : arrow y z) :
-  compose g f = compose g f.
-Proof.
-  magic.
-Qed.
-
-Definition idFunctor {C} : functor C C := newFunctor C C
-  (fun x => x)
-  (fun _ _ f => f)
-  idFIdent
-  idFComp.
 
 Let compFIdent
   {C D E}
@@ -84,3 +68,47 @@ Definition compFunctor
   (fun {x y} (f : arrow x y) => fMap G (fMap F f))
   compFIdent
   compFComp.
+
+Let idFIdent {C} (x : object C) : @id C x = id.
+Proof.
+  magic.
+Qed.
+
+Let idFComp {C} (x y z : object C) (f : arrow x y) (g : arrow y z) :
+  compose g f = compose g f.
+Proof.
+  magic.
+Qed.
+
+Definition idFunctor {C} : functor C C := newFunctor C C
+  (fun x => x)
+  (fun _ _ f => f)
+  idFIdent
+  idFComp.
+
+Theorem compFunctorAssoc
+  {B C D E}
+  (F : functor B C)
+  (G : functor C D)
+  (H : functor D E)
+: compFunctor H (compFunctor G F) = compFunctor (compFunctor H G) F.
+Proof.
+  unfold compFunctor.
+  f_equal; apply proof_irrelevance.
+Qed.
+
+Theorem compFunctorIdentLeft {C D} (F : functor C D) :
+  compFunctor idFunctor F = F.
+Proof.
+  unfold compFunctor.
+  destruct F.
+  f_equal; apply proof_irrelevance.
+Qed.
+
+Theorem compFunctorIdentRight {C D} (F : functor C D) :
+  compFunctor F idFunctor = F.
+Proof.
+  unfold compFunctor.
+  destruct F.
+  f_equal; apply proof_irrelevance.
+Qed.
