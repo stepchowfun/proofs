@@ -16,7 +16,7 @@ Open Scope type. (* Parse `*` as `prod` rather than `mul`. *)
 
 (* Sets and functions form a category. *)
 
-Let setCAssoc w x y z (f : w -> x) (g : x -> y) (h : y -> z):
+Let setCAssoc w x y z (f : w -> x) (g : x -> y) (h : y -> z) :
   (fun e : w => h (g (f e))) = (fun e : w => h (g (f e))).
 Proof.
   magic.

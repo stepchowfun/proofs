@@ -16,20 +16,23 @@ Require Import Main.Tactics.
 
 (* A maybe is a wrapper for value that might be missing. *)
 
-Inductive maybe {x} : Type :=
-| nothing : @maybe x
-| just : x -> @maybe x.
+Inductive maybe x : Type :=
+| nothing : maybe x
+| just : x -> maybe x.
+
+Arguments nothing {_}.
+Arguments just {_}.
 
 (* Here's a proof that maybe is a functor. *)
 
 Let maybeFIdent (x : object setCategory) :
   (
-    fun e : maybe =>
+    fun e : maybe x =>
       match e with
       | nothing => nothing
       | just e0 => just (@id setCategory x e0)
       end
-  ) = @id setCategory maybe.
+  ) = @id setCategory (maybe x).
 Proof.
   clean.
   apply functional_extensionality.
@@ -42,21 +45,21 @@ Let maybeFComp
   (g : arrow y z)
 : @compose setCategory _ _ _
     (
-      fun e : maybe =>
+      fun e : maybe y =>
         match e with
         | nothing => nothing
         | just e0 => just (g e0)
         end
     )
     (
-      fun e : maybe =>
+      fun e : maybe x =>
         match e with
         | nothing => nothing
         | just e0 => just (f e0)
         end
     ) =
   (
-    fun e : maybe =>
+    fun e : maybe x =>
       match e with
       | nothing => nothing
       | just e0 => just (compose g f e0)
@@ -71,7 +74,7 @@ Qed.
 Definition maybeFunctor : functor setCategory setCategory := newFunctor
   setCategory
   setCategory
-  (@maybe)
+  maybe
   (fun _ _ f e =>
     match e with
     | nothing => nothing
