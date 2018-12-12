@@ -13,71 +13,74 @@ Set Universe Polymorphism.
 
 (* Metavariables for functors: F, G, H *)
 
-Record functor {C D : category} := newFunctor {
+Record functor C D := newFunctor {
   oMap : object C -> object D;
-  fMap {x y} : arrow C x y -> arrow D (oMap x) (oMap y);
+  fMap {x y} : arrow x y -> arrow (oMap x) (oMap y);
 
   fIdent x : fMap (@id C x) = @id D (oMap x);
-  fComp x y z (f : arrow C x y) (g : arrow C y z) :
-    compose D (fMap g) (fMap f) = fMap (compose C g f);
+  fComp {x y z} (f : arrow x y) (g : arrow y z) :
+    compose (fMap g) (fMap f) = fMap (compose g f);
 }.
+
+Arguments oMap {_} {_} _.
+Arguments fMap {_} {_} _ {_} {_}.
+Arguments fIdent {_} {_} _.
+Arguments fComp {_} {_} _ {_} {_} {_}.
 
 Hint Resolve @fIdent.
 Hint Rewrite @fIdent.
 Hint Resolve @fComp.
 Hint Rewrite @fComp.
 
-Let idFIdent {C : category} (x : object C) : @id C x = @id C x.
+Definition endofunctor C := functor C C.
+
+Let idFIdent {C} (x : object C) : @id C x = id.
 Proof.
   magic.
 Qed.
 
-Let idFComp
-  {C : category}
-  (x y z : object C)
-  (f : arrow C x y)
-  (g : arrow C y z)
-: compose C g f = compose C g f.
+Let idFComp {C} (x y z : object C) (f : arrow x y) (g : arrow y z) :
+  compose g f = compose g f.
 Proof.
   magic.
 Qed.
 
-Definition idFunctor {C : category} : @functor C C := newFunctor C C
+Definition idFunctor {C} : functor C C := newFunctor C C
   (fun x => x)
-  (fun x y f => f)
+  (fun _ _ f => f)
   idFIdent
   idFComp.
 
 Let compFIdent
-  {C D E : category}
-  {G : @functor D E}
-  {F : @functor C D}
+  {C D E}
+  {G : functor D E}
+  {F : functor C D}
   (x : object C)
-: fMap G (fMap F (@id C x)) = id E.
+: fMap G (fMap F (@id C x)) = id.
 Proof.
   magic.
 Qed.
 
 Let compFComp
-  {C D E : category}
-  {G : @functor D E}
-  {F : @functor C D}
+  {C D E}
+  {G : functor D E}
+  {F : functor C D}
   (x y z : object C)
-  (f : arrow C x y)
-  (g : arrow C y z)
-: compose E (fMap G (fMap F g)) (fMap G (fMap F f)) =
-  fMap G (fMap F (compose C g f)).
+  (f : arrow x y)
+  (g : arrow y z)
+: compose (fMap G (fMap F g)) (fMap G (fMap F f)) =
+  fMap G (fMap F (compose g f)).
 Proof.
   magic.
 Qed.
 
 Definition compFunctor
-  {C D E : category}
-  (G : @functor D E)
-  (F : @functor C D) :
-  @functor C E
+  {C D E}
+  (G : functor D E)
+  (F : functor C D) :
+  functor C E
 := newFunctor C E
-  (fun (x : object C) => oMap G (oMap F x))
-  (fun {x y : object C} (f : arrow C x y) => fMap G (fMap F f))
+  (fun x => oMap G (oMap F x))
+  (fun {x y} (f : arrow x y) => fMap G (fMap F f))
   compFIdent
   compFComp.

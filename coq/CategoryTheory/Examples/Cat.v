@@ -11,17 +11,17 @@ Require Import Main.CategoryTheory.Functor.
 Require Import ProofIrrelevance.
 
 Let catCAssoc
-  (w x y z : category)
-  (f : @functor w x)
-  (g : @functor x y)
-  (h : @functor y z)
+  w x y z
+  (f : functor w x)
+  (g : functor x y)
+  (h : functor y z)
 : compFunctor h (compFunctor g f) = compFunctor (compFunctor h g) f.
 Proof.
   unfold compFunctor.
   f_equal; apply proof_irrelevance.
 Qed.
 
-Let catCIdentLeft (x y : category) (f : @functor x y) :
+Let catCIdentLeft x y (f : functor x y) :
   compFunctor idFunctor f = f.
 Proof.
   unfold compFunctor.
@@ -29,7 +29,7 @@ Proof.
   f_equal; apply proof_irrelevance.
 Qed.
 
-Let catCIdentRight (x y : category) (f : @functor x y) :
+Let catCIdentRight x y (f : functor x y) :
   compFunctor f idFunctor = f.
 Proof.
   unfold compFunctor.
@@ -39,7 +39,7 @@ Qed.
 
 Definition catCategory : category := newCategory
   category
-  (@functor)
+  (functor)
   (fun _ _ _ => compFunctor)
   (fun _ => idFunctor)
   catCAssoc

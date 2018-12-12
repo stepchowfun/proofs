@@ -12,13 +12,13 @@ Require Import Main.Tactics.
 
 Set Universe Polymorphism.
 
-Definition isomorphic {C : category} (x y : object C) :=
-  exists (f : arrow C x y), isomorphism f.
+Definition isomorphic {C} (x y : object C) :=
+  exists (f : arrow x y), isomorphism f.
 
-Definition uniqueUpToIsomorphism {C : category} (P : object C -> Prop) :=
+Definition uniqueUpToIsomorphism {C} (P : object C -> Prop) :=
   forall x y, P x -> P y -> isomorphic x y.
 
-Theorem isomorphicRefl C x : @isomorphic C x x.
+Theorem isomorphicRefl C (x : object C) : isomorphic x x.
 Proof.
   unfold isomorphic.
   unfold isomorphism.
@@ -28,22 +28,22 @@ Qed.
 
 Hint Resolve isomorphicRefl.
 
-Theorem isomorphicTrans C x y z :
-  @isomorphic C x y -> @isomorphic C y z -> @isomorphic C x z.
+Theorem isomorphicTrans C (x y z : object C) :
+  isomorphic x y -> isomorphic y z -> isomorphic x z.
 Proof.
   unfold isomorphic.
   unfold isomorphism.
   unfold inverse.
   clean.
-  exists (compose C x0 x2).
-  exists (compose C x3 x1).
+  exists (compose x0 x2).
+  exists (compose x3 x1).
   split.
   - rewrite cAssoc.
-    rewrite <- (cAssoc C y x y z).
+    rewrite <- (cAssoc x3).
     rewrite H.
     magic.
   - rewrite cAssoc.
-    rewrite <- (cAssoc C y z y x).
+    rewrite <- (cAssoc x0).
     rewrite H1.
     magic.
 Qed.
@@ -53,7 +53,7 @@ Qed.
   so could lead to nonterminating searches.
 *)
 
-Theorem isomorphicSymm C x y : @isomorphic C x y <-> @isomorphic C y x.
+Theorem isomorphicSymm C (x y : object C) : isomorphic x y <-> isomorphic y x.
 Proof.
   unfold isomorphic.
   unfold isomorphism.

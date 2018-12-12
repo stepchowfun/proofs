@@ -158,9 +158,7 @@ Check eq_ind.
   quantification, however, is definable as follows:
 *)
 
-Inductive ex A
-             (P : A -> Prop) :
-             Prop := (* Notation: exists x, P x *)
+Inductive ex A (P : A -> Prop) : Prop := (* Notation: exists x, P x *)
   ex_intro : forall x : A, P x -> ex A P.
 
 (* Make the A and P arguments of ex_intro implicit. *)
