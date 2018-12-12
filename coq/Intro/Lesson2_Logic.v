@@ -20,10 +20,14 @@ Inductive False : Prop := .
 Inductive and P Q : Prop := (* Notation: P /\ Q *)
 | conj : P -> Q -> and P Q.
 
+(* Make the P and Q arguments of conj implicit. *)
+
+Arguments conj {_} {_}.
+
 (* A proof of True AND True *)
 
 Definition true_and_true_1 : and True True :=
-  conj True True trivial trivial.
+  conj trivial trivial.
 
 (* The same proof, but written in "proof mode" *)
 
@@ -35,7 +39,7 @@ Proof.
   - apply trivial.
 Qed.
 
-Print true_and_true_2. (* conj True True trivial trivial *)
+Print true_and_true_2. (* conj trivial trivial *)
 
 (* The same proof, but written using the `;` tactical *)
 
@@ -45,7 +49,7 @@ Proof.
   apply conj; apply trivial.
 Qed.
 
-Print true_and_true_3. (* conj True True trivial trivial *)
+Print true_and_true_3. (* conj trivial trivial *)
 
 (* Let's see what happens when we try to prove True AND False. *)
 
@@ -65,6 +69,11 @@ Definition iff P Q := and (P -> Q) (Q -> P). (* Notation: P <-> Q *)
 Inductive or P Q : Prop := (* Notation: P \/ Q *)
 | orIntroL : P -> or P Q
 | orIntroR : Q -> or P Q.
+
+(* Make the P and Q arguments of orIntroL and orIntroR implicit. *)
+
+Arguments orIntroL {_} {_}.
+Arguments orIntroR {_} {_}.
 
 (* Let's prove True OR False. *)
 
@@ -99,6 +108,10 @@ Print not_false. (* fun H : False => H *)
 Inductive eq A (x : A) : A -> Prop := (* Notation: x = x *)
 | eq_refl : eq A x x. (* A dependent type! *)
 
+(* Make the A argument of eq_refl implicit. *)
+
+Arguments eq_refl {_}.
+
 (* A simple proof that 0 = 0. *)
 Theorem zero_eq_zero : eq nat 0 0.
 Proof.
@@ -118,7 +131,7 @@ Definition leibniz A
                    (e : eq A x y) :
                    P y :=
   match e in eq _ _ z return P z with (* Here, z = y. *)
-  | eq_refl _ _ => f (* But z = x here. *)
+  | eq_refl _ => f (* But z = x here. *)
   end.
 
 (*
@@ -149,6 +162,10 @@ Inductive ex A
              (P : A -> Prop) :
              Prop := (* Notation: exists x, P x *)
   ex_intro : forall x : A, P x -> ex A P.
+
+(* Make the A and P arguments of ex_intro implicit. *)
+
+Arguments ex_intro {_} {_}.
 
 (* A simple existence proof *)
 
