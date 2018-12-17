@@ -55,6 +55,22 @@ Qed.
 
 Hint Resolve coproductUnique.
 
+Theorem coproductCommutator
+  {C}
+  (x y xy : object C)
+  (ix : arrow x xy)
+  (iy : arrow y xy)
+: coproduct x y xy ix iy -> coproduct y x xy iy ix.
+Proof.
+  repeat rewrite opCoproductProduct.
+  apply productCommutator.
+Qed.
+
+(*
+  We deliberately avoid adding a resolve hint for coproductCommutator because
+  doing so could lead to nonterminating searches.
+*)
+
 Theorem coproductCommutative
   {C}
   (x y xy yx : object C)
