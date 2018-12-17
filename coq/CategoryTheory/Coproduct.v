@@ -8,8 +8,10 @@
 
 Require Import Main.CategoryTheory.Arrow.
 Require Import Main.CategoryTheory.Category.
+Require Import Main.CategoryTheory.Initial.
 Require Import Main.CategoryTheory.Object.
 Require Import Main.CategoryTheory.Product.
+Require Import Main.CategoryTheory.Terminal.
 Require Import Main.Tactics.
 
 Set Universe Polymorphism.
@@ -55,6 +57,22 @@ Qed.
 
 Hint Resolve coproductUnique.
 
+Theorem coproductCommutator
+  {C}
+  (x y xy : object C)
+  (ix : arrow x xy)
+  (iy : arrow y xy)
+: coproduct x y xy ix iy -> coproduct y x xy iy ix.
+Proof.
+  repeat rewrite opCoproductProduct.
+  apply productCommutator.
+Qed.
+
+(*
+  We deliberately avoid adding a resolve hint for coproductCommutator because
+  doing so could lead to nonterminating searches.
+*)
+
 Theorem coproductCommutative
   {C}
   (x y xy yx : object C)
@@ -94,3 +112,18 @@ Proof.
 Qed.
 
 Hint Resolve coproductAssociative.
+
+Theorem coproductInitial
+  {C}
+  (x y xy : object C)
+  (x_to_xy : arrow x xy)
+  (y_to_xy : arrow y xy)
+: coproduct x y xy x_to_xy y_to_xy -> initial x -> isomorphic y xy.
+Proof.
+  rewrite opCoproductProduct.
+  rewrite opInitialTerminal.
+  rewrite opIsomorphic.
+  apply productTerminal.
+Qed.
+
+Hint Resolve coproductInitial.
