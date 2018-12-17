@@ -8,8 +8,10 @@
 
 Require Import Main.CategoryTheory.Arrow.
 Require Import Main.CategoryTheory.Category.
+Require Import Main.CategoryTheory.Initial.
 Require Import Main.CategoryTheory.Object.
 Require Import Main.CategoryTheory.Product.
+Require Import Main.CategoryTheory.Terminal.
 Require Import Main.Tactics.
 
 Set Universe Polymorphism.
@@ -110,3 +112,18 @@ Proof.
 Qed.
 
 Hint Resolve coproductAssociative.
+
+Theorem coproductInitial
+  {C}
+  (x y xy : object C)
+  (x_to_xy : arrow x xy)
+  (y_to_xy : arrow y xy)
+: coproduct x y xy x_to_xy y_to_xy -> initial x -> isomorphic y xy.
+Proof.
+  rewrite opCoproductProduct.
+  rewrite opInitialTerminal.
+  rewrite opIsomorphic.
+  apply productTerminal.
+Qed.
+
+Hint Resolve coproductInitial.

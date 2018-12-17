@@ -9,6 +9,7 @@
 Require Import Main.CategoryTheory.Arrow.
 Require Import Main.CategoryTheory.Category.
 Require Import Main.CategoryTheory.Object.
+Require Import Main.CategoryTheory.Terminal.
 Require Import Main.Tactics.
 
 Set Universe Polymorphism.
@@ -250,3 +251,35 @@ Proof.
 Qed.
 
 Hint Resolve productAssociative.
+
+Theorem productTerminal
+  {C}
+  (x y xy : object C)
+  (xy_to_x : arrow xy x)
+  (xy_to_y : arrow xy y)
+: product x y xy xy_to_x xy_to_y -> terminal x -> isomorphic xy y.
+Proof.
+  unfold terminal.
+  clean.
+  fact (H0 y).
+  clean.
+  assert (product x y y x0 id).
+  - clear H1.
+    unfold product.
+    clean.
+    unfold universal.
+    split.
+    + unfold arrowExists.
+      exists qy.
+      split; magic.
+      specialize (H0 z).
+      magic.
+    + unfold arrowUnique.
+      magic.
+  - fact (productUnique C x y).
+    unfold uniqueUpToIsomorphism in H3.
+    specialize (H3 xy y).
+    eMagic.
+Qed.
+
+Hint Resolve productTerminal.
