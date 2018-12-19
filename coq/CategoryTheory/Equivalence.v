@@ -9,7 +9,6 @@
 Require Import Main.CategoryTheory.Functor.
 Require Import Main.CategoryTheory.NaturalTransformation.
 Require Import Main.Tactics.
-Require Import ProofIrrelevance.
 
 Set Universe Polymorphism.
 
@@ -34,8 +33,9 @@ Proof.
   exists idFunctor.
   exists idFunctor.
   assert (idFunctor = @compFunctor C C C idFunctor idFunctor); [
-    unfold compFunctor; unfold idFunctor; f_equal; apply proof_irrelevance |
-    idtac ].
+    rewrite compFunctorIdentLeft; magic |
+    idtac
+  ].
   exists (
     match H
     in (_ = rhs)
