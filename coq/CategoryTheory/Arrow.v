@@ -85,6 +85,16 @@ Qed.
 
 Hint Resolve opSecRet.
 
+Theorem idIso C x : isomorphism (@id C x).
+Proof.
+  unfold isomorphism.
+  exists id.
+  unfold inverse.
+  magic.
+Qed.
+
+Hint Resolve idIso.
+
 Theorem rightIdUnique C (x : object C):
   arrowUnique (
     fun (f : arrow x x) => forall y (g : arrow x y), compose g f = g

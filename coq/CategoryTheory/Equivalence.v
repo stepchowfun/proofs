@@ -8,6 +8,8 @@
 
 Require Import Main.CategoryTheory.Functor.
 Require Import Main.CategoryTheory.NaturalTransformation.
+Require Import Main.Tactics.
+Require Import ProofIrrelevance.
 
 Set Universe Polymorphism.
 
@@ -25,3 +27,34 @@ Definition equivalent C D :=
     (Eta : naturalTransformation (compFunctor F G) idFunctor)
     (Mu : naturalTransformation idFunctor (compFunctor G F)),
   equivalence C D F G Eta Mu.
+
+Theorem equivalentRefl C : equivalent C C.
+Proof.
+  unfold equivalent.
+  exists idFunctor.
+  exists idFunctor.
+  assert (idFunctor = @compFunctor C C C idFunctor idFunctor); [
+    unfold compFunctor; unfold idFunctor; f_equal; apply proof_irrelevance |
+    idtac ].
+  exists (
+    match H
+    in (_ = rhs)
+    return naturalTransformation rhs idFunctor
+    with
+    | eq_refl => idNaturalTransformation
+    end
+  ).
+  exists (
+    match H
+    in (_ = rhs)
+    return naturalTransformation idFunctor rhs
+    with
+    | eq_refl => idNaturalTransformation
+    end
+  ).
+  unfold equivalence.
+  destruct H.
+  split; unfold naturalIsomorphism; magic.
+Qed.
+
+Hint Resolve equivalentRefl.
