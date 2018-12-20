@@ -118,6 +118,15 @@ Definition vertCompNaturalTransformation
   (fun x => compose (eta Eta x) (eta Mu x))
   vertCompNaturality.
 
+Definition horCompNaturalTransformation
+  {C D E}
+  {F G : functor C D}
+  {K H : functor D E}
+  (Beta : naturalTransformation H K)
+  (Alpha : naturalTransformation F G) :
+  naturalTransformation (compFunctor H F) (compFunctor K G)
+:= vertCompNaturalTransformation (leftWhisker Beta G) (rightWhisker H Alpha).
+
 Definition naturalIsomorphism
   {C D} {F G : functor C D}
   (Eta : naturalTransformation F G) :=
