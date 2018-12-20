@@ -46,7 +46,7 @@ Definition idNaturalTransformation
   naturalTransformation F F
 := newNaturalTransformation F F (fun x => id) idNaturality.
 
-Let compNaturality
+Let vertCompNaturality
   {C D}
   {F G H : functor C D}
   {Eta : naturalTransformation G H}
@@ -63,7 +63,7 @@ Proof.
     (compose (eta Eta y) (fMap G f)); magic.
 Qed.
 
-Definition compNaturalTransformation
+Definition vertCompNaturalTransformation
   {C D}
   {F G H : functor C D}
   (Eta : naturalTransformation G H)
@@ -71,7 +71,7 @@ Definition compNaturalTransformation
   naturalTransformation F H
 := newNaturalTransformation F H
   (fun x => compose (eta Eta x) (eta Mu x))
-  compNaturality.
+  vertCompNaturality.
 
 Let rightWhiskerNaturality
   {C D E}

@@ -145,8 +145,8 @@ Definition maybeMu :
 (* Now we can prove that maybe is a monad. *)
 
 Let maybeMAssoc :
-  eta (compNaturalTransformation maybeMu (leftWhisker maybeMu maybeFunctor)) =
-  eta (compNaturalTransformation maybeMu (rightWhisker maybeFunctor maybeMu)).
+  eta (vertCompNaturalTransformation maybeMu (leftWhisker maybeMu maybeFunctor)) =
+  eta (vertCompNaturalTransformation maybeMu (rightWhisker maybeFunctor maybeMu)).
 Proof.
   clean.
   apply functional_extensionality_dep.
@@ -156,7 +156,7 @@ Proof.
 Qed.
 
 Let maybeMIdent1 :
-  eta (compNaturalTransformation maybeMu (leftWhisker maybeEta maybeFunctor)) =
+  eta (vertCompNaturalTransformation maybeMu (leftWhisker maybeEta maybeFunctor)) =
   eta idNaturalTransformation.
 Proof.
   magic.
@@ -164,7 +164,7 @@ Qed.
 
 Let maybeMIdent2 :
   eta
-    (compNaturalTransformation maybeMu (rightWhisker maybeFunctor maybeEta)) =
+    (vertCompNaturalTransformation maybeMu (rightWhisker maybeFunctor maybeEta)) =
   eta idNaturalTransformation.
 Proof.
   clean.
