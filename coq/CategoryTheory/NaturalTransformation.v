@@ -30,49 +30,6 @@ Arguments naturality {_} {_} {_} {_} _ {_} {_}.
 Hint Resolve @naturality.
 Hint Rewrite @naturality.
 
-Let idNaturality
-  {C D}
-  {F : functor C D}
-  (x y : object C)
-  (f : arrow x y)
-: compose id (fMap F f) = compose (fMap F f) id.
-Proof.
-  magic.
-Qed.
-
-Definition idNaturalTransformation
-  {C D}
-  {F : functor C D} :
-  naturalTransformation F F
-:= newNaturalTransformation F F (fun x => id) idNaturality.
-
-Let vertCompNaturality
-  {C D}
-  {F G H : functor C D}
-  {Eta : naturalTransformation G H}
-  {Mu : naturalTransformation F G}
-  (x y : object C) (f : arrow x y)
-: compose (compose (eta Eta y) (eta Mu y)) (fMap F f) =
-  compose (fMap H f) (compose (eta Eta x) (eta Mu x)).
-Proof.
-  rewrite cAssoc.
-  rewrite <- cAssoc.
-  replace (compose (eta Mu y) (fMap F f)) with
-    (compose (fMap G f) (eta Mu x)); magic.
-  replace (compose (fMap H f) (eta Eta x)) with
-    (compose (eta Eta y) (fMap G f)); magic.
-Qed.
-
-Definition vertCompNaturalTransformation
-  {C D}
-  {F G H : functor C D}
-  (Eta : naturalTransformation G H)
-  (Mu : naturalTransformation F G) :
-  naturalTransformation F H
-:= newNaturalTransformation F H
-  (fun x => compose (eta Eta x) (eta Mu x))
-  vertCompNaturality.
-
 Let rightWhiskerNaturality
   {C D E}
   {F G : functor C D}
@@ -117,6 +74,49 @@ Definition leftWhisker
 := newNaturalTransformation (compFunctor F H) (compFunctor G H)
   (fun x => eta Eta (oMap H x))
   leftWhiskerNaturality.
+
+Let idNaturality
+  {C D}
+  {F : functor C D}
+  (x y : object C)
+  (f : arrow x y)
+: compose id (fMap F f) = compose (fMap F f) id.
+Proof.
+  magic.
+Qed.
+
+Definition idNaturalTransformation
+  {C D}
+  {F : functor C D} :
+  naturalTransformation F F
+:= newNaturalTransformation F F (fun x => id) idNaturality.
+
+Let vertCompNaturality
+  {C D}
+  {F G H : functor C D}
+  {Eta : naturalTransformation G H}
+  {Mu : naturalTransformation F G}
+  (x y : object C) (f : arrow x y)
+: compose (compose (eta Eta y) (eta Mu y)) (fMap F f) =
+  compose (fMap H f) (compose (eta Eta x) (eta Mu x)).
+Proof.
+  rewrite cAssoc.
+  rewrite <- cAssoc.
+  replace (compose (eta Mu y) (fMap F f)) with
+    (compose (fMap G f) (eta Mu x)); magic.
+  replace (compose (fMap H f) (eta Eta x)) with
+    (compose (eta Eta y) (fMap G f)); magic.
+Qed.
+
+Definition vertCompNaturalTransformation
+  {C D}
+  {F G H : functor C D}
+  (Eta : naturalTransformation G H)
+  (Mu : naturalTransformation F G) :
+  naturalTransformation F H
+:= newNaturalTransformation F H
+  (fun x => compose (eta Eta x) (eta Mu x))
+  vertCompNaturality.
 
 Definition naturalIsomorphism
   {C D} {F G : functor C D}
