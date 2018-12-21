@@ -6,10 +6,12 @@
 (*************************************)
 (*************************************)
 
+Require Import FunctionalExtensionality.
 Require Import Main.CategoryTheory.Arrow.
 Require Import Main.CategoryTheory.Category.
 Require Import Main.CategoryTheory.Functor.
 Require Import Main.Tactics.
+Require Import ProofIrrelevance.
 
 Set Universe Polymorphism.
 
@@ -29,6 +31,32 @@ Arguments naturality {_} {_} {_} {_} _ {_} {_}.
 
 Hint Resolve @naturality.
 Hint Rewrite @naturality.
+
+Theorem eqNaturalTransformation
+  {C D}
+  (F G : functor C D)
+  (Eta Mu : naturalTransformation F G)
+: eta Eta = eta Mu -> Eta = Mu.
+Proof.
+  clean.
+  assert (
+    match H
+    in (_ = rhs)
+    return
+      forall (x y : object C) (f : arrow x y),
+      compose (rhs y) (fMap F f) = compose (fMap G f) (rhs x)
+    with
+    | eq_refl => @naturality C D F G Eta
+    end =
+    @naturality C D F G Mu
+  ).
+  - apply proof_irrelevance.
+  - destruct Eta.
+    destruct Mu.
+    magic.
+Qed.
+
+Hint Resolve eqNaturalTransformation.
 
 Let rightWhiskerNaturality
   {C D E}
@@ -126,6 +154,25 @@ Definition horCompNaturalTransformation
   (Alpha : naturalTransformation F G) :
   naturalTransformation (compFunctor H F) (compFunctor K G)
 := vertCompNaturalTransformation (leftWhisker Beta G) (rightWhisker H Alpha).
+
+Theorem horCompNaturalTransformationAlt
+  {C D E}
+  {F G : functor C D}
+  {K H : functor D E}
+  (Beta : naturalTransformation H K)
+  (Alpha : naturalTransformation F G)
+: horCompNaturalTransformation Beta Alpha =
+  vertCompNaturalTransformation (rightWhisker K Alpha) (leftWhisker Beta F).
+Proof.
+  unfold horCompNaturalTransformation.
+  unfold vertCompNaturalTransformation.
+  apply eqNaturalTransformation.
+  clean.
+  apply functional_extensionality_dep.
+  magic.
+Qed.
+
+Hint Resolve horCompNaturalTransformationAlt.
 
 Definition naturalIsomorphism
   {C D} {F G : functor C D}
