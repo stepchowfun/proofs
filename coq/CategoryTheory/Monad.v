@@ -8,6 +8,7 @@
 
 Require Import Main.CategoryTheory.Functor.
 Require Import Main.CategoryTheory.NaturalTransformation.
+Require Import ProofIrrelevance.
 
 Set Universe Polymorphism.
 
@@ -35,3 +36,18 @@ Hint Resolve @mIdent1.
 Hint Rewrite @mIdent1.
 Hint Resolve @mIdent2.
 Hint Rewrite @mIdent2.
+
+Theorem eqMonad
+  {C}
+  {F : endofunctor C}
+  (Eta : naturalTransformation idFunctor F)
+  (Mu : naturalTransformation (compFunctor F F) F)
+  (M1 M2 : monad Eta Mu)
+: M1 = M2.
+Proof.
+  destruct M1.
+  destruct M2.
+  f_equal; apply proof_irrelevance.
+Qed.
+
+Hint Resolve eqMonad.
