@@ -6,10 +6,12 @@
 (*************************************)
 (*************************************)
 
+Require Import FunctionalExtensionality.
 Require Import Main.CategoryTheory.Arrow.
 Require Import Main.CategoryTheory.Category.
 Require Import Main.CategoryTheory.Functor.
 Require Import Main.Tactics.
+Require Import ProofIrrelevance.
 
 Set Universe Polymorphism.
 
@@ -30,48 +32,31 @@ Arguments naturality {_} {_} {_} {_} _ {_} {_}.
 Hint Resolve @naturality.
 Hint Rewrite @naturality.
 
-Let idNaturality
+Theorem eqNaturalTransformation
   {C D}
-  {F : functor C D}
-  (x y : object C)
-  (f : arrow x y)
-: compose id (fMap F f) = compose (fMap F f) id.
+  (F G : functor C D)
+  (Eta Mu : naturalTransformation F G)
+: eta Eta = eta Mu -> Eta = Mu.
 Proof.
-  magic.
+  clean.
+  assert (
+    match H
+    in (_ = rhs)
+    return
+      forall (x y : object C) (f : arrow x y),
+      compose (rhs y) (fMap F f) = compose (fMap G f) (rhs x)
+    with
+    | eq_refl => @naturality C D F G Eta
+    end =
+    @naturality C D F G Mu
+  ).
+  - apply proof_irrelevance.
+  - destruct Eta.
+    destruct Mu.
+    magic.
 Qed.
 
-Definition idNaturalTransformation
-  {C D}
-  {F : functor C D} :
-  naturalTransformation F F
-:= newNaturalTransformation F F (fun x => id) idNaturality.
-
-Let compNaturality
-  {C D}
-  {F G H : functor C D}
-  {Eta : naturalTransformation G H}
-  {Mu : naturalTransformation F G}
-  (x y : object C) (f : arrow x y)
-: compose (compose (eta Eta y) (eta Mu y)) (fMap F f) =
-  compose (fMap H f) (compose (eta Eta x) (eta Mu x)).
-Proof.
-  rewrite cAssoc.
-  rewrite <- cAssoc.
-  replace (compose (eta Mu y) (fMap F f)) with
-    (compose (fMap G f) (eta Mu x)); magic.
-  replace (compose (fMap H f) (eta Eta x)) with
-    (compose (eta Eta y) (fMap G f)); magic.
-Qed.
-
-Definition compNaturalTransformation
-  {C D}
-  {F G H : functor C D}
-  (Eta : naturalTransformation G H)
-  (Mu : naturalTransformation F G) :
-  naturalTransformation F H
-:= newNaturalTransformation F H
-  (fun x => compose (eta Eta x) (eta Mu x))
-  compNaturality.
+Hint Resolve eqNaturalTransformation.
 
 Let rightWhiskerNaturality
   {C D E}
@@ -117,6 +102,77 @@ Definition leftWhisker
 := newNaturalTransformation (compFunctor F H) (compFunctor G H)
   (fun x => eta Eta (oMap H x))
   leftWhiskerNaturality.
+
+Let idNaturality
+  {C D}
+  {F : functor C D}
+  (x y : object C)
+  (f : arrow x y)
+: compose id (fMap F f) = compose (fMap F f) id.
+Proof.
+  magic.
+Qed.
+
+Definition idNaturalTransformation
+  {C D}
+  {F : functor C D} :
+  naturalTransformation F F
+:= newNaturalTransformation F F (fun x => id) idNaturality.
+
+Let vertCompNaturality
+  {C D}
+  {F G H : functor C D}
+  {Eta : naturalTransformation G H}
+  {Mu : naturalTransformation F G}
+  (x y : object C) (f : arrow x y)
+: compose (compose (eta Eta y) (eta Mu y)) (fMap F f) =
+  compose (fMap H f) (compose (eta Eta x) (eta Mu x)).
+Proof.
+  rewrite cAssoc.
+  rewrite <- cAssoc.
+  replace (compose (eta Mu y) (fMap F f)) with
+    (compose (fMap G f) (eta Mu x)); magic.
+  replace (compose (fMap H f) (eta Eta x)) with
+    (compose (eta Eta y) (fMap G f)); magic.
+Qed.
+
+Definition vertCompNaturalTransformation
+  {C D}
+  {F G H : functor C D}
+  (Eta : naturalTransformation G H)
+  (Mu : naturalTransformation F G) :
+  naturalTransformation F H
+:= newNaturalTransformation F H
+  (fun x => compose (eta Eta x) (eta Mu x))
+  vertCompNaturality.
+
+Definition horCompNaturalTransformation
+  {C D E}
+  {F G : functor C D}
+  {K H : functor D E}
+  (Beta : naturalTransformation H K)
+  (Alpha : naturalTransformation F G) :
+  naturalTransformation (compFunctor H F) (compFunctor K G)
+:= vertCompNaturalTransformation (leftWhisker Beta G) (rightWhisker H Alpha).
+
+Theorem horCompNaturalTransformationAlt
+  {C D E}
+  {F G : functor C D}
+  {K H : functor D E}
+  (Beta : naturalTransformation H K)
+  (Alpha : naturalTransformation F G)
+: horCompNaturalTransformation Beta Alpha =
+  vertCompNaturalTransformation (rightWhisker K Alpha) (leftWhisker Beta F).
+Proof.
+  unfold horCompNaturalTransformation.
+  unfold vertCompNaturalTransformation.
+  apply eqNaturalTransformation.
+  clean.
+  apply functional_extensionality_dep.
+  magic.
+Qed.
+
+Hint Resolve horCompNaturalTransformationAlt.
 
 Definition naturalIsomorphism
   {C D} {F G : functor C D}

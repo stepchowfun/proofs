@@ -20,13 +20,13 @@ Record monad
   (Mu : naturalTransformation (compFunctor F F) F) :=
 newMonad {
   mAssoc :
-    eta (compNaturalTransformation Mu (leftWhisker Mu F)) =
-    eta (compNaturalTransformation Mu (rightWhisker F Mu));
+    eta (vertCompNaturalTransformation Mu (leftWhisker Mu F)) =
+    eta (vertCompNaturalTransformation Mu (rightWhisker F Mu));
   mIdent1 :
-    eta (compNaturalTransformation Mu (leftWhisker Eta F)) =
+    eta (vertCompNaturalTransformation Mu (leftWhisker Eta F)) =
     eta idNaturalTransformation;
   mIdent2 :
-    eta (compNaturalTransformation Mu (rightWhisker F Eta)) =
+    eta (vertCompNaturalTransformation Mu (rightWhisker F Eta)) =
     eta idNaturalTransformation;
 }.
 
