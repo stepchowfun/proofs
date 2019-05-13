@@ -7,8 +7,8 @@
 (**************************************)
 
 Require Import Extraction.
+Require Import Lia.
 Require Import Nat.
-Require Import Omega.
 
 Extraction Language Haskell.
 
@@ -49,7 +49,7 @@ Theorem double_correct : forall x, proj1_sig (double x) = x + x.
 Proof.
   intro.
   cbn.
-  omega.
+  lia.
 Qed.
 
 Recursive Extraction double.
