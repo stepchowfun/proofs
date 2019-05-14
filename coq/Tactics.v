@@ -6,7 +6,7 @@
 (*************************************)
 (*************************************)
 
-Require Import Omega.
+Require Import Lia.
 
 (*
   This tactic does a variety of simplifications on the goal and hypotheses.
@@ -19,25 +19,23 @@ Ltac simplify tactic :=
     intros;
     cbn in *;
     subst;
-    try (autorewrite with core in *);
-    try (
-      match goal with
-      | [ H : ex _ |- _ ] => destruct H
-      | [ H : _ /\ _ |- _ ] => destruct H
-      | [ H : _ <-> _ |- _ ] => destruct H
-      | [ H : ?T = ?T |- _ ] => clear H
-      | [ H1 : ?T -> _ |- _ ] =>
-        match type of T with
-        | context[Prop] =>
-          let H2 := fresh "H"
-          in assert (H2 : T); [
-            solve [ tactic ] |
-            specialize (H1 H2); clear H2
-          ]
+    try autorewrite with core in *;
+    try match goal with
+        | [ H : ex _ |- _ ] => destruct H
+        | [ H : _ /\ _ |- _ ] => destruct H
+        | [ H : _ <-> _ |- _ ] => destruct H
+        | [ H : ?T = ?T |- _ ] => clear H
+        | [ H1 : ?T -> _ |- _ ] =>
+          match type of T with
+          | context[Prop] =>
+            let H2 := fresh "H" in
+            assert (H2 : T); [
+              solve [ tactic ] |
+              specialize (H1 H2); clear H2
+            ]
+          end
         end
-      end
-    )
-  ).
+    ).
 
 (*
   The `magic` tactic tries a variety of approaches to solve a goal. The
@@ -51,8 +49,8 @@ Ltac magicWith tactic :=
     simplify tactic;
     try solve [dintuition (simplify tactic; tactic)];
     try solve [progress f_equal; magicWith tactic];
-    try solve [congruence];
-    try solve [omega];
+    try congruence;
+    try lia;
     try solve [
       match goal with
       | [ |- context[if ?X then _ else _] ] =>

@@ -1,4 +1,5 @@
 .coqdeps.d
+.lia.cache
 Makefile.coq
 Makefile.coq.conf
 _CoqProjectFull
