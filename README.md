@@ -6,13 +6,4 @@ A selection of formal developments in [Coq](https://coq.inria.fr/).
 
 ## Instructions
 
-Make sure you have the dependencies listed below. Then you can run `make` to verify the proofs. You can also use `make lint` to invoke the linters. The build artifacts can be removed with `make clean`.
-
-## Dependencies
-
-The build system depends on the following:
-
-- [GNU Make](https://www.gnu.org/software/make/) >= 3.79.1
-- [Coq](https://coq.inria.fr/) >= 8.7.2
-
-You also need the usual set of Unix tools, such as `echo`, `find`, etc.
+Make sure you have [Toast](https://github.com/stepchowfun/toast) installed. Then you can run `toast verify` to verify the proofs.

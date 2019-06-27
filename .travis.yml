@@ -1,9 +1,21 @@
-os: linux
-dist: trusty
 language: generic
-sudo: required
 services: docker
+install:
+  - |
+    if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then
+      echo "$DOCKER_HUB_PASSWORD" |
+        docker login --username stephanmisc --password-stdin
+    fi
+    curl https://raw.githubusercontent.com/stepchowfun/toast/master/install.sh -LSfs |
+      VERSION=0.27.0 sh
 script:
-  - while sleep 1m; do echo "=====[ still running ]====="; done &
-  - make docker-build
-  - kill %1
+  - |
+    if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then
+      WRITE_REMOTE_CACHE=true
+    else
+      WRITE_REMOTE_CACHE=false
+    fi
+    toast verify lint \
+      --repo stephanmisc/toast \
+      --read-remote-cache true \
+      --write-remote-cache "$WRITE_REMOTE_CACHE"
