@@ -1,0 +1,93 @@
+image: ubuntu:18.04
+default: verify
+tasks:
+  prepare_system:
+    description: Install system packages and set up a non-root user.
+    command: |
+      set -euo pipefail
+
+      # Create a non-root user.
+      adduser --disabled-password --gecos '' user
+
+      # Install system packages.
+      apt-get update
+      apt-get install --yes build-essential camlp5 curl ocaml ruby
+
+      # Without this, Ruby will assume files are encoded as ASCII.
+      echo 'export LANG="C.UTF-8"' >> /home/user/.profile
+
+      # Install Coq.
+      curl -fsSLo coq.tar.gz https://github.com/coq/coq/archive/V8.8.2.tar.gz
+      tar -xzf coq.tar.gz
+      rm coq.tar.gz
+      cd coq-8.8.2
+      ./configure -prefix /usr/local
+      make
+      make install
+      cd ..
+      rm -rf coq-8.8.2
+
+  verify:
+    description: Run Coq on the proof scripts.
+    dependencies:
+      - prepare_system
+    cache: false
+    input_paths:
+      - _CoqProject
+      - coq
+    user: user
+    command: |
+      set -euo pipefail
+
+      # Run Coq on the proof scripts.
+      echo '-R coq Main' > _CoqProjectFull
+      find coq -type f -name '*.v' >> _CoqProjectFull
+      coq_makefile -f _CoqProjectFull -o Makefile.coq
+      make -f Makefile.coq
+
+  lint:
+    description: Run the linters.
+    dependencies:
+      - verify
+    cache: false
+    input_paths:
+      - coq
+      - scripts
+    user: user
+    command: |
+      set -euo pipefail
+
+      # Make sure the `LANG` environment variable is set for Ruby.
+      source ~/.profile
+
+      # Run the linters.
+      ./scripts/lint-general.rb $(
+        find . -type d \( \
+          -path ./.git \
+        \) -prune -o \( \
+          -name '*.rb' -o \
+          -name '*.sh' -o \
+          -name '*.v' -o \
+          -name '*.yml' -o \
+          -name 'Dockerfile' -o \
+          -name 'Makefile' \
+        \) -print
+      )
+      ./scripts/lint-imports.rb '^\s*Require ' 'coqc -R coq Main ?' $(
+        find . -type d \( \
+          -path ./.git \
+        \) -prune -o \( \
+          -name '*.v' \
+        \) -print
+      )
+      ./scripts/lint-imports.rb '^\s*Import ' 'coqc -R coq Main ?' $(
+        find . -type d \( \
+          -path ./.git \
+        \) -prune -o \( \
+          -name '*.v' \
+        \) -print
+      )
+      if grep --recursive --line-number --include '*.v' Admitted coq; then
+        echo "Error: 'Admitted' found in proofs." 1>&2
+        exit 1
+      fi
