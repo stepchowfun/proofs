@@ -32,19 +32,16 @@ tasks:
     dependencies:
       - prepare_system
     input_paths:
+      - Makefile
       - _CoqProject
-      - coq
-    output_paths:
       - coq
     user: user
     command: |
       set -euo pipefail
 
       # Run Coq on the proof scripts.
-      echo '-R coq Main' > _CoqProjectFull
-      find coq -type f -name '*.v' >> _CoqProjectFull
-      coq_makefile -f _CoqProjectFull -o Makefile.coq
-      make -f Makefile.coq
+      make clean
+      make
 
   lint:
     description: Run the linters.
