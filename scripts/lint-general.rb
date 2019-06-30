@@ -18,12 +18,24 @@ ARGV.each do |path|
 
   # Iterate over the lines of the file.
   lines.each_with_index do |line, index|
-    # Check for any tabs.
-    if line =~ /\t/
-      STDERR.puts(
-        "Error: Line #{index + 1} of #{path} has a tab."
-      )
-      failed = true
+    # Check for tabs, with special behavior for files called `Makefile`.
+    if File.basename(path) == 'Makefile'
+      # Check for tabs which are not the first character of the line.
+      if line =~ /.\t/
+        STDERR.puts(
+          "Error: Line #{index + 1} of #{path} has a tab in a non-required " \
+            "position."
+        )
+        failed = true
+      end
+    else
+      # Check for any tabs.
+      if line =~ /\t/
+        STDERR.puts(
+          "Error: Line #{index + 1} of #{path} has a tab."
+        )
+        failed = true
+      end
     end
 
     # Check the line length.
