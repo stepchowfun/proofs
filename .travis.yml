@@ -7,7 +7,7 @@ install:
         docker login --username stephanmisc --password-stdin
     fi
     curl https://raw.githubusercontent.com/stepchowfun/toast/master/install.sh -LSfs |
-      VERSION=0.27.0 sh
+      VERSION=0.28.0 sh
 script:
   - |
     if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then
