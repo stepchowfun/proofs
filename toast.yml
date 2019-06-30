@@ -31,9 +31,10 @@ tasks:
     description: Run Coq on the proof scripts.
     dependencies:
       - prepare_system
-    cache: false
     input_paths:
       - _CoqProject
+      - coq
+    output_paths:
       - coq
     user: user
     command: |
@@ -49,9 +50,7 @@ tasks:
     description: Run the linters.
     dependencies:
       - verify
-    cache: false
     input_paths:
-      - coq
       - scripts
     user: user
     command: |
