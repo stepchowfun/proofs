@@ -32,10 +32,10 @@ Arguments cAssoc {_} {_} {_} {_} {_}.
 Arguments cIdentLeft {_} {_} {_}.
 Arguments cIdentRight {_} {_} {_}.
 
-Hint Resolve @cAssoc.
-Hint Resolve @cIdentLeft.
+Hint Resolve @cAssoc : core.
+Hint Resolve @cIdentLeft : core.
 Hint Rewrite @cIdentLeft.
-Hint Resolve @cIdentRight.
+Hint Resolve @cIdentRight : core.
 Hint Rewrite @cIdentRight.
 
 Let opCAssoc
@@ -77,4 +77,4 @@ Proof.
   f_equal; apply proof_irrelevance.
 Qed.
 
-Hint Resolve oppositeInvolution.
+Hint Resolve oppositeInvolution : core.

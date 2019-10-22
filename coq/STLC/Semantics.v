@@ -14,7 +14,7 @@ Inductive value : term -> Prop :=
 | vFalse : value eFalse
 | vAbs : forall e x t, value (eAbs x t e).
 
-Hint Constructors value.
+Hint Constructors value : core.
 
 Inductive step : term -> term -> Prop :=
 | sIf1 :
@@ -41,7 +41,7 @@ Inductive step : term -> term -> Prop :=
   step e2 e3 ->
   step (eApp e1 e2) (eApp e1 e3).
 
-Hint Constructors step.
+Hint Constructors step : core.
 
 Inductive stepStar : term -> term -> Prop :=
 | scRefl :
@@ -53,4 +53,4 @@ Inductive stepStar : term -> term -> Prop :=
   stepStar e2 e3 ->
   stepStar e1 e3.
 
-Hint Constructors stepStar.
+Hint Constructors stepStar : core.

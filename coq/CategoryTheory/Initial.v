@@ -31,4 +31,4 @@ Proof.
   split; magic.
 Qed.
 
-Hint Resolve initialUnique.
+Hint Resolve initialUnique : core.

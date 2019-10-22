@@ -27,7 +27,7 @@ Proof.
   clean. gen i. induction t1; magic.
 Qed.
 
-Hint Resolve ttSubIntro.
+Hint Resolve ttSubIntro : core.
 
 Theorem eeSubIntro :
   forall e1 e2 i x,
@@ -37,7 +37,7 @@ Proof.
   induction e1; magic.
 Qed.
 
-Hint Resolve eeSubIntro.
+Hint Resolve eeSubIntro : core.
 
 Theorem etSubIntro :
   forall e i t x,
@@ -47,7 +47,7 @@ Proof.
   induction e; magic; clean; rewrite ttSubIntro with (x := x); magic.
 Qed.
 
-Hint Resolve etSubIntro.
+Hint Resolve etSubIntro : core.
 
 (******************************************)
 (* Substitution distributes over opening. *)
@@ -64,7 +64,7 @@ Proof.
     apply tLocalClosureMonotonic with (i1 := i); magic.
 Qed.
 
-Hint Resolve ttttSubOpen.
+Hint Resolve ttttSubOpen : core.
 
 Theorem eeeeSubOpen :
   forall e1 e2 e3 ie it x,
@@ -78,7 +78,7 @@ Proof.
     apply eLocalClosureMonotonic with (ie1 := ie) (it1 := it); magic.
 Qed.
 
-Hint Resolve eeeeSubOpen.
+Hint Resolve eeeeSubOpen : core.
 
 Theorem eeetSubOpen :
   forall e1 e2 ie it t x,
@@ -92,7 +92,7 @@ Proof.
     apply eLocalClosureMonotonic with (ie1 := ie) (it1 := it); magic.
 Qed.
 
-Hint Resolve eeetSubOpen.
+Hint Resolve eeetSubOpen : core.
 
 Theorem eteeSubOpen :
   forall i e1 e2 t x,
@@ -104,7 +104,7 @@ Proof.
   apply tLocalClosureMonotonic with (i1 := i); magic.
 Qed.
 
-Hint Resolve eteeSubOpen.
+Hint Resolve eteeSubOpen : core.
 
 Theorem etetSubOpen :
   forall i e t1 t2 x,
@@ -116,4 +116,4 @@ Proof.
   apply tLocalClosureMonotonic with (i1 := i); magic.
 Qed.
 
-Hint Resolve etetSubOpen.
+Hint Resolve etetSubOpen : core.

@@ -22,4 +22,4 @@ Proof.
   clean. induction H0; eMagic.
 Qed.
 
-Hint Resolve soundness.
+Hint Resolve soundness : core.

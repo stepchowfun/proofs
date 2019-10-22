@@ -215,12 +215,12 @@ Section Kleene.
 
 End Kleene.
 
-Hint Resolve supremumUniqueness.
+Hint Resolve supremumUniqueness : core.
 
-Hint Resolve continuousImpliesMonotone.
+Hint Resolve continuousImpliesMonotone : core.
 
-Hint Resolve omegaChain.
+Hint Resolve omegaChain : core.
 
-Hint Resolve kleeneChainDirected.
+Hint Resolve kleeneChainDirected : core.
 
-Hint Resolve kleene.
+Hint Resolve kleene : core.
