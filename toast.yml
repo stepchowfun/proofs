@@ -34,7 +34,7 @@ tasks:
     input_paths:
       - Makefile
       - _CoqProject
-      - coq
+      - proofs
     user: user
     command: |
       set -euo pipefail
@@ -69,21 +69,21 @@ tasks:
           -name 'Makefile' \
         \) -print
       )
-      ./scripts/lint-imports.rb '^\s*Require ' 'coqc -R coq Main ?' $(
+      ./scripts/lint-imports.rb '^\s*Require ' 'coqc -R proofs Main ?' $(
         find . -type d \( \
           -path ./.git \
         \) -prune -o \( \
           -name '*.v' \
         \) -print
       )
-      ./scripts/lint-imports.rb '^\s*Import ' 'coqc -R coq Main ?' $(
+      ./scripts/lint-imports.rb '^\s*Import ' 'coqc -R proofs Main ?' $(
         find . -type d \( \
           -path ./.git \
         \) -prune -o \( \
           -name '*.v' \
         \) -print
       )
-      if grep --recursive --line-number --include '*.v' Admitted coq; then
+      if grep --recursive --line-number --include '*.v' Admitted proofs; then
         echo "Error: 'Admitted' found in proofs." 1>&2
         exit 1
       fi
