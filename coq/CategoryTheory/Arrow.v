@@ -51,7 +51,7 @@ Proof.
   split; clean; exists x0; magic.
 Qed.
 
-Hint Resolve opIsomorphism.
+Hint Resolve opIsomorphism : core.
 
 Theorem opMonoEpi C x y f :
   @monomorphism C x y f <-> @epimorphism (oppositeCategory C) y x f.
@@ -59,7 +59,7 @@ Proof.
   magic.
 Qed.
 
-Hint Resolve opMonoEpi.
+Hint Resolve opMonoEpi : core.
 
 Theorem opEpiMono C x y f :
   @epimorphism C x y f <-> @monomorphism (oppositeCategory C) y x f.
@@ -67,7 +67,7 @@ Proof.
   magic.
 Qed.
 
-Hint Resolve opEpiMono.
+Hint Resolve opEpiMono : core.
 
 Theorem opRetSec C x y f :
   @retraction C x y f <-> @section (oppositeCategory C) y x f.
@@ -75,7 +75,7 @@ Proof.
   magic.
 Qed.
 
-Hint Resolve opRetSec.
+Hint Resolve opRetSec : core.
 
 Theorem opSecRet C x y f :
   @section C x y f <-> @retraction (oppositeCategory C) y x f.
@@ -83,7 +83,7 @@ Proof.
   magic.
 Qed.
 
-Hint Resolve opSecRet.
+Hint Resolve opSecRet : core.
 
 Theorem idIso C x : isomorphism (@id C x).
 Proof.
@@ -93,7 +93,7 @@ Proof.
   magic.
 Qed.
 
-Hint Resolve idIso.
+Hint Resolve idIso : core.
 
 Theorem rightIdUnique C (x : object C):
   arrowUnique (
@@ -107,7 +107,7 @@ Proof.
   magic.
 Qed.
 
-Hint Resolve rightIdUnique.
+Hint Resolve rightIdUnique : core.
 
 Theorem leftIdUnique C (x : object C):
   arrowUnique (
@@ -121,7 +121,7 @@ Proof.
   magic.
 Qed.
 
-Hint Resolve leftIdUnique.
+Hint Resolve leftIdUnique : core.
 
 Theorem inverseUnique C (x y : object C) (f : arrow x y) :
   arrowUnique (inverse f).
@@ -135,7 +135,7 @@ Proof.
   magic.
 Qed.
 
-Hint Resolve inverseUnique.
+Hint Resolve inverseUnique : core.
 
 Theorem inverseInvolution C (x y : object C) (f h : arrow x y) g :
   inverse f g -> inverse g h -> f = h.
@@ -148,7 +148,7 @@ Proof.
     rewrite cAssoc. rewrite H. magic.
 Qed.
 
-Hint Resolve inverseInvolution.
+Hint Resolve inverseInvolution : core.
 
 Theorem isoImpliesEpi C x y f : @isomorphism C x y f -> @epimorphism C x y f.
 Proof.
@@ -164,7 +164,7 @@ Proof.
   magic.
 Qed.
 
-Hint Resolve isoImpliesEpi.
+Hint Resolve isoImpliesEpi : core.
 
 Theorem isoImpliesMono C x y f : @isomorphism C x y f -> @monomorphism C x y f.
 Proof.
@@ -175,7 +175,7 @@ Proof.
   magic.
 Qed.
 
-Hint Resolve isoImpliesMono.
+Hint Resolve isoImpliesMono : core.
 
 Theorem secImpliesMono C x y f : @section C x y f -> @monomorphism C x y f.
 Proof.
@@ -190,7 +190,7 @@ Proof.
   magic.
 Qed.
 
-Hint Resolve secImpliesMono.
+Hint Resolve secImpliesMono : core.
 
 Theorem retImpliesEpi C x y f : @retraction C x y f -> @epimorphism C x y f.
 Proof.
@@ -200,7 +200,7 @@ Proof.
   magic.
 Qed.
 
-Hint Resolve retImpliesEpi.
+Hint Resolve retImpliesEpi : core.
 
 Theorem monoRetEquivIso C x y f :
   @monomorphism C x y f /\ @retraction C x y f <-> @isomorphism C x y f.
@@ -227,7 +227,7 @@ Proof.
     magic.
 Qed.
 
-Hint Resolve monoRetEquivIso.
+Hint Resolve monoRetEquivIso : core.
 
 Theorem epiSecEquivIso C x y f :
   @epimorphism C x y f /\ @section C x y f <-> @isomorphism C x y f.
@@ -239,4 +239,4 @@ Proof.
   magic.
 Qed.
 
-Hint Resolve epiSecEquivIso.
+Hint Resolve epiSecEquivIso : core.

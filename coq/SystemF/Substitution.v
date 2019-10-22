@@ -53,7 +53,7 @@ Proof.
   induction t1; magic.
 Qed.
 
-Hint Resolve tttSubBound.
+Hint Resolve tttSubBound : core.
 
 Theorem eeeSubBound :
   forall e1 e2 x,
@@ -63,7 +63,7 @@ Proof.
   induction e1; magic.
 Qed.
 
-Hint Resolve eeeSubBound.
+Hint Resolve eeeSubBound : core.
 
 Theorem eetSubBound :
   forall e t x,
@@ -73,7 +73,7 @@ Proof.
   induction e; magic; clean; f_equal; magic; apply tttSubBound; magic.
 Qed.
 
-Hint Resolve eetSubBound.
+Hint Resolve eetSubBound : core.
 
 (*****************************************)
 (* Substitution preserves local closure. *)
@@ -90,7 +90,7 @@ Proof.
   apply tLocalClosureMonotonic with (i1 := i); magic.
 Qed.
 
-Hint Resolve ttSubLocallyClosed.
+Hint Resolve ttSubLocallyClosed : core.
 
 Theorem eeSubLocallyClosed :
   forall e1 e2 ie it x,
@@ -103,7 +103,7 @@ Proof.
     apply eLocalClosureMonotonic with (ie1 := ie) (it1 := it); magic.
 Qed.
 
-Hint Resolve eeSubLocallyClosed.
+Hint Resolve eeSubLocallyClosed : core.
 
 Theorem etSubLocallyClosed :
   forall e ie it t x,
@@ -116,7 +116,7 @@ Proof.
   apply tLocalClosureMonotonic with (i1 := it); magic.
 Qed.
 
-Hint Resolve etSubLocallyClosed.
+Hint Resolve etSubLocallyClosed : core.
 
 (************************************)
 (* Free variables of a substitution *)
@@ -135,7 +135,7 @@ Section FreeSub.
     induction l2; magic.
   Qed.
 
-  Hint Resolve inclAppRemoveWeakeningLeft.
+  Hint Resolve inclAppRemoveWeakeningLeft : core.
 
   Local Theorem inclAppRemoveWeakeningRight :
     forall x l1 l2 l3,
@@ -148,7 +148,7 @@ Section FreeSub.
     induction l2; magic.
   Qed.
 
-  Hint Resolve inclAppRemoveWeakeningRight.
+  Hint Resolve inclAppRemoveWeakeningRight : core.
 
   Theorem tttFreeSub :
     forall t1 t2 x,
@@ -165,7 +165,7 @@ Section FreeSub.
       ); magic.
   Qed.
 
-  Hint Resolve tttFreeSub.
+  Hint Resolve tttFreeSub : core.
 
   Theorem eeeeFreeSub :
     forall e1 e2 x,
@@ -182,7 +182,7 @@ Section FreeSub.
       ); magic.
   Qed.
 
-  Hint Resolve eeeeFreeSub.
+  Hint Resolve eeeeFreeSub : core.
 
   Theorem eeetFreeSub :
     forall e t x,
@@ -191,7 +191,7 @@ Section FreeSub.
     clean. induction e; magic.
   Qed.
 
-  Hint Resolve eeetFreeSub.
+  Hint Resolve eeetFreeSub : core.
 
   Theorem eteeFreeSub :
     forall e1 e2 x,
@@ -206,7 +206,7 @@ Section FreeSub.
     - apply incl_tran with (m := etFreeVars e1 ++ tFreeVars t); magic.
   Qed.
 
-  Hint Resolve eteeFreeSub.
+  Hint Resolve eteeFreeSub : core.
 
   Theorem etetFreeSub :
     forall e t x,
@@ -235,12 +235,12 @@ Section FreeSub.
       ); magic.
   Qed.
 
-  Hint Resolve etetFreeSub.
+  Hint Resolve etetFreeSub : core.
 
 End FreeSub.
 
-Hint Resolve tttFreeSub.
-Hint Resolve eeeeFreeSub.
-Hint Resolve eeetFreeSub.
-Hint Resolve eteeFreeSub.
-Hint Resolve etetFreeSub.
+Hint Resolve tttFreeSub : core.
+Hint Resolve eeeeFreeSub : core.
+Hint Resolve eeetFreeSub : core.
+Hint Resolve eteeFreeSub : core.
+Hint Resolve etetFreeSub : core.

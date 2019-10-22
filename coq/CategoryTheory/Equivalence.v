@@ -57,4 +57,4 @@ Proof.
   split; unfold naturalIsomorphism; magic.
 Qed.
 
-Hint Resolve equivalentRefl.
+Hint Resolve equivalentRefl : core.

@@ -44,7 +44,7 @@ Proof.
     split; rewrite cAssoc; magic.
 Qed.
 
-Hint Resolve productUnique.
+Hint Resolve productUnique : core.
 
 Theorem productCommutator
   {C}
@@ -83,7 +83,7 @@ Proof.
   apply H1; eMagic.
 Qed.
 
-Hint Resolve productCommutative.
+Hint Resolve productCommutative : core.
 
 Theorem productAssociative
   {C}
@@ -250,7 +250,7 @@ Proof.
       magic.
 Qed.
 
-Hint Resolve productAssociative.
+Hint Resolve productAssociative : core.
 
 Theorem productTerminal
   {C}
@@ -282,4 +282,4 @@ Proof.
     eMagic.
 Qed.
 
-Hint Resolve productTerminal.
+Hint Resolve productTerminal : core.

@@ -22,7 +22,7 @@ Proof.
   magic.
 Qed.
 
-Hint Resolve opInitialTerminal.
+Hint Resolve opInitialTerminal : core.
 
 Theorem opTerminalInitial C x :
   @terminal C x <-> @initial (oppositeCategory C) x.
@@ -30,7 +30,7 @@ Proof.
   magic.
 Qed.
 
-Hint Resolve opTerminalInitial.
+Hint Resolve opTerminalInitial : core.
 
 Theorem terminalUnique C : uniqueUpToIsomorphism (@terminal C).
 Proof.
@@ -41,4 +41,4 @@ Proof.
   apply initialUnique; magic.
 Qed.
 
-Hint Resolve terminalUnique.
+Hint Resolve terminalUnique : core.

@@ -46,4 +46,4 @@ Inductive hasType : context -> term -> type -> Prop :=
   hasType c e2 t2 ->
   hasType c (eApp e1 e2) t1.
 
-Hint Constructors hasType.
+Hint Constructors hasType : core.

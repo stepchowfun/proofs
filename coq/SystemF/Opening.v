@@ -55,7 +55,7 @@ Proof.
   clean. induction H; magic.
 Qed.
 
-Hint Resolve tttOpenLocallyClosed.
+Hint Resolve tttOpenLocallyClosed : core.
 
 Theorem eeeOpenLocallyClosed :
   forall e1 e2 ie it,
@@ -65,7 +65,7 @@ Proof.
   clean. induction H; magic.
 Qed.
 
-Hint Resolve eeeOpenLocallyClosed.
+Hint Resolve eeeOpenLocallyClosed : core.
 
 Theorem eetOpenLocallyClosed :
   forall e ie it t,
@@ -75,7 +75,7 @@ Proof.
   clean. induction H; magic.
 Qed.
 
-Hint Resolve eetOpenLocallyClosed.
+Hint Resolve eetOpenLocallyClosed : core.
 
 (***************************************************************************)
 (* If the opening of a term/type is locally closed at some level, then the *)
@@ -95,7 +95,7 @@ Proof.
   - invert H. magic.
 Qed.
 
-Hint Resolve ttLocallyClosedOpen.
+Hint Resolve ttLocallyClosedOpen : core.
 
 Theorem eeLocallyClosedOpen :
   forall e1 e2 ie it,
@@ -112,7 +112,7 @@ Proof.
   - invert H. magic.
 Qed.
 
-Hint Resolve eeLocallyClosedOpen.
+Hint Resolve eeLocallyClosedOpen : core.
 
 Theorem etLocallyClosedOpen :
   forall e ie it t,
@@ -128,7 +128,7 @@ Proof.
   - invert H. eMagic.
 Qed.
 
-Hint Resolve etLocallyClosedOpen.
+Hint Resolve etLocallyClosedOpen : core.
 
 (********************************)
 (* Free variables of an opening *)
@@ -146,7 +146,7 @@ Proof.
   - induction t1; magic. unfold incl. magic.
 Qed.
 
-Hint Resolve tttFreeOpen.
+Hint Resolve tttFreeOpen : core.
 
 Theorem eeeeFreeOpen :
   forall e1 e2 i,
@@ -160,7 +160,7 @@ Proof.
   - induction e1; magic. unfold incl. magic.
 Qed.
 
-Hint Resolve eeeeFreeOpen.
+Hint Resolve eeeeFreeOpen : core.
 
 Theorem eeetFreeOpen :
   forall e i t,
@@ -170,7 +170,7 @@ Proof.
   clean. split; gen i; induction e; magic.
 Qed.
 
-Hint Resolve eeetFreeOpen.
+Hint Resolve eeetFreeOpen : core.
 
 Theorem eteeFreeOpen :
   forall e1 e2 i,
@@ -189,7 +189,7 @@ Proof.
   - induction e1; magic. unfold incl. magic.
 Qed.
 
-Hint Resolve eteeFreeOpen.
+Hint Resolve eteeFreeOpen : core.
 
 Theorem etetFreeOpen :
   forall e i t,
@@ -212,7 +212,7 @@ Proof.
       apply tttFreeOpen.
 Qed.
 
-Hint Resolve etetFreeOpen.
+Hint Resolve etetFreeOpen : core.
 
 (********************************************)
 (* Opening binders preserves local closure. *)
@@ -233,7 +233,7 @@ Proof.
   apply tLocalClosureMonotonic with (i1 := i); magic.
 Qed.
 
-Hint Resolve locallyClosedOpenForAll.
+Hint Resolve locallyClosedOpenForAll : core.
 
 Theorem locallyClosedOpenAbs :
   forall e1 e2 ie it t,
@@ -252,7 +252,7 @@ Proof.
   magic.
 Qed.
 
-Hint Resolve locallyClosedOpenAbs.
+Hint Resolve locallyClosedOpenAbs : core.
 
 Theorem locallyClosedOpenTAbs :
   forall e ie it t,
@@ -274,4 +274,4 @@ Proof.
     apply tLocalClosureMonotonic with (i1 := nt); magic.
 Qed.
 
-Hint Resolve locallyClosedOpenTAbs.
+Hint Resolve locallyClosedOpenTAbs : core.

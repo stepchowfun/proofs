@@ -28,9 +28,9 @@ Arguments fMap {_} {_} _ {_} {_}.
 Arguments fIdent {_} {_} _.
 Arguments fComp {_} {_} _ {_} {_} {_}.
 
-Hint Resolve @fIdent.
+Hint Resolve @fIdent : core.
 Hint Rewrite @fIdent.
-Hint Resolve @fComp.
+Hint Resolve @fComp : core.
 Hint Rewrite @fComp.
 
 Definition endofunctor C := functor C C.
