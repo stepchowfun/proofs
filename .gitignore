@@ -3,6 +3,6 @@
 Makefile.coq
 Makefile.coq.conf
 _CoqProjectFull
-coq/**/*.aux
-coq/**/*.glob
-coq/**/*.vo
+proofs/**/*.aux
+proofs/**/*.glob
+proofs/**/*.vo
