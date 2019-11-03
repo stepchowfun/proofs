@@ -17,15 +17,15 @@ tasks:
       echo 'export LANG="C.UTF-8"' >> /home/user/.profile
 
       # Install Coq.
-      curl -fsSLo coq.tar.gz https://github.com/coq/coq/archive/V8.10.0.tar.gz
+      curl -fsSLo coq.tar.gz https://github.com/coq/coq/archive/V8.10.1.tar.gz
       tar -xzf coq.tar.gz
       rm coq.tar.gz
-      cd coq-8.10.0
+      cd coq-8.10.1
       ./configure -prefix /usr/local
       make
       make install
       cd ..
-      rm -rf coq-8.10.0
+      rm -rf coq-8.10.1
 
   verify:
     description: Run Coq on the proof scripts.
