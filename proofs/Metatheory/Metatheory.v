@@ -77,3 +77,46 @@ Definition idUniverse (t : universe) (x : t) := x.
 
   Definition catastrophe : bool := evil (makeBad evil).
 *)
+
+(***********************************************************)
+(* A demonstration that inductive families (not to be      *)
+(* confused with families of inductive types) and          *)
+(* propositional equality can be encoded in terms of each  *)
+(* other.                                                  *)
+(***********************************************************)
+
+Inductive Exp : Set -> Type :=
+| Zero : Exp nat
+| Succ : Exp nat -> Exp nat
+| Pair : forall b c, Exp b -> Exp c -> Exp (prod b c).
+
+Fixpoint eval (a : Set) (e1 : Exp a) : a :=
+  match e1 in Exp b return b with
+  | Zero => 0
+  | Succ e2 => eval nat e2 + 1
+  | Pair c d e2 e3 => (eval c e2, eval d e3)
+  end.
+
+Inductive Exp2 (a : Set) : Type :=
+| Zero2 : nat = a -> Exp2 a
+| Succ2 : nat = a -> Exp2 a -> Exp2 a
+| Pair2 : forall (b c : Set), (prod b c) = a -> Exp2 b -> Exp2 c -> Exp2 a.
+
+Fixpoint eval2 (a : Set) (e1 : Exp2 a) : a :=
+  match e1 with
+  | Zero2 _ H => match H in (_ = b) return b with
+                 | eq_refl => 0
+                 end
+  | Succ2 _ H e2 => match H in (_ = b) return b with
+                    | eq_refl => eval2 nat (
+                                   match (eq_sym H)
+                                   in (_ = c)
+                                   return Exp2 c with
+                                   | eq_refl => e2
+                                   end
+                                 ) + 1
+                    end
+  | Pair2 _ b c H e2 e3 => match H in (_ = b) return b with
+                           | eq_refl => (eval2 b e2, eval2 c e3)
+                           end
+  end.
