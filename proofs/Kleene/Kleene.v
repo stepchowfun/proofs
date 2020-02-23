@@ -6,6 +6,7 @@
 (*******************************************************)
 (*******************************************************)
 
+Require Import Lia.
 Require Import Main.Tactics.
 
 Section Kleene.
@@ -107,7 +108,9 @@ Section Kleene.
     n1 = n2 + n3 \/ n2 = n1 + n3.
   Proof.
     clean. induction n1; eMagic. clean.
-    destruct x; eMagic.
+    destruct H.
+    - exists (S x). lia.
+    - destruct x; [exists 1 | exists x]; lia.
   Qed.
 
   (* The supremum of a subset of T, if it exists, is unique. *)

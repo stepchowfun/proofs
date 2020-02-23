@@ -16,13 +16,13 @@ Open Scope type. (* Parse `*` as `prod` rather than `mul`. *)
 
 (* Sets and functions form a category. *)
 
-Let setCAssoc w x y z (f : w -> x) (g : x -> y) (h : y -> z) :
+Local Theorem setCAssoc w x y z (f : w -> x) (g : x -> y) (h : y -> z) :
   (fun e : w => h (g (f e))) = (fun e : w => h (g (f e))).
 Proof.
   magic.
 Qed.
 
-Let setCIdent x y (f : x -> y) : (fun e : x => f e) = f.
+Local Theorem setCIdent x y (f : x -> y) : (fun e : x => f e) = f.
 Proof.
   magic.
 Qed.

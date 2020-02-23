@@ -38,7 +38,7 @@ Hint Rewrite @cIdentLeft.
 Hint Resolve @cIdentRight : core.
 Hint Rewrite @cIdentRight.
 
-Let opCAssoc
+Local Theorem opCAssoc
   {C}
   (w x y z : object C)
   (f : arrow x w)
@@ -49,13 +49,13 @@ Proof.
   magic.
 Qed.
 
-Let opCIdentLeft {C} (x y : object C) (f : arrow y x) :
+Local Theorem opCIdentLeft {C} (x y : object C) (f : arrow y x) :
   compose f id = f.
 Proof.
   magic.
 Qed.
 
-Let opCIdentRight {C} (x y : object C) (f : arrow y x) :
+Local Theorem opCIdentRight {C} (x y : object C) (f : arrow y x) :
   compose id f = f.
 Proof.
   magic.
