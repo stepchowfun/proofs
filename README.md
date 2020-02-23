@@ -1,6 +1,6 @@
 # Proofs
 
-A selection of formal developments in [Coq](https://coq.inria.fr/).
+A selection of formal proofs in [Coq](https://coq.inria.fr/).
 
 [![Build Status](https://travis-ci.org/stepchowfun/proofs.svg?branch=master)](https://travis-ci.org/stepchowfun/proofs)
 

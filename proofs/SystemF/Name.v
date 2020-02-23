@@ -36,6 +36,7 @@ Module Name : NameSig.
     assert (forall n, In n l -> n < S (fold_right Nat.max 0 l)).
     - clear H. clean. induction l; magic.
       assert ((fold_right max 0 l) < S (max a (fold_right max 0 l))); magic.
+      destruct H; magic.
     - specialize (H0 (S (fold_right Nat.max 0 l))). magic.
   Qed.
 

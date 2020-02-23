@@ -14,7 +14,7 @@ Set Universe Polymorphism.
 
 Open Scope type. (* Parse `*` as `prod` rather than `mul`. *)
 
-Let productCategoryCAssoc
+Local Theorem productCategoryCAssoc
   {C D}
   (w x y z : object C * object D)
   (f : arrow (fst w) (fst x) * arrow (snd w) (snd x))
@@ -39,7 +39,7 @@ Proof.
   magic.
 Qed.
 
-Let productCategoryCIdentLeft
+Local Theorem productCategoryCIdentLeft
   {C D}
   (x y : object C * object D)
   (f : arrow (fst x) (fst y) * arrow (snd x) (snd y))
@@ -51,7 +51,7 @@ Proof.
   magic.
 Qed.
 
-Let productCategoryCIdentRight
+Local Theorem productCategoryCIdentRight
   {C D : category}
   (x y : object C * object D)
   (f : arrow (fst x) (fst y) * arrow (snd x) (snd y))
@@ -72,13 +72,15 @@ Definition productCategory C D : category := newCategory
   productCategoryCIdentLeft
   productCategoryCIdentRight.
 
-Let productCategoryProj1FIdent {C D} (x : object (productCategory C D)) :
-  fst (@id (productCategory C D) x) = id.
+Local Theorem productCategoryProj1FIdent
+  {C D}
+  (x : object (productCategory C D))
+: fst (@id (productCategory C D) x) = id.
 Proof.
   magic.
 Qed.
 
-Let productCategoryProj1FComp
+Local Theorem productCategoryProj1FComp
   {C D}
   (x y z : object (productCategory C D))
   (f : arrow x y)
@@ -95,7 +97,7 @@ Definition productCategoryProj1 C D :
     fst
     (fun _ _ => fst) productCategoryProj1FIdent productCategoryProj1FComp.
 
-Let productCategoryProj2FIdent
+Local Theorem productCategoryProj2FIdent
   {C D}
   (x : object (productCategory C D))
 : snd (@id (productCategory C D) x) = id.
@@ -103,7 +105,7 @@ Proof.
   magic.
 Qed.
 
-Let productCategoryProj2FComp
+Local Theorem productCategoryProj2FComp
   {C D}
   (x y z : object (productCategory C D))
   (f : arrow x y)

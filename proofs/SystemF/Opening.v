@@ -6,6 +6,7 @@
 (******************************)
 (******************************)
 
+Require Import Lia.
 Require Import List.
 Require Import Main.SystemF.FreeVar.
 Require Import Main.SystemF.LocalClosure.
@@ -227,10 +228,11 @@ Proof.
   clean. invert H.
   remember (S i). assert (n <= S i); magic. clear Heqn. gen t2 i.
   induction H2; magic; clean.
-  constructor; magic.
-  specialize (IHtLocallyClosed t2 (S i)).
-  feed IHtLocallyClosed.
-  apply tLocalClosureMonotonic with (i1 := i); magic.
+  - destruct (eq_dec i n1); magic. apply tlcBoundVar. lia.
+  - constructor; magic.
+    specialize (IHtLocallyClosed t2 (S i)).
+    feed IHtLocallyClosed.
+    apply tLocalClosureMonotonic with (i1 := i); magic.
 Qed.
 
 Hint Resolve locallyClosedOpenForAll : core.
@@ -243,13 +245,16 @@ Theorem locallyClosedOpenAbs :
 Proof.
   clean. invert H. clear t0 H3.
   remember (S ie). assert (n <= S ie); magic. clear Heqn. gen e2 ie.
-  induction H6; magic; constructor; magic; clean; [
-    specialize (IHeLocallyClosed e2 (S ie)) |
-    specialize (IHeLocallyClosed e2 ie)
-  ];
-  feed IHeLocallyClosed;
-  eapply eLocalClosureMonotonic with (ie1 := ie) (it1 := nt);
-  magic.
+  induction H6; magic; clean.
+  - destruct (eq_dec ie ne1); magic. apply elcBoundVar. lia.
+  - constructor; magic.
+    specialize (IHeLocallyClosed e2 (S ie)).
+    apply IHeLocallyClosed; magic.
+    apply eLocalClosureMonotonic with (ie1 := ie) (it1 := nt); magic.
+  - constructor.
+    specialize (IHeLocallyClosed e2 ie).
+    apply IHeLocallyClosed; magic.
+    apply eLocalClosureMonotonic with (ie1 := ie) (it1 := nt); magic.
 Qed.
 
 Hint Resolve locallyClosedOpenAbs : core.

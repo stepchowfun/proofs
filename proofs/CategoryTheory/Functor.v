@@ -35,7 +35,7 @@ Hint Rewrite @fComp.
 
 Definition endofunctor C := functor C C.
 
-Let compFIdent
+Local Theorem compFIdent
   {C D E}
   {G : functor D E}
   {F : functor C D}
@@ -45,7 +45,7 @@ Proof.
   magic.
 Qed.
 
-Let compFComp
+Local Theorem compFComp
   {C D E}
   {G : functor D E}
   {F : functor C D}
@@ -69,12 +69,12 @@ Definition compFunctor
   compFIdent
   compFComp.
 
-Let idFIdent {C} (x : object C) : @id C x = id.
+Local Theorem idFIdent {C} (x : object C) : @id C x = id.
 Proof.
   magic.
 Qed.
 
-Let idFComp {C} (x y z : object C) (f : arrow x y) (g : arrow y z) :
+Local Theorem idFComp {C} (x y z : object C) (f : arrow x y) (g : arrow y z) :
   compose g f = compose g f.
 Proof.
   magic.

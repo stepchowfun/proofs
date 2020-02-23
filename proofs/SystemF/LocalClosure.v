@@ -6,6 +6,7 @@
 (**************************************)
 (**************************************)
 
+Require Import Lia.
 Require Import Main.SystemF.Syntax.
 Require Import Main.Tactics.
 
@@ -70,6 +71,7 @@ Theorem tLocalClosureMonotonic :
   tLocallyClosed t i2.
 Proof.
   clean. gen i2 H. induction H0; magic.
+  clean. apply tlcBoundVar. lia.
 Qed.
 
 (* Don't add a resolve hint because eapply has a hard time guessing i1. *)

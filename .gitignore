@@ -1,4 +1,4 @@
-.coqdeps.d
+.Makefile.coq.d
 .lia.cache
 Makefile.coq
 Makefile.coq.conf
@@ -6,3 +6,5 @@ _CoqProjectFull
 proofs/**/*.aux
 proofs/**/*.glob
 proofs/**/*.vo
+proofs/**/*.vok
+proofs/**/*.vos

@@ -58,7 +58,7 @@ Qed.
 
 Hint Resolve eqNaturalTransformation : core.
 
-Let rightWhiskerNaturality
+Local Theorem rightWhiskerNaturality
   {C D E}
   {F G : functor C D}
   {H : functor D E}
@@ -80,7 +80,7 @@ Definition rightWhisker
   (fun x => fMap H (eta Eta x))
   rightWhiskerNaturality.
 
-Let leftWhiskerNaturality
+Local Theorem leftWhiskerNaturality
   {C D E}
   {F G : functor D E}
   {Eta : naturalTransformation F G}
@@ -103,7 +103,7 @@ Definition leftWhisker
   (fun x => eta Eta (oMap H x))
   leftWhiskerNaturality.
 
-Let idNaturality
+Local Theorem idNaturality
   {C D}
   {F : functor C D}
   (x y : object C)
@@ -119,7 +119,7 @@ Definition idNaturalTransformation
   naturalTransformation F F
 := newNaturalTransformation F F (fun x => id) idNaturality.
 
-Let vertCompNaturality
+Local Theorem vertCompNaturality
   {C D}
   {F G H : functor C D}
   {Eta : naturalTransformation G H}
