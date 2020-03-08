@@ -2,7 +2,7 @@
 
 A selection of formal proofs in [Coq](https://coq.inria.fr/).
 
-[![Build Status](https://travis-ci.org/stepchowfun/proofs.svg?branch=master)](https://travis-ci.org/stepchowfun/proofs)
+[![Build status](https://github.com/stepchowfun/proofs/workflows/Continuous%20integration/badge.svg?branch=master)](https://github.com/stepchowfun/proofs/actions?query=branch%3Amaster)
 
 ## Instructions
 
