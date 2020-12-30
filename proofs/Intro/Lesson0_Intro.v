@@ -17,7 +17,7 @@ Inductive bool :=
 Check true. (* bool *)
 Check false. (* bool *)
 
-(* Here's a simple function on Bools. *)
+(* Here's a simple function on Booleans. *)
 
 Definition negb b :=
   match b with
