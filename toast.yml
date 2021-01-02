@@ -1,36 +1,47 @@
-image: ubuntu:18.04
+image: ubuntu:20.04
 default: verify
 tasks:
-  prepare_system:
-    description: Install system packages and set up a non-root user.
+  install_packages:
+    description: Install system packages.
     command: |
       set -euo pipefail
 
-      # Create a non-root user.
-      adduser --disabled-password --gecos '' user
-
       # Install system packages.
+      export DEBIAN_FRONTEND=noninteractive
       apt-get update
-      apt-get install --yes build-essential camlp5 curl ocaml ruby
+      apt-get install --yes build-essential curl opam ruby
+
+  create_user:
+    description: Create a user.
+    command: |
+      set -euo pipefail
+
+      # Create a user.
+      adduser --disabled-password --gecos '' user
 
       # Without this, Ruby will assume files are encoded as ASCII.
       echo 'export LANG="C.UTF-8"' >> /home/user/.profile
 
-      # Install Coq.
-      curl -fsSLo coq.tar.gz https://github.com/coq/coq/archive/V8.11.0.tar.gz
-      tar -xzf coq.tar.gz
-      rm coq.tar.gz
-      cd coq-8.11.0
-      ./configure -prefix /usr/local
-      make
-      make install
-      cd ..
-      rm -rf coq-8.11.0
+  install_coq:
+    description: Install Coq.
+    dependencies:
+      - create_user
+      - install_packages
+    user: user
+    command: |
+      set -euo pipefail
+
+      # Install Coq via OPAM.
+      opam init --disable-sandboxing --yes
+      eval "$(opam env)"
+      opam switch create 4.11.1 --yes
+      eval "$(opam env)"
+      opam pin add coq 8.12.2 --yes
 
   verify:
     description: Run Coq on the proof scripts.
     dependencies:
-      - prepare_system
+      - install_coq
     input_paths:
       - Makefile
       - _CoqProject
@@ -38,6 +49,9 @@ tasks:
     user: user
     command: |
       set -euo pipefail
+
+      # Make sure the OPAM environment is loaded.
+      eval "$(opam env)"
 
       # Run Coq on the proof scripts.
       make clean
@@ -55,6 +69,9 @@ tasks:
 
       # Make sure the `LANG` environment variable is set for Ruby.
       source ~/.profile
+
+      # Make sure the OPAM environment is loaded.
+      eval "$(opam env)"
 
       # Run the linters.
       ./scripts/lint-general.rb $(
