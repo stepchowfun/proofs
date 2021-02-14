@@ -9,7 +9,7 @@ tasks:
       # Install system packages.
       export DEBIAN_FRONTEND=noninteractive
       apt-get update
-      apt-get install --yes build-essential curl opam ruby
+      apt-get install --yes build-essential curl libgmp3-dev opam ruby
 
   create_user:
     description: Create a user.
@@ -36,7 +36,7 @@ tasks:
       eval "$(opam env)"
       opam switch create 4.11.1 --yes
       eval "$(opam env)"
-      opam pin add coq 8.12.2 --yes
+      opam pin add coq 8.13.0 --yes
 
   verify:
     description: Run Coq on the proof scripts.
