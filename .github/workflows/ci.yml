@@ -10,7 +10,7 @@ jobs:
         username: stephanmisc
         password: ${{ secrets.DOCKER_PASSWORD }}
       if: github.event_name == 'push'
-    - uses: stepchowfun/toast/.github/actions/toast@master
+    - uses: stepchowfun/toast/.github/actions/toast@main
       with:
         tasks: verify lint
         repo: stephanmisc/toast
