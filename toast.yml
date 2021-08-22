@@ -1,11 +1,12 @@
 image: ubuntu:20.04
 default: verify
+user: user
+command_prefix: set -euo pipefail
 tasks:
   install_packages:
     description: Install system packages.
+    user: root
     command: |
-      set -euo pipefail
-
       # Install system packages.
       export DEBIAN_FRONTEND=noninteractive
       apt-get update
@@ -13,9 +14,8 @@ tasks:
 
   create_user:
     description: Create a user.
+    user: root
     command: |
-      set -euo pipefail
-
       # Create a user.
       adduser --disabled-password --gecos '' user
 
@@ -29,8 +29,6 @@ tasks:
       - install_packages
     user: user
     command: |
-      set -euo pipefail
-
       # Install Coq via OPAM.
       opam init --disable-sandboxing --yes
       eval "$(opam env)"
@@ -48,8 +46,6 @@ tasks:
       - proofs
     user: user
     command: |
-      set -euo pipefail
-
       # Make sure the OPAM environment is loaded.
       eval "$(opam env)"
 
@@ -65,8 +61,6 @@ tasks:
       - scripts
     user: user
     command: |
-      set -euo pipefail
-
       # Make sure the `LANG` environment variable is set for Ruby.
       source ~/.profile
 
