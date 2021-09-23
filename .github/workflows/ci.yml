@@ -13,5 +13,5 @@ jobs:
     - uses: stepchowfun/toast/.github/actions/toast@main
       with:
         tasks: verify lint
-        repo: stephanmisc/toast
+        docker_repo: stephanmisc/toast
         write_remote_cache: ${{ github.event_name == 'push' }}
