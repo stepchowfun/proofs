@@ -32,9 +32,9 @@ tasks:
       # Install Coq via OPAM.
       opam init --disable-sandboxing --yes
       eval "$(opam env)"
-      opam switch create 4.11.1 --yes
+      opam switch create 4.13.1 --yes
       eval "$(opam env)"
-      opam pin add coq 8.13.0 --yes
+      opam pin add coq 8.15.0 --yes
 
   verify:
     description: Run Coq on the proof scripts.
