@@ -1,22 +1,43 @@
 image: ubuntu:20.04
 default: verify
 user: user
-command_prefix: set -euo pipefail
+command_prefix: |
+  # Make Bash not silently ignore errors.
+  set -euo pipefail
+
+  # Load the opam environment.
+  if type opam > /dev/null 2>&1; then
+    eval "$(opam env)"
+  fi
 tasks:
   install_packages:
     description: Install system packages.
     user: root
     command: |
-      # Install system packages.
-      export DEBIAN_FRONTEND=noninteractive
+      # Install the following packages:
+      #
+      # - build-essential - Used by opam to build Coq
+      # - curl            - Used for installing Tagref
+      # - libgmp3-dev     - Used by opam to build Coq
+      # - opam            - Used to install OCaml and Coq
+      # - ruby            - Used by the linter scripts
       apt-get update
       apt-get install --yes build-essential curl libgmp3-dev opam ruby
 
-  create_user:
-    description: Create a user.
+  install_tagref:
+    description: Install Tagref, a reference checking tool.
+    dependencies:
+      - install_packages
     user: root
     command: |
-      # Create a user.
+      # Install Tagref using the official installer script.
+      curl https://raw.githubusercontent.com/stepchowfun/tagref/main/install.sh -LSfs | sh
+
+  create_user:
+    description: Create a user who doesn't have root privileges.
+    user: root
+    command: |
+      # Create a user named `user` with a home directory.
       adduser --disabled-password --gecos '' user
 
       # Without this, Ruby will assume files are encoded as ASCII.
@@ -36,19 +57,22 @@ tasks:
       eval "$(opam env)"
       opam pin add coq 8.15.0 --yes
 
+  install_tools:
+    description: Install the tools needed to verify the Coq proofs.
+    dependencies:
+      - install_coq
+      - install_tagref
+
   verify:
     description: Run Coq on the proof scripts.
     dependencies:
-      - install_coq
+      - install_tools
     input_paths:
       - Makefile
       - _CoqProject
       - proofs
     user: user
     command: |
-      # Make sure the OPAM environment is loaded.
-      eval "$(opam env)"
-
       # Run Coq on the proof scripts.
       make clean
       make
@@ -64,8 +88,8 @@ tasks:
       # Make sure the `LANG` environment variable is set for Ruby.
       source ~/.profile
 
-      # Make sure the OPAM environment is loaded.
-      eval "$(opam env)"
+      # Check references with Tagref.
+      tagref
 
       # Run the linters.
       ./scripts/lint-general.rb $(
