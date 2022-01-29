@@ -40,9 +40,6 @@ tasks:
       # Create a user named `user` with a home directory.
       adduser --disabled-password --gecos '' user
 
-      # Without this, Ruby will assume files are encoded as ASCII.
-      echo 'export LANG="C.UTF-8"' >> /home/user/.profile
-
   install_coq:
     description: Install Coq.
     dependencies:
