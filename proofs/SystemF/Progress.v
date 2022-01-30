@@ -32,4 +32,4 @@ Proof.
     + exists (eTApp x t2). invert H. magic.
 Qed.
 
-Hint Resolve progress : core.
+#[export] Hint Resolve progress : core.

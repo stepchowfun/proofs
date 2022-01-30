@@ -21,7 +21,7 @@ Inductive value : term -> Prop :=
   eLocallyClosed (eTAbs e) 0 0 ->
   value (eTAbs e).
 
-Hint Constructors value : core.
+#[export] Hint Constructors value : core.
 
 Inductive step : term -> term -> Prop :=
 | sBeta :
@@ -50,7 +50,7 @@ Inductive step : term -> term -> Prop :=
   tLocallyClosed t 0 ->
   step (eTApp (eTAbs e1) t) (etOpen e1 0 t).
 
-Hint Constructors step : core.
+#[export] Hint Constructors step : core.
 
 Theorem stepRegularity :
   forall e1 e2,
@@ -64,7 +64,7 @@ Proof.
   - invert H; magic.
 Qed.
 
-Hint Resolve stepRegularity : core.
+#[export] Hint Resolve stepRegularity : core.
 
 Inductive stepStar : term -> term -> Prop :=
 | scRefl :
@@ -77,7 +77,7 @@ Inductive stepStar : term -> term -> Prop :=
   stepStar e2 e3 ->
   stepStar e1 e3.
 
-Hint Constructors stepStar : core.
+#[export] Hint Constructors stepStar : core.
 
 Theorem stepStarRegularity :
   forall e1 e2,
@@ -87,4 +87,4 @@ Proof.
   clean. induction H; magic. fact (stepRegularity e1 e2). magic.
 Qed.
 
-Hint Resolve stepStarRegularity : core.
+#[export] Hint Resolve stepStarRegularity : core.

@@ -53,7 +53,7 @@ Proof.
   induction t1; magic.
 Qed.
 
-Hint Resolve tttSubBound : core.
+#[export] Hint Resolve tttSubBound : core.
 
 Theorem eeeSubBound :
   forall e1 e2 x,
@@ -63,7 +63,7 @@ Proof.
   induction e1; magic.
 Qed.
 
-Hint Resolve eeeSubBound : core.
+#[export] Hint Resolve eeeSubBound : core.
 
 Theorem eetSubBound :
   forall e t x,
@@ -73,7 +73,7 @@ Proof.
   induction e; magic; clean; f_equal; magic; apply tttSubBound; magic.
 Qed.
 
-Hint Resolve eetSubBound : core.
+#[export] Hint Resolve eetSubBound : core.
 
 (*****************************************)
 (* Substitution preserves local closure. *)
@@ -90,7 +90,7 @@ Proof.
   apply tLocalClosureMonotonic with (i1 := i); magic.
 Qed.
 
-Hint Resolve ttSubLocallyClosed : core.
+#[export] Hint Resolve ttSubLocallyClosed : core.
 
 Theorem eeSubLocallyClosed :
   forall e1 e2 ie it x,
@@ -103,7 +103,7 @@ Proof.
     apply eLocalClosureMonotonic with (ie1 := ie) (it1 := it); magic.
 Qed.
 
-Hint Resolve eeSubLocallyClosed : core.
+#[export] Hint Resolve eeSubLocallyClosed : core.
 
 Theorem etSubLocallyClosed :
   forall e ie it t x,
@@ -116,7 +116,7 @@ Proof.
   apply tLocalClosureMonotonic with (i1 := it); magic.
 Qed.
 
-Hint Resolve etSubLocallyClosed : core.
+#[export] Hint Resolve etSubLocallyClosed : core.
 
 (************************************)
 (* Free variables of a substitution *)
@@ -239,8 +239,8 @@ Section FreeSub.
 
 End FreeSub.
 
-Hint Resolve tttFreeSub : core.
-Hint Resolve eeeeFreeSub : core.
-Hint Resolve eeetFreeSub : core.
-Hint Resolve eteeFreeSub : core.
-Hint Resolve etetFreeSub : core.
+#[export] Hint Resolve tttFreeSub : core.
+#[export] Hint Resolve eeeeFreeSub : core.
+#[export] Hint Resolve eeetFreeSub : core.
+#[export] Hint Resolve eteeFreeSub : core.
+#[export] Hint Resolve etetFreeSub : core.

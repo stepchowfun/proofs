@@ -31,11 +31,11 @@ newMonad {
     eta idNaturalTransformation;
 }.
 
-Hint Resolve @mAssoc : core.
-Hint Resolve @mIdent1 : core.
-Hint Rewrite @mIdent1.
-Hint Resolve @mIdent2 : core.
-Hint Rewrite @mIdent2.
+#[export] Hint Resolve mAssoc : core.
+#[export] Hint Resolve mIdent1 : core.
+#[export] Hint Rewrite @mIdent1 : core.
+#[export] Hint Resolve mIdent2 : core.
+#[export] Hint Rewrite @mIdent2 : core.
 
 Theorem eqMonad
   {C}
@@ -50,4 +50,4 @@ Proof.
   f_equal; apply proof_irrelevance.
 Qed.
 
-Hint Resolve eqMonad : core.
+#[export] Hint Resolve eqMonad : core.

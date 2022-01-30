@@ -20,4 +20,4 @@ Proof.
   - destruct IHhasType1; destruct IHhasType2; eMagic. invert H; eMagic.
 Qed.
 
-Hint Resolve progress : core.
+#[export] Hint Resolve progress : core.

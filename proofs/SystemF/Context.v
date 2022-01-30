@@ -84,7 +84,7 @@ Inductive cWellFormed : context -> Prop :=
   cWellFormed c ->
   cWellFormed (cTExtend c x).
 
-Hint Constructors cWellFormed : core.
+#[export] Hint Constructors cWellFormed : core.
 
 (*****************************)
 (* Concatenation of contexts *)
@@ -119,8 +119,8 @@ Proof.
   clean. split; induction c; eMagic. clean. destruct H; eMagic.
 Qed.
 
-Hint Resolve -> eDomainLookup : core.
-Hint Resolve <- eDomainLookup : core.
+#[export] Hint Resolve -> eDomainLookup : core.
+#[export] Hint Resolve <- eDomainLookup : core.
 
 Theorem tDomainLookup :
   forall c x,
@@ -129,8 +129,8 @@ Proof.
   clean. induction c; magic.
 Qed.
 
-Hint Resolve -> tDomainLookup : core.
-Hint Resolve <- tDomainLookup : core.
+#[export] Hint Resolve -> tDomainLookup : core.
+#[export] Hint Resolve <- tDomainLookup : core.
 
 (************************************)
 (* Facts about type well-formedness *)
@@ -145,7 +145,7 @@ Proof.
   clean. apply tDomainLookup. invert H. magic.
 Qed.
 
-Hint Resolve tWellFormedClosed : core.
+#[export] Hint Resolve tWellFormedClosed : core.
 
 Theorem tLookupWellFormed :
   forall c x t,
@@ -157,7 +157,7 @@ Proof.
   destruct (nameEq x x0); magic. clean. invert H0. magic.
 Qed.
 
-Hint Resolve tLookupWellFormed : core.
+#[export] Hint Resolve tLookupWellFormed : core.
 
 (****************************)
 (* Facts about substitution *)
@@ -170,7 +170,7 @@ Proof.
   induction c; magic.
 Qed.
 
-Hint Resolve cSubEDomain : core.
+#[export] Hint Resolve cSubEDomain : core.
 
 Theorem cSubTDomain :
   forall c x t,
@@ -179,7 +179,7 @@ Proof.
   induction c; magic.
 Qed.
 
-Hint Resolve cSubTDomain : core.
+#[export] Hint Resolve cSubTDomain : core.
 
 (*****************************************)
 (* Facts about concatenation of contexts *)
@@ -190,7 +190,7 @@ Proof.
   induction c; magic.
 Qed.
 
-Hint Resolve cConcatEmpty : core.
+#[export] Hint Resolve cConcatEmpty : core.
 
 Theorem cConcatAssoc :
   forall c1 c2 c3,
@@ -199,7 +199,7 @@ Proof.
   induction c2; induction c3; magic.
 Qed.
 
-Hint Resolve cConcatAssoc : core.
+#[export] Hint Resolve cConcatAssoc : core.
 
 (*****************************************)
 (* Facts about concatenation and domains *)
@@ -212,7 +212,7 @@ Proof.
   induction c2; magic.
 Qed.
 
-Hint Resolve eDomainConcat : core.
+#[export] Hint Resolve eDomainConcat : core.
 
 Theorem tDomainConcat :
   forall c1 c2,
@@ -221,7 +221,7 @@ Proof.
   induction c2; magic.
 Qed.
 
-Hint Resolve tDomainConcat : core.
+#[export] Hint Resolve tDomainConcat : core.
 
 (****************************************)
 (* Facts about concatenation and lookup *)
@@ -235,7 +235,7 @@ Proof.
   induction c2; magic.
 Qed.
 
-Hint Resolve cConcatELookup : core.
+#[export] Hint Resolve cConcatELookup : core.
 
 Theorem cConcatTLookup :
   forall c1 c2 x,
@@ -245,7 +245,7 @@ Proof.
   induction c2; magic.
 Qed.
 
-Hint Resolve cConcatTLookup : core.
+#[export] Hint Resolve cConcatTLookup : core.
 
 Theorem cELookupConcatRight :
   forall c1 c2 t x,
@@ -255,7 +255,7 @@ Proof.
   induction c2; magic.
 Qed.
 
-Hint Resolve cELookupConcatRight : core.
+#[export] Hint Resolve cELookupConcatRight : core.
 
 Theorem cELookupConcatLeft :
   forall c1 c2 t x,
@@ -266,7 +266,7 @@ Proof.
   induction c2; magic.
 Qed.
 
-Hint Resolve cELookupConcatLeft : core.
+#[export] Hint Resolve cELookupConcatLeft : core.
 
 Theorem cTLookupConcatRight :
   forall c1 c2 x,
@@ -276,7 +276,7 @@ Proof.
   induction c2; magic.
 Qed.
 
-Hint Resolve cTLookupConcatRight : core.
+#[export] Hint Resolve cTLookupConcatRight : core.
 
 Theorem cTLookupConcatLeft :
   forall c1 c2 x,
@@ -286,7 +286,7 @@ Proof.
   induction c2; magic.
 Qed.
 
-Hint Resolve cTLookupConcatLeft : core.
+#[export] Hint Resolve cTLookupConcatLeft : core.
 
 Theorem cELookupNone :
   forall c1 c2 t x,
@@ -301,7 +301,7 @@ Proof.
   unfold not in H4. magic.
 Qed.
 
-Hint Resolve cELookupNone : core.
+#[export] Hint Resolve cELookupNone : core.
 
 Theorem cTLookupNone :
   forall c1 c2 x,
@@ -316,7 +316,7 @@ Proof.
   unfold not in H3. magic.
 Qed.
 
-Hint Resolve cTLookupNone : core.
+#[export] Hint Resolve cTLookupNone : core.
 
 (***************************************)
 (* Facts about context well-formedness *)
@@ -337,7 +337,7 @@ Proof.
   - rewrite tDomainConcat in *. magic.
 Qed.
 
-Hint Resolve cWellFormedESkip : core.
+#[export] Hint Resolve cWellFormedESkip : core.
 
 Theorem cWellFormedTSkip :
   forall c1 c2 t x,
@@ -375,4 +375,4 @@ Proof.
     rewrite cSubTDomain in H1. magic.
 Qed.
 
-Hint Resolve cWellFormedTSkip : core.
+#[export] Hint Resolve cWellFormedTSkip : core.
