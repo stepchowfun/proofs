@@ -66,8 +66,8 @@ Qed.
 Definition productCategory C D : category := newCategory
   (object C * object D)
   (fun x y => arrow (fst x) (fst y) * arrow (snd x) (snd y))
-  (fun {x y z} f g => (compose (fst f) (fst g), compose (snd f) (snd g)))
-  (fun {x} => (id, id))
+  (fun _ _ _ f g => (compose (fst f) (fst g), compose (snd f) (snd g)))
+  (fun _ => (id, id))
   productCategoryCAssoc
   productCategoryCIdentLeft
   productCategoryCIdentRight.
