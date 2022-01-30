@@ -65,7 +65,7 @@ Definition compFunctor
   functor C E
 := newFunctor C E
   (fun x => oMap G (oMap F x))
-  (fun {x y} (f : arrow x y) => fMap G (fMap F f))
+  (fun x y (f : arrow x y) => fMap G (fMap F f))
   compFIdent
   compFComp.
 

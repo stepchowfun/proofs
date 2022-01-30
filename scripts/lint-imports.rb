@@ -18,11 +18,11 @@ if ARGV.size < 2
 end
 
 # Parse the input.
-importRegexStr, buildCommand, *paths = ARGV
-importRegex = Regexp.new(importRegexStr, nil)
+import_regex_str, build_command, *paths = ARGV
+import_regex = Regexp.new(import_regex_str, nil)
 
 # Make sure the build command has exactly one '?'.
-if buildCommand.count('?') != 1
+if build_command.count('?') != 1
   STDERR.puts("Error: #{ARGV[1]}")
   exit(1)
 end
@@ -42,7 +42,7 @@ paths.each do |path|
   imports = lines.map.with_index do |line, index|
     [line, index]
   end.select do |line, index|
-    line =~ importRegex
+    line =~ import_regex
   end
 
   # Check that the imports are sorted.
@@ -55,13 +55,13 @@ paths.each do |path|
   # Delete each import and try to rebuild the file without it.
   imports.each do |import, index|
     uniqueId = SecureRandom.hex
-    mutatedLines = lines.clone
-    mutatedLines.delete_at(index)
-    mutatedFileContents = mutatedLines.join("\n")
-    mutatedFilePath = path.dup.insert(path.rindex('.') || -1, uniqueId)
+    mutated_gines = lines.clone
+    mutated_gines.delete_at(index)
+    mutated_file_contents = mutated_gines.join("\n")
+    mutated_file_path = path.dup.insert(path.rindex('.') || -1, uniqueId)
     begin
-      File.write(mutatedFilePath, mutatedFileContents)
-      _, _, status = Open3.capture3(buildCommand.sub('?', mutatedFilePath))
+      File.write(mutated_file_path, mutated_file_contents)
+      _, _, status = Open3.capture3(build_command.sub('?', mutated_file_path))
       if status.success?
         STDERR.puts("Error: unused import in #{path}.")
         STDERR.puts("  #{import}")
