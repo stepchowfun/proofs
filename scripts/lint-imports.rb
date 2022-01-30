@@ -54,11 +54,11 @@ paths.each do |path|
 
   # Delete each import and try to rebuild the file without it.
   imports.each do |import, index|
-    uniqueId = SecureRandom.hex
+    unique_id = SecureRandom.hex
     mutated_gines = lines.clone
     mutated_gines.delete_at(index)
     mutated_file_contents = mutated_gines.join("\n")
-    mutated_file_path = path.dup.insert(path.rindex('.') || -1, uniqueId)
+    mutated_file_path = path.dup.insert(path.rindex('.') || -1, unique_id)
     begin
       File.write(mutated_file_path, mutated_file_contents)
       _, _, status = Open3.capture3(build_command.sub('?', mutated_file_path))
@@ -71,8 +71,8 @@ paths.each do |path|
       Dir.glob(
         File.join(File.dirname(path), '*'),
         File::FNM_DOTMATCH
-      ).each do |filePath|
-        File.delete(filePath) if filePath.include?(uniqueId)
+      ).each do |file_path|
+        File.delete(file_path) if file_path.include?(unique_id)
       end
     end
   end
