@@ -29,8 +29,8 @@ Arguments newNaturalTransformation {_} {_}.
 Arguments eta {_} {_} {_} {_} _.
 Arguments naturality {_} {_} {_} {_} _ {_} {_}.
 
-Hint Resolve @naturality : core.
-Hint Rewrite @naturality.
+#[export] Hint Resolve naturality : core.
+#[export] Hint Rewrite @naturality : core.
 
 Theorem eqNaturalTransformation
   {C D}
@@ -56,7 +56,7 @@ Proof.
     magic.
 Qed.
 
-Hint Resolve eqNaturalTransformation : core.
+#[export] Hint Resolve eqNaturalTransformation : core.
 
 Local Theorem rightWhiskerNaturality
   {C D E}
@@ -172,7 +172,7 @@ Proof.
   magic.
 Qed.
 
-Hint Resolve horCompNaturalTransformationAlt : core.
+#[export] Hint Resolve horCompNaturalTransformationAlt : core.
 
 Definition naturalIsomorphism
   {C D} {F G : functor C D}

@@ -48,7 +48,7 @@ Inductive hasType : context -> term -> type -> Prop :=
   hasType c e (tForAll t1) ->
   hasType c (eTApp e t2) (ttOpen t1 0 t2).
 
-Hint Constructors hasType : core.
+#[export] Hint Constructors hasType : core.
 
 (*****************************************)
 (* The regularity of the typing judgment *)
@@ -100,7 +100,7 @@ Proof.
       * unfold tWellFormed in H2. magic.
 Qed.
 
-Hint Resolve typingRegularity : core.
+#[export] Hint Resolve typingRegularity : core.
 
 (*********************)
 (* Context weakening *)
@@ -152,4 +152,4 @@ Proof.
     assert (In a (tDomain c3) \/ In a (tDomain c1)); magic.
 Qed.
 
-Hint Resolve contextWeakening : core.
+#[export] Hint Resolve contextWeakening : core.

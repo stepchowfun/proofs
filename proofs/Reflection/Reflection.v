@@ -23,8 +23,8 @@ Proof.
   - split; intros; destruct H; magic.
 Qed.
 
-Hint Resolve -> reflectIff : core.
-Hint Resolve <- reflectIff : core.
+#[export] Hint Resolve -> reflectIff : core.
+#[export] Hint Resolve <- reflectIff : core.
 
 Ltac reflect H1 :=
   let H2 := fresh "H" in
@@ -45,7 +45,7 @@ Inductive even : nat -> Prop :=
 | evenZero : even 0
 | evenSS : forall n : nat, even n -> even (S (S n)).
 
-Hint Constructors even : core.
+#[export] Hint Constructors even : core.
 
 Fixpoint isEven n :=
   match n with
@@ -67,7 +67,7 @@ Proof.
   induction n; magic.
 Qed.
 
-Hint Resolve evenInd : core.
+#[export] Hint Resolve evenInd : core.
 
 Theorem evenIffIsEven : forall n, even n <-> isEven n = true.
 Proof.
@@ -80,8 +80,8 @@ Proof.
     + clean. specialize (H n). magic.
 Qed.
 
-Hint Resolve -> evenIffIsEven : core.
-Hint Resolve <- evenIffIsEven : core.
+#[export] Hint Resolve -> evenIffIsEven : core.
+#[export] Hint Resolve <- evenIffIsEven : core.
 
 Theorem evenRefl : forall n, reflect (even n) (isEven n).
 Proof.

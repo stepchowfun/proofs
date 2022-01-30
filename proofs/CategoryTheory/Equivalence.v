@@ -6,6 +6,8 @@
 (***************************************)
 (***************************************)
 
+Require Import Main.CategoryTheory.Arrow.
+Require Import Main.CategoryTheory.Category.
 Require Import Main.CategoryTheory.Functor.
 Require Import Main.CategoryTheory.NaturalTransformation.
 Require Import Main.Tactics.
@@ -54,7 +56,13 @@ Proof.
   ).
   unfold equivalence.
   destruct H.
-  split; unfold naturalIsomorphism; magic.
+  split;
+    unfold naturalIsomorphism;
+    clean;
+    unfold isomorphism;
+    exists id;
+    unfold inverse;
+    magic.
 Qed.
 
-Hint Resolve equivalentRefl : core.
+#[export] Hint Resolve equivalentRefl : core.
