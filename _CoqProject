@@ -1,2 +1,2 @@
 # This file is used by CoqIDE.
--R proofs Main
+-Q proofs Main
