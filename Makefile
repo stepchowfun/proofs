@@ -3,7 +3,6 @@
 verify:
 	rm -f \
           .CoqMakefile.d \
-          .lia.cache \
           CoqMakefile \
           CoqMakefile.conf \
           _CoqProjectFull
@@ -11,21 +10,18 @@ verify:
 	find proofs -type f -name '*.v' >> _CoqProjectFull
 	coq_makefile -f _CoqProjectFull -o CoqMakefile || (rm -f \
             .CoqMakefile.d \
-            .lia.cache \
             CoqMakefile \
             CoqMakefile.conf \
             _CoqProjectFull; \
           exit 1)
 	make -f CoqMakefile || (rm -f \
             .CoqMakefile.d \
-            .lia.cache \
             CoqMakefile \
             CoqMakefile.conf \
             _CoqProjectFull; \
           exit 1)
 	rm -f \
           .CoqMakefile.d \
-          .lia.cache \
           CoqMakefile \
           CoqMakefile.conf \
           _CoqProjectFull
@@ -33,7 +29,6 @@ verify:
 clean:
 	rm -f \
           .CoqMakefile.d \
-          .lia.cache \
           CoqMakefile \
           CoqMakefile.conf \
           _CoqProjectFull \
