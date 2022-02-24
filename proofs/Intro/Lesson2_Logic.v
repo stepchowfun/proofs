@@ -45,7 +45,6 @@ Print true_and_true_2. (* conj trivial trivial *)
 
 Theorem true_and_true_3 : and True True.
 Proof.
-  (* Our first example of a tactic: apply. *)
   apply conj; apply trivial.
 Qed.
 

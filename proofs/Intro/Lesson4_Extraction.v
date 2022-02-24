@@ -20,7 +20,7 @@ Extraction Language Haskell.
 Extract Inductive bool => "Bool" [ "True" "False" ].
 
 (*
-  For inductive data types for which the arguments have constructors, we must
+  For inductive data types for which the constructors have arguments, we must
   also provide a function for pattern matching.
 *)
 
