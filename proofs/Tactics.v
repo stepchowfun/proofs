@@ -14,7 +14,7 @@ Require Import Lia.
   and context for easier reading, use the `clean` tactic below.
 *)
 
-Ltac simplify tactic :=
+#[local] Ltac simplify tactic :=
   repeat (
     intros;
     cbn in *;
@@ -43,7 +43,7 @@ Ltac simplify tactic :=
   `auto`.
 *)
 
-Ltac magicWith tactic :=
+#[local] Ltac magicWith tactic :=
   try solve [tactic];
   try solve [
     simplify tactic;
