@@ -1,2 +1,6 @@
-# This file is used by CoqIDE.
+# This file is used by IDEs such as CoqIDE and VsCoq. The build system
+# doesn't use this. Instead, it constructs a different version of this file
+# (`_CoqProjectFull`) which explicitly enumerates all the source files. That
+# more explicit project file isn't tracked by the repository, since it's
+# generated on the fly.
 -Q proofs Main
