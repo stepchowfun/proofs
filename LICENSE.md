@@ -1,6 +1,6 @@
 # License
 
-These proofs are distributed under the MIT license.
+This repository is distributed under the MIT license. The repository contains proofs based on unoriginal ideas and techniques, which have been cited where appropriate.
 
 > Copyright 2022 Stephan Boyer
 >
