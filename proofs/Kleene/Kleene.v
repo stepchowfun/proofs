@@ -102,7 +102,7 @@ Section Kleene.
 
   (* We will need this simple lemma about pairs of natural numbers. *)
 
-  Local Theorem natDiff :
+  #[local] Theorem natDiff :
     forall n1 n2,
     exists n3,
     n1 = n2 + n3 \/ n2 = n1 + n3.

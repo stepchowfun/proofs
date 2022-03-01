@@ -25,7 +25,7 @@ Arguments just {_}.
 
 (* Here's a proof that maybe is a functor. *)
 
-Local Theorem maybeFIdent (x : object setCategory) :
+#[local] Theorem maybeFIdent (x : object setCategory) :
   (
     fun e : maybe x =>
       match e with
@@ -39,7 +39,7 @@ Proof.
   destruct x0; magic.
 Qed.
 
-Local Theorem maybeFComp
+#[local] Theorem maybeFComp
   (x y z : object setCategory)
   (f : arrow x y)
   (g : arrow y z)
@@ -86,7 +86,10 @@ Definition maybeFunctor : functor setCategory setCategory := newFunctor
 
 (* This is the "return" natural transformation for maybe. *)
 
-Local Theorem maybeEtaNaturality (x y : object setCategory) (f : arrow x y) :
+#[local] Theorem maybeEtaNaturality
+  (x y : object setCategory)
+  (f : arrow x y)
+:
   @compose setCategory _ _ _ just (fMap idFunctor f) =
   @compose setCategory _ _ _ (fMap maybeFunctor f) just.
 Proof.
@@ -102,7 +105,7 @@ Definition maybeEta : naturalTransformation idFunctor maybeFunctor :=
 
 (* This is the "join" natural transformation for maybe. *)
 
-Local Theorem maybeMuNaturality (x y : object setCategory) (f : arrow x y) :
+#[local] Theorem maybeMuNaturality (x y : object setCategory) (f : arrow x y) :
   @compose
     setCategory _ _ _
     (
@@ -144,7 +147,7 @@ Definition maybeMu :
 
 (* Now we can prove that maybe is a monad. *)
 
-Local Theorem maybeMAssoc :
+#[local] Theorem maybeMAssoc :
   eta (
     vertCompNaturalTransformation maybeMu (leftWhisker maybeMu maybeFunctor)
   ) = eta (
@@ -158,7 +161,7 @@ Proof.
   destruct x0; magic.
 Qed.
 
-Local Theorem maybeMIdent1 :
+#[local] Theorem maybeMIdent1 :
   eta (
     vertCompNaturalTransformation maybeMu (leftWhisker maybeEta maybeFunctor)
   ) = eta idNaturalTransformation.
@@ -166,7 +169,7 @@ Proof.
   magic.
 Qed.
 
-Local Theorem maybeMIdent2 :
+#[local] Theorem maybeMIdent2 :
   eta (
     vertCompNaturalTransformation maybeMu (rightWhisker maybeFunctor maybeEta)
   ) = eta idNaturalTransformation.
