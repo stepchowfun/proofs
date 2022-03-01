@@ -32,11 +32,11 @@ Arguments cAssoc {_} {_} {_} {_} {_}.
 Arguments cIdentLeft {_} {_} {_}.
 Arguments cIdentRight {_} {_} {_}.
 
-#[export] Hint Resolve cAssoc : core.
-#[export] Hint Resolve cIdentLeft : core.
-#[export] Hint Rewrite @cIdentLeft : core.
-#[export] Hint Resolve cIdentRight : core.
-#[export] Hint Rewrite @cIdentRight : core.
+#[export] Hint Resolve cAssoc : main.
+#[export] Hint Resolve cIdentLeft : main.
+#[export] Hint Rewrite @cIdentLeft : main.
+#[export] Hint Resolve cIdentRight : main.
+#[export] Hint Rewrite @cIdentRight : main.
 
 #[local] Theorem opCAssoc
   {C}
@@ -77,4 +77,4 @@ Proof.
   f_equal; apply proof_irrelevance.
 Qed.
 
-#[export] Hint Resolve oppositeInvolution : core.
+#[export] Hint Resolve oppositeInvolution : main.

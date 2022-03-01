@@ -218,12 +218,12 @@ Section Kleene.
 
 End Kleene.
 
-#[export] Hint Resolve supremumUniqueness : core.
+#[export] Hint Resolve supremumUniqueness : main.
 
-#[export] Hint Resolve continuousImpliesMonotone : core.
+#[export] Hint Resolve continuousImpliesMonotone : main.
 
-#[export] Hint Resolve omegaChain : core.
+#[export] Hint Resolve omegaChain : main.
 
-#[export] Hint Resolve kleeneChainDirected : core.
+#[export] Hint Resolve kleeneChainDirected : main.
 
-#[export] Hint Resolve kleene : core.
+#[export] Hint Resolve kleene : main.

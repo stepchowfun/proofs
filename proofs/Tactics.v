@@ -19,7 +19,7 @@ Require Import Lia.
     intros;
     cbn in *;
     subst;
-    try autorewrite with core in *;
+    try autorewrite with main in *;
     try match goal with
         | [ H : ex _ |- _ ] => destruct H
         | [ H : _ /\ _ |- _ ] => destruct H

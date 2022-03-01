@@ -26,7 +26,7 @@ Proof.
   eMagic.
 Qed.
 
-#[export] Hint Resolve isomorphicRefl : core.
+#[export] Hint Resolve isomorphicRefl : main.
 
 Theorem isomorphicTrans C (x y z : object C) :
   isomorphic x y -> isomorphic y z -> isomorphic x z.
@@ -75,4 +75,4 @@ Proof.
   ]; magic.
 Qed.
 
-#[export] Hint Resolve opIsomorphic : core.
+#[export] Hint Resolve opIsomorphic : main.

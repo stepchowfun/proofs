@@ -25,7 +25,7 @@ Module Name : NameSig.
     induction x1; magic.
   Qed.
 
-  #[export] Hint Resolve nameEq : core.
+  #[export] Hint Resolve nameEq : main.
 
 End Name.
 

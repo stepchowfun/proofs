@@ -65,4 +65,4 @@ Proof.
     magic.
 Qed.
 
-#[export] Hint Resolve equivalentRefl : core.
+#[export] Hint Resolve equivalentRefl : main.

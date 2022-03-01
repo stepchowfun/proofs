@@ -28,7 +28,7 @@ Inductive tLocallyClosed : type -> nat -> Prop :=
   tLocallyClosed t (S n) ->
   tLocallyClosed (tForAll t) n.
 
-#[export] Hint Constructors tLocallyClosed : core.
+#[export] Hint Constructors tLocallyClosed : main.
 
 Inductive eLocallyClosed : term -> nat -> nat -> Prop :=
 | elcFreeVar :
@@ -58,7 +58,7 @@ Inductive eLocallyClosed : term -> nat -> nat -> Prop :=
   tLocallyClosed t nt ->
   eLocallyClosed (eTApp e t) ne nt.
 
-#[export] Hint Constructors eLocallyClosed : core.
+#[export] Hint Constructors eLocallyClosed : main.
 
 (*************************************************)
 (* Local closure is monotonic with the level(s). *)

@@ -28,7 +28,7 @@ Module Name : NameSig.
     induction x1; magic.
   Qed.
 
-  #[export] Hint Resolve nameEq : core.
+  #[export] Hint Resolve nameEq : main.
 
   Theorem nameFresh : forall l : list nat, exists x, ~ In x l.
   Proof.
@@ -40,7 +40,7 @@ Module Name : NameSig.
     - specialize (H0 (S (fold_right Nat.max 0 l))). magic.
   Qed.
 
-  #[export] Hint Resolve nameFresh : core.
+  #[export] Hint Resolve nameFresh : main.
 
 End Name.
 
@@ -58,4 +58,4 @@ Proof.
   clean. induction l; magic.
 Qed.
 
-#[export] Hint Resolve nameInRemove : core.
+#[export] Hint Resolve nameInRemove : main.

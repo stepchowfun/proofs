@@ -39,4 +39,4 @@ Inductive freeVar : term -> name -> Prop :=
   freeVar e2 x ->
   freeVar (eApp e1 e2) x.
 
-#[export] Hint Constructors freeVar : core.
+#[export] Hint Constructors freeVar : main.

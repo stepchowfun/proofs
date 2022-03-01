@@ -22,7 +22,7 @@ Proof.
   clean. induction H; invert H0; eMagic.
 Qed.
 
-#[export] Hint Resolve typingJudgmentClosed : core.
+#[export] Hint Resolve typingJudgmentClosed : main.
 
 Theorem contextInvariance :
   forall c1 c2 e t,
@@ -36,7 +36,7 @@ Proof.
   - eapply htApp; magic.
 Qed.
 
-#[export] Hint Resolve contextInvariance : core.
+#[export] Hint Resolve contextInvariance : main.
 
 Theorem substitutionPreservesTyping :
   forall c x e1 e2 t1 t2,
@@ -54,7 +54,7 @@ Proof.
       apply contextInvariance with (c1 := cExtend (cExtend c x t1) n t); magic.
 Qed.
 
-#[export] Hint Resolve substitutionPreservesTyping : core.
+#[export] Hint Resolve substitutionPreservesTyping : main.
 
 Theorem preservation :
   forall e1 e2 t,
@@ -69,4 +69,4 @@ Proof.
     invert H; magic.
 Qed.
 
-#[export] Hint Resolve preservation : core.
+#[export] Hint Resolve preservation : main.
