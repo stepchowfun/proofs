@@ -34,7 +34,7 @@ Proof.
   magic.
 Qed.
 
-#[export] Hint Resolve opCoproductProduct : core.
+#[export] Hint Resolve opCoproductProduct : main.
 
 Theorem opProductCoproduct C x y xy px py :
   @product C x y xy px py <-> @coproduct (oppositeCategory C) x y xy px py.
@@ -42,7 +42,7 @@ Proof.
   magic.
 Qed.
 
-#[export] Hint Resolve opProductCoproduct : core.
+#[export] Hint Resolve opProductCoproduct : main.
 
 Theorem coproductUnique C (x y : object C) :
   uniqueUpToIsomorphism (fun xy => exists ix iy, coproduct x y xy ix iy).
@@ -55,7 +55,7 @@ Proof.
   eMagic.
 Qed.
 
-#[export] Hint Resolve coproductUnique : core.
+#[export] Hint Resolve coproductUnique : main.
 
 Theorem coproductCommutator
   {C}
@@ -87,7 +87,7 @@ Proof.
   apply productCommutative.
 Qed.
 
-#[export] Hint Resolve coproductCommutative : core.
+#[export] Hint Resolve coproductCommutative : main.
 
 Theorem coproductAssociative
   {C}
@@ -111,7 +111,7 @@ Proof.
   apply productAssociative.
 Qed.
 
-#[export] Hint Resolve coproductAssociative : core.
+#[export] Hint Resolve coproductAssociative : main.
 
 Theorem coproductInitial
   {C}
@@ -126,4 +126,4 @@ Proof.
   apply productTerminal.
 Qed.
 
-#[export] Hint Resolve coproductInitial : core.
+#[export] Hint Resolve coproductInitial : main.

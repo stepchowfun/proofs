@@ -31,4 +31,4 @@ Proof.
   split; magic.
 Qed.
 
-#[export] Hint Resolve initialUnique : core.
+#[export] Hint Resolve initialUnique : main.

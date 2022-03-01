@@ -21,4 +21,4 @@ Proof.
   clean. induction H0; eMagic.
 Qed.
 
-#[export] Hint Resolve soundness : core.
+#[export] Hint Resolve soundness : main.

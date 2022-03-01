@@ -60,7 +60,7 @@ Proof.
     rewrite tDomainConcat in *. clean. magic.
 Qed.
 
-#[export] Hint Resolve eSubstitutionPreservesTyping : core.
+#[export] Hint Resolve eSubstitutionPreservesTyping : main.
 
 Theorem tSubstitutionPreservesTyping :
   forall c1 c2 e t1 t2 x,
@@ -121,7 +121,7 @@ Proof.
     destruct H4; magic.
 Qed.
 
-#[export] Hint Resolve tSubstitutionPreservesTyping : core.
+#[export] Hint Resolve tSubstitutionPreservesTyping : main.
 
 Theorem preservation :
   forall e1 e2 t,
@@ -143,4 +143,4 @@ Proof.
     replace cEmpty with (cConcat cEmpty (cSub cEmpty x t2)); eMagic.
 Qed.
 
-#[export] Hint Resolve preservation : core.
+#[export] Hint Resolve preservation : main.

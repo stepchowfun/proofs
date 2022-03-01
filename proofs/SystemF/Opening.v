@@ -56,7 +56,7 @@ Proof.
   clean. induction H; magic.
 Qed.
 
-#[export] Hint Resolve tttOpenLocallyClosed : core.
+#[export] Hint Resolve tttOpenLocallyClosed : main.
 
 Theorem eeeOpenLocallyClosed :
   forall e1 e2 ie it,
@@ -66,7 +66,7 @@ Proof.
   clean. induction H; magic.
 Qed.
 
-#[export] Hint Resolve eeeOpenLocallyClosed : core.
+#[export] Hint Resolve eeeOpenLocallyClosed : main.
 
 Theorem eetOpenLocallyClosed :
   forall e ie it t,
@@ -76,7 +76,7 @@ Proof.
   clean. induction H; magic.
 Qed.
 
-#[export] Hint Resolve eetOpenLocallyClosed : core.
+#[export] Hint Resolve eetOpenLocallyClosed : main.
 
 (***************************************************************************)
 (* If the opening of a term/type is locally closed at some level, then the *)
@@ -96,7 +96,7 @@ Proof.
   - invert H. magic.
 Qed.
 
-#[export] Hint Resolve ttLocallyClosedOpen : core.
+#[export] Hint Resolve ttLocallyClosedOpen : main.
 
 Theorem eeLocallyClosedOpen :
   forall e1 e2 ie it,
@@ -113,7 +113,7 @@ Proof.
   - invert H. magic.
 Qed.
 
-#[export] Hint Resolve eeLocallyClosedOpen : core.
+#[export] Hint Resolve eeLocallyClosedOpen : main.
 
 Theorem etLocallyClosedOpen :
   forall e ie it t,
@@ -129,7 +129,7 @@ Proof.
   - invert H. eMagic.
 Qed.
 
-#[export] Hint Resolve etLocallyClosedOpen : core.
+#[export] Hint Resolve etLocallyClosedOpen : main.
 
 (********************************)
 (* Free variables of an opening *)
@@ -147,7 +147,7 @@ Proof.
   - induction t1; magic. unfold incl. magic.
 Qed.
 
-#[export] Hint Resolve tttFreeOpen : core.
+#[export] Hint Resolve tttFreeOpen : main.
 
 Theorem eeeeFreeOpen :
   forall e1 e2 i,
@@ -161,7 +161,7 @@ Proof.
   - induction e1; magic. unfold incl. magic.
 Qed.
 
-#[export] Hint Resolve eeeeFreeOpen : core.
+#[export] Hint Resolve eeeeFreeOpen : main.
 
 Theorem eeetFreeOpen :
   forall e i t,
@@ -171,7 +171,7 @@ Proof.
   clean. split; gen i; induction e; magic.
 Qed.
 
-#[export] Hint Resolve eeetFreeOpen : core.
+#[export] Hint Resolve eeetFreeOpen : main.
 
 Theorem eteeFreeOpen :
   forall e1 e2 i,
@@ -190,7 +190,7 @@ Proof.
   - induction e1; magic. unfold incl. magic.
 Qed.
 
-#[export] Hint Resolve eteeFreeOpen : core.
+#[export] Hint Resolve eteeFreeOpen : main.
 
 Theorem etetFreeOpen :
   forall e i t,
@@ -213,7 +213,7 @@ Proof.
       apply tttFreeOpen.
 Qed.
 
-#[export] Hint Resolve etetFreeOpen : core.
+#[export] Hint Resolve etetFreeOpen : main.
 
 (********************************************)
 (* Opening binders preserves local closure. *)
@@ -235,7 +235,7 @@ Proof.
     apply tLocalClosureMonotonic with (i1 := i); magic.
 Qed.
 
-#[export] Hint Resolve locallyClosedOpenForAll : core.
+#[export] Hint Resolve locallyClosedOpenForAll : main.
 
 Theorem locallyClosedOpenAbs :
   forall e1 e2 ie it t,
@@ -257,7 +257,7 @@ Proof.
     apply eLocalClosureMonotonic with (ie1 := ie) (it1 := nt); magic.
 Qed.
 
-#[export] Hint Resolve locallyClosedOpenAbs : core.
+#[export] Hint Resolve locallyClosedOpenAbs : main.
 
 Theorem locallyClosedOpenTAbs :
   forall e ie it t,
@@ -279,4 +279,4 @@ Proof.
     apply tLocalClosureMonotonic with (i1 := nt); magic.
 Qed.
 
-#[export] Hint Resolve locallyClosedOpenTAbs : core.
+#[export] Hint Resolve locallyClosedOpenTAbs : main.
