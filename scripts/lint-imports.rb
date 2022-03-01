@@ -55,9 +55,9 @@ paths.each do |path|
   # Delete each import and try to rebuild the file without it.
   imports.each do |import, index|
     unique_id = SecureRandom.hex
-    mutated_gines = lines.clone
-    mutated_gines.delete_at(index)
-    mutated_file_contents = mutated_gines.join("\n")
+    mutated_lines = lines.clone
+    mutated_lines.delete_at(index)
+    mutated_file_contents = mutated_lines.join("\n")
     mutated_file_path = path.dup.insert(path.rindex('.') || -1, unique_id)
     begin
       File.write(mutated_file_path, mutated_file_contents)
