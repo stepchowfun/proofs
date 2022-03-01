@@ -35,7 +35,7 @@ Arguments fComp {_} {_} _ {_} {_} {_}.
 
 Definition endofunctor C := functor C C.
 
-Local Theorem compFIdent
+#[local] Theorem compFIdent
   {C D E}
   {G : functor D E}
   {F : functor C D}
@@ -45,7 +45,7 @@ Proof.
   magic.
 Qed.
 
-Local Theorem compFComp
+#[local] Theorem compFComp
   {C D E}
   {G : functor D E}
   {F : functor C D}
@@ -69,13 +69,17 @@ Definition compFunctor
   compFIdent
   compFComp.
 
-Local Theorem idFIdent {C} (x : object C) : @id C x = id.
+#[local] Theorem idFIdent {C} (x : object C) : @id C x = id.
 Proof.
   magic.
 Qed.
 
-Local Theorem idFComp {C} (x y z : object C) (f : arrow x y) (g : arrow y z) :
-  compose g f = compose g f.
+#[local] Theorem idFComp
+  {C}
+  (x y z : object C)
+  (f : arrow x y)
+  (g : arrow y z)
+: compose g f = compose g f.
 Proof.
   magic.
 Qed.

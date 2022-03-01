@@ -124,7 +124,7 @@ Qed.
 
 Section FreeSub.
 
-  Local Theorem inclAppRemoveWeakeningLeft :
+  #[local] Theorem inclAppRemoveWeakeningLeft :
     forall x l1 l2 l3,
     incl (l1 ++ remove nameEq x l2) (l1 ++ remove nameEq x (l2 ++ l3)).
   Proof.
@@ -137,7 +137,7 @@ Section FreeSub.
 
   Hint Resolve inclAppRemoveWeakeningLeft : core.
 
-  Local Theorem inclAppRemoveWeakeningRight :
+  #[local] Theorem inclAppRemoveWeakeningRight :
     forall x l1 l2 l3,
     incl (l1 ++ remove nameEq x l3) (l1 ++ remove nameEq x (l2 ++ l3)).
   Proof.
