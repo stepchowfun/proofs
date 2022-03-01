@@ -1,18 +1,26 @@
 # Proofs
 
-A selection of formal proofs in [Coq](https://coq.inria.fr/).
-
 [![Build status](https://github.com/stepchowfun/proofs/workflows/Continuous%20integration/badge.svg?branch=main)](https://github.com/stepchowfun/proofs/actions?query=branch%3Amain)
+
+This is my personal repository of formally verified mathematics, including results from category theory, type theory, domain theory, etc. The proofs are verified using the [Coq proof assistant](https://coq.inria.fr/).
+
+If you want to set up your own repository of formally verified mathematics, you can simply fork this repository and replace the contents of the [`proofs`](https://github.com/stepchowfun/proofs/tree/main/proofs) directory with your own proofs. Setting up a Coq project from scratch is not particularly straightforward, so this scaffolding can save you time.
+
+If you are new to Coq, the repository contains a tutorial [here](https://github.com/stepchowfun/proofs/tree/main/proofs/Tutorial). I recommend [Software Foundations](https://softwarefoundations.cis.upenn.edu/) and [Certified Programming with Dependent Types](http://adam.chlipala.net/cpdt/) for further learning.
 
 ## Instructions
 
-Make sure you have the dependencies listed below. Then you can run `make` to verify the proofs. You can also use `make lint` to invoke the linters. The build artifacts can be removed with `make clean`.
+Make sure you have the dependencies listed below. Then you can run `make` in this directory to verify all the proofs. If you change anything, run `make` again to to incrementally verify the affected proofs. You can run the linters with `make lint`. The build artifacts can be removed with `make clean`.
 
-## Dependencies
+To write proofs, you'll want to use an IDE that supports interactive theorem proving. My general recommendation is [VsCoq](https://github.com/coq-community/vscoq), which is a plugin for [Visual Studio Code](https://code.visualstudio.com/). However, you may find the built-in [CoqIDE](https://coq.inria.fr/refman/practical-tools/coqide.html) easier if you are new to interactive theorem proving, since it has buttons you can click on to step through your proofs.
 
-The build system depends on the following:
+### Dependencies
 
-- [GNU Make](https://www.gnu.org/software/make/) >= 3.79.1
+You will need the following:
+
 - [Coq](https://coq.inria.fr/) >= 8.15.0
-
-You also need the usual set of Unix tools, such as `echo`, `find`, etc.
+  - Make sure to update your [`PATH`](https://en.wikipedia.org/wiki/PATH_\(variable\)) to include the location of the Coq binaries (`coqc`, `coqdep`, etc.).
+- [GNU Make](https://www.gnu.org/software/make/) >= 3.79.1
+  - You also need these common Unix tools: `echo`, `find`, and `rm`. If you have `make`, you probably already have those other programs too.
+- [Ruby](https://www.ruby-lang.org/en/) >= 2.6.8
+  - This is only needed by `make lint`.
