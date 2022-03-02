@@ -10,7 +10,7 @@ If you are new to Coq, the repository contains a tutorial [here](https://github.
 
 ## Instructions
 
-Make sure you have the dependencies listed below. Then you can run `make` in this directory to verify all the proofs. If you change anything, run `make` again to to incrementally verify the affected proofs. You can run the linters with `make lint`. The build artifacts can be removed with `make clean`.
+Make sure you have the dependencies listed below. Then you can run `make` in this directory to verify all the proofs. If you change anything, run `make` again to to incrementally verify the affected proofs. The build artifacts can be removed with `make clean`.
 
 To write proofs, you'll want to use an IDE that supports interactive theorem proving. My general recommendation is [VsCoq](https://github.com/coq-community/vscoq), which is a plugin for [Visual Studio Code](https://code.visualstudio.com/). However, you may find the built-in [CoqIDE](https://coq.inria.fr/refman/practical-tools/coqide.html) easier if you're new to interactive theorem proving, since it has buttons you can click on to step through your proofs.
 
@@ -22,5 +22,3 @@ You'll need the following:
   - Make sure to update your [`PATH`](https://en.wikipedia.org/wiki/PATH_\(variable\)) to include the location of the Coq binaries (`coqc`, `coqdep`, etc.).
 - [GNU Make](https://www.gnu.org/software/make/) >= 3.79.1
   - You also need these common Unix tools: `echo`, `find`, and `rm`. If you have `make`, you probably already have those other programs too.
-- [Ruby](https://www.ruby-lang.org/en/) >= 2.6.8
-  - This is only needed by `make lint`.

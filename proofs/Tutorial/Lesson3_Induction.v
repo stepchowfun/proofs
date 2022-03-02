@@ -85,7 +85,7 @@ Print n_plus_zero.
     n
 *)
 
-(* Let's prove addition is associative. *)
+(* Let's prove that addition is associative. *)
 
 Theorem add_assoc :
   forall n m p,
