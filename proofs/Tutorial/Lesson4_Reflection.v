@@ -28,10 +28,17 @@ Qed.
 #[export] Hint Resolve -> reflectIff : main.
 #[export] Hint Resolve <- reflectIff : main.
 
-Ltac reflect H1 :=
+Ltac reflect b :=
+  let H1 := fresh "H" in
   let H2 := fresh "H" in
   let H3 := fresh "H" in
-  solve [pose (H2 := H1); inversion H2 as [ H3 | H3 ]; exact H3].
+  solve [
+    evar (H1: Prop);
+    assert (H2: reflect H1 b); subst H1; [
+      auto with main |
+      inversion H2 as [H3 | H3]; exact H3
+    ]
+  ].
 
 (*********************)
 (* Example: evenness *)
@@ -71,10 +78,10 @@ Proof.
   apply IHn.
 Qed.
 
-#[export] Hint Resolve evenInd : main.
-
-Theorem evenIffIsEven : forall n, even n <-> isEven n = true.
+Theorem evenRefl : forall n, reflect (even n) (isEven n).
 Proof.
+  intro.
+  apply reflectIff.
   split.
   - intro. induction H; auto.
   - generalize dependent n.
@@ -87,19 +94,11 @@ Proof.
     + intros. destruct (H n). unfold P in H1. auto.
 Qed.
 
-#[export] Hint Resolve -> evenIffIsEven : main.
-#[export] Hint Resolve <- evenIffIsEven : main.
-
-Theorem evenRefl : forall n, reflect (even n) (isEven n).
-Proof.
-  intro.
-  apply reflectIff.
-  split; auto with main.
-Qed.
+#[export] Hint Resolve evenRefl : main.
 
 (* A proof by reflection of `even 1000` *)
 
 Theorem evenOneThousand : even 1000.
 Proof.
-  reflect (evenRefl 1000).
+  reflect (isEven 1000).
 Qed.
