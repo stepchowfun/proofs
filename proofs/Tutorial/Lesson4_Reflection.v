@@ -1,12 +1,10 @@
-(***********************************************************************)
-(***********************************************************************)
-(****                                                               ****)
-(****   A simple demonstration of the idea of proof by reflection   ****)
-(****                                                               ****)
-(***********************************************************************)
-(***********************************************************************)
-
-Require Import Main.Tactics.
+(*********************************)
+(*********************************)
+(****                         ****)
+(****   Proof by reflection   ****)
+(****                         ****)
+(*********************************)
+(*********************************)
 
 (**********************)
 (* General reflection *)
@@ -18,9 +16,13 @@ Inductive reflect (P : Prop) : bool -> Prop :=
 
 Theorem reflectIff : forall P b, (P <-> b = true) <-> reflect P b.
 Proof.
-  split; clean.
-  - destruct b; constructor; magic.
-  - split; intros; destruct H; magic.
+  split.
+  - destruct b; constructor.
+    + destruct H. auto.
+    + intro. destruct H. discriminate (H H0).
+  - split; intro; destruct H; auto.
+    + destruct H. auto.
+    + discriminate H0.
 Qed.
 
 #[export] Hint Resolve -> reflectIff : main.
@@ -54,7 +56,7 @@ Fixpoint isEven n :=
   | S (S x) => isEven x
   end.
 
-(* A proof that (even n) is reflected in (isEven n) *)
+(* A proof that `even n` is reflected in `isEven n` *)
 
 Theorem evenInd :
   forall P : nat -> Prop,
@@ -64,20 +66,25 @@ Theorem evenInd :
   forall n,
   P n /\ P (S n).
 Proof.
-  induction n; magic.
+  induction n; auto.
+  split; auto.
+  apply IHn.
 Qed.
 
 #[export] Hint Resolve evenInd : main.
 
 Theorem evenIffIsEven : forall n, even n <-> isEven n = true.
 Proof.
-  clean; split; clean.
-  - induction H; magic.
-  - gen n.
+  split.
+  - intro. induction H; auto.
+  - generalize dependent n.
     pose (P := fun n => isEven n = true -> even n).
     assert (forall n, P n /\ P (S n)).
-    + apply evenInd; unfold P; magic.
-    + clean. specialize (H n). magic.
+    + apply evenInd; unfold P.
+      * constructor.
+      * intro. inversion H.
+      * intros. constructor. assert (isEven n = true); auto. destruct H. auto.
+    + intros. destruct (H n). unfold P in H1. auto.
 Qed.
 
 #[export] Hint Resolve -> evenIffIsEven : main.
@@ -85,10 +92,12 @@ Qed.
 
 Theorem evenRefl : forall n, reflect (even n) (isEven n).
 Proof.
-  magic.
+  intro.
+  apply reflectIff.
+  split; auto with main.
 Qed.
 
-(* A proof by reflection of (even 1000) *)
+(* A proof by reflection of `even 1000` *)
 
 Theorem evenOneThousand : even 1000.
 Proof.
