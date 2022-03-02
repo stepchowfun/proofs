@@ -119,7 +119,7 @@ Qed.
 
 (*
   Here we show that this definition of propositional equality is "Leibniz
-  equaltiy".
+  equality".
 *)
 
 Definition leibniz A
