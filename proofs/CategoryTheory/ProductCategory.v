@@ -12,7 +12,7 @@ Require Import Main.Tactics.
 
 Set Universe Polymorphism.
 
-Open Scope type. (* Parse `*` as `prod` rather than `mul`. *)
+#[local] Open Scope type. (* Parse `*` as `prod` rather than `mul`. *)
 
 #[local] Theorem productCategoryCAssoc
   {C D}

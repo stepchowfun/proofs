@@ -8,7 +8,7 @@
 
 Require Import String.
 
-(* A length-indexed list of strings *)
+(* Length-indexed lists of strings *)
 
 Inductive slist : nat -> Type :=
 | snil : slist O
@@ -18,15 +18,15 @@ Inductive slist : nat -> Type :=
     slist n ->  (* Tail *)
     slist (S n).
 
-(* Let's construct some slists. *)
+(* Let's construct some `slists`. *)
 
 Check snil. (* slist 0 *)
 Check scons "foo" snil. (* slist 1 *)
 Check scons "hello" (scons "world" snil). (* slist 2 *)
 
 (*
-  Here's a function which produces an slist of a given length containing empty
-  strings.
+  Here's a function which produces an `slist` of a given length containing
+  empty strings.
 *)
 
 Fixpoint empty_strings n1 : slist n1 :=
@@ -36,8 +36,8 @@ Fixpoint empty_strings n1 : slist n1 :=
   end.
 
 (*
-  Here's a function which concatenates two slists. This demonstrates how to do
-  dependent pattern matching.
+  Here's a function which concatenates two `slists`. This demonstrates how to
+  do dependent pattern matching.
 *)
 
 Fixpoint concat {n1 n2}

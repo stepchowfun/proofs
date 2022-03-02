@@ -12,7 +12,7 @@ Require Import Main.CategoryTheory.Category.
 Require Import Main.CategoryTheory.Product.
 Require Import Main.Tactics.
 
-Open Scope type. (* Parse `*` as `prod` rather than `mul`. *)
+#[local] Open Scope type. (* Parse `*` as `prod` rather than `mul`. *)
 
 (* Sets and functions form a category. *)
 
