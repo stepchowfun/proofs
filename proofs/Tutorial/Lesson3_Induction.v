@@ -59,7 +59,7 @@ Proof.
   intro.
 
   (*
-    Instead of applying `nat_ind` directly, it is easier to use the `induction`
+    Instead of applying `nat_ind` directly, it's easier to use the `induction`
     tactic.
   *)
   induction n.
