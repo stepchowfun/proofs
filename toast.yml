@@ -82,7 +82,7 @@ tasks:
     dependencies:
       - verify
     input_paths:
-      - scripts
+      - linters
     user: user
     command: |
       # Make sure the `LANG` environment variable is set for Ruby.
@@ -92,7 +92,7 @@ tasks:
       tagref
 
       # Run the linters.
-      ./scripts/lint-general.rb $(
+      ./linters/lint-general.rb $(
         find . -type d \( \
           -path ./.git \
         \) -prune -o \( \
@@ -104,14 +104,14 @@ tasks:
           -name 'Makefile' \
         \) -print
       )
-      ./scripts/lint-imports.rb '^\s*Require ' 'coqc -R proofs Main ?' $(
+      ./linters/lint-imports.rb '^\s*Require ' 'coqc -R proofs Main ?' $(
         find . -type d \( \
           -path ./.git \
         \) -prune -o \( \
           -name '*.v' \
         \) -print
       )
-      ./scripts/lint-imports.rb '^\s*Import ' 'coqc -R proofs Main ?' $(
+      ./linters/lint-imports.rb '^\s*Import ' 'coqc -R proofs Main ?' $(
         find . -type d \( \
           -path ./.git \
         \) -prune -o \( \
