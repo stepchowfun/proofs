@@ -17,10 +17,10 @@ Inductive False : Prop := .
 
 (* Logical conjunction *)
 
-Inductive and P Q : Prop := (* Notation: P /\ Q *)
+Inductive and P Q : Prop := (* Notation: `P /\ Q` *)
 | conj : P -> Q -> and P Q.
 
-(* Make the P and Q arguments of conj implicit. *)
+(* Make the `P` and `Q` arguments of conj implicit. *)
 
 Arguments conj {_} {_}.
 
@@ -33,7 +33,7 @@ Definition true_and_true_1 : and True True :=
 
 Theorem true_and_true_2 : and True True.
 Proof.
-  (* Our first example of a tactic: apply *)
+  (* Our first example of a tactic: `apply` *)
   apply conj.
   - apply trivial.
   - apply trivial.
@@ -61,15 +61,15 @@ Abort.
 
 (* If and only if *)
 
-Definition iff P Q := and (P -> Q) (Q -> P). (* Notation: P <-> Q *)
+Definition iff P Q := and (P -> Q) (Q -> P). (* Notation: `P <-> Q` *)
 
 (* Logical disjunction *)
 
-Inductive or P Q : Prop := (* Notation: P \/ Q *)
+Inductive or P Q : Prop := (* Notation: `P \/ Q` *)
 | orIntroL : P -> or P Q
 | orIntroR : Q -> or P Q.
 
-(* Make the P and Q arguments of orIntroL and orIntroR implicit. *)
+(* Make the `P` and `Q` arguments of `orIntroL` and `orIntroR` implicit. *)
 
 Arguments orIntroL {_} {_}.
 Arguments orIntroR {_} {_}.
@@ -107,7 +107,7 @@ Print not_false. (* fun H : False => H *)
 Inductive eq A (x : A) : A -> Prop := (* Notation: x = x *)
 | eq_refl : eq A x x. (* A dependent type! *)
 
-(* Make the A argument of eq_refl implicit. *)
+(* Make the `A` argument of `eq_refl` implicit. *)
 
 Arguments eq_refl {_}.
 
@@ -153,14 +153,14 @@ Check eq_ind.
 *)
 
 (*
-  Universal quantification (forall) is built into the language. Existential
+  Universal quantification (`forall`) is built into the language. Existential
   quantification, however, is definable as follows:
 *)
 
 Inductive ex A (P : A -> Prop) : Prop := (* Notation: exists x, P x *)
   ex_intro : forall x : A, P x -> ex A P.
 
-(* Make the A and P arguments of ex_intro implicit. *)
+(* Make the `A` and `P` arguments of `ex_intro` implicit. *)
 
 Arguments ex_intro {_} {_}.
 
