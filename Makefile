@@ -7,7 +7,7 @@ verify:
           CoqMakefile \
           CoqMakefile.conf \
           _CoqProjectFull
-	echo '-Q proofs Main' > _CoqProjectFull
+	cp _CoqProject _CoqProjectFull
 	find proofs -type f -name '*.v' >> _CoqProjectFull
 	coq_makefile -f _CoqProjectFull -o CoqMakefile || (rm -f \
             .CoqMakefile.d \

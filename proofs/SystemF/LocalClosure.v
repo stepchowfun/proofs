@@ -6,7 +6,8 @@
 (**************************************)
 (**************************************)
 
-Require Import Lia.
+Require Import Coq.Arith.Gt.
+Require Import Coq.micromega.Lia.
 Require Import Main.SystemF.Syntax.
 Require Import Main.Tactics.
 

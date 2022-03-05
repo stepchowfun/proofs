@@ -6,7 +6,8 @@
 (*******************************************)
 (*******************************************)
 
-Require Import List.
+Require Import Coq.Arith.Peano_dec.
+Require Import Coq.Lists.List.
 Require Import Main.Tactics.
 
 Module Type NameSig.

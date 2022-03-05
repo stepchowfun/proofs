@@ -6,7 +6,8 @@
 (**************************)
 (**************************)
 
-Require Import List.
+Require Import Coq.Bool.Bool.
+Require Import Coq.Lists.List.
 Require Import Main.SystemF.Context.
 Require Import Main.SystemF.FreeVar.
 Require Import Main.SystemF.LocalClosure.

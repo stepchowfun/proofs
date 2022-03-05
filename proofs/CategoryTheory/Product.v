@@ -12,7 +12,7 @@ Require Import Main.CategoryTheory.Object.
 Require Import Main.CategoryTheory.Terminal.
 Require Import Main.Tactics.
 
-Set Universe Polymorphism.
+#[local] Set Universe Polymorphism.
 
 (* Metavariable for products: xy *)
 (* Metavariables for projections: px, py *)

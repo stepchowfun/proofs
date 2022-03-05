@@ -6,11 +6,12 @@
 (*********************)
 (*********************)
 
+Require Import Coq.Classes.Morphisms.
 Require Import Main.CategoryTheory.Arrow.
 Require Import Main.CategoryTheory.Category.
 Require Import Main.Tactics.
 
-Set Universe Polymorphism.
+#[local] Set Universe Polymorphism.
 
 Definition isomorphic {C} (x y : object C) :=
   exists (f : arrow x y), isomorphism f.

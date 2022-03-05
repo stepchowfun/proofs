@@ -6,11 +6,11 @@
 (********************)
 (********************)
 
+Require Import Coq.Logic.ProofIrrelevance.
 Require Import Main.CategoryTheory.Functor.
 Require Import Main.CategoryTheory.NaturalTransformation.
-Require Import ProofIrrelevance.
 
-Set Universe Polymorphism.
+#[local] Set Universe Polymorphism.
 
 (* Metavariable for monads: M *)
 

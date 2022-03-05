@@ -6,15 +6,16 @@
 (******************************)
 (******************************)
 
-Require Import Lia.
-Require Import List.
+Require Import Coq.Arith.Le.
+Require Import Coq.Arith.Peano_dec.
+Require Import Coq.Lists.List.
+Require Import Coq.micromega.Lia.
 Require Import Main.SystemF.FreeVar.
 Require Import Main.SystemF.LocalClosure.
 Require Import Main.SystemF.Syntax.
 Require Import Main.Tactics.
-Require Import Peano_dec.
 
-Import PeanoNat.Nat.
+Import Coq.Arith.PeanoNat.Nat.
 
 Fixpoint eeOpen e1 i1 e2 :=
   match e1 with

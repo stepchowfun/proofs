@@ -6,6 +6,7 @@
 (************************)
 (************************)
 
+Require Import Coq.Classes.Morphisms.
 Require Import Main.CategoryTheory.Arrow.
 Require Import Main.CategoryTheory.Category.
 Require Import Main.CategoryTheory.Initial.
@@ -14,7 +15,7 @@ Require Import Main.CategoryTheory.Product.
 Require Import Main.CategoryTheory.Terminal.
 Require Import Main.Tactics.
 
-Set Universe Polymorphism.
+#[local] Set Universe Polymorphism.
 
 (* Metavariable for coproducts: xy (same as products) *)
 (* Metavariables for injections: ix, iy *)

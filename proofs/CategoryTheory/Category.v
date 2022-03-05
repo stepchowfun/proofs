@@ -6,10 +6,10 @@
 (************************)
 (************************)
 
+Require Import Coq.Logic.ProofIrrelevance.
 Require Import Main.Tactics.
-Require Import ProofIrrelevance.
 
-Set Universe Polymorphism.
+#[local] Set Universe Polymorphism.
 
 (* Metavariables for categories: C, D, E *)
 

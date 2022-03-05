@@ -6,10 +6,12 @@
 (********************)
 (********************)
 
+Require Import Coq.Classes.Morphisms.
+Require Import Coq.Classes.Morphisms_Prop.
 Require Import Main.CategoryTheory.Category.
 Require Import Main.Tactics.
 
-Set Universe Polymorphism.
+#[local] Set Universe Polymorphism.
 
 Definition endomorphism {C} x := @arrow C x x.
 

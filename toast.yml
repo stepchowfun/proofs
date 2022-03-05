@@ -104,20 +104,28 @@ tasks:
           -name 'Makefile' \
         \) -print
       )
-      ./linters/lint-imports.rb '^\s*Require ' 'coqc -R proofs Main ?' $(
-        find . -type d \( \
-          -path ./.git \
-        \) -prune -o \( \
-          -name '*.v' \
-        \) -print
-      )
-      ./linters/lint-imports.rb '^\s*Import ' 'coqc -R proofs Main ?' $(
-        find . -type d \( \
-          -path ./.git \
-        \) -prune -o \( \
-          -name '*.v' \
-        \) -print
-      )
+      ./linters/lint-imports.rb \
+        '^\s*Require ' \
+        '^\s*Require Import (Coq|Extraction|Main)\.' \
+        'coqc -set "Loose Hint Behavior=Strict" -Q proofs Main ?' \
+        $(
+          find . -type d \( \
+            -path ./.git \
+          \) -prune -o \( \
+            -name '*.v' \
+          \) -print
+        )
+      ./linters/lint-imports.rb \
+        '^\s*Import ' \
+        '^\s*Import (Coq|Extraction|Main)\.' \
+        'coqc -set "Loose Hint Behavior=Strict" -Q proofs Main ?' \
+        $(
+          find . -type d \( \
+            -path ./.git \
+          \) -prune -o \( \
+            -name '*.v' \
+          \) -print
+        )
       if grep --recursive --line-number --include '*.v' Admitted proofs; then
         echo "Error: 'Admitted' found in proofs." 1>&2
         exit 1

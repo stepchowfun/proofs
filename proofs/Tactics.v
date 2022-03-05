@@ -6,7 +6,7 @@
 (*************************************)
 (*************************************)
 
-Require Import Lia.
+Require Import Coq.micromega.Lia.
 
 (*
   This tactic does a variety of simplifications on the goal and hypotheses.

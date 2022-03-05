@@ -6,7 +6,8 @@
 (*****************************)
 (*****************************)
 
-Require Import List.
+Require Import Coq.Bool.Bool.
+Require Import Coq.Lists.List.
 Require Import Main.SystemF.FreeVar.
 Require Import Main.SystemF.LocalClosure.
 Require Import Main.SystemF.Name.
@@ -14,7 +15,7 @@ Require Import Main.SystemF.Substitution.
 Require Import Main.SystemF.Syntax.
 Require Import Main.Tactics.
 
-Import ListNotations.
+Import Coq.Lists.List.ListNotations.
 
 Inductive context :=
 | cEmpty : context
