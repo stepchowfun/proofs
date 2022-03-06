@@ -8,6 +8,9 @@
 
 Require Import Coq.micromega.Lia.
 
+(* Ensure this hint database exists. *)
+Create HintDb main.
+
 (*
   This tactic does a variety of simplifications on the goal and hypotheses.
   It's used by the `magic` tactics below. If you just want to clean up the goal
@@ -63,12 +66,12 @@ Require Import Coq.micromega.Lia.
   ].
 
 Tactic Notation "magic" integer(n) :=
-  let autoStar := auto n with * in magicWith autoStar.
+  let autoStar := auto n with arith datatypes main in magicWith autoStar.
 
 Tactic Notation "magic" := magic 5.
 
 Tactic Notation "eMagic" integer(n) :=
-  let eautoStar := eauto n with * in magicWith eautoStar.
+  let eautoStar := eauto n with arith datatypes main in magicWith eautoStar.
 
 Tactic Notation "eMagic" := eMagic 5.
 
