@@ -6,7 +6,7 @@
 (************************************************)
 (************************************************)
 
-Require Import FunctionalExtensionality.
+Require Import Coq.Logic.FunctionalExtensionality.
 Require Import Main.CategoryTheory.Arrow.
 Require Import Main.CategoryTheory.Category.
 Require Import Main.CategoryTheory.Product.

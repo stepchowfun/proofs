@@ -6,12 +6,13 @@
 (******************************)
 (******************************)
 
+Require Import Coq.Classes.Morphisms.
 Require Import Main.CategoryTheory.Category.
 Require Import Main.CategoryTheory.Initial.
 Require Import Main.CategoryTheory.Object.
 Require Import Main.Tactics.
 
-Set Universe Polymorphism.
+#[local] Set Universe Polymorphism.
 
 Definition terminal {C} (x : object C) :=
   forall y, exists f, forall (g : arrow y x), f = g.

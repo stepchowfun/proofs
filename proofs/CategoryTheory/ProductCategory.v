@@ -10,7 +10,7 @@ Require Import Main.CategoryTheory.Category.
 Require Import Main.CategoryTheory.Functor.
 Require Import Main.Tactics.
 
-Set Universe Polymorphism.
+#[local] Set Universe Polymorphism.
 
 #[local] Open Scope type. (* Parse `*` as `prod` rather than `mul`. *)
 

@@ -6,7 +6,7 @@
 (*******************************************)
 (*******************************************)
 
-Require Import FunctionalExtensionality.
+Require Import Coq.Logic.FunctionalExtensionality.
 Require Import Main.CategoryTheory.Category.
 Require Import Main.CategoryTheory.Examples.Set.
 Require Import Main.CategoryTheory.Functor.

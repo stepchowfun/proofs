@@ -12,7 +12,7 @@ Require Import Main.CategoryTheory.Functor.
 Require Import Main.CategoryTheory.NaturalTransformation.
 Require Import Main.Tactics.
 
-Set Universe Polymorphism.
+#[local] Set Universe Polymorphism.
 
 Definition equivalence C D
   (F : functor C D)

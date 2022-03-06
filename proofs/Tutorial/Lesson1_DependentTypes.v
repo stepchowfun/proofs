@@ -6,7 +6,7 @@
 (**********************************************)
 (**********************************************)
 
-Require Import String.
+Require Import Coq.Strings.String.
 
 (* Length-indexed lists of strings *)
 

@@ -4,22 +4,32 @@
 # have a '?' indicating where the path should be inserted.
 #
 # Usage:
-#   ./lint-imports.rb import-regex build-command path1 path2 path3 ...
+#   ./lint-imports.rb
+#     import-matching-regex
+#     import-validation-regex
+#     build-command
+#     path1 path2 path3 ...
 
 require 'open3'
 require 'securerandom'
 
 # Make sure we got enough arguments.
-if ARGV.size < 2
+if ARGV.size < 3
   STDERR.puts(
-    'Usage: ./lint-imports.rb import-regex build-command path1 path2 path3 ...'
+    'Usage: ./lint-imports.rb ' +
+      'import-matching-regex ' +
+      'import-validation-regex ' +
+      'build-command ' +
+      'path1 path2 path3 ...'
   )
   exit(1)
 end
 
 # Parse the input.
-import_regex_str, build_command, *paths = ARGV
-import_regex = Regexp.new(import_regex_str, nil)
+import_matching_regex_str, import_validation_regex_str, build_command, *paths =
+  ARGV
+import_matching_regex = Regexp.new(import_matching_regex_str, nil)
+import_validation_regex = Regexp.new(import_validation_regex_str, nil)
 
 # Make sure the build command has exactly one '?'.
 if build_command.count('?') != 1
@@ -42,13 +52,22 @@ paths.each do |path|
   imports = lines.map.with_index do |line, index|
     [line, index]
   end.select do |line, index|
-    line =~ import_regex
+    line =~ import_matching_regex
+  end
+
+  # Validate the imports.
+  imports.each do |import, _|
+    if !import_validation_regex.match?(import)
+      STDERR.puts("Error: invalid import in #{path}.")
+      STDERR.puts("  #{import}")
+      failed = true
+    end
   end
 
   # Check that the imports are sorted.
   if imports.sort { |a, b| a[0] <=> b[0]} != imports
     STDERR.puts("Error: unsorted imports in #{path}.")
-    imports.each { |import, index| STDERR.puts("  #{import}") }
+    imports.each { |import, _| STDERR.puts("  #{import}") }
     failed = true
   end
 

@@ -11,7 +11,7 @@ Require Import Main.CategoryTheory.Category.
 Require Import Main.CategoryTheory.Object.
 Require Import Main.Tactics.
 
-Set Universe Polymorphism.
+#[local] Set Universe Polymorphism.
 
 Definition initial {C} (x : object C) :=
   forall y, exists f, forall (g : arrow x y), f = g.

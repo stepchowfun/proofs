@@ -6,7 +6,7 @@
 (*******************************************************)
 (*******************************************************)
 
-Require Import Lia.
+Require Import Coq.micromega.Lia.
 Require Import Main.Tactics.
 
 Section Kleene.

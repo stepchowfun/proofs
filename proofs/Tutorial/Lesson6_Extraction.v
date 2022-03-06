@@ -6,9 +6,9 @@
 (**************************************)
 (**************************************)
 
+Require Import Coq.Init.Nat.
+Require Import Coq.micromega.Lia.
 Require Import Extraction.
-Require Import Lia.
-Require Import Nat.
 
 Extraction Language Haskell.
 

@@ -6,7 +6,7 @@
 (**************************************************************************)
 (**************************************************************************)
 
-Require Import List.
+Require Import Coq.Lists.List.
 Require Import Main.SystemF.FreeVar.
 Require Import Main.SystemF.LocalClosure.
 Require Import Main.SystemF.Name.

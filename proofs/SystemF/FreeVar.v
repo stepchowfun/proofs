@@ -6,10 +6,10 @@
 (****************************)
 (****************************)
 
-Require Import List.
+Require Import Coq.Lists.List.
 Require Import Main.SystemF.Syntax.
 
-Import ListNotations.
+Import Coq.Lists.List.ListNotations.
 
 Fixpoint eeFreeVars e1 :=
   match e1 with
