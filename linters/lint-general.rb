@@ -56,24 +56,20 @@ ARGV.each do |path|
     end
   end
 
-  # Check for blank lines at the end of the file.
+  # Check for a single blank line at the end of the file.
   if !lines.empty?
     # Check that there is a blank line at the end of the file.
-    if !lines.last.empty?
-      STDERR.puts(
-        "Error: #{path} is not terminated by a blank line."
-      )
-      failed = true
-    end
-
-    # Check that there are not multiple blank lines at the end of the file.
-    if lines.size > 1
-      if lines[lines.size - 2].empty?
+    if lines.last.empty?
+      # Check that there are not multiple blank lines at the end of the file.
+      if lines.size > 1 && lines[lines.size - 2].empty?
         STDERR.puts(
           "Error: #{path} is terminated by more than one blank line."
         )
         failed = true
       end
+    else
+      STDERR.puts("Error: #{path} is not terminated by a blank line.")
+      failed = true
     end
   end
 end
