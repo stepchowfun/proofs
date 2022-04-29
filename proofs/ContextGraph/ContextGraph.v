@@ -10,7 +10,7 @@ Require Import Main.Tactics.
 
 Section ContextGraph.
 
-  (* An *context graph* has a set of nodes, just like any graph. *)
+  (* A *context graph* has a set of nodes, just like any graph. *)
 
   Variable node : Set.
 
