@@ -86,7 +86,7 @@ Section ContextGraph.
 
   #[local] Hint Constructors accessible : main.
 
-  (* The next two theorems establish that accessibility is a preorder. *)
+  (* These two theorems establish that accessibility is a preorder. *)
 
   Theorem accessibleReflexive : forall node, accessible node node.
   Proof.
@@ -111,8 +111,8 @@ Section ContextGraph.
     global context from which every node is accessible.
   *)
 
-  Variable universe : node.
+  Variable origin : node.
 
-  Hypothesis universeAccess : forall node, accessible universe node.
+  Hypothesis originality : forall node, accessible origin node.
 
 End ContextGraph.
