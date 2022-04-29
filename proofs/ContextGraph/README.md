@@ -1,3 +1,3 @@
 # Context graphs
 
-This directory introduces a new kind of graph called a *context graph*, in which individual vertices can stand for entire subgraphs.
+This directory introduces *context graphs*. Each node in a context graph provides its own local view of the graph.
