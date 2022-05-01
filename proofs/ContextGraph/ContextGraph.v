@@ -78,8 +78,9 @@ Section ContextGraph.
   Definition rooted context := horizontallyReachable context context.
 
   (*
-    For a context graph to be *well-formed*, it must satisfy the following
-    condition: the source of every edge is rooted in that edge's context.
+    The following requirement establishes the connection between the contexts
+    of the edges and the structure of the graph: the source of every edge is
+    rooted in that edge's context.
   *)
 
   Hypothesis sourcesRooted :
@@ -146,6 +147,17 @@ Section ContextGraph.
     induction H0; magic.
     apply verticalExtension with (context := context); magic.
   Qed.
+
+  (*
+    Rootedness is intended to signify nesting. To support that intention, we
+    require vertical reachability to be antisymmetric and thus a partial order.
+  *)
+
+  Hypothesis verticalAntisymmetry :
+    forall node1 node2,
+    verticallyReachable node1 node2 ->
+    verticallyReachable node2 node1 ->
+    node1 = node2.
 
   (*
     Since the nodes of the subgraph induced by the edges for a particular
