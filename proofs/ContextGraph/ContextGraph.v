@@ -45,17 +45,6 @@ Section ContextGraph.
 
   #[local] Hint Constructors horizontallyReachable : main.
 
-  (* Horizontal reachability contains the edge relation. *)
-
-  Theorem horizontalCompleteness :
-    forall context source target,
-    edge context source target ->
-    horizontallyReachable context source target.
-  Proof.
-    clean.
-    apply horizontalExtension with (source := source); magic.
-  Qed.
-
   (*
     Horizontal reachability is reflexive by definition. Here, we show that it's
     also transitive and thus a preorder.
@@ -68,8 +57,17 @@ Section ContextGraph.
     horizontallyReachable context node1 node3.
   Proof.
     clean.
-    induction H0; magic.
-    apply horizontalExtension with (source := source); magic.
+    induction H0; eMagic.
+  Qed.
+
+  (* Horizontal reachability contains the edge relation. *)
+
+  Theorem horizontalCompleteness :
+    forall context source target,
+    edge context source target ->
+    horizontallyReachable context source target.
+  Proof.
+    eMagic.
   Qed.
 
   (*
@@ -78,33 +76,6 @@ Section ContextGraph.
   *)
 
   Definition rooted context := horizontallyReachable context context.
-
-  (*
-    The following requirement establishes the connection between the contexts
-    of the edges and the structure of the graph: the source of every edge is
-    rooted in that edge's context.
-  *)
-
-  Hypothesis sourcesRooted :
-    forall context source target,
-    edge context source target ->
-    rooted context source.
-
-  (*
-    The condition above immediately implies the following corollary: the target
-    of every edge is rooted in that edge's context.
-  *)
-
-  Theorem targetsRooted :
-    forall context source target,
-    edge context source target ->
-    rooted context target.
-  Proof.
-    clean.
-    apply horizontalExtension with (source := source); magic.
-    apply sourcesRooted with (target := target).
-    magic.
-  Qed.
 
   (*
     *Vertical reachability* is the transitive reflexive closure of the rooted
@@ -123,17 +94,6 @@ Section ContextGraph.
 
   #[local] Hint Constructors verticallyReachable : main.
 
-  (* Vertical reachability contains the rootedness relation. *)
-
-  Theorem verticalCompleteness :
-    forall context node,
-    rooted context node ->
-    verticallyReachable context node.
-  Proof.
-    clean.
-    apply verticalExtension with (context := context); magic.
-  Qed.
-
   (*
     Vertical reachability is reflexive by definition. Here, we show that it's
     also transitive and thus a preorder.
@@ -146,12 +106,21 @@ Section ContextGraph.
     verticallyReachable node1 node3.
   Proof.
     clean.
-    induction H0; magic.
-    apply verticalExtension with (context := context); magic.
+    induction H0; eMagic.
+  Qed.
+
+  (* Vertical reachability contains the rootedness relation. *)
+
+  Theorem verticalCompleteness :
+    forall context node,
+    rooted context node ->
+    verticallyReachable context node.
+  Proof.
+    eMagic.
   Qed.
 
   (*
-    Rootedness is intended to signify nesting. To support that intention, we
+    Rootedness is intended to signify nesting. To codify that intention, we
     require vertical reachability to be antisymmetric and thus a partial order.
   *)
 
@@ -160,6 +129,33 @@ Section ContextGraph.
     verticallyReachable node1 node2 ->
     verticallyReachable node2 node1 ->
     node1 = node2.
+
+  (*
+    Since vertical reachability only considers edges for which the source is
+    rooted in that edge's context, we may wish to postulate that no other edges
+    exist.
+  *)
+
+  Hypothesis sourcesRooted :
+    forall context source target,
+    edge context source target ->
+    rooted context source.
+
+  (*
+    The postulate above immediately implies the following corollary: the target
+    of every edge is rooted in that edge's context.
+  *)
+
+  Theorem targetsRooted :
+    forall context source target,
+    edge context source target ->
+    rooted context target.
+  Proof.
+    clean.
+    apply horizontalExtension with (source := source); magic.
+    apply sourcesRooted with (target := target).
+    magic.
+  Qed.
 
   (*
     Since the nodes of the subgraph associated with a particular context must
