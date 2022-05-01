@@ -26,55 +26,56 @@ Section ContextGraph.
   Variable edge : node -> node -> node -> Prop.
 
   (*
-    *Interior reachability* is the transitive reflexive closure of the edge
+    *Horizontal reachability* is the transitive reflexive closure of the edge
     relation specialized on a particular context. Reflexivity is immediate from
     the definition, and transitivity is proven below.
   *)
 
-  Inductive interiorReachable (context : node) (start : node) : node -> Prop :=
-  | interiorReflexivity :
-    interiorReachable context start start
-  | interiorExtension :
+  Inductive horizontallyReachable
+    (context : node) (start : node) : node -> Prop :=
+  | horizontalReflexivity :
+    horizontallyReachable context start start
+  | horizontalExtension :
     forall source target,
-    interiorReachable context start source ->
+    horizontallyReachable context start source ->
     edge context source target ->
-    interiorReachable context start target.
+    horizontallyReachable context start target.
 
-  #[local] Hint Constructors interiorReachable : main.
+  #[local] Hint Constructors horizontallyReachable : main.
 
-  (* Interior reachability contains the edge relation. *)
+  (* Horizontal reachability contains the edge relation. *)
 
-  Theorem interiorReachableComplete :
+  Theorem horizontalCompleteness :
     forall context source target,
     edge context source target ->
-    interiorReachable context source target.
+    horizontallyReachable context source target.
   Proof.
     clean.
-    apply interiorExtension with (source := source); magic.
+    apply horizontalExtension with (source := source); magic.
   Qed.
 
   (*
-    Interior reachability is reflexive by definition. Here, we show that it's
+    Horizontal reachability is reflexive by definition. Here, we show that it's
     also transitive and thus a preorder.
   *)
 
-  Theorem interiorTransitivity :
+  Theorem horizontalTransitivity :
     forall context node1 node2 node3,
-    interiorReachable context node1 node2 ->
-    interiorReachable context node2 node3 ->
-    interiorReachable context node1 node3.
+    horizontallyReachable context node1 node2 ->
+    horizontallyReachable context node2 node3 ->
+    horizontallyReachable context node1 node3.
   Proof.
     clean.
     induction H0; magic.
-    apply interiorExtension with (source := source); magic.
+    apply horizontalExtension with (source := source); magic.
   Qed.
 
   (*
-    A node is *rooted in* a context if it's interior reachable in and from that
-    context.
+    A node is *rooted in* a context if it's horizontally reachable in and from
+    that context.
   *)
 
-  Definition rooted context := interiorReachable context context.
+  Definition rooted context := horizontallyReachable context context.
 
   (*
     For a context graph to be *well-formed*, it must satisfy the following
@@ -97,51 +98,53 @@ Section ContextGraph.
     rooted context target.
   Proof.
     clean.
-    apply interiorExtension with (source := source); magic.
+    apply horizontalExtension with (source := source); magic.
     apply sourcesRooted with (target := target).
     magic.
   Qed.
 
   (*
-    *Exterior reachability* is the transitive reflexive closure of the rooted
+    *Vertical reachability* is the transitive reflexive closure of the rooted
     relation. Reflexivity is immediate from the definition, and transitivity is
     proven below.
   *)
 
-  Inductive exteriorReachable (start : node) : node -> Prop :=
-  | exteriorReflexivity :
-    exteriorReachable start start
-  | exteriorExtension :
+  Inductive verticallyReachable (start : node) : node -> Prop :=
+  | verticalReflexivity :
+    verticallyReachable start start
+  | verticalExtension :
     forall context node,
-    exteriorReachable start context ->
+    verticallyReachable start context ->
     rooted context node ->
-    exteriorReachable start node.
+    verticallyReachable start node.
 
-  #[local] Hint Constructors exteriorReachable : main.
+  #[local] Hint Constructors verticallyReachable : main.
 
-  (* Exterior reachability contains the rooted relation. *)
+  (* Vertical reachability contains the rootedness relation. *)
 
-  Theorem exteriorReachableComplete :
-    forall context node, rooted context node -> exteriorReachable context node.
+  Theorem verticalCompleteness :
+    forall context node,
+    rooted context node ->
+    verticallyReachable context node.
   Proof.
     clean.
-    apply exteriorExtension with (context := context); magic.
+    apply verticalExtension with (context := context); magic.
   Qed.
 
   (*
-    Exterior reachability is reflexive by definition. Here, we show that it's
+    Vertical reachability is reflexive by definition. Here, we show that it's
     also transitive and thus a preorder.
   *)
 
-  Theorem exteriorTransitivity :
+  Theorem verticalTransitivity :
     forall node1 node2 node3,
-    exteriorReachable node1 node2 ->
-    exteriorReachable node2 node3 ->
-    exteriorReachable node1 node3.
+    verticallyReachable node1 node2 ->
+    verticallyReachable node2 node3 ->
+    verticallyReachable node1 node3.
   Proof.
     clean.
     induction H0; magic.
-    apply exteriorExtension with (context := context); magic.
+    apply verticalExtension with (context := context); magic.
   Qed.
 
   (*
@@ -149,11 +152,11 @@ Section ContextGraph.
     context must be rooted in that context, one might also expect an analogous
     situation for the graph as a whole. Here we formalize that criterion by
     postulating the existence of an *origin* context from which every node is
-    exterior reachable.
+    vertically reachable.
   *)
 
   Variable origin : node.
 
-  Hypothesis originality : forall node, exteriorReachable origin node.
+  Hypothesis originality : forall node, verticallyReachable origin node.
 
 End ContextGraph.
