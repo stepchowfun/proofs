@@ -122,125 +122,115 @@ Qed.
 (* Free variables of a substitution *)
 (************************************)
 
-Section FreeSub.
+#[local] Theorem inclAppRemoveWeakeningLeft :
+  forall x l1 l2 l3,
+  incl (l1 ++ remove nameEq x l2) (l1 ++ remove nameEq x (l2 ++ l3)).
+Proof.
+  unfold incl. clean.
+  fact (in_app_or l1 (remove nameEq x l2) a H).
+  destruct H0; magic.
+  apply in_or_app. right.
+  induction l2; magic.
+Qed.
 
-  #[local] Theorem inclAppRemoveWeakeningLeft :
-    forall x l1 l2 l3,
-    incl (l1 ++ remove nameEq x l2) (l1 ++ remove nameEq x (l2 ++ l3)).
-  Proof.
-    unfold incl. clean.
-    fact (in_app_or l1 (remove nameEq x l2) a H).
-    destruct H0; magic.
-    apply in_or_app. right.
-    induction l2; magic.
-  Qed.
+#[local] Hint Resolve inclAppRemoveWeakeningLeft : main.
 
-  Hint Resolve inclAppRemoveWeakeningLeft : main.
+#[local] Theorem inclAppRemoveWeakeningRight :
+  forall x l1 l2 l3,
+  incl (l1 ++ remove nameEq x l3) (l1 ++ remove nameEq x (l2 ++ l3)).
+Proof.
+  unfold incl. clean.
+  fact (in_app_or l1 (remove nameEq x l3) a H).
+  destruct H0; magic.
+  apply in_or_app. right.
+  induction l2; magic.
+Qed.
 
-  #[local] Theorem inclAppRemoveWeakeningRight :
-    forall x l1 l2 l3,
-    incl (l1 ++ remove nameEq x l3) (l1 ++ remove nameEq x (l2 ++ l3)).
-  Proof.
-    unfold incl. clean.
-    fact (in_app_or l1 (remove nameEq x l3) a H).
-    destruct H0; magic.
-    apply in_or_app. right.
-    induction l2; magic.
-  Qed.
+#[local] Hint Resolve inclAppRemoveWeakeningRight : main.
 
-  Hint Resolve inclAppRemoveWeakeningRight : main.
-
-  Theorem tttFreeSub :
-    forall t1 t2 x,
-    incl
-      (tFreeVars (ttSub t1 x t2))
-      (tFreeVars t2 ++ remove nameEq x (tFreeVars t1)).
-  Proof.
-    clean. induction t1; magic. clean. apply incl_app.
-    - apply incl_tran with (
-        m := tFreeVars t2 ++ remove nameEq x (tFreeVars t1_1)
-      ); magic.
-    - apply incl_tran with (
-        m := tFreeVars t2 ++ remove nameEq x (tFreeVars t1_2)
-      ); magic.
-  Qed.
-
-  Hint Resolve tttFreeSub : main.
-
-  Theorem eeeeFreeSub :
-    forall e1 e2 x,
-    incl
-      (eeFreeVars (eeSub e1 x e2))
-      (eeFreeVars e2 ++ remove nameEq x (eeFreeVars e1)).
-  Proof.
-    clean. induction e1; magic. clean. apply incl_app.
-    - apply incl_tran with (
-        m := eeFreeVars e2 ++ remove nameEq x (eeFreeVars e1_1)
-      ); magic.
-    - apply incl_tran with (
-        m := eeFreeVars e2 ++ remove nameEq x (eeFreeVars e1_2)
-      ); magic.
-  Qed.
-
-  Hint Resolve eeeeFreeSub : main.
-
-  Theorem eeetFreeSub :
-    forall e t x,
-    incl (eeFreeVars (etSub e x t)) (eeFreeVars e).
-  Proof.
-    clean. induction e; magic.
-  Qed.
-
-  Hint Resolve eeetFreeSub : main.
-
-  Theorem eteeFreeSub :
-    forall e1 e2 x,
-    incl (etFreeVars (eeSub e1 x e2)) (etFreeVars e2 ++ etFreeVars e1).
-  Proof.
-    clean. induction e1; magic; clean; apply incl_app.
-    - apply incl_tran with (m := etFreeVars e2 ++ tFreeVars t); magic.
-    - apply incl_tran with (m := etFreeVars e2 ++ etFreeVars e1); magic.
-    - apply incl_tran with (m := etFreeVars e2 ++ etFreeVars e1_1); magic.
-    - apply incl_tran with (m := etFreeVars e2 ++ etFreeVars e1_2); magic.
-    - apply incl_tran with (m := etFreeVars e2 ++ etFreeVars e1); magic.
-    - apply incl_tran with (m := etFreeVars e1 ++ tFreeVars t); magic.
-  Qed.
-
-  Hint Resolve eteeFreeSub : main.
-
-  Theorem etetFreeSub :
-    forall e t x,
-    incl
-      (etFreeVars (etSub e x t))
-      (tFreeVars t ++ remove nameEq x (etFreeVars e)).
-  Proof.
-    clean. induction e; magic; clean; apply incl_app.
-    - apply incl_tran with (
-        m := tFreeVars t ++ remove nameEq x (tFreeVars t0)
-      ); magic.
-    - apply incl_tran with (
-        m := tFreeVars t ++ remove nameEq x (etFreeVars e)
-      ); magic.
-    - apply incl_tran with (
-        m := tFreeVars t ++ remove nameEq x (etFreeVars e1)
-      ); magic.
-    - apply incl_tran with (
-        m := tFreeVars t ++ remove nameEq x (etFreeVars e2)
-      ); magic.
-    - apply incl_tran with (
-        m := tFreeVars t ++ remove nameEq x (etFreeVars e)
-      ); magic.
-    - apply incl_tran with (
-        m := tFreeVars t ++ remove nameEq x (tFreeVars t0)
-      ); magic.
-  Qed.
-
-  Hint Resolve etetFreeSub : main.
-
-End FreeSub.
+Theorem tttFreeSub :
+  forall t1 t2 x,
+  incl
+    (tFreeVars (ttSub t1 x t2))
+    (tFreeVars t2 ++ remove nameEq x (tFreeVars t1)).
+Proof.
+  clean. induction t1; magic. clean. apply incl_app.
+  - apply incl_tran with (
+      m := tFreeVars t2 ++ remove nameEq x (tFreeVars t1_1)
+    ); magic.
+  - apply incl_tran with (
+      m := tFreeVars t2 ++ remove nameEq x (tFreeVars t1_2)
+    ); magic.
+Qed.
 
 #[export] Hint Resolve tttFreeSub : main.
+
+Theorem eeeeFreeSub :
+  forall e1 e2 x,
+  incl
+    (eeFreeVars (eeSub e1 x e2))
+    (eeFreeVars e2 ++ remove nameEq x (eeFreeVars e1)).
+Proof.
+  clean. induction e1; magic. clean. apply incl_app.
+  - apply incl_tran with (
+      m := eeFreeVars e2 ++ remove nameEq x (eeFreeVars e1_1)
+    ); magic.
+  - apply incl_tran with (
+      m := eeFreeVars e2 ++ remove nameEq x (eeFreeVars e1_2)
+    ); magic.
+Qed.
+
 #[export] Hint Resolve eeeeFreeSub : main.
+
+Theorem eeetFreeSub :
+  forall e t x,
+  incl (eeFreeVars (etSub e x t)) (eeFreeVars e).
+Proof.
+  clean. induction e; magic.
+Qed.
+
 #[export] Hint Resolve eeetFreeSub : main.
+
+Theorem eteeFreeSub :
+  forall e1 e2 x,
+  incl (etFreeVars (eeSub e1 x e2)) (etFreeVars e2 ++ etFreeVars e1).
+Proof.
+  clean. induction e1; magic; clean; apply incl_app.
+  - apply incl_tran with (m := etFreeVars e2 ++ tFreeVars t); magic.
+  - apply incl_tran with (m := etFreeVars e2 ++ etFreeVars e1); magic.
+  - apply incl_tran with (m := etFreeVars e2 ++ etFreeVars e1_1); magic.
+  - apply incl_tran with (m := etFreeVars e2 ++ etFreeVars e1_2); magic.
+  - apply incl_tran with (m := etFreeVars e2 ++ etFreeVars e1); magic.
+  - apply incl_tran with (m := etFreeVars e1 ++ tFreeVars t); magic.
+Qed.
+
 #[export] Hint Resolve eteeFreeSub : main.
+
+Theorem etetFreeSub :
+  forall e t x,
+  incl
+    (etFreeVars (etSub e x t))
+    (tFreeVars t ++ remove nameEq x (etFreeVars e)).
+Proof.
+  clean. induction e; magic; clean; apply incl_app.
+  - apply incl_tran with (
+      m := tFreeVars t ++ remove nameEq x (tFreeVars t0)
+    ); magic.
+  - apply incl_tran with (
+      m := tFreeVars t ++ remove nameEq x (etFreeVars e)
+    ); magic.
+  - apply incl_tran with (
+      m := tFreeVars t ++ remove nameEq x (etFreeVars e1)
+    ); magic.
+  - apply incl_tran with (
+      m := tFreeVars t ++ remove nameEq x (etFreeVars e2)
+    ); magic.
+  - apply incl_tran with (
+      m := tFreeVars t ++ remove nameEq x (etFreeVars e)
+    ); magic.
+  - apply incl_tran with (
+      m := tFreeVars t ++ remove nameEq x (tFreeVars t0)
+    ); magic.
+Qed.
+
 #[export] Hint Resolve etetFreeSub : main.

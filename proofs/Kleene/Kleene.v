@@ -9,24 +9,19 @@
 Require Import Coq.micromega.Lia.
 Require Import Main.Tactics.
 
-Section Kleene.
-
-  (***************)
-  (* Definitions *)
-  (***************)
-
+Module Type KleeneData.
   (*
     Assumption: Let (T, leq) be a partially ordered set, or poset. A poset is
     a set with a binary relation which is reflexive, transitive, and
     antisymmetric.
   *)
 
-  Variable T : Type.
-  Variable leq : T -> T -> Prop.
+  Parameter T : Type.
+  Parameter leq : T -> T -> Prop.
 
-  Hypothesis refl : forall x, leq x x.
-  Hypothesis trans : forall x y z, leq x y -> leq y z -> leq x z.
-  Hypothesis antisym : forall x y, leq x y -> leq y x -> x = y.
+  Axiom reflexivity : forall x, leq x x.
+  Axiom transitivity : forall x y z, leq x y -> leq y z -> leq x z.
+  Axiom antisymmetry : forall x y, leq x y -> leq y x -> x = y.
 
   (*
     A supremum of a subset of T is a least element of T which is greater than
@@ -52,7 +47,7 @@ Section Kleene.
     directed subset has a supremum.
   *)
 
-  Hypothesis directedComplete :
+  Axiom directedComplete :
     forall P,
     directed P ->
     exists x, supremum P x.
@@ -62,9 +57,27 @@ Section Kleene.
     partial order a pointed directed-complete partial order.
   *)
 
-  Variable bottom : T.
+  Parameter bottom : T.
 
-  Hypothesis bottomLeast : forall x, leq bottom x.
+  Axiom bottomLeast : forall x, leq bottom x.
+End KleeneData.
+
+Module KleeneTheorems (Kleene : KleeneData).
+  Import Kleene.
+
+  #[local] Hint Resolve reflexivity : main.
+
+  #[local] Hint Resolve transitivity : main.
+
+  #[local] Hint Resolve antisymmetry : main.
+
+  #[local] Hint Resolve directedComplete : main.
+
+  #[local] Hint Resolve bottomLeast : main.
+
+  (***************)
+  (* Definitions *)
+  (***************)
 
   (*
     A monotone function is one which preserves order. We only need to consider
@@ -113,6 +126,8 @@ Section Kleene.
     - destruct x; [exists 1 | exists x]; lia.
   Qed.
 
+  #[local] Hint Resolve natDiff : main.
+
   (* The supremum of a subset of T, if it exists, is unique. *)
 
   Theorem supremumUniqueness :
@@ -124,6 +139,8 @@ Section Kleene.
     unfold supremum. magic.
   Qed.
 
+  #[export] Hint Resolve supremumUniqueness : main.
+
   (* Scott-continuity implies monotonicity. *)
 
   Theorem continuousImpliesMonotone : forall f, continuous f -> monotone f.
@@ -133,6 +150,8 @@ Section Kleene.
     - unfold directed in H. split; eMagic.
     - unfold supremum in H. feed H; eMagic.
   Qed.
+
+  #[export] Hint Resolve continuousImpliesMonotone : main.
 
   (*
     Iterated applications of a monotone function f to bottom form an ω-chain,
@@ -150,6 +169,8 @@ Section Kleene.
     - left. clean. induction n; magic.
   Qed.
 
+  #[export] Hint Resolve omegaChain : main.
+
   (* The ascending Kleene chain of f is directed. *)
 
   Theorem kleeneChainDirected :
@@ -166,6 +187,8 @@ Section Kleene.
       + exists (approx f x0). eMagic.
       + exists (approx f x). eMagic.
   Qed.
+
+  #[export] Hint Resolve kleeneChainDirected : main.
 
   (**********************************)
   (* The Kleene fixed-point theorem *)
@@ -216,14 +239,5 @@ Section Kleene.
         * unfold supremum in H1. magic.
   Qed.
 
-End Kleene.
-
-#[export] Hint Resolve supremumUniqueness : main.
-
-#[export] Hint Resolve continuousImpliesMonotone : main.
-
-#[export] Hint Resolve omegaChain : main.
-
-#[export] Hint Resolve kleeneChainDirected : main.
-
-#[export] Hint Resolve kleene : main.
+  #[export] Hint Resolve kleene : main.
+End KleeneTheorems.

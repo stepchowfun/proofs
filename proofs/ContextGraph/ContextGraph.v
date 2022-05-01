@@ -8,11 +8,10 @@
 
 Require Import Main.Tactics.
 
-Section ContextGraph.
-
+Module Type ContextGraph.
   (* A *context graph* has a set of nodes, just like any graph. *)
 
-  Variable node : Set.
+  Parameter node : Type.
 
   (*
     Unsurprisingly, a context graph also has edges. In our formulation, edges
@@ -25,7 +24,7 @@ Section ContextGraph.
     with that context.
   *)
 
-  Variable edge : node -> node -> node -> Prop.
+  Parameter edge : node -> node -> node -> Prop.
 
   (*
     *Horizontal reachability* is the transitive reflexive closure of the edge
@@ -43,7 +42,69 @@ Section ContextGraph.
     edge context source target ->
     horizontallyReachable context start target.
 
+  (*
+    A node is *rooted in* a context if it's horizontally reachable in and from
+    that context.
+  *)
+
+  Definition rooted context := horizontallyReachable context context.
+
+  (*
+    *Vertical reachability* is the transitive reflexive closure of the rooted
+    relation. Reflexivity is immediate from the definition, and transitivity is
+    proven below.
+  *)
+
+  Inductive verticallyReachable (start : node) : node -> Prop :=
+  | verticalReflexivity :
+    verticallyReachable start start
+  | verticalExtension :
+    forall context node,
+    verticallyReachable start context ->
+    rooted context node ->
+    verticallyReachable start node.
+
+  (*
+    Rootedness is intended to signify nesting. To codify that intention, we
+    require vertical reachability to be antisymmetric and thus a partial order.
+  *)
+
+  Axiom verticalAntisymmetry :
+    forall node1 node2,
+    verticallyReachable node1 node2 ->
+    verticallyReachable node2 node1 ->
+    node1 = node2.
+
+  (*
+    Since vertical reachability only considers edges for which the source is
+    rooted in that edge's context, we may wish to postulate that no other edges
+    exist.
+  *)
+
+  Axiom sourcesRooted :
+    forall context source target,
+    edge context source target ->
+    rooted context source.
+
+  (*
+    Since the nodes of the subgraph associated with a particular context must
+    be rooted in that context, one might also expect an analogous situation for
+    the graph as a whole. Here we formalize that criterion by postulating the
+    existence of an *origin* context from which every node is vertically
+    reachable.
+  *)
+
+  Parameter origin : node.
+
+  Axiom originality : forall node, verticallyReachable origin node.
+End ContextGraph.
+
+Module ContextGraphTheorems (Graph : ContextGraph).
+  Import Graph.
+
   #[local] Hint Constructors horizontallyReachable : main.
+
+  #[local] Hint Constructors verticallyReachable : main.
 
   (*
     Horizontal reachability is reflexive by definition. Here, we show that it's
@@ -71,30 +132,6 @@ Section ContextGraph.
   Qed.
 
   (*
-    A node is *rooted in* a context if it's horizontally reachable in and from
-    that context.
-  *)
-
-  Definition rooted context := horizontallyReachable context context.
-
-  (*
-    *Vertical reachability* is the transitive reflexive closure of the rooted
-    relation. Reflexivity is immediate from the definition, and transitivity is
-    proven below.
-  *)
-
-  Inductive verticallyReachable (start : node) : node -> Prop :=
-  | verticalReflexivity :
-    verticallyReachable start start
-  | verticalExtension :
-    forall context node,
-    verticallyReachable start context ->
-    rooted context node ->
-    verticallyReachable start node.
-
-  #[local] Hint Constructors verticallyReachable : main.
-
-  (*
     Vertical reachability is reflexive by definition. Here, we show that it's
     also transitive and thus a preorder.
   *)
@@ -120,30 +157,8 @@ Section ContextGraph.
   Qed.
 
   (*
-    Rootedness is intended to signify nesting. To codify that intention, we
-    require vertical reachability to be antisymmetric and thus a partial order.
-  *)
-
-  Hypothesis verticalAntisymmetry :
-    forall node1 node2,
-    verticallyReachable node1 node2 ->
-    verticallyReachable node2 node1 ->
-    node1 = node2.
-
-  (*
-    Since vertical reachability only considers edges for which the source is
-    rooted in that edge's context, we may wish to postulate that no other edges
-    exist.
-  *)
-
-  Hypothesis sourcesRooted :
-    forall context source target,
-    edge context source target ->
-    rooted context source.
-
-  (*
-    The postulate above immediately implies the following corollary: the target
-    of every edge is rooted in that edge's context.
+    The `sourcesRooted` postulate immediately implies the following corollary:
+    the target of every edge is rooted in that edge's context.
   *)
 
   Theorem targetsRooted :
@@ -156,17 +171,4 @@ Section ContextGraph.
     apply sourcesRooted with (target := target).
     magic.
   Qed.
-
-  (*
-    Since the nodes of the subgraph associated with a particular context must
-    be rooted in that context, one might also expect an analogous situation for
-    the graph as a whole. Here we formalize that criterion by postulating the
-    existence of an *origin* context from which every node is vertically
-    reachable.
-  *)
-
-  Variable origin : node.
-
-  Hypothesis originality : forall node, verticallyReachable origin node.
-
-End ContextGraph.
+End ContextGraphTheorems.
