@@ -15,12 +15,14 @@ Section ContextGraph.
   Variable node : Set.
 
   (*
-    Context graphs are directed, i.e., each edge is associated with a source
-    node and a target node. Each edge is also labeled with another node called
-    its *context*. Here, edges are indicated by a predicate on the context,
-    source, and target, respectively. Specializing the predicate on a
-    particular context yields a binary edge relation which induces a subgraph
-    for that context.
+    Unsurprisingly, a context graph also has edges. In our formulation, edges
+    are directed, but this is inessential.
+
+    Each edge in a context graph is labeled with a node called its *context*.
+    We indicate edges by ternary relation between the context, source, and
+    target, respectively. Specializing the ternary relation on a particular
+    context yields a binary edge relation which induces a subgraph associated
+    with that context.
   *)
 
   Variable edge : node -> node -> node -> Prop.
@@ -160,11 +162,11 @@ Section ContextGraph.
     node1 = node2.
 
   (*
-    Since the nodes of the subgraph induced by the edges for a particular
-    context must be rooted in that context, one might also expect an analogous
-    situation for the graph as a whole. Here we formalize that criterion by
-    postulating the existence of an *origin* context from which every node is
-    vertically reachable.
+    Since the nodes of the subgraph associated with a particular context must
+    be rooted in that context, one might also expect an analogous situation for
+    the graph as a whole. Here we formalize that criterion by postulating the
+    existence of an *origin* context from which every node is vertically
+    reachable.
   *)
 
   Variable origin : node.
