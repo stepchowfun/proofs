@@ -117,7 +117,7 @@ tasks:
         )
       ./linters/lint-imports.rb \
         '^\s*Import ' \
-        '^\s*Import (Coq|Extraction|Main)\.' \
+        '^\s*Import ' \
         'coqc -set "Loose Hint Behavior=Strict" -Q proofs Main ?' \
         $(
           find . -type d \( \
