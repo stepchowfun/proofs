@@ -6,6 +6,7 @@
 (****************************)
 (****************************)
 
+Require Import Coq.Program.Basics.
 Require Import Main.ContextGraph.Closure.
 Require Import Main.Tactics.
 
@@ -32,7 +33,7 @@ Module Type ContextGraph.
     relation specialized on a particular context.
   *)
 
-  Definition horizontallyReachable context := closure (edge context).
+  Definition horizontallyReachable := compose closure edge.
 
   (*
     A node is *rooted in* a context if it's horizontally reachable in and from
