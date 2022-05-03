@@ -15,8 +15,7 @@ Module Type ContextGraph.
   Parameter node : Type.
 
   (*
-    Unsurprisingly, a context graph also has edges. In our formulation, edges
-    are directed, but this is inessential.
+    In our formulation, edges are directed, but this is inessential.
 
     Each edge in a context graph is labeled with a node called its *context*.
     We indicate edges by ternary relation between the context, source, and
