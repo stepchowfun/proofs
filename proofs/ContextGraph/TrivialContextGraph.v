@@ -6,6 +6,7 @@
 (*************************************************)
 (*************************************************)
 
+Require Import Main.ContextGraph.Closure.
 Require Import Main.ContextGraph.ContextGraph.
 Require Import Main.Tactics.
 
@@ -15,32 +16,13 @@ Module TrivialContextGraph <: ContextGraph.
   Definition edge (x y z : node) := False.
 
   (* Coq requires that we copy this verbatim from `ContextGraph`. *)
-  Inductive horizontallyReachable
-    (context : node) (start : node) : node -> Prop :=
-  | horizontalReflexivity :
-    horizontallyReachable context start start
-  | horizontalExtension :
-    forall source target,
-    horizontallyReachable context start source ->
-    edge context source target ->
-    horizontallyReachable context start target.
-
-  #[local] Hint Constructors horizontallyReachable : main.
+  Definition horizontallyReachable context := closure (edge context).
 
   (* Coq requires that we copy this verbatim from `ContextGraph`. *)
   Definition rooted context := horizontallyReachable context context.
 
   (* Coq requires that we copy this verbatim from `ContextGraph`. *)
-  Inductive verticallyReachable (start : node) : node -> Prop :=
-  | verticalReflexivity :
-    verticallyReachable start start
-  | verticalExtension :
-    forall context node,
-    verticallyReachable start context ->
-    rooted context node ->
-    verticallyReachable start node.
-
-  #[local] Hint Constructors verticallyReachable : main.
+  Definition verticallyReachable := closure rooted.
 
   Theorem verticalAntisymmetry :
     forall node1 node2,
@@ -69,7 +51,7 @@ Module TrivialContextGraph <: ContextGraph.
     clean.
     elim origin.
     elim node0.
-    magic.
+    apply reflexivity.
   Qed.
 End TrivialContextGraph.
 
