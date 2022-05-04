@@ -6,23 +6,25 @@
 (*************************************************)
 (*************************************************)
 
-Require Import Main.ContextGraph.Closure.
+Require Import Coq.Relations.Relation_Operators.
 Require Import Main.ContextGraph.ContextGraph.
 Require Import Main.Tactics.
 
 Module TrivialContextGraph <: ContextGraph.
+  #[local] Arguments clos_refl_trans {A} _ _ _.
+
   Definition node := unit.
 
   Definition edge (x y z : node) := False.
 
   (* Coq requires that we copy this verbatim from `ContextGraph`. *)
-  Definition horizontallyReachable context := closure (edge context).
+  Definition horizontallyReachable context := clos_refl_trans (edge context).
 
   (* Coq requires that we copy this verbatim from `ContextGraph`. *)
   Definition rooted context := horizontallyReachable context context.
 
   (* Coq requires that we copy this verbatim from `ContextGraph`. *)
-  Definition verticallyReachable := closure rooted.
+  Definition verticallyReachable := clos_refl_trans rooted.
 
   Theorem verticalAntisymmetry :
     forall node1 node2,
@@ -51,7 +53,7 @@ Module TrivialContextGraph <: ContextGraph.
     clean.
     elim origin.
     elim node0.
-    apply reflexivity.
+    apply rt_refl.
   Qed.
 End TrivialContextGraph.
 
