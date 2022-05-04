@@ -6,10 +6,12 @@
 (****************************)
 (****************************)
 
-Require Import Main.ContextGraph.Closure.
+Require Import Coq.Relations.Relation_Operators.
 Require Import Main.Tactics.
 
 Module Type ContextGraph.
+  #[local] Arguments clos_refl_trans {A} _ _ _.
+
   (* A *context graph* has a set of nodes, just like any graph. *)
 
   Parameter node : Type.
@@ -31,7 +33,7 @@ Module Type ContextGraph.
     relation specialized on a particular context.
   *)
 
-  Definition horizontallyReachable context := closure (edge context).
+  Definition horizontallyReachable context := clos_refl_trans (edge context).
 
   (*
     A node is *rooted in* a context if it's horizontally reachable in and from
@@ -45,7 +47,7 @@ Module Type ContextGraph.
     relation.
   *)
 
-  Definition verticallyReachable := closure rooted.
+  Definition verticallyReachable := clos_refl_trans rooted.
 
   (*
     Rootedness is intended to signify nesting. To codify that intention, we
@@ -93,8 +95,8 @@ Module ContextGraphTheorems (Graph : ContextGraph).
     rooted context target.
   Proof.
     clean.
-    apply extension with (y := source); magic.
-    apply sourcesRooted with (target := target).
-    magic.
+    apply rt_trans with (y := source).
+    - apply sourcesRooted with (target := target). magic.
+    - apply rt_step. magic.
   Qed.
 End ContextGraphTheorems.
