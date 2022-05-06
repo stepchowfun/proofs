@@ -18,33 +18,33 @@ Module TrivialContextGraph <: ContextGraph.
   Definition edge (x y z : node) := False.
 
   (* Coq requires that we copy this verbatim from `ContextGraph`. *)
-  Definition horizontallyReachable context := clos_refl_trans (edge context).
+  Definition horizontallyReachable c := clos_refl_trans (edge c).
 
   (* Coq requires that we copy this verbatim from `ContextGraph`. *)
-  Definition rooted context := horizontallyReachable context context.
+  Definition rooted c := horizontallyReachable c c.
 
   (* Coq requires that we copy this verbatim from `ContextGraph`. *)
   Definition verticallyReachable := clos_refl_trans rooted.
 
   Theorem verticalAntisymmetry :
-    forall node1 node2,
-    verticallyReachable node1 node2 ->
-    verticallyReachable node2 node1 ->
-    node1 = node2.
+    forall n1 n2,
+    verticallyReachable n1 n2 ->
+    verticallyReachable n2 n1 ->
+    n1 = n2.
   Proof.
     clean.
-    elim node1.
-    elim node2.
+    elim n1.
+    elim n2.
     magic.
   Qed.
 
   Definition origin := tt.
 
-  Theorem originality : forall node, verticallyReachable origin node.
+  Theorem originality : forall n, verticallyReachable origin n.
   Proof.
     clean.
     elim origin.
-    elim node0.
+    elim n.
     apply rt_refl.
   Qed.
 End TrivialContextGraph.
