@@ -31,14 +31,14 @@ Module Type ContextGraph.
     of the edge relation specialized on that context.
   *)
 
-  Definition horizontallyReachable context := clos_refl_trans (edge context).
+  Definition horizontallyReachable c := clos_refl_trans (edge c).
 
   (*
     A node is *rooted* in a context if it's horizontally reachable in and from
     that context.
   *)
 
-  Definition rooted context := horizontallyReachable context context.
+  Definition rooted c := horizontallyReachable c c.
 
   (*
     *Vertical reachability* is the transitive reflexive closure of rootedness.
@@ -52,10 +52,10 @@ Module Type ContextGraph.
   *)
 
   Axiom verticalAntisymmetry :
-    forall node1 node2,
-    verticallyReachable node1 node2 ->
-    verticallyReachable node2 node1 ->
-    node1 = node2.
+    forall n1 n2,
+    verticallyReachable n1 n2 ->
+    verticallyReachable n2 n1 ->
+    n1 = n2.
 
   (*
     Let there be an *origin* context from which every node is vertically
@@ -64,5 +64,5 @@ Module Type ContextGraph.
 
   Parameter origin : node.
 
-  Axiom originality : forall node, verticallyReachable origin node.
+  Axiom originality : forall n, verticallyReachable origin n.
 End ContextGraph.
