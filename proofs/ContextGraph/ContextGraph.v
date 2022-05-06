@@ -7,7 +7,6 @@
 (****************************)
 
 Require Import Coq.Relations.Relation_Operators.
-Require Import Main.Tactics.
 
 Module Type ContextGraph.
   #[local] Arguments clos_refl_trans {A} _ _ _.
@@ -21,9 +20,8 @@ Module Type ContextGraph.
 
     Each edge in a context graph is labeled with a node called its *context*.
     We indicate edges by ternary relation between the context, source, and
-    target, respectively. Specializing the ternary relation on a particular
-    context yields a binary edge relation which induces a subgraph associated
-    with that context.
+    target. Specializing the ternary relation on a particular context yields a
+    binary edge relation which induces a subgraph associated with that context.
   *)
 
   Parameter edge : node -> node -> node -> Prop.
@@ -60,21 +58,7 @@ Module Type ContextGraph.
     node1 = node2.
 
   (*
-    Since vertical reachability only considers edges for which the source is
-    rooted in that edge's context, we may wish to postulate that no other edges
-    exist.
-  *)
-
-  Axiom sourcesRooted :
-    forall context source target,
-    edge context source target ->
-    rooted context source.
-
-  (*
-    Since the nodes of the subgraph associated with a particular context must
-    be rooted in that context, one might also expect an analogous situation for
-    the graph as a whole. Here we formalize that criterion by postulating the
-    existence of an *origin* context from which every node is vertically
+    Let there be an *origin* context from which every node is vertically
     reachable.
   *)
 
@@ -82,30 +66,3 @@ Module Type ContextGraph.
 
   Axiom originality : forall node, verticallyReachable origin node.
 End ContextGraph.
-
-Module ContextGraphTheorems (Graph : ContextGraph).
-  Import Graph.
-
-  (* The target of every edge is rooted in that edge's context. *)
-
-  Theorem targetsRooted :
-    forall context source target,
-    edge context source target ->
-    rooted context target.
-  Proof.
-    clean.
-    apply rt_trans with (y := source).
-    - apply sourcesRooted with (target := target). magic.
-    - apply rt_step. magic.
-  Qed.
-
-  (*
-    *Diagonal reachability* from some context is the composition of horizontal
-    reachability in that context with vertical reachability.
-  *)
-
-  Definition diagonallyReachable context node1 node2 :=
-    exists node3,
-    horizontallyReachable context node1 node3 /\
-    verticallyReachable node3 node2.
-End ContextGraphTheorems.

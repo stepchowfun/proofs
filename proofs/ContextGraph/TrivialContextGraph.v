@@ -38,14 +38,6 @@ Module TrivialContextGraph <: ContextGraph.
     magic.
   Qed.
 
-  Theorem sourcesRooted :
-    forall context source target,
-    edge context source target ->
-    rooted context source.
-  Proof.
-    magic.
-  Qed.
-
   Definition origin := tt.
 
   Theorem originality : forall node, verticallyReachable origin node.
@@ -56,5 +48,3 @@ Module TrivialContextGraph <: ContextGraph.
     apply rt_refl.
   Qed.
 End TrivialContextGraph.
-
-Module TrivialContextGraphTheorems := ContextGraphTheorems TrivialContextGraph.
