@@ -29,22 +29,21 @@ Module Type ContextGraph.
   Parameter edge : node -> node -> node -> Prop.
 
   (*
-    *Horizontal reachability* is the transitive reflexive closure of the edge
-    relation specialized on a particular context.
+    *Horizontal reachability* in a context is the transitive reflexive closure
+    of the edge relation specialized on that context.
   *)
 
   Definition horizontallyReachable context := clos_refl_trans (edge context).
 
   (*
-    A node is *rooted in* a context if it's horizontally reachable in and from
+    A node is *rooted* in a context if it's horizontally reachable in and from
     that context.
   *)
 
   Definition rooted context := horizontallyReachable context context.
 
   (*
-    *Vertical reachability* is the transitive reflexive closure of the rooted
-    relation.
+    *Vertical reachability* is the transitive reflexive closure of rootedness.
   *)
 
   Definition verticallyReachable := clos_refl_trans rooted.
@@ -99,4 +98,14 @@ Module ContextGraphTheorems (Graph : ContextGraph).
     - apply sourcesRooted with (target := target). magic.
     - apply rt_step. magic.
   Qed.
+
+  (*
+    *Diagonal reachability* from some context is the composition of horizontal
+    reachability in that context with vertical reachability.
+  *)
+
+  Definition diagonallyReachable context node1 node2 :=
+    exists node3,
+    horizontallyReachable context node1 node3 /\
+    verticallyReachable node3 node2.
 End ContextGraphTheorems.
