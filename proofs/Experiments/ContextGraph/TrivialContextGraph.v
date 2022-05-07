@@ -7,7 +7,7 @@
 (*************************************************)
 
 Require Import Coq.Relations.Relation_Operators.
-Require Import Main.ContextGraph.ContextGraph.
+Require Import Main.Experiments.ContextGraph.ContextGraph.
 Require Import Main.Tactics.
 
 Module TrivialContextGraph <: ContextGraph.
@@ -15,7 +15,7 @@ Module TrivialContextGraph <: ContextGraph.
 
   Definition node := unit.
 
-  Definition edge (x y z : node) := False.
+  Definition edge (c n1 n2 : node) := False.
 
   (* Coq requires that we copy this verbatim from `ContextGraph`. *)
   Definition horizontallyReachable c := clos_refl_trans (edge c).
@@ -33,8 +33,8 @@ Module TrivialContextGraph <: ContextGraph.
     n1 = n2.
   Proof.
     clean.
-    elim n1.
-    elim n2.
+    destruct n1.
+    destruct n2.
     magic.
   Qed.
 
@@ -43,8 +43,7 @@ Module TrivialContextGraph <: ContextGraph.
   Theorem originality : forall n, verticallyReachable origin n.
   Proof.
     clean.
-    elim origin.
-    elim n.
+    destruct n.
     apply rt_refl.
   Qed.
 End TrivialContextGraph.
