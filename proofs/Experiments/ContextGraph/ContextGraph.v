@@ -16,7 +16,7 @@ Module Type ContextGraph.
   Parameter node : Type.
 
   (*
-    In our formulation, edges are directed, but this is inessential.
+    Edges are directed in our formulation, but this is inessential.
 
     Each edge in a context graph is labeled with a node called its *context*.
     We indicate edges by ternary relation between the context, source, and
@@ -34,20 +34,20 @@ Module Type ContextGraph.
   Definition horizontallyReachable c := clos_refl_trans (edge c).
 
   (*
-    A node is *rooted* in a context if it's horizontally reachable in and from
-    that context.
+    A context *proxies* a node if the node is horizontally reachable in and
+    from that context.
   *)
 
-  Definition rooted c := horizontallyReachable c c.
+  Definition proxies c := horizontallyReachable c c.
 
   (*
-    *Vertical reachability* is the transitive reflexive closure of rootedness.
+    *Vertical reachability* is the transitive reflexive closure of proxying.
   *)
 
-  Definition verticallyReachable := clos_refl_trans rooted.
+  Definition verticallyReachable := clos_refl_trans proxies.
 
   (*
-    Rootedness is intended to signify nesting. To codify that intention, we
+    Proxying is intended to signify nesting. To codify that intention, we
     require vertical reachability to be antisymmetric and thus a partial order.
   *)
 
@@ -58,11 +58,11 @@ Module Type ContextGraph.
     n1 = n2.
 
   (*
-    Let there be an *origin* context from which every node is vertically
+    Let there be a *root* context from which every node is vertically
     reachable.
   *)
 
-  Parameter origin : node.
+  Parameter root : node.
 
-  Axiom originality : forall n, verticallyReachable origin n.
+  Axiom rootReach : forall n, verticallyReachable root n.
 End ContextGraph.

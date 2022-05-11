@@ -21,10 +21,10 @@ Module TrivialContextGraph <: ContextGraph.
   Definition horizontallyReachable c := clos_refl_trans (edge c).
 
   (* Coq requires that we copy this verbatim from `ContextGraph`. *)
-  Definition rooted c := horizontallyReachable c c.
+  Definition proxies c := horizontallyReachable c c.
 
   (* Coq requires that we copy this verbatim from `ContextGraph`. *)
-  Definition verticallyReachable := clos_refl_trans rooted.
+  Definition verticallyReachable := clos_refl_trans proxies.
 
   Theorem verticalAntisymmetry :
     forall n1 n2,
@@ -38,9 +38,9 @@ Module TrivialContextGraph <: ContextGraph.
     magic.
   Qed.
 
-  Definition origin := tt.
+  Definition root := tt.
 
-  Theorem originality : forall n, verticallyReachable origin n.
+  Theorem rootReach : forall n, verticallyReachable root n.
   Proof.
     clean.
     destruct n.
