@@ -33,8 +33,8 @@ Module TrivialKleeneData <: KleeneData.
   Theorem antisymmetry : forall x y, leq x y -> leq y x -> x = y.
   Proof.
     clean.
-    elim x.
-    elim y.
+    destruct x.
+    destruct y.
     magic.
   Qed.
 
