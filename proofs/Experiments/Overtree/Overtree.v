@@ -248,7 +248,6 @@ Module OvertreeTheorems (Graph : Overtree).
         * apply clos_rt_rtn1.
           magic.
         * {
-          clear IHclos_refl_trans_1n.
           destruct H4.
           - assert (clos_refl_trans_n1 proxies z n2).
             + apply clos_rt_rtn1.
@@ -256,14 +255,12 @@ Module OvertreeTheorems (Graph : Overtree).
             + destruct H4; magic.
               assert (x = y).
               * apply proxyUniqueness with (n3 := z0); magic.
-              * subst x.
-                apply rt_trans with (y := z); magic.
+              * apply rt_trans with (y := z); magic.
                 apply clos_rtn1_rt.
                 magic.
           - assert (x = y).
             + apply proxyUniqueness with (n3 := z0); magic.
-            + subst x.
-              apply clos_rtn1_rt.
+            + apply clos_rtn1_rt.
               magic.
         }
     - destruct (classic (n1 = n2)); magic.
