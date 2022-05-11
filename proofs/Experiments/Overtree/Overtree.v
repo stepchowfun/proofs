@@ -74,18 +74,6 @@ Module OvertreeTheorems (Graph : Overtree).
 
   #[local] Arguments clos_refl_trans_n1 {A} _ _ _.
 
-  (* The root is the only node which is its own proxy. *)
-
-  Theorem rootProxyUniqueness : forall n, proxy n = n -> n = root.
-  Proof.
-    clean.
-    induction (rootReach n); magic.
-    destruct H0.
-    magic.
-  Qed.
-
-  #[export] Hint Resolve rootProxyUniqueness : main.
-
   (* The only node that can vertically reach the root is itself. *)
 
   Theorem rootUniquelyReachable :
@@ -107,6 +95,18 @@ Module OvertreeTheorems (Graph : Overtree).
   Qed.
 
   #[export] Hint Resolve rootUniquelyReachable : main.
+
+  (* The root is the only node which is its own proxy. *)
+
+  Theorem rootProxyUniqueness : forall n, proxy n = n -> n = root.
+  Proof.
+    clean.
+    induction (rootReach n); magic.
+    destruct H0.
+    magic.
+  Qed.
+
+  #[export] Hint Resolve rootProxyUniqueness : main.
 
   (* The root is the only node which can vertically reach every other node. *)
 
@@ -148,7 +148,7 @@ Module OvertreeTheorems (Graph : Overtree).
     If a node is horizontally reachable from another node, they share a proxy.
   *)
 
-  Theorem horizontalProxyPreservation :
+  Theorem horizontalCovalency :
     forall n1 n2,
     horizontallyReachable n1 n2 ->
     proxy n1 = proxy n2.
@@ -159,7 +159,7 @@ Module OvertreeTheorems (Graph : Overtree).
     magic.
   Qed.
 
-  #[export] Hint Resolve horizontalProxyPreservation : main.
+  #[export] Hint Resolve horizontalCovalency : main.
 
   (* The proxy for a given node is unique. *)
 
