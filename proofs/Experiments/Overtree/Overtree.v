@@ -54,13 +54,15 @@ Module Type Overtree.
   Definition verticallyReachable := clos_refl_trans proxies.
 
   (*
-    Let there be a *root* node which is its own proxy and from which every
-    node is vertically reachable.
+    Let there be a *root* node which proxies itself and from which every node
+    is vertically reachable.
   *)
 
   Parameter root : node.
 
   Axiom rootProxy : proxy root = root.
+
+  Axiom rootEdge : edge root root.
 
   Axiom rootReach : forall n, verticallyReachable root n.
 End Overtree.
@@ -175,18 +177,24 @@ Module OvertreeTheorems (Graph : Overtree).
 
   #[export] Hint Resolve proxyUniqueness : main.
 
-  (* Every node must be proxied by its proxy or be equal to it. *)
+  (* Every node is proxied by its proxy. *)
 
-  Theorem proxySoundness : forall n, proxies (proxy n) n \/ proxy n = n.
+  Theorem proxySoundness : forall n, proxies (proxy n) n.
   Proof.
     clean.
     assert (clos_refl_trans_n1 proxies root n).
     - apply clos_rt_rtn1. apply rootReach.
     - invert H.
-      + right.
-        apply rootProxy.
-      + left.
-        invert H0.
+      + split.
+        * magic.
+        * {
+          exists root.
+          split.
+          - rewrite rootProxy.
+            apply rootEdge.
+          - apply rt_refl.
+        }
+      + invert H0.
         unfold proxies; magic.
   Qed.
 
@@ -197,12 +205,8 @@ Module OvertreeTheorems (Graph : Overtree).
   Theorem verticalProxyReach : forall n, verticallyReachable (proxy n) n.
   Proof.
     clean.
-    fact (proxySoundness n).
-    invert H.
-    - apply rt_step.
-      magic.
-    - rewrite H0.
-      apply rt_refl.
+    apply rt_step.
+    magic.
   Qed.
 
   #[export] Hint Resolve verticalProxyReach : main.
