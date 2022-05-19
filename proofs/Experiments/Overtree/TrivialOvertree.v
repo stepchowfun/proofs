@@ -15,7 +15,7 @@ Module TrivialOvertree <: Overtree.
 
   Definition node := unit.
 
-  Definition edge (n1 n2 : node) := False.
+  Definition edge (n1 n2 : node) := True.
 
   Definition proxy (n : node) := tt.
 
@@ -40,6 +40,11 @@ Module TrivialOvertree <: Overtree.
   Theorem rootProxy : proxy root = root.
   Proof.
     magic.
+  Qed.
+
+  Theorem rootEdge : edge root root.
+  Proof.
+    apply I.
   Qed.
 
   Theorem rootReach : forall n, verticallyReachable root n.
