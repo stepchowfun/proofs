@@ -37,14 +37,14 @@ Module TrivialOvertree <: Overtree.
 
   Definition root := tt.
 
+  Theorem rootLoop : edge root root.
+  Proof.
+    apply I.
+  Qed.
+
   Theorem rootProxy : proxy root = root.
   Proof.
     magic.
-  Qed.
-
-  Theorem rootEdge : edge root root.
-  Proof.
-    apply I.
   Qed.
 
   Theorem rootReach : forall n, verticallyReachable root n.

@@ -54,15 +54,15 @@ Module Type Overtree.
   Definition verticallyReachable := clos_refl_trans proxies.
 
   (*
-    Let there be a *root* node which proxies itself and from which every node
-    is vertically reachable.
+    Let there be a *root* node which has a loop, which is its own proxy, and
+    from which every node is vertically reachable.
   *)
 
   Parameter root : node.
 
-  Axiom rootProxy : proxy root = root.
+  Axiom rootLoop : edge root root.
 
-  Axiom rootEdge : edge root root.
+  Axiom rootProxy : proxy root = root.
 
   Axiom rootReach : forall n, verticallyReachable root n.
 End Overtree.
@@ -191,7 +191,7 @@ Module OvertreeTheorems (Graph : Overtree).
           exists root.
           split.
           - rewrite rootProxy.
-            apply rootEdge.
+            apply rootLoop.
           - apply rt_refl.
         }
       + invert H0.
