@@ -37,8 +37,8 @@ Module Type Overtree.
   Definition horizontallyReachable := clos_refl_trans covalent.
 
   (*
-    A node proxies another node if it's the proxy for that node and that node
-    is horizontally reachable from one of its neighbors.
+    A node *proxies* another node if it's the proxy for that node and that node
+    is horizontally reachable from one of the proxy's neighbors.
   *)
 
   Definition proxies n1 n2 :=
