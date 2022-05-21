@@ -8,6 +8,7 @@
 
 Require Import Coq.Relations.Relation_Operators.
 Require Import Main.Experiments.Overtree.Overtree.
+Require Import Main.Experiments.Overtree.OvertreeTheorems.
 Require Import Main.Tactics.
 
 Module TrivialOvertree <: Overtree.
