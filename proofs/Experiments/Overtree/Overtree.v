@@ -27,11 +27,15 @@ Module Type Overtree.
 
   Definition covalent n1 n2 := edge n1 n2 /\ proxy n1 = proxy n2.
 
+  #[export] Hint Unfold covalent : main.
+
   (*
     *Horizontal reachability* is the transitive reflexive closure of covalency.
   *)
 
   Definition horizontallyReachable := clos_refl_trans covalent.
+
+  #[export] Hint Unfold horizontallyReachable : main.
 
   (*
     A node *proxies* another node if it's the proxy for that node and that node
@@ -44,11 +48,15 @@ Module Type Overtree.
     edge n1 n3 /\
     horizontallyReachable n3 n2.
 
+  #[export] Hint Unfold proxies : main.
+
   (*
     *Vertical reachability* is the transitive reflexive closure of proxying.
   *)
 
   Definition verticallyReachable := clos_refl_trans proxies.
+
+  #[export] Hint Unfold verticallyReachable : main.
 
   (*
     Let there be a *root* node which has a loop, which is its own proxy, and
@@ -59,7 +67,15 @@ Module Type Overtree.
 
   Axiom rootLoop : edge root root.
 
+  #[export] Hint Resolve rootLoop : main.
+
   Axiom rootProxy : proxy root = root.
 
+  #[export] Hint Resolve rootProxy : main.
+
+  #[export] Hint Rewrite rootProxy : main.
+
   Axiom rootReach : forall n, verticallyReachable root n.
+
+  #[export] Hint Resolve rootReach : main.
 End Overtree.

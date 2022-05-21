@@ -21,6 +21,20 @@ Module OvertreeTheorems (Graph : Overtree).
 
   #[local] Arguments clos_refl_trans_n1 {A} _ _ _.
 
+  #[local] Hint Constructors clos_refl_trans : main.
+
+  #[local] Hint Constructors clos_refl_trans_1n : main.
+
+  #[local] Hint Constructors clos_refl_trans_n1 : main.
+
+  #[local] Hint Resolve clos_rt1n_rt : main.
+
+  #[local] Hint Resolve clos_rt_rt1n : main.
+
+  #[local] Hint Resolve clos_rtn1_rt : main.
+
+  #[local] Hint Resolve clos_rt_rtn1 : main.
+
   (* The only node that can vertically reach the root is itself. *)
 
   Theorem rootUniquelyReachable :
@@ -29,16 +43,10 @@ Module OvertreeTheorems (Graph : Overtree).
     n = root.
   Proof.
     clean.
-    assert (clos_refl_trans_n1 proxies n root).
-    - apply clos_rt_rtn1.
-      magic.
-    - clear H.
-      fact rootProxy.
-      induction H0; magic.
-      assert (y = z).
-      + destruct H0.
-        magic.
-      + magic.
+    assert (clos_refl_trans_n1 proxies n root); magic.
+    fact rootProxy.
+    induction H0; magic.
+    assert (y = z); magic.
   Qed.
 
   #[export] Hint Resolve rootUniquelyReachable : main.
@@ -49,8 +57,6 @@ Module OvertreeTheorems (Graph : Overtree).
   Proof.
     clean.
     induction (rootReach n); magic.
-    destruct H0.
-    magic.
   Qed.
 
   #[export] Hint Resolve rootProxyUniqueness : main.
@@ -73,6 +79,8 @@ Module OvertreeTheorems (Graph : Overtree).
 
   Definition reachable := clos_refl_trans edge.
 
+  #[export] Hint Unfold reachable : main.
+
   (* Horizontal reachability implies reachability. *)
 
   Theorem horizontalSoundness :
@@ -81,12 +89,8 @@ Module OvertreeTheorems (Graph : Overtree).
     reachable n1 n2.
   Proof.
     clean.
-    induction H.
-    - apply rt_step.
-      destruct H.
-      magic.
-    - apply rt_refl.
-    - apply rt_trans with (y := y); magic.
+    induction H; magic.
+    apply rt_trans with (y := y); magic.
   Qed.
 
   #[export] Hint Resolve horizontalSoundness : main.
@@ -102,8 +106,6 @@ Module OvertreeTheorems (Graph : Overtree).
   Proof.
     clean.
     induction H; magic.
-    destruct H.
-    magic.
   Qed.
 
   #[export] Hint Resolve horizontalCovalency : main.
@@ -116,7 +118,6 @@ Module OvertreeTheorems (Graph : Overtree).
     proxies n2 n3 ->
     n1 = n2.
   Proof.
-    unfold proxies.
     magic.
   Qed.
 
@@ -130,17 +131,11 @@ Module OvertreeTheorems (Graph : Overtree).
     assert (clos_refl_trans_n1 proxies root n).
     - apply clos_rt_rtn1. apply rootReach.
     - invert H.
-      + split.
-        * magic.
-        * {
-          exists root.
-          split.
-          - rewrite rootProxy.
-            apply rootLoop.
-          - apply rt_refl.
-        }
+      + split; magic.
+        exists root.
+        split; magic.
       + invert H0.
-        unfold proxies; magic.
+        magic.
   Qed.
 
   #[export] Hint Resolve proxySoundness : main.
@@ -149,8 +144,6 @@ Module OvertreeTheorems (Graph : Overtree).
 
   Theorem verticalProxyReach : forall n, verticallyReachable (proxy n) n.
   Proof.
-    clean.
-    apply rt_step.
     magic.
   Qed.
 
@@ -164,15 +157,12 @@ Module OvertreeTheorems (Graph : Overtree).
     reachable n1 n2.
   Proof.
     clean.
-    induction H.
+    induction H; magic.
     - invert H.
       invert H1.
-      apply rt_trans with (y := x).
-      + apply rt_step.
-        magic.
-      + apply horizontalSoundness.
-        magic.
-    - apply rt_refl.
+      apply rt_trans with (y := x); magic.
+      apply horizontalSoundness.
+      magic.
     - apply rt_trans with (y := y); magic.
   Qed.
 
@@ -193,25 +183,13 @@ Module OvertreeTheorems (Graph : Overtree).
         apply rootReach.
       + induction H1; magic.
         clean.
-        assert (clos_refl_trans_n1 proxies n2 y).
-        * apply clos_rt_rtn1.
-          magic.
-        * {
-          destruct H4.
-          - assert (clos_refl_trans_n1 proxies z n2).
-            + apply clos_rt_rtn1.
-              magic.
-            + destruct H4; magic.
-              assert (x = y).
-              * apply proxyUniqueness with (n3 := z0); magic.
-              * apply rt_trans with (y := z); magic.
-                apply clos_rtn1_rt.
-                magic.
-          - assert (x = y).
-            + apply proxyUniqueness with (n3 := z0); magic.
-            + apply clos_rtn1_rt.
-              magic.
-        }
+        assert (clos_refl_trans_n1 proxies n2 y); magic.
+        destruct H4.
+        * assert (clos_refl_trans_n1 proxies z n2); magic.
+          destruct H4; magic.
+          assert (x = y); magic.
+          apply rt_trans with (y := z); magic.
+        * assert (x = y); magic.
     - destruct (classic (n1 = n2)); magic.
       fact (rootUniquelyReachable n2).
       magic.
@@ -229,21 +207,10 @@ Module OvertreeTheorems (Graph : Overtree).
     verticallyReachable n2 n1.
   Proof.
     clean.
-    assert (clos_refl_trans_n1 proxies n1 n3).
-    - apply clos_rt_rtn1.
-      magic.
-    - induction H1; magic.
-      assert (clos_refl_trans_n1 proxies n2 z).
-      + apply clos_rt_rtn1.
-        magic.
-      + destruct H3; magic.
-        apply IHclos_refl_trans_n1.
-        * apply clos_rtn1_rt.
-          magic.
-        * unfold proxies in H1.
-          unfold proxies in H3.
-          apply clos_rtn1_rt.
-          magic.
+    assert (clos_refl_trans_n1 proxies n1 n3); magic.
+    induction H1; magic.
+    assert (clos_refl_trans_n1 proxies n2 z); magic.
+    destruct H3; magic.
   Qed.
 
   #[export] Hint Resolve verticalAncestorsTotallyOrdered : main.
