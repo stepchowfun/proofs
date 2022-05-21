@@ -33,6 +33,8 @@ Module Type ContextGraph.
 
   Definition horizontallyReachable c := clos_refl_trans (edge c).
 
+  #[export] Hint Unfold horizontallyReachable : main.
+
   (*
     A context *proxies* a node if the node is horizontally reachable in and
     from that context.
@@ -40,11 +42,15 @@ Module Type ContextGraph.
 
   Definition proxies c := horizontallyReachable c c.
 
+  #[export] Hint Unfold proxies : main.
+
   (*
     *Vertical reachability* is the transitive reflexive closure of proxying.
   *)
 
   Definition verticallyReachable := clos_refl_trans proxies.
+
+  #[export] Hint Unfold verticallyReachable : main.
 
   (*
     Proxying is intended to signify nesting. To codify that intention, we
@@ -57,6 +63,8 @@ Module Type ContextGraph.
     verticallyReachable n2 n1 ->
     n1 = n2.
 
+  #[export] Hint Resolve verticalAntisymmetry : main.
+
   (*
     Let there be a *root* context from which every node is vertically
     reachable.
@@ -65,4 +73,6 @@ Module Type ContextGraph.
   Parameter root : node.
 
   Axiom rootReach : forall n, verticallyReachable root n.
+
+  #[export] Hint Resolve rootReach : main.
 End ContextGraph.

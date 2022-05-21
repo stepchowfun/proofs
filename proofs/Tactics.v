@@ -9,6 +9,7 @@
 Require Import Coq.micromega.Lia.
 
 (* Ensure this hint database exists. *)
+
 Create HintDb main.
 
 (*
@@ -22,7 +23,6 @@ Create HintDb main.
     intros;
     cbn in *;
     subst;
-    try autorewrite with main in *;
     try match goal with
         | [ H : ex _ |- _ ] => destruct H
         | [ H : _ /\ _ |- _ ] => destruct H
@@ -50,6 +50,8 @@ Create HintDb main.
   try solve [tactic];
   try solve [
     simplify tactic;
+    try autorewrite with main in *;
+    try autounfold with main in *;
     try solve [dintuition (simplify tactic; tactic)];
     try solve [progress f_equal; magicWith tactic];
     try congruence;
@@ -66,12 +68,14 @@ Create HintDb main.
   ].
 
 Tactic Notation "magic" integer(n) :=
-  let autoStar := auto n with arith datatypes main in magicWith autoStar.
+  let autoTactic := auto n with arith datatypes main
+  in magicWith autoTactic.
 
 Tactic Notation "magic" := magic 5.
 
 Tactic Notation "eMagic" integer(n) :=
-  let eautoStar := eauto n with arith datatypes main in magicWith eautoStar.
+  let eautoTactic := eauto n with arith datatypes main
+  in magicWith eautoTactic.
 
 Tactic Notation "eMagic" := eMagic 5.
 

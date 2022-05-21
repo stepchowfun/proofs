@@ -15,16 +15,26 @@ Module TrivialContextGraph <: ContextGraph.
 
   Definition node := unit.
 
+  #[export] Hint Unfold node : main.
+
   Definition edge (c n1 n2 : node) := False.
+
+  #[export] Hint Unfold edge : main.
 
   (* Coq requires that we copy this verbatim from `ContextGraph`. *)
   Definition horizontallyReachable c := clos_refl_trans (edge c).
 
+  #[export] Hint Unfold horizontallyReachable : main.
+
   (* Coq requires that we copy this verbatim from `ContextGraph`. *)
   Definition proxies c := horizontallyReachable c c.
 
+  #[export] Hint Unfold proxies : main.
+
   (* Coq requires that we copy this verbatim from `ContextGraph`. *)
   Definition verticallyReachable := clos_refl_trans proxies.
+
+  #[export] Hint Unfold verticallyReachable : main.
 
   Theorem verticalAntisymmetry :
     forall n1 n2,
@@ -38,7 +48,11 @@ Module TrivialContextGraph <: ContextGraph.
     magic.
   Qed.
 
+  #[export] Hint Resolve verticalAntisymmetry : main.
+
   Definition root := tt.
+
+  #[export] Hint Unfold root : main.
 
   Theorem rootReach : forall n, verticallyReachable root n.
   Proof.
@@ -46,4 +60,6 @@ Module TrivialContextGraph <: ContextGraph.
     destruct n.
     apply rt_refl.
   Qed.
+
+  #[export] Hint Resolve rootReach : main.
 End TrivialContextGraph.
