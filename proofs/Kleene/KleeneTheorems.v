@@ -7,73 +7,11 @@
 (*******************************************************)
 
 Require Import Coq.micromega.Lia.
+Require Import Main.Kleene.KleeneData.
 Require Import Main.Tactics.
-
-Module Type KleeneData.
-  (*
-    Assumption: Let (T, leq) be a partially ordered set, or poset. A poset is
-    a set with a binary relation which is reflexive, transitive, and
-    antisymmetric.
-  *)
-
-  Parameter T : Type.
-  Parameter leq : T -> T -> Prop.
-
-  Axiom reflexivity : forall x, leq x x.
-  Axiom transitivity : forall x y z, leq x y -> leq y z -> leq x z.
-  Axiom antisymmetry : forall x y, leq x y -> leq y x -> x = y.
-
-  (*
-    A supremum of a subset of T is a least element of T which is greater than
-    or equal to every element in the subset. This is also called a join or
-    least upper bound.
-  *)
-
-  Definition supremum P x1 :=
-    (forall x2, P x2 -> leq x2 x1) /\
-    forall x3, (forall x2, P x2 -> leq x2 x3) -> leq x1 x3.
-
-  (*
-    A directed subset of T is a non-empty subset of T such that any two
-    elements in the subset have an upper bound in the subset.
-  *)
-
-  Definition directed P :=
-    (exists x1, P x1) /\
-    forall x1 x2, P x1 -> P x2 -> exists x3, leq x1 x3 /\ leq x2 x3 /\ P x3.
-
-  (*
-    Assumption: Let the partial order be directed-complete. That means every
-    directed subset has a supremum.
-  *)
-
-  Axiom directedComplete :
-    forall P,
-    directed P ->
-    exists x, supremum P x.
-
-  (*
-    Assumption: Let T have a least element called bottom. This makes our
-    partial order a pointed directed-complete partial order.
-  *)
-
-  Parameter bottom : T.
-
-  Axiom bottomLeast : forall x, leq bottom x.
-End KleeneData.
 
 Module KleeneTheorems (Kleene : KleeneData).
   Import Kleene.
-
-  #[local] Hint Resolve reflexivity : main.
-
-  #[local] Hint Resolve transitivity : main.
-
-  #[local] Hint Resolve antisymmetry : main.
-
-  #[local] Hint Resolve directedComplete : main.
-
-  #[local] Hint Resolve bottomLeast : main.
 
   (***************)
   (* Definitions *)
@@ -88,6 +26,8 @@ Module KleeneTheorems (Kleene : KleeneData).
 
   Definition monotone f := forall x1 x2, leq x1 x2 -> leq (f x1) (f x2).
 
+  #[export] Hint Unfold monotone : main.
+
   (*
     A function is Scott-continuous if it preserves suprema of directed subsets.
     We only need to consider functions for which the domain and codomain are
@@ -101,6 +41,8 @@ Module KleeneTheorems (Kleene : KleeneData).
     supremum P x1 ->
     supremum (fun x2 => exists x3, P x3 /\ x2 = f x3) (f x1).
 
+  #[export] Hint Unfold continuous : main.
+
   (* This function performs iterated application of a function to bottom. *)
 
   Fixpoint approx f n :=
@@ -113,7 +55,7 @@ Module KleeneTheorems (Kleene : KleeneData).
   (* Helpful lemmas *)
   (******************)
 
-  (* We will need this simple lemma about pairs of natural numbers. *)
+  (* We'll need this simple lemma about pairs of natural numbers. *)
 
   #[local] Theorem natDiff :
     forall n1 n2,
