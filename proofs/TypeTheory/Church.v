@@ -15,14 +15,14 @@ Definition PairNN (X Y : Type) : Type :=
 Definition constructNN (X Y : Type) : X -> Y -> PairNN X Y :=
   fun x y Z f => f x y.
 
-Definition elimNN (X Y Z : Type) : (X -> Y -> Z) -> PairNN X Y -> Z :=
+Definition eliminateNN (X Y Z : Type) : (X -> Y -> Z) -> PairNN X Y -> Z :=
   fun f p => p Z f.
 
 Definition firstNN (X Y : Type) : PairNN X Y -> X :=
-  fun p => elimNN X Y X (fun x _ => x) p.
+  fun p => eliminateNN X Y X (fun x _ => x) p.
 
 Definition secondNN (X Y : Type) : PairNN X Y -> Y :=
-  fun p => elimNN X Y Y (fun _ y => y) p.
+  fun p => eliminateNN X Y Y (fun _ y => y) p.
 
 Compute firstNN bool nat (constructNN bool nat true 42).
 Compute secondNN bool nat (constructNN bool nat true 42).
@@ -40,21 +40,21 @@ Definition constructDN (X : Type) (Y : X -> Type) :
 :=
   fun x y Z f => f x y.
 
-Definition elimDN (X : Type) (Y : X -> Type) (Z : Type) :
+Definition eliminateDN (X : Type) (Y : X -> Type) (Z : Type) :
   (forall (x : X), Y x -> Z) -> PairDN X Y -> Z
 :=
   fun f p => p Z f.
 
 Definition firstDN (X : Type) (Y : X -> Type) : PairDN X Y -> X :=
-  fun p => elimDN X Y X (fun x _ => x) p.
+  fun p => eliminateDN X Y X (fun x _ => x) p.
 
 (*
   Definition secondDN (X : Type) (Y : X -> Type) : PairDN X Y -> Y ? :=
-    fun p => elimDN X Y (Y ?) (fun _ y => y) p.
+    fun p => eliminateDN X Y (Y ?) (fun _ y => y) p.
 *)
 
   Definition secondDN' (X : Type) (Y : Type) : PairDN X (fun _ => Y) -> Y :=
-    fun p => elimDN X (fun _ => Y) Y (fun _ y => y) p.
+    fun p => eliminateDN X (fun _ => Y) Y (fun _ y => y) p.
 
 Compute firstDN bool (fun _ => nat) (constructDN bool (fun _ => nat) true 42).
 Compute secondDN' bool nat (constructDN bool (fun _ => nat) true 42).
