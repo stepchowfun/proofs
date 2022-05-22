@@ -67,31 +67,28 @@ Proof.
   - fact (nameFresh l). clean. specialize (H0 x H1). clean. split.
     + invert H0. magic.
     + split.
-      * {
-        constructor; clean.
-        - constructor.
-          + invert H0. unfold tWellFormed in H8. magic.
-          + unfold tWellFormed in H2. magic.
-        - invert H0. unfold tWellFormed in H8. unfold tWellFormed in H2. magic.
-      }
-      * {
-        constructor.
-        - invert H0. unfold tWellFormed in H8. magic.
-        - apply eeLocallyClosedOpen with (e2 := eFreeVar x). magic.
-      }
+      * constructor; clean.
+        -- constructor.
+           ++ invert H0. unfold tWellFormed in H8. magic.
+           ++ unfold tWellFormed in H2. magic.
+        -- invert H0.
+           unfold tWellFormed in H8.
+           unfold tWellFormed in H2.
+           magic.
+      * constructor.
+        -- invert H0. unfold tWellFormed in H8. magic.
+        -- apply eeLocallyClosedOpen with (e2 := eFreeVar x). magic.
   - split; magic. split; magic.
     unfold tWellFormed in H5. clean. invert H5. constructor; eMagic.
   - fact (nameFresh (l ++ tFreeVars t)). clean.
     specialize (H0 x). feed H0. clean. split.
     + invert H0. magic.
     + split.
-      * {
-        constructor; clean.
-        - constructor. invert H2.
-          apply ttLocallyClosedOpen with (t2 := tFreeVar x). magic.
-        - invert H2. clean. unfold incl in *. clean.
-          specialize (H5 a). feed H5. apply tttFreeOpen. magic.
-      }
+      * constructor; clean.
+        -- constructor. invert H2.
+           apply ttLocallyClosedOpen with (t2 := tFreeVar x). magic.
+        -- invert H2. clean. unfold incl in *. clean.
+           specialize (H5 a). feed H5. apply tttFreeOpen. magic.
       * constructor. apply etLocallyClosedOpen with (t := tFreeVar x). magic.
   - split; magic. unfold tWellFormed in H. clean. split; magic.
     constructor.
