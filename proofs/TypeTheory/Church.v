@@ -29,7 +29,7 @@ Compute secondNN bool nat (constructNN bool nat true 42).
 
 (*
   Dependent pairs with non-dependent elimination ("DN") are also fine, though
-  we have to give up the second projection.
+  we can't define the second projection in full generality.
 *)
 
 Definition PairDN (X : Type) (Y : X -> Type) : Type :=
@@ -53,7 +53,11 @@ Definition firstDN (X : Type) (Y : X -> Type) : PairDN X Y -> X :=
     fun p => elimDN X Y (Y ?) (fun _ y => y) p.
 *)
 
+  Definition secondDN' (X : Type) (Y : Type) : PairDN X (fun _ => Y) -> Y :=
+    fun p => elimDN X (fun _ => Y) Y (fun _ y => y) p.
+
 Compute firstDN bool (fun _ => nat) (constructDN bool (fun _ => nat) true 42).
+Compute secondDN' bool nat (constructDN bool (fun _ => nat) true 42).
 
 (*
   However, we can't even define the type former for non-dependent pairs with
