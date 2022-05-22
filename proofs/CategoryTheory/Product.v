@@ -152,8 +152,7 @@ Proof.
         rewrite <- H8.
         rewrite cAssoc.
         magic.
-      * {
-        fact (
+      * fact (
           H
           xy_z
           (
@@ -185,7 +184,6 @@ Proof.
         fact (H1 xy_z xy_z_to_xy xy_z_to_z).
         unfold universal in H15.
         magic.
-      }
   - assert (id = compose xy_z_to_x_yz x_yz_to_xy_z).
     + assert (
         compose yz_to_y (
@@ -198,50 +196,48 @@ Proof.
         rewrite <- H4.
         rewrite <- cAssoc.
         magic.
-      * {
-        assert (
+      * assert (
           compose yz_to_z (
             compose x_yz_to_yz (compose xy_z_to_x_yz x_yz_to_xy_z)
           ) = compose yz_to_z x_yz_to_yz
         ).
-        - rewrite (cAssoc x_yz_to_xy_z).
-          rewrite <- H9.
-          rewrite cAssoc.
-          magic.
-        - fact (
-            H0
-            x_yz
-            (
-              compose yz_to_y (
-                compose x_yz_to_yz (compose xy_z_to_x_yz x_yz_to_xy_z)
-              )
-            )
-            (
-              compose yz_to_z (
-                compose x_yz_to_yz (compose xy_z_to_x_yz x_yz_to_xy_z)
-              )
-            )
-          ).
-          unfold universal in H14.
-          destruct H14.
-          clear H14.
-          unfold arrowUnique in H15.
-          specialize (
-            H15 x_yz_to_yz (
-              compose x_yz_to_yz (compose xy_z_to_x_yz x_yz_to_xy_z)
-            )
-          ).
-          do 2 feed H15.
+        -- rewrite (cAssoc x_yz_to_xy_z).
+           rewrite <- H9.
+           rewrite cAssoc.
+           magic.
+        -- fact (
+             H0
+             x_yz
+             (
+               compose yz_to_y (
+                 compose x_yz_to_yz (compose xy_z_to_x_yz x_yz_to_xy_z)
+               )
+             )
+             (
+               compose yz_to_z (
+                 compose x_yz_to_yz (compose xy_z_to_x_yz x_yz_to_xy_z)
+               )
+             )
+           ).
+           unfold universal in H14.
+           destruct H14.
+           clear H14.
+           unfold arrowUnique in H15.
+           specialize (
+             H15 x_yz_to_yz (
+               compose x_yz_to_yz (compose xy_z_to_x_yz x_yz_to_xy_z)
+             )
+           ).
+           do 2 feed H15.
 
-          assert (
-            compose x_yz_to_x (compose xy_z_to_x_yz x_yz_to_xy_z) =
-              x_yz_to_x
-          ); [rewrite cAssoc; rewrite <- H6; magic | idtac].
+           assert (
+             compose x_yz_to_x (compose xy_z_to_x_yz x_yz_to_xy_z) =
+               x_yz_to_x
+           ); [rewrite cAssoc; rewrite <- H6; magic | idtac].
 
-          fact (H2 x_yz x_yz_to_x x_yz_to_yz).
-          unfold universal in H16.
-          magic.
-      }
+           fact (H2 x_yz x_yz_to_x x_yz_to_yz).
+           unfold universal in H16.
+           magic.
     + unfold isomorphic.
       exists xy_z_to_x_yz.
       unfold isomorphism.

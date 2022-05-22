@@ -159,19 +159,17 @@ Module KleeneTheorems (Kleene : KleeneData).
         specialize (H P x H0 H1).
         set (Q := fun x2 : T => exists x3 : T, P x3 /\ x2 = f x3) in H.
         assert (supremum P (f x)).
-        * {
-          unfold supremum. split; unfold supremum in H; clean.
-          - unfold P in H2. clean.
-            destruct x0; magic.
-            assert (Q (approx f (S x0))); magic.
-            unfold Q. exists (approx f x0).
-            split; magic.
-            unfold P. eMagic.
-          - apply H3. clean.
-            apply H2. unfold P.
-            unfold Q in H4. unfold P in H4. clean.
-            exists (S x1). magic.
-        }
+        * unfold supremum. split; unfold supremum in H; clean.
+          -- unfold P in H2. clean.
+             destruct x0; magic.
+             assert (Q (approx f (S x0))); magic.
+             unfold Q. exists (approx f x0).
+             split; magic.
+             unfold P. eMagic.
+          -- apply H3. clean.
+             apply H2. unfold P.
+             unfold Q in H4. unfold P in H4. clean.
+             exists (S x1). magic.
         * apply (supremumUniqueness P); magic.
       + clean. assert (forall x3, P x3 -> leq x3 x2); clean.
         * unfold P in H3. clean.
