@@ -13,7 +13,6 @@ Require Import Main.Tactics.
 
 Module TrivialOvertree <: Overtree.
   #[local] Arguments clos_refl_trans {A} _ _ _.
-
   #[local] Hint Resolve I : main.
 
   Definition node := unit.
@@ -69,7 +68,6 @@ Module TrivialOvertree <: Overtree.
   Qed.
 
   #[export] Hint Resolve rootProxy : main.
-
   #[export] Hint Rewrite rootProxy : main.
 
   Theorem rootReach : forall n, verticallyReachable root n.
