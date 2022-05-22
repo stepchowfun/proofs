@@ -27,7 +27,7 @@ Module Type ContextGraph.
   Parameter edge : node -> node -> node -> Prop.
 
   (*
-    *Horizontal reachability* in a context is the transitive reflexive closure
+    *Horizontal reachability* in a context is the reflexive transitive closure
     of the edge relation specialized on that context.
   *)
 
@@ -45,7 +45,7 @@ Module Type ContextGraph.
   #[export] Hint Unfold proxies : main.
 
   (*
-    *Vertical reachability* is the transitive reflexive closure of proxying.
+    *Vertical reachability* is the reflexive transitive closure of proxying.
   *)
 
   Definition verticallyReachable := clos_refl_trans proxies.

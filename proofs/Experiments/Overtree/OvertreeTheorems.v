@@ -16,23 +16,14 @@ Module OvertreeTheorems (Graph : Overtree).
   Import Graph.
 
   #[local] Arguments clos_refl_trans {A} _ _ _.
-
   #[local] Arguments clos_refl_trans_1n {A} _ _ _.
-
   #[local] Arguments clos_refl_trans_n1 {A} _ _ _.
-
   #[local] Hint Constructors clos_refl_trans : main.
-
   #[local] Hint Constructors clos_refl_trans_1n : main.
-
   #[local] Hint Constructors clos_refl_trans_n1 : main.
-
   #[local] Hint Resolve clos_rt1n_rt : main.
-
   #[local] Hint Resolve clos_rt_rt1n : main.
-
   #[local] Hint Resolve clos_rtn1_rt : main.
-
   #[local] Hint Resolve clos_rt_rtn1 : main.
 
   (* The only node that can vertically reach the root is itself. *)
@@ -74,7 +65,7 @@ Module OvertreeTheorems (Graph : Overtree).
   #[export] Hint Resolve rootReachUniqueness : main.
 
   (*
-    *Reachability* is the transitive reflexive closure of the edge relation.
+    *Reachability* is the reflexive transitive closure of the edge relation.
   *)
 
   Definition reachable := clos_refl_trans edge.

@@ -30,7 +30,7 @@ Module Type Overtree.
   #[export] Hint Unfold covalent : main.
 
   (*
-    *Horizontal reachability* is the transitive reflexive closure of covalency.
+    *Horizontal reachability* is the reflexive transitive closure of covalency.
   *)
 
   Definition horizontallyReachable := clos_refl_trans covalent.
@@ -51,7 +51,7 @@ Module Type Overtree.
   #[export] Hint Unfold proxies : main.
 
   (*
-    *Vertical reachability* is the transitive reflexive closure of proxying.
+    *Vertical reachability* is the reflexive transitive closure of proxying.
   *)
 
   Definition verticallyReachable := clos_refl_trans proxies.
@@ -72,7 +72,6 @@ Module Type Overtree.
   Axiom rootProxy : proxy root = root.
 
   #[export] Hint Resolve rootProxy : main.
-
   #[export] Hint Rewrite rootProxy : main.
 
   Axiom rootReach : forall n, verticallyReachable root n.
