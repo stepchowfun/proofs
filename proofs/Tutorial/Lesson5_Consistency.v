@@ -111,10 +111,15 @@ Definition idUniverse (t : universe) (x : t) := x.
 (* Inductive types have a "strict positivity requirement". *)
 (***********************************************************)
 
-(* The following `weird` type is allowed, even though it has no inhabitants. *)
+(* The following type is allowed, even though it has no inhabitants. *)
 
 Inductive weird :=
 | makeWeird : weird -> weird.
+
+(* This "reflexive" type is also allowed: *)
+
+Inductive weirder :=
+| makeWeirder : (nat -> weirder) -> weirder.
 
 (*
   However, the following is not allowed:
