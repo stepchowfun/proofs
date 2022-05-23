@@ -9,18 +9,10 @@
 
 (* These encodings require an impredicative universe, so we will use Prop. *)
 
-Inductive A : Prop :=
-| foo : A
-| bar : A.
-
-Inductive B : Prop :=
-| baz : B
-| qux : B.
-
 Module NonDependentPairsWithNonDependentElimination.
   (*
-    Non-dependent pairs with non-dependent elimination work fine, just as they
-    do in System F.
+    Just as in System F, non-dependent pairs with non-dependent elimination
+    work fine, but we don't get eta equivalence.
   *)
 
   Definition Pair (X Y : Prop) : Prop :=
@@ -38,15 +30,29 @@ Module NonDependentPairsWithNonDependentElimination.
   Definition second (X Y : Prop) : Pair X Y -> Y :=
     fun p => eliminate X Y Y (fun _ y => y) p.
 
-  Compute first A B (construct A B bar qux).
-  Compute second A B (construct A B bar qux).
+  Theorem betaFirst :
+    forall (X Y : Prop) (x : X) (y : Y), first X Y (construct X Y x y) = x.
+  Proof.
+    reflexivity.
+  Qed.
+
+  Theorem betaSecond :
+    forall (X Y : Prop) (x : X) (y : Y), second X Y (construct X Y x y) = y.
+  Proof.
+    reflexivity.
+  Qed.
+
+  Axiom eta :
+    forall (X Y : Prop) (p : Pair X Y),
+    construct X Y (first X Y p) (second X Y p) = p.
 End NonDependentPairsWithNonDependentElimination.
 
 Module DependentPairsWithNonDependentElimination.
   (*
     Dependent pairs with non-dependent elimination almost work, except we can't
     define the second projection in full generality. In other words, we can
-    encode "weak existentials" but not "strong existentials".
+    encode "weak existentials" but not "strong existentials". Of course,
+    without the second projection, we don't have the relevant equivalences.
   *)
 
   Definition Pair (X : Prop) (Y : X -> Prop) : Prop :=
@@ -72,13 +78,23 @@ Module DependentPairsWithNonDependentElimination.
     eliminate X Y (Y (first X Y p)) (fun _ y => y) p.
   *)
 
-  Definition nonDependentSecond (X : Prop) (Y : Prop) :
-    Pair X (fun _ => Y) -> Y
-  :=
-    fun p => eliminate X (fun _ => Y) Y (fun _ y => y) p.
+  Parameter second :
+    forall (X : Prop) (Y : X -> Prop) (p : Pair X Y), Y (first X Y p).
 
-  Compute first A (fun _ => B) (construct A (fun _ => B) bar qux).
-  Compute nonDependentSecond A B (construct A (fun _ => B) bar qux).
+  Theorem betaFirst :
+    forall (X : Prop) (Y : X -> Prop) (x : X) (y : Y x),
+    first X Y (construct X Y x y) = x.
+  Proof.
+    reflexivity.
+  Qed.
+
+  Axiom betaSecond :
+    forall (X : Prop) (Y : X -> Prop) (x : X) (y : Y x),
+    second X Y (construct X Y x y) = y.
+
+  Axiom eta :
+    forall (X : Prop) (Y : X -> Prop) (p : Pair X Y),
+    construct X Y (first X Y p) (second X Y p) = p.
 End DependentPairsWithNonDependentElimination.
 
 Module NonDependentPairsWithDependentElimination.
