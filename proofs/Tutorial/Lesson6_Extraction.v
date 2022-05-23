@@ -100,8 +100,7 @@ Extract Constant plus => "(+)".
 Extract Constant mult => "(*)".
 
 (*
-  Let's write a simple program with dependent types, prove it correct, and
-  extract the computational part to Haskell.
+  Let's write a simple program, prove it correct, and extract it to Haskell.
 *)
 
 Definition double x := x * 2.
