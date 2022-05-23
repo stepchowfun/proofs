@@ -14,7 +14,7 @@ Require Import Main.CategoryTheory.Monad.
 Require Import Main.CategoryTheory.NaturalTransformation.
 Require Import Main.Tactics.
 
-(* A maybe is a wrapper for value that might be missing. *)
+(* A `maybe` is a wrapper for value that might be missing. *)
 
 Inductive maybe x : Type :=
 | nothing : maybe x
@@ -23,7 +23,7 @@ Inductive maybe x : Type :=
 Arguments nothing {_}.
 Arguments just {_}.
 
-(* Here's a proof that maybe is a functor. *)
+(* Here's a proof that `maybe` is a functor. *)
 
 #[local] Theorem maybeFIdent (x : object setCategory) :
   (
@@ -84,7 +84,7 @@ Definition maybeFunctor : functor setCategory setCategory := newFunctor
   maybeFIdent
   maybeFComp.
 
-(* This is the "return" natural transformation for maybe. *)
+(* This is the "return" natural transformation for `maybe`. *)
 
 #[local] Theorem maybeEtaNaturality
   (x y : object setCategory)
@@ -103,7 +103,7 @@ Definition maybeEta : naturalTransformation idFunctor maybeFunctor :=
     (@just)
     maybeEtaNaturality.
 
-(* This is the "join" natural transformation for maybe. *)
+(* This is the "join" natural transformation for `maybe`. *)
 
 #[local] Theorem maybeMuNaturality (x y : object setCategory) (f : arrow x y) :
   @compose
@@ -145,7 +145,7 @@ Definition maybeMu :
   )
   maybeMuNaturality.
 
-(* Now we can prove that maybe is a monad. *)
+(* Now we can prove that `maybe` is a monad. *)
 
 #[local] Theorem maybeMAssoc :
   eta (

@@ -8,8 +8,8 @@
 
 Module Type KleeneData.
   (*
-    Assumption: Let (T, leq) be a partially ordered set, or poset. A poset is
-    a set with a binary relation which is reflexive, transitive, and
+    Assumption: Let (`T`, `leq`) be a partially ordered set, or poset. A poset
+    is a set with a binary relation that is reflexive, transitive, and
     antisymmetric.
   *)
 
@@ -26,8 +26,8 @@ Module Type KleeneData.
   #[export] Hint Rewrite antisymmetry: main.
 
   (*
-    A supremum of a subset of T is a least element of T which is greater than
-    or equal to every element in the subset. This is also called a join or
+    A supremum of a subset of `T` is a least element of `T` which is greater
+    than or equal to every element in the subset. This is also called a join or
     least upper bound.
   *)
 
@@ -38,7 +38,7 @@ Module Type KleeneData.
   #[export] Hint Unfold supremum : main.
 
   (*
-    A directed subset of T is a non-empty subset of T such that any two
+    A directed subset of `T` is a non-empty subset of `T` such that any two
     elements in the subset have an upper bound in the subset.
   *)
 
@@ -61,7 +61,7 @@ Module Type KleeneData.
   #[export] Hint Resolve directedComplete : main.
 
   (*
-    Assumption: Let T have a least element called bottom. This makes our
+    Assumption: Let `T` have a least element called bottom. This makes our
     partial order a pointed directed-complete partial order.
   *)
 

@@ -15,7 +15,7 @@ Require Import Main.Tactics.
 
 #[local] Set Universe Polymorphism.
 
-(* Metavariables for natural transformations: Eta, Mu *)
+(* Metavariables for natural transformations: `Eta`, `Mu` *)
 
 Record naturalTransformation {C D} (F G : functor C D) :=
 newNaturalTransformation {

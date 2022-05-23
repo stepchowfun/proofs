@@ -75,7 +75,7 @@ Proof.
   clean. apply tlcBoundVar. lia.
 Qed.
 
-(* Don't add a resolve hint because eapply has a hard time guessing i1. *)
+(* Don't add a resolve hint because `eapply` has a hard time guessing `i1`. *)
 
 Theorem eLocalClosureMonotonic :
   forall e ie1 ie2 it1 it2,
@@ -89,4 +89,7 @@ Proof.
     apply tLocalClosureMonotonic with (i1 := nt); magic.
 Qed.
 
-(* Don't add a resolve hint because eapply has a hard time guessing ie1/it1. *)
+(*
+  Don't add a resolve hint because `eapply` has a hard time guessing
+  `ie1`/`it1`.
+*)

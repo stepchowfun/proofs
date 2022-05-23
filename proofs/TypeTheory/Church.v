@@ -7,7 +7,7 @@
 (*****************************************************************************)
 (*****************************************************************************)
 
-(* These encodings require an impredicative universe, so we will use Prop. *)
+(* These encodings require an impredicative universe, so we will use `Prop`. *)
 
 Module NonDependentPairsWithNonDependentElimination.
   (*
@@ -72,10 +72,12 @@ Module DependentPairsWithNonDependentElimination.
     fun p => eliminate X Y X (fun x _ => x) p.
 
   (*
+    ```
     Definition second (X : Prop) (Y : X -> Prop) (p : Pair X Y) :
       Y (first X Y p)
-  :=
-    eliminate X Y (Y (first X Y p)) (fun _ y => y) p.
+    :=
+      eliminate X Y (Y (first X Y p)) (fun _ y => y) p.
+    ```
   *)
 
   Parameter second :
@@ -105,10 +107,12 @@ Module NonDependentPairsWithDependentElimination.
   *)
 
   (*
+    ```
     Definition Pair (X Y : Prop) : Prop :=
       forall (Z : Pair X Y -> Prop),
       (forall (x : X) (y : Y), Z (construct X Y x y)) ->
       Z ?.
+    ```
   *)
 End NonDependentPairsWithDependentElimination.
 
@@ -119,9 +123,11 @@ Module DependentPairsWithDependentElimination.
   *)
 
   (*
+    ```
     Definition Pair (X : Prop) (Y : X -> Prop) : Prop :=
       forall (Z : Pair X Y -> Prop),
       (forall (x : X) (y : Y x), Z (construct X Y x y)) ->
       Z ?.
+    ```
   *)
 End DependentPairsWithDependentElimination.

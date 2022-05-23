@@ -24,7 +24,7 @@ Inductive and P Q : Prop := (* Notation: `P /\ Q` *)
 
 Arguments conj {_} {_}.
 
-(* A proof of True AND True *)
+(* A proof of `True` *and* `True` *)
 
 Definition true_and_true_1 : and True True :=
   conj trivial trivial.
@@ -39,7 +39,7 @@ Proof.
   - apply trivial.
 Qed.
 
-Print true_and_true_2. (* conj trivial trivial *)
+Print true_and_true_2. (* `conj trivial trivial` *)
 
 (* The same proof, but written using the `;` tactical *)
 
@@ -48,9 +48,9 @@ Proof.
   apply conj; apply trivial.
 Qed.
 
-Print true_and_true_3. (* conj trivial trivial *)
+Print true_and_true_3. (* `conj trivial trivial` *)
 
-(* Let's see what happens when we try to prove True AND False. *)
+(* Let's see what happens when we try to prove `True` *and* `False`. *)
 
 Theorem true_and_false : and True False.
 Proof.
@@ -74,7 +74,7 @@ Inductive or P Q : Prop := (* Notation: `P \/ Q` *)
 Arguments orIntroL {_} {_}.
 Arguments orIntroR {_} {_}.
 
-(* Let's prove True OR False. *)
+(* Let's prove `True` *or* `False`. *)
 
 Theorem true_or_false : or True False.
 Proof.
@@ -86,7 +86,7 @@ Qed.
 
 Definition not A := A -> False. (* Notation: ~ A *)
 
-(* A proof of NOT False *)
+(* A proof of *not* `False` *)
 
 Theorem not_false : not False.
 Proof.
@@ -100,11 +100,11 @@ Proof.
   exact H.
 Qed.
 
-Print not_false. (* fun H : False => H *)
+Print not_false. (* `fun H : False => H` *)
 
 (* Propositional equality *)
 
-Inductive eq A (x : A) : A -> Prop := (* Notation: x = x *)
+Inductive eq A (x : A) : A -> Prop := (* Notation: `x = x` *)
 | eq_refl : eq A x x. (* A dependent type! *)
 
 (* Make the `A` argument of `eq_refl` implicit. *)
@@ -129,8 +129,8 @@ Definition leibniz A
                    (y : A)
                    (e : eq A x y) :
                    P y :=
-  match e in eq _ _ z return P z with (* Here, z = y. *)
-  | eq_refl _ => f (* But z = x here. *)
+  match e in eq _ _ z return P z with (* Here, `z` = `y`. *)
+  | eq_refl _ => f (* But `z` = `x` here. *)
   end.
 
 (*
@@ -141,15 +141,19 @@ Definition leibniz A
 Check leibniz.
 
 (*
+  ```
   forall (A : Type) (x : A) (P : A -> Prop),
   P x -> forall y : A, eq A x y -> P y
+  ```
 *)
 
 Check eq_ind.
 
 (*
+  ```
   forall (A : Type) (x : A) (P : A -> Prop),
   P x -> forall y : A, eq A x y -> P y
+  ```
 *)
 
 (*
@@ -157,7 +161,7 @@ Check eq_ind.
   quantification, however, is definable as follows:
 *)
 
-Inductive ex A (P : A -> Prop) : Prop := (* Notation: exists x, P x *)
+Inductive ex A (P : A -> Prop) : Prop := (* Notation: `exists x, P x` *)
   ex_intro : forall x : A, P x -> ex A P.
 
 (* Make the `A` and `P` arguments of `ex_intro` implicit. *)

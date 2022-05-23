@@ -43,7 +43,7 @@ Module KleeneTheorems (Kleene : KleeneData).
 
   #[export] Hint Unfold continuous : main.
 
-  (* This function performs iterated application of a function to bottom. *)
+  (* This function performs iterated application of a function to `bottom`. *)
 
   Fixpoint approx f n :=
     match n with
@@ -70,7 +70,7 @@ Module KleeneTheorems (Kleene : KleeneData).
 
   #[local] Hint Resolve natDiff : main.
 
-  (* The supremum of a subset of T, if it exists, is unique. *)
+  (* The supremum of a subset of `T`, if it exists, is unique. *)
 
   Theorem supremumUniqueness :
     forall P x1 x2,
@@ -96,9 +96,9 @@ Module KleeneTheorems (Kleene : KleeneData).
   #[export] Hint Resolve continuousImpliesMonotone : main.
 
   (*
-    Iterated applications of a monotone function f to bottom form an ω-chain,
-    which means they are a totally ordered subset of T. This ω-chain is called
-    the ascending Kleene chain of f.
+    Iterated applications of a monotone function `f` to bottom form an
+    ω-chain, which means they are a totally ordered subset of `T`. This
+    ω-chain is called the ascending Kleene chain of `f`.
   *)
 
   Theorem omegaChain :
@@ -113,7 +113,7 @@ Module KleeneTheorems (Kleene : KleeneData).
 
   #[export] Hint Resolve omegaChain : main.
 
-  (* The ascending Kleene chain of f is directed. *)
+  (* The ascending Kleene chain of `f` is directed. *)
 
   Theorem kleeneChainDirected :
     forall f,
