@@ -7,77 +7,88 @@
 (*****************************************************************************)
 (*****************************************************************************)
 
-(* Non-dependent pairs with non-dependent elimination ("NN") work fine. *)
+Module NonDependentPairsWithNonDependentElimination.
+  (*
+    Non-dependent pairs with non-dependent elimination work fine, just as they
+    do in System F.
+  *)
 
-Definition PairNN (X Y : Type) : Type :=
-  forall Z, (X -> Y -> Z) -> Z.
+  Definition Pair (X Y : Type) : Type :=
+    forall Z, (X -> Y -> Z) -> Z.
 
-Definition constructNN (X Y : Type) : X -> Y -> PairNN X Y :=
-  fun x y Z f => f x y.
+  Definition construct (X Y : Type) : X -> Y -> Pair X Y :=
+    fun x y Z f => f x y.
 
-Definition eliminateNN (X Y Z : Type) : (X -> Y -> Z) -> PairNN X Y -> Z :=
-  fun f p => p Z f.
+  Definition eliminate (X Y Z : Type) : (X -> Y -> Z) -> Pair X Y -> Z :=
+    fun f p => p Z f.
 
-Definition firstNN (X Y : Type) : PairNN X Y -> X :=
-  fun p => eliminateNN X Y X (fun x _ => x) p.
+  Definition first (X Y : Type) : Pair X Y -> X :=
+    fun p => eliminate X Y X (fun x _ => x) p.
 
-Definition secondNN (X Y : Type) : PairNN X Y -> Y :=
-  fun p => eliminateNN X Y Y (fun _ y => y) p.
+  Definition second (X Y : Type) : Pair X Y -> Y :=
+    fun p => eliminate X Y Y (fun _ y => y) p.
 
-Compute firstNN bool nat (constructNN bool nat true 42).
-Compute secondNN bool nat (constructNN bool nat true 42).
+  Compute first bool nat (construct bool nat true 42).
+  Compute second bool nat (construct bool nat true 42).
+End NonDependentPairsWithNonDependentElimination.
 
-(*
-  Dependent pairs with non-dependent elimination ("DN") are almost fine, except
-  we can't define the second projection in full generality.
-*)
+Module DependentPairsWithNonDependentElimination.
+  (*
+    Dependent pairs with non-dependent elimination almost work, except we can't
+    define the second projection in full generality.
+  *)
 
-Definition PairDN (X : Type) (Y : X -> Type) : Type :=
-  forall (Z : Type), (forall x, Y x -> Z) -> Z.
+  Definition Pair (X : Type) (Y : X -> Type) : Type :=
+    forall (Z : Type), (forall x, Y x -> Z) -> Z.
 
-Definition constructDN (X : Type) (Y : X -> Type) :
-  forall (x : X), Y x -> PairDN X Y
-:=
-  fun x y Z f => f x y.
+  Definition construct (X : Type) (Y : X -> Type) :
+    forall (x : X), Y x -> Pair X Y
+  :=
+    fun x y Z f => f x y.
 
-Definition eliminateDN (X : Type) (Y : X -> Type) (Z : Type) :
-  (forall (x : X), Y x -> Z) -> PairDN X Y -> Z
-:=
-  fun f p => p Z f.
+  Definition eliminate (X : Type) (Y : X -> Type) (Z : Type) :
+    (forall (x : X), Y x -> Z) -> Pair X Y -> Z
+  :=
+    fun f p => p Z f.
 
-Definition firstDN (X : Type) (Y : X -> Type) : PairDN X Y -> X :=
-  fun p => eliminateDN X Y X (fun x _ => x) p.
+  Definition first (X : Type) (Y : X -> Type) : Pair X Y -> X :=
+    fun p => eliminate X Y X (fun x _ => x) p.
 
-(*
-  Definition secondDN (X : Type) (Y : X -> Type) (p : PairDN X Y) :
-    Y (firstDN X Y p)
-:=
-  eliminateDN X Y (Y (firstDN X Y p)) (fun _ y => y) p.
-*)
+  (*
+    Definition second (X : Type) (Y : X -> Type) (p : Pair X Y) :
+      Y (first X Y p)
+  :=
+    eliminate X Y (Y (first X Y p)) (fun _ y => y) p.
+  *)
 
-  Definition secondDN' (X : Type) (Y : Type) : PairDN X (fun _ => Y) -> Y :=
-    fun p => eliminateDN X (fun _ => Y) Y (fun _ y => y) p.
+  Definition second' (X : Type) (Y : Type) : Pair X (fun _ => Y) -> Y :=
+    fun p => eliminate X (fun _ => Y) Y (fun _ y => y) p.
 
-Compute firstDN bool (fun _ => nat) (constructDN bool (fun _ => nat) true 42).
-Compute secondDN' bool nat (constructDN bool (fun _ => nat) true 42).
+  Compute first bool (fun _ => nat) (construct bool (fun _ => nat) true 42).
+  Compute second' bool nat (construct bool (fun _ => nat) true 42).
+End DependentPairsWithNonDependentElimination.
 
-(*
-  However, we can't even define the type former for non-dependent pairs with
-  dependent elimination ("ND").
-*)
+Module NonDependentPairsWithDependentElimination.
+  (*
+    We can't even define the type former for non-dependent pairs with dependent
+    elimination.
+  *)
 
-(*
-  Definition PairND (X Y : Type) : Type :=
-    forall (Z : PairND X Y -> Type),
-    (forall (x : X) (y : Y), Z (constructND X Y x y)) ->
-    Z ?.
-*)
+  (*
+    Definition Pair (X Y : Type) : Type :=
+      forall (Z : Pair X Y -> Type),
+      (forall (x : X) (y : Y), Z (construct X Y x y)) ->
+      Z ?.
+  *)
+End NonDependentPairsWithDependentElimination.
 
-(* Dependent pairs with dependent elimination ("DD") have the same problem. *)
+Module DependentPairsWithDependentElimination.
+  (* Dependent pairs with dependent elimination have the same problem. *)
 
-(*
-  Definition PairDD (X : Type) (Y : X -> Type) : Type :=
-    forall (Z : PairDD X Y -> Type),
-    (forall (x : X) (y : Y x), Z (constructDD X Y x y)) ->
-    Z ?.
-*)
+  (*
+    Definition Pair (X : Type) (Y : X -> Type) : Type :=
+      forall (Z : Pair X Y -> Type),
+      (forall (x : X) (y : Y x), Z (construct X Y x y)) ->
+      Z ?.
+  *)
+End DependentPairsWithDependentElimination.
