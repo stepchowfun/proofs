@@ -35,7 +35,8 @@ End NonDependentPairsWithNonDependentElimination.
 Module DependentPairsWithNonDependentElimination.
   (*
     Dependent pairs with non-dependent elimination almost work, except we can't
-    define the second projection in full generality.
+    define the second projection in full generality. In other words, we can
+    encode "weak existentials" but not "strong existentials".
   *)
 
   Definition Pair (X : Type) (Y : X -> Type) : Type :=
@@ -71,7 +72,8 @@ End DependentPairsWithNonDependentElimination.
 Module NonDependentPairsWithDependentElimination.
   (*
     We can't even define the type former for non-dependent pairs with dependent
-    elimination.
+    elimination. In other words, we don't have an encoding of pairs with an
+    induction principle.
   *)
 
   (*
@@ -83,7 +85,10 @@ Module NonDependentPairsWithDependentElimination.
 End NonDependentPairsWithDependentElimination.
 
 Module DependentPairsWithDependentElimination.
-  (* Dependent pairs with dependent elimination have the same problem. *)
+  (*
+    Dependent pairs with dependent elimination (i.e., sigma types) have the
+    same problem.
+  *)
 
   (*
     Definition Pair (X : Type) (Y : X -> Type) : Type :=
