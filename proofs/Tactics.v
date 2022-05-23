@@ -21,16 +21,16 @@ Create HintDb main.
 #[local] Ltac simplify tactic :=
   repeat (
     intros;
-    cbn in *;
     subst;
+    cbn in *;
     try match goal with
+        | [ H : ?T = ?T |- _ ] => clear H
         | [ H : ex _ |- _ ] => destruct H
         | [ H : _ /\ _ |- _ ] => destruct H
         | [ H : _ <-> _ |- _ ] => destruct H
-        | [ H : ?T = ?T |- _ ] => clear H
         | [ H1 : ?T -> _ |- _ ] =>
           match type of T with
-          | context[Prop] =>
+          | Prop =>
             let H2 := fresh "H" in
             assert (H2 : T); [
               solve [ tactic ] |
@@ -38,7 +38,7 @@ Create HintDb main.
             ]
           end
         end
-    ).
+  ).
 
 (*
   The `magic` tactic tries a variety of approaches to solve a goal. The
@@ -52,12 +52,13 @@ Create HintDb main.
     simplify tactic;
     try autorewrite with main in *;
     try autounfold with main in *;
+    try solve [congruence];
     try solve [dintuition (simplify tactic; tactic)];
+    try solve [lia];
     try solve [progress f_equal; magicWith tactic];
-    try congruence;
-    try lia;
     try solve [
       match goal with
+      | [ X : unit |- _ ] => destruct X; magicWith tactic; fail
       | [ |- context[if ?X then _ else _] ] =>
         destruct X; magicWith tactic; fail
       | [ _ : context[if ?X then _ else _] |- _ ] =>
