@@ -62,11 +62,13 @@ Module DependentPairsWithNonDependentElimination.
     eliminate X Y (Y (first X Y p)) (fun _ y => y) p.
   *)
 
-  Definition second' (X : Type) (Y : Type) : Pair X (fun _ => Y) -> Y :=
+  Definition nonDependentSecond (X : Type) (Y : Type) :
+    Pair X (fun _ => Y) -> Y
+  :=
     fun p => eliminate X (fun _ => Y) Y (fun _ y => y) p.
 
   Compute first bool (fun _ => nat) (construct bool (fun _ => nat) true 42).
-  Compute second' bool nat (construct bool (fun _ => nat) true 42).
+  Compute nonDependentSecond bool nat (construct bool (fun _ => nat) true 42).
 End DependentPairsWithNonDependentElimination.
 
 Module NonDependentPairsWithDependentElimination.
