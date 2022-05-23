@@ -14,6 +14,7 @@ Require Import Main.Tactics.
 Module TrivialOvertree <: Overtree.
   #[local] Arguments clos_refl_trans {A} _ _ _.
   #[local] Hint Resolve I : main.
+  #[local] Hint Resolve rt_refl : main.
 
   Definition node := unit.
 
@@ -72,9 +73,7 @@ Module TrivialOvertree <: Overtree.
 
   Theorem rootReach : forall n, verticallyReachable root n.
   Proof.
-    clean.
-    destruct n.
-    apply rt_refl.
+    magic.
   Qed.
 
   #[export] Hint Resolve rootReach : main.

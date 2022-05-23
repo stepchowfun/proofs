@@ -12,6 +12,7 @@ Require Import Main.Tactics.
 
 Module TrivialContextGraph <: ContextGraph.
   #[local] Arguments clos_refl_trans {A} _ _ _.
+  #[local] Hint Resolve rt_refl : main.
 
   Definition node := unit.
 
@@ -42,9 +43,6 @@ Module TrivialContextGraph <: ContextGraph.
     verticallyReachable n2 n1 ->
     n1 = n2.
   Proof.
-    clean.
-    destruct n1.
-    destruct n2.
     magic.
   Qed.
 
@@ -56,9 +54,7 @@ Module TrivialContextGraph <: ContextGraph.
 
   Theorem rootReach : forall n, verticallyReachable root n.
   Proof.
-    clean.
-    destruct n.
-    apply rt_refl.
+    magic.
   Qed.
 
   #[export] Hint Resolve rootReach : main.

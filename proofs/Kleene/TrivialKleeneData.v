@@ -21,7 +21,6 @@ Module TrivialKleeneData <: KleeneData.
 
   Theorem reflexivity : forall x, leq x x.
   Proof.
-    unfold leq.
     magic.
   Qed.
 
@@ -29,7 +28,6 @@ Module TrivialKleeneData <: KleeneData.
 
   Theorem transitivity : forall x y z, leq x y -> leq y z -> leq x z.
   Proof.
-    unfold leq.
     magic.
   Qed.
 
@@ -37,9 +35,6 @@ Module TrivialKleeneData <: KleeneData.
 
   Theorem antisymmetry : forall x y, leq x y -> leq y x -> x = y.
   Proof.
-    clean.
-    destruct x.
-    destruct y.
     magic.
   Qed.
 
@@ -64,9 +59,7 @@ Module TrivialKleeneData <: KleeneData.
     directed P ->
     exists x, supremum P x.
   Proof.
-    clean.
-    exists tt.
-    split; unfold leq; magic.
+    magic.
   Qed.
 
   #[local] Hint Resolve directedComplete : main.
@@ -77,7 +70,6 @@ Module TrivialKleeneData <: KleeneData.
 
   Theorem bottomLeast : forall x, leq bottom x.
   Proof.
-    unfold leq.
     magic.
   Qed.
 
