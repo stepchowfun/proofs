@@ -5,7 +5,7 @@
 (****   (i.e., inductive types with indices) built into the type       ****)
 (****   theory, we can emulate them with families of inductive types   ****)
 (****   (i.e., inductive types with parameters) if propositional       ****)
-(****   equality is taken to be primitive.                             ****)
+(****   equality is taken to be primitive                              ****)
 (****                                                                  ****)
 (**************************************************************************)
 (**************************************************************************)
