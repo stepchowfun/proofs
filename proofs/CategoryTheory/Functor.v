@@ -12,7 +12,7 @@ Require Import Main.Tactics.
 
 #[local] Set Universe Polymorphism.
 
-(* Metavariables for functors: F, G, H *)
+(* Metavariables for functors: `F`, `G`, `H` *)
 
 Record functor C D := newFunctor {
   oMap : object C -> object D;

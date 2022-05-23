@@ -30,23 +30,27 @@ Abort.
 Print add.
 
 (*
+  ```
   fix add (n m : nat) {struct n} : nat :=
     match n with
     | 0 => m
     | S p => S (add p m)
     end
+  ```
 *)
 
 (*
-  From this, it's clear why 0 + n = n. But how do we prove n + 0 = n? We need
-  induction.
+  From this, it's clear why `0 + n = n`. But how do we prove `n + 0 = n`? We
+  need induction.
 *)
 
 Check nat_ind.
 
 (*
+  ```
   forall P : nat -> Prop,
   P 0 -> (forall n : nat, P n -> P (S n)) -> forall n : nat, P n
+  ```
 *)
 
 (*
@@ -75,6 +79,7 @@ Qed.
 Print n_plus_zero.
 
 (*
+  ```
   fun n : nat => nat_ind
     (fun n0 : nat => n0 + 0 = n0)
     eq_refl
@@ -83,6 +88,7 @@ Print n_plus_zero.
         eq_ind_r (fun n1 : nat => S n1 = S n0) eq_refl IHn
     )
     n
+  ```
 *)
 
 (* Let's prove that addition is associative. *)

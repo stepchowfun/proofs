@@ -17,8 +17,8 @@ Require Import Main.Tactics.
 
 #[local] Set Universe Polymorphism.
 
-(* Metavariable for coproducts: xy (same as products) *)
-(* Metavariables for injections: ix, iy *)
+(* Metavariable for coproducts: `xy` (same as products) *)
+(* Metavariables for injections: `ix`, `iy` *)
 
 Definition coproduct
   {C}
@@ -70,7 +70,7 @@ Proof.
 Qed.
 
 (*
-  We deliberately avoid adding a resolve hint for coproductCommutator because
+  We deliberately avoid adding a resolve hint for `coproductCommutator` because
   doing so could lead to nonterminating searches.
 *)
 

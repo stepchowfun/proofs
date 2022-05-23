@@ -46,7 +46,7 @@ Ltac reflect b :=
 
 (*
   Two definitions of evenness:
-  1. an inductive proposition
+  1. an inductive predicate
   2. a decision procedure
 *)
 

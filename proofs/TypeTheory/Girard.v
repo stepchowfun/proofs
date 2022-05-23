@@ -55,10 +55,12 @@ Definition bad := (
       one omega (fun (x : universe) => one (tau (sigma x)))
 ).
 
-Check bad. (* exfalso *)
-Check bad False. (* False *)
+Check bad. (* `exfalso` *)
+Check bad False. (* `False` *)
 
 (*
+  ```
   Compute bad.
   Compute bad False.
+  ```
 *)

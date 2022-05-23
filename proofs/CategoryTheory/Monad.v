@@ -12,7 +12,7 @@ Require Import Main.CategoryTheory.NaturalTransformation.
 
 #[local] Set Universe Polymorphism.
 
-(* Metavariable for monads: M *)
+(* Metavariable for monads: `M` *)
 
 Record monad
   {C}

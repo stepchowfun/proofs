@@ -47,9 +47,9 @@ Check S (S O). (* nat *)
 
 (* Numeric literals can also be used to construct natural numbers. *)
 
-Check 0. (* Datatypes.nat *)
-Check 1. (* Datatypes.nat *)
-Check 2. (* Datatypes.nat *)
+Check 0. (* `Datatypes.nat` *)
+Check 1. (* `Datatypes.nat` *)
+Check 2. (* `Datatypes.nat` *)
 
 (*
   Recursive definitions use the `Fixpoint` keyword instead of `Definition`.

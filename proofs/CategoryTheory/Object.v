@@ -50,8 +50,8 @@ Proof.
 Qed.
 
 (*
-  We deliberately avoid adding a resolve hint for isomorphicTrans because doing
-  so could lead to nonterminating searches.
+  We deliberately avoid adding a resolve hint for `isomorphicTrans` because
+  doing so could lead to nonterminating searches.
 *)
 
 Theorem isomorphicSymm C (x y : object C) : isomorphic x y <-> isomorphic y x.
@@ -63,8 +63,8 @@ Proof.
 Qed.
 
 (*
-  We deliberately avoid adding a resolve hint for isomorphicSymm because doing
-  so could lead to nonterminating searches.
+  We deliberately avoid adding a resolve hint for `isomorphicSymm` because
+  doing so could lead to nonterminating searches.
 *)
 
 Theorem opIsomorphic C x y :

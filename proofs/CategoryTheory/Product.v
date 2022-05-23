@@ -14,8 +14,8 @@ Require Import Main.Tactics.
 
 #[local] Set Universe Polymorphism.
 
-(* Metavariable for products: xy *)
-(* Metavariables for projections: px, py *)
+(* Metavariable for products: `xy` *)
+(* Metavariables for projections: `px`, `py` *)
 
 Definition product
   {C}
@@ -63,7 +63,7 @@ Proof.
 Qed.
 
 (*
-  We deliberately avoid adding a resolve hint for productCommutator because
+  We deliberately avoid adding a resolve hint for `productCommutator` because
   doing so could lead to nonterminating searches.
 *)
 

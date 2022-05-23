@@ -11,11 +11,11 @@ Require Import Main.Tactics.
 
 #[local] Set Universe Polymorphism.
 
-(* Metavariables for categories: C, D, E *)
+(* Metavariables for categories: `C`, `D`, `E` *)
 
 Record category := newCategory {
-  object : Type; (* Metavariables for objects: w, x, y, z *)
-  arrow : object -> object -> Type; (* Metavariables for arrows: f, g, h *)
+  object : Type; (* Objects: `w`, `x`, `y`, `z` *)
+  arrow : object -> object -> Type; (* Arrows: `f`, `g`, `h` *)
   compose {x y z} : arrow y z -> arrow x y -> arrow x z;
   id {x}: arrow x x;
 
