@@ -7,29 +7,39 @@
 (*****************************************************************************)
 (*****************************************************************************)
 
+(* These encodings require an impredicative universe, so we will use Prop. *)
+
+Inductive A : Prop :=
+| foo : A
+| bar : A.
+
+Inductive B : Prop :=
+| baz : B
+| qux : B.
+
 Module NonDependentPairsWithNonDependentElimination.
   (*
     Non-dependent pairs with non-dependent elimination work fine, just as they
     do in System F.
   *)
 
-  Definition Pair (X Y : Type) : Type :=
-    forall Z, (X -> Y -> Z) -> Z.
+  Definition Pair (X Y : Prop) : Prop :=
+    forall (Z : Prop), (X -> Y -> Z) -> Z.
 
-  Definition construct (X Y : Type) : X -> Y -> Pair X Y :=
+  Definition construct (X Y : Prop) : X -> Y -> Pair X Y :=
     fun x y Z f => f x y.
 
-  Definition eliminate (X Y Z : Type) : (X -> Y -> Z) -> Pair X Y -> Z :=
+  Definition eliminate (X Y Z : Prop) : (X -> Y -> Z) -> Pair X Y -> Z :=
     fun f p => p Z f.
 
-  Definition first (X Y : Type) : Pair X Y -> X :=
+  Definition first (X Y : Prop) : Pair X Y -> X :=
     fun p => eliminate X Y X (fun x _ => x) p.
 
-  Definition second (X Y : Type) : Pair X Y -> Y :=
+  Definition second (X Y : Prop) : Pair X Y -> Y :=
     fun p => eliminate X Y Y (fun _ y => y) p.
 
-  Compute first bool nat (construct bool nat true 42).
-  Compute second bool nat (construct bool nat true 42).
+  Compute first A B (construct A B bar qux).
+  Compute second A B (construct A B bar qux).
 End NonDependentPairsWithNonDependentElimination.
 
 Module DependentPairsWithNonDependentElimination.
@@ -39,36 +49,36 @@ Module DependentPairsWithNonDependentElimination.
     encode "weak existentials" but not "strong existentials".
   *)
 
-  Definition Pair (X : Type) (Y : X -> Type) : Type :=
-    forall (Z : Type), (forall x, Y x -> Z) -> Z.
+  Definition Pair (X : Prop) (Y : X -> Prop) : Prop :=
+    forall (Z : Prop), (forall x, Y x -> Z) -> Z.
 
-  Definition construct (X : Type) (Y : X -> Type) :
+  Definition construct (X : Prop) (Y : X -> Prop) :
     forall (x : X), Y x -> Pair X Y
   :=
     fun x y Z f => f x y.
 
-  Definition eliminate (X : Type) (Y : X -> Type) (Z : Type) :
+  Definition eliminate (X : Prop) (Y : X -> Prop) (Z : Prop) :
     (forall (x : X), Y x -> Z) -> Pair X Y -> Z
   :=
     fun f p => p Z f.
 
-  Definition first (X : Type) (Y : X -> Type) : Pair X Y -> X :=
+  Definition first (X : Prop) (Y : X -> Prop) : Pair X Y -> X :=
     fun p => eliminate X Y X (fun x _ => x) p.
 
   (*
-    Definition second (X : Type) (Y : X -> Type) (p : Pair X Y) :
+    Definition second (X : Prop) (Y : X -> Prop) (p : Pair X Y) :
       Y (first X Y p)
   :=
     eliminate X Y (Y (first X Y p)) (fun _ y => y) p.
   *)
 
-  Definition nonDependentSecond (X : Type) (Y : Type) :
+  Definition nonDependentSecond (X : Prop) (Y : Prop) :
     Pair X (fun _ => Y) -> Y
   :=
     fun p => eliminate X (fun _ => Y) Y (fun _ y => y) p.
 
-  Compute first bool (fun _ => nat) (construct bool (fun _ => nat) true 42).
-  Compute nonDependentSecond bool nat (construct bool (fun _ => nat) true 42).
+  Compute first A (fun _ => B) (construct A (fun _ => B) bar qux).
+  Compute nonDependentSecond A B (construct A (fun _ => B) bar qux).
 End DependentPairsWithNonDependentElimination.
 
 Module NonDependentPairsWithDependentElimination.
@@ -79,8 +89,8 @@ Module NonDependentPairsWithDependentElimination.
   *)
 
   (*
-    Definition Pair (X Y : Type) : Type :=
-      forall (Z : Pair X Y -> Type),
+    Definition Pair (X Y : Prop) : Prop :=
+      forall (Z : Pair X Y -> Prop),
       (forall (x : X) (y : Y), Z (construct X Y x y)) ->
       Z ?.
   *)
@@ -93,8 +103,8 @@ Module DependentPairsWithDependentElimination.
   *)
 
   (*
-    Definition Pair (X : Type) (Y : X -> Type) : Type :=
-      forall (Z : Pair X Y -> Type),
+    Definition Pair (X : Prop) (Y : X -> Prop) : Prop :=
+      forall (Z : Pair X Y -> Prop),
       (forall (x : X) (y : Y x), Z (construct X Y x y)) ->
       Z ?.
   *)
