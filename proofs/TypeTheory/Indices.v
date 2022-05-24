@@ -31,21 +31,23 @@ Inductive exp2 (a : Set) : Type :=
 
 Fixpoint eval2 (a : Set) (e1 : exp2 a) : a :=
   match e1 with
-  | zero2 _ H => match H in (_ = b) return b with
-                 | eq_refl => 0
-                 end
-  | succ2 _ H e2 => match H in (_ = b) return b with
-                    | eq_refl => eval2 nat (
-                                   match (eq_sym H)
-                                   in (_ = c)
-                                   return exp2 c with
-                                   | eq_refl => e2
-                                   end
-                                 ) + 1
-                    end
-  | pair2 _ b c H e2 e3 => match H in (_ = b) return b with
-                           | eq_refl => (eval2 b e2, eval2 c e3)
-                           end
+  | zero2 _ H =>
+    match H in (_ = b) return b with
+    | eq_refl => 0
+    end
+  | succ2 _ H e2 =>
+    match H in (_ = b) return b with
+    | eq_refl =>
+      eval2 nat (
+        match (eq_sym H) in (_ = c) return exp2 c with
+        | eq_refl => e2
+        end
+      ) + 1
+    end
+  | pair2 _ b c H e2 e3 =>
+    match H in (_ = b) return b with
+    | eq_refl => (eval2 b e2, eval2 c e3)
+    end
   end.
 
 Fixpoint exp1ToExp2 (a : Set) (e1 : exp1 a) : exp2 a :=
