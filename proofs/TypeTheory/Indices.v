@@ -18,10 +18,14 @@ Inductive exp1 : Set -> Type :=
 | add1 : exp1 nat -> exp1 nat -> exp1 nat
 | lessThan1 : exp1 nat -> exp1 nat -> exp1 bool.
 
+#[export] Hint Constructors exp1 : main.
+
 Inductive exp2 (a : Set) : Type :=
 | const2 : a -> exp2 a
 | add2 : nat = a -> exp2 nat -> exp2 nat -> exp2 a
 | lessThan2 : bool = a -> exp2 nat -> exp2 nat -> exp2 a.
+
+#[export] Hint Constructors exp2 : main.
 
 Fixpoint eval1 (a : Set) (e1 : exp1 a) : a :=
   match e1 in exp1 b return b with
