@@ -51,8 +51,8 @@ Module DependentPairsWithNonDependentElimination.
   (*
     Dependent pairs with non-dependent elimination almost work, except we can't
     define the second projection in full generality. In other words, we can
-    encode "weak existentials" but not "strong existentials". Of course,
-    without the second projection, we don't have the relevant equivalences.
+    encode "weak sums" but not "strong sums". Of course, without the second
+    projection, we don't have the associated equivalences.
   *)
 
   Definition Pair (X : Prop) (Y : X -> Prop) : Prop :=
@@ -111,7 +111,7 @@ Module NonDependentPairsWithDependentElimination.
     Definition Pair (X Y : Prop) : Prop :=
       forall (Z : Pair X Y -> Prop),
       (forall (x : X) (y : Y), Z (construct X Y x y)) ->
-      Z ?.
+      forall (p : Pair X Y), Z p.
     ```
   *)
 End NonDependentPairsWithDependentElimination.
@@ -127,7 +127,7 @@ Module DependentPairsWithDependentElimination.
     Definition Pair (X : Prop) (Y : X -> Prop) : Prop :=
       forall (Z : Pair X Y -> Prop),
       (forall (x : X) (y : Y x), Z (construct X Y x y)) ->
-      Z ?.
+      forall (p : Pair X Y), Z p.
     ```
   *)
 End DependentPairsWithDependentElimination.
