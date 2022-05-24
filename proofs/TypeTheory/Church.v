@@ -51,8 +51,8 @@ Module DependentPairsWithNonDependentElimination.
   (*
     Dependent pairs with non-dependent elimination almost work, except we can't
     define the second projection in full generality. In other words, we can
-    encode "weak sums" but not "strong sums". Of course, without the second
-    projection, we don't have the associated equivalences.
+    encode "weak sums" (i.e., existentials) but not "strong sums". Of course,
+    without the second projection, we don't have the associated equivalences.
   *)
 
   Definition Pair (X : Prop) (Y : X -> Prop) : Prop :=
