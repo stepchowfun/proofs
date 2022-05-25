@@ -1,13 +1,25 @@
 (*****************************************************************************)
 (*****************************************************************************)
 (****                                                                     ****)
-(****   A demonstration of why Church encodings don't support dependent   ****)
-(****   elimination                                                       ****)
+(****   A demonstration (but not a proof) of why Church encodings don't   ****)
+(****   support dependent elimination                                     ****)
 (****                                                                     ****)
 (*****************************************************************************)
 (*****************************************************************************)
 
-(* These encodings require an impredicative universe, so we will use `Prop`. *)
+(*
+  This file demonstrates the problems one encounters when trying to implement
+  inductive types (in particular, pairs) with Church encodings. For an actual
+  impossibility result, see:
+
+    Geuvers, H. (2001). Induction Is Not Derivable in Second Order Dependent
+    Type Theory. In: Abramsky, S. (eds) Typed Lambda Calculi and Applications.
+    TLCA 2001. Lecture Notes in Computer Science, vol 2044. Springer, Berlin,
+    Heidelberg. https://doi.org/10.1007/3-540-45413-6_16
+
+  These encodings of pairs require an impredicative universe in order to be
+  defined in the same universe as their component types, so we'll use `Prop`.
+*)
 
 Module NonDependentPairsWithNonDependentElimination.
   (*
