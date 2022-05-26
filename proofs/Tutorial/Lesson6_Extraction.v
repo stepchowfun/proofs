@@ -7,7 +7,7 @@
 (**************************************)
 
 Require Import Coq.micromega.Lia.
-Require Import Extraction.
+From Coq Require Extraction.
 
 (*************************************************)
 (* Information cannot leave the `Prop` universe. *)
