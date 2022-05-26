@@ -118,9 +118,9 @@ Definition large := Type.
 Definition constraint : large := Set.
 
 (*
-  An inductive type must either live in `Prop` or in a higher universe than the
-  universes of the arguments to its constructors, including indices but not
-  parameters.
+  If an inductive type has a constructor which takes an argument of type
+  `T : Type_i`, the inductive type must be in a universe at least as large as
+  `Type_i`. This includes indices, but not parameters.
 *)
 
 Inductive foo1 : Set :=
