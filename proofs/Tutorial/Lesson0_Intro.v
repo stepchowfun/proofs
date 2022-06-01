@@ -245,9 +245,9 @@ Inductive nat :=
 
 (* Here are some natural numbers: *)
 
-Check O. (* nat *)
-Check S O. (* nat *)
-Check S (S O). (* nat *)
+Check O. (* `nat` *)
+Check S O. (* `nat` *)
+Check S (S O). (* `nat` *)
 
 (*
   Conveniently, the Coq parser allows us to write numeric literals instead of
@@ -272,4 +272,4 @@ Fixpoint add n m :=
 
 (* Let's compute 1 + 1. *)
 
-Compute add (S O) (S O). (* S (S O) *)
+Compute add (S O) (S O). (* `S (S O)` *)
