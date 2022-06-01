@@ -273,3 +273,7 @@ Fixpoint add n m :=
 (* Let's compute 1 + 1. *)
 
 Compute add (S O) (S O). (* `S (S O)` *)
+
+(* If we use `nat`s from the standard library, we get nice numeric literals. *)
+
+Compute 1 + 1. (* `2` *)
