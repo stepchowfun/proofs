@@ -233,13 +233,15 @@ Compute mapOption (fun n => n + 1) (Some nat 3). (* `Some nat 4` *)
 Compute mapOption flip (Some bool false). (* `Some bool true` *)
 
 (*
-  Inductive types can be recursive. For example, here is how natural numbers
-  are defined in the standard library:
+  Inductive types can be recursive. For example, below is how natural numbers
+  are defined in the standard library. Note that the name of the first
+  constructor is the letter "O", which was chosen due to its resemblance to the
+  numeral "0".
 *)
 
 Inductive nat :=
-| O : nat
-| S : nat -> nat.
+| O (* Zero *)
+| S (_ : nat). (* Successor of another `nat` *)
 
 (* Here are some natural numbers: *)
 
