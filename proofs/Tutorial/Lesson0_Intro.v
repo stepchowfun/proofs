@@ -105,7 +105,7 @@ Check idNat. (* `nat -> nat` *)
 
 Definition idBool (x : bool) := x.
 
-Check idBool.
+Check idBool. (* `nat -> nat` *)
 
 (*
   Those identity functions are almost exactly the same, except they're defined
@@ -116,7 +116,7 @@ Check idBool.
   languages.
 *)
 
-Definition id (T : Type) (x : T) := x.
+Definition id (T : Set) (x : T) := x.
 
 Compute id nat (3 + 4). (* `7`*)
 
@@ -127,9 +127,9 @@ Compute id nat (3 + 4). (* `7`*)
   figure it out automatically whenever we use the function.
 *)
 
-Definition betterId {T : Type} (x : T) := x.
+Definition betterId {T : Set} (x : T) := x.
 
-Check betterId. (* `?T -> ?T where ?T : [ |- Type]` *)
+Check betterId. (* `?T -> ?T where ?T : [ |- Set]` *)
 
 Compute betterId (3 + 4). (* `7` *)
 
@@ -151,6 +151,8 @@ Inductive bool :=
 Check true. (* `bool` *)
 
 Check false. (* `bool` *)
+
+Check bool. (* `Set` *)
 
 (*
   To use a `bool`, we can do case analysis on it. This is called *pattern
@@ -191,6 +193,8 @@ Check SomeNat. (* nat -> optionNat *)
 
 Check NoneNat. (* optionNat *)
 
+Check optionNat. (* `Set` *)
+
 (*
   When pattern matching on an `optionNat`, we get access to the `nat` in the
   `Some` case. Here is a function which will transform the `nat`, if it exists,
@@ -212,13 +216,15 @@ Compute mapOptionNat (fun n => n + 1) (SomeNat 3). (* `Some 4` *)
   work for any type.
 *)
 
-Inductive option (T : Type) :=
+Inductive option (T : Set) :=
 | Some (_ : T)
 | None.
 
-Check Some. (* `forall T : Type, T -> option T` *)
+Check Some. (* `forall T : Set, T -> option T` *)
 
-Check None. (* `forall T : Type, option T` *)
+Check None. (* `forall T : Set, option T` *)
+
+Check option. (* `Set -> Set` *)
 
 Definition mapOption {T} f (o : option T) :=
   match o with
@@ -242,6 +248,8 @@ Compute mapOption flip (Some bool false). (* `Some bool true` *)
 Inductive nat :=
 | O (* Zero *)
 | S (_ : nat). (* Successor of another `nat` *)
+
+Check nat. (* `Set` *)
 
 (* Here are some natural numbers: *)
 
