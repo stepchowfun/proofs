@@ -23,9 +23,16 @@ Check 3 + 4. (* `nat` *)
 
 Compute 3 + 4. (* `7` *)
 
-(* We can define variables with the `Definition` keyword. *)
+(*
+  We can define variables with the `Definition` keyword. Note that Coq is able
+  to infer the type of this variable automatically.
+*)
 
 Definition myVariable := 42.
+
+(* If you want to specify the type explicitly, you can do so like this: *)
+
+Definition myAnnotatedVariable : nat := 42.
 
 (*
   Functions are data too, so we can also use `Definition` to introduce
@@ -191,6 +198,8 @@ Inductive optionNat :=
 
 Check SomeNat. (* nat -> optionNat *)
 
+Check SomeNat 3. (* optionNat *)
+
 Check NoneNat. (* optionNat *)
 
 Check optionNat. (* `Set` *)
@@ -209,7 +218,9 @@ Definition mapOptionNat f o :=
 
 Check mapOptionNat. (* `(nat -> nat) -> optionNat -> optionNat` *)
 
-Compute mapOptionNat (fun n => n + 1) (SomeNat 3). (* `Some 4` *)
+Compute mapOptionNat double (SomeNat 3). (* `SomeNat 6` *)
+
+Compute mapOptionNat double NoneNat. (* `NoneNat` *)
 
 (*
   `optionNat` only works with `nat`s. We can add a type parameter to make it
@@ -250,12 +261,11 @@ Inductive nat :=
 | S (_ : nat). (* Successor of another `nat` *)
 
 Check nat. (* `Set` *)
-
-(* Here are some natural numbers: *)
-
 Check O. (* `nat` *)
+Check S. (* `nat -> nat` *)
 Check S O. (* `nat` *)
 Check S (S O). (* `nat` *)
+Check S (S (S O)). (* `nat` *)
 
 (*
   Conveniently, the Coq parser allows us to write numeric literals instead of
