@@ -125,6 +125,8 @@ Check idBool. (* `nat -> nat` *)
 
 Definition id (T : Set) (x : T) := x.
 
+Check id. (* `forall T : Set, T -> T` *)
+
 Compute id nat (3 + 4). (* `7`*)
 
 (*
