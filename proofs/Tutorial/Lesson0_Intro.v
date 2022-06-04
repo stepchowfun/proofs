@@ -125,15 +125,33 @@ Check idBool. (* `nat -> nat` *)
 
 Definition id (T : Set) (x : T) := x.
 
-Check id. (* `forall T : Set, T -> T` *)
-
 Compute id nat (3 + 4). (* `7`*)
 
 (*
-  It seems unnecessary to have to explicitly provide the type argument whenever
-  we call the `id` function. Fortunately, we can declare the argument
-  *implicit* by using curly braces instead of parentheses. Then Coq will try to
-  figure it out automatically whenever we use the function.
+  What's the type of `id`? `id` is a curried function of two arguments, but the
+  type of the second argument isn't fixed; it *depends* on the first argument,
+  which isn't known here since it's provided by the caller. Thus, in the type
+  of `id`, we need to give a name to the first argument so we can refer to it
+  in the type of the second argument. The `forall` keyword does exactly that.
+*)
+
+Check id. (* `forall T : Set, T -> T` *)
+
+(*
+  `A -> B` is actually just shorthand for `forall x : A, B`, as long as `B`
+  doesn't refer to `x`. We can write the type of `id` in any of the following
+  equivalent ways:
+
+  - `forall T : Set, T -> T`
+  - `forall T : Set, forall x : T, T`
+  - `forall (T : Set) (x : T), T`
+
+  The first way is generally best.
+
+  It's awkward to have to explicitly provide the type argument whenever we call
+  the `id` function. We can declare the argument *implicit* by using curly
+  braces instead of parentheses. Then Coq will try to figure it out
+  automatically whenever we use the function.
 *)
 
 Definition betterId {T : Set} (x : T) := x.
@@ -250,6 +268,19 @@ Check mapOption. (* `(?T -> ?T) -> option ?T -> option ?T` *)
 Compute mapOption (fun n => n + 1) (Some nat 3). (* `Some nat 4` *)
 
 Compute mapOption flip (Some bool false). (* `Some bool true` *)
+
+(*
+  The type argument for `Some` can be deduced automatically from the payload,
+  so we can make it implicit as follows.
+*)
+
+Arguments Some {_} _.
+
+Check Some. (* `?T -> option ?T where ?T : [ |- Set]` *)
+
+Compute mapOption (fun n => n + 1) (Some 3). (* `Some 4` *)
+
+Compute mapOption flip (Some false). (* `Some true` *)
 
 (*
   Inductive types can be recursive. For example, below is how natural numbers
