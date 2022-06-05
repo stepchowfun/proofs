@@ -239,18 +239,29 @@ Compute mapOptionNat double NoneNat. (* `NoneNat` *)
 
 (*
   `optionNat` only works with `nat`s. We can add a type parameter to make it
-  work for any type.
+  work for any type. This results in a family of inductive data types, one for
+  every choice of `T`. Note that each constructor returns an `option T`, rather
+  than just an `option`.
 *)
 
 Inductive option (T : Set) :=
 | None : option T
 | Some : T -> option T.
 
+(* Each constructor automatically takes the parameter as an extra argument. *)
+
 Check None. (* `forall T : Set, option T` *)
 
 Check Some. (* `forall T : Set, T -> option T` *)
 
 Check option. (* `Set -> Set` *)
+
+(*
+  When pattern matching, the parameter `T` is already known from the type of
+  the expression being matched on. There's no point on binding it to a variable
+  in each pattern. In fact, Coq doesn't even allow us to do so; we have to use
+  `_` to ignore it.
+*)
 
 Definition mapOption {T} f (o : option T) :=
   match o with
@@ -267,8 +278,11 @@ Compute mapOption (fun n => n + 1) (Some nat 3). (* `Some nat 4` *)
 Compute mapOption flip (Some bool false). (* `Some bool true` *)
 
 (*
-  The type argument for `Some` can be deduced automatically from the payload,
-  so we can make it implicit as follows.
+  The type argument for `Some` can be deduced automatically from its other
+  argument, so we can make it implicit after the fact as shown below. We
+  couldn't do this with curly braces in the type we specified for this
+  constructor, since this type argument was automatically added by Coq as a
+  consequence of it being a parameter.
 *)
 
 Arguments Some {_} _.
@@ -280,8 +294,8 @@ Compute mapOption (fun n => n + 1) (Some 3). (* `Some 4` *)
 Compute mapOption flip (Some false). (* `Some true` *)
 
 (*
-  Inductive types can be recursive. For example, below is how natural numbers
-  are defined in the standard library. Note that the name of the first
+  Inductive data types can be recursive. For example, below is how natural
+  numbers are defined in the standard library. Note that the name of the first
   constructor is the letter "O", which was chosen due to its resemblance to the
   numeral "0".
 *)
@@ -325,3 +339,15 @@ Compute add (S O) (S O). (* `S (S O)` *)
 (* If we use `nat`s from the standard library, we get nice numeric literals. *)
 
 Compute 1 + 1. (* `2` *)
+
+(*
+  Exercises:
+
+  1. Define the concept of lists as an inductive data type which is
+     parameterized by the element type. Which arguments would you make
+     implicit, if any?
+  2. Define a function which computes the length of a list.
+  3. Define a function which reverses a list.
+  4. Define a `map` function for lists, analogous to the `mapOption` function
+     we defined above.
+*)
