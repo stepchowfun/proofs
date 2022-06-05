@@ -30,10 +30,6 @@ Compute 3 + 4. (* `7` *)
 
 Definition myVariable := 42.
 
-(* If you want to specify the type explicitly, you can do so like this: *)
-
-Definition myAnnotatedVariable : nat := 42.
-
 (*
   Functions are data too, so we can also use `Definition` to introduce
   functions. Note that Coq is able to infer that the type of the function is
@@ -96,14 +92,13 @@ Check addAndMultiply. (* `nat -> nat -> nat -> nat` *)
 Compute addAndMultiply 3 4 5. (* `23` *)
 
 (*
-  Sometimes, the type of a function's argument is ambiguous. In that case, we
-  can provide a type annotation.
-*)
+  Sometimes, the type of a function's argument is ambiguous.
 
-(*
   ```
   Definition id x := x.
   ```
+
+  To resolve this ambiguity, we need to provide a type annotation.
 *)
 
 Definition idNat (x : nat) := x.
@@ -206,21 +201,21 @@ Compute flip false. (* `true` *)
 Definition betterFlip (b : bool) := if b then false else true.
 
 (*
-  Each case of an inductive data type may store some data. For example, we can
-  define a type which *may* hold a `nat` as follows. Note that the argument to
-  the `Some` constructor can be given a name (like `(x : nat)`), but for now
-  there is no need to do so.
+  Each case of an inductive data type may store some data. In order to use that
+  feature, we can provide a type annotation each constructor describing what
+  data that constructor accepts. For example, we can define a type which *may*
+  hold a `nat` as follows:
 *)
 
 Inductive optionNat :=
-| SomeNat (_ : nat)
-| NoneNat.
+| NoneNat : optionNat
+| SomeNat : nat -> optionNat.
+
+Check NoneNat. (* optionNat *)
 
 Check SomeNat. (* nat -> optionNat *)
 
 Check SomeNat 3. (* optionNat *)
-
-Check NoneNat. (* optionNat *)
 
 Check optionNat. (* `Set` *)
 
@@ -232,8 +227,8 @@ Check optionNat. (* `Set` *)
 
 Definition mapOptionNat f o :=
   match o with
-  | SomeNat n => SomeNat (f n)
   | NoneNat => NoneNat
+  | SomeNat n => SomeNat (f n)
   end.
 
 Check mapOptionNat. (* `(nat -> nat) -> optionNat -> optionNat` *)
@@ -248,22 +243,24 @@ Compute mapOptionNat double NoneNat. (* `NoneNat` *)
 *)
 
 Inductive option (T : Set) :=
-| Some (_ : T)
-| None.
-
-Check Some. (* `forall T : Set, T -> option T` *)
+| None : option T
+| Some : T -> option T.
 
 Check None. (* `forall T : Set, option T` *)
+
+Check Some. (* `forall T : Set, T -> option T` *)
 
 Check option. (* `Set -> Set` *)
 
 Definition mapOption {T} f (o : option T) :=
   match o with
-  | Some _ x => Some T (f x)
   | None _ => None T
+  | Some _ x => Some T (f x)
   end.
 
 Check mapOption. (* `(?T -> ?T) -> option ?T -> option ?T` *)
+
+Compute mapOption (fun n => n + 1) (None nat). (* `None nat` *)
 
 Compute mapOption (fun n => n + 1) (Some nat 3). (* `Some nat 4` *)
 
@@ -290,8 +287,8 @@ Compute mapOption flip (Some false). (* `Some true` *)
 *)
 
 Inductive nat :=
-| O (* Zero *)
-| S (_ : nat). (* Successor of another `nat` *)
+| O : nat (* Zero *)
+| S : nat -> nat. (* Successor of another `nat` *)
 
 Check nat. (* `Set` *)
 Check O. (* `nat` *)
