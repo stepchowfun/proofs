@@ -128,34 +128,40 @@ Inductive foo1 : Set :=
 
 (*
   Inductive foo2 : Set :=
-  | makeFoo2 : forall (x : Set), foo2.
+  | makeFoo2 : Set -> foo2.
 
   Inductive foo3 : Set -> Set :=
   | makeFoo3 : forall (x : Set), foo3 x.
 *)
 
-Inductive foo3 : Prop :=
-| makeFoo3 : forall (x : Set), foo3.
-
-Inductive foo4 : Set -> Prop :=
-| makeFoo4 : forall (x : Set), foo4 x.
+Inductive foo4 : Prop :=
+| makeFoo4 : forall (x : Set), foo4.
 
 Inductive foo5 : Prop :=
-| makeFoo5 : forall (x : large), foo5.
+| makeFoo5 : Set -> foo5.
 
-Inductive foo6 : large -> Prop :=
-| makeFoo6 : forall (x : large), foo6 x.
+Inductive foo6 : Set -> Prop :=
+| makeFoo6 : forall (x : Set), foo6 x.
+
+Inductive foo7 : Prop :=
+| makeFoo7 : forall (x : large), foo7.
+
+Inductive foo8 : Prop :=
+| makeFoo8 : large -> foo8.
+
+Inductive foo9 : large -> Prop :=
+| makeFoo9 : forall (x : large), foo9 x.
 
 (*
   There's no constraint between the universe of an inductive type and the
   universes of its parameters.
 *)
 
-Inductive foo7 (x : Set) : Set :=
-| makeFoo7 : foo7 x.
+Inductive foo10 (x : Set) : Set :=
+| makeFoo10 : foo10 x.
 
-Inductive foo8 (x : large) : Set :=
-| makeFoo8 : foo8 x.
+Inductive foo11 (x : large) : Set :=
+| makeFoo11 : foo11 x.
 
 (***********************************************************)
 (* Inductive types have a "strict positivity requirement". *)
