@@ -178,8 +178,8 @@ Check bool. (* `Set` *)
 
 (*
   To use a `bool`, we can do case analysis on it. This is called *pattern
-  matching*. For example, we can use pattern matching to define a function
-  which inverts a `bool`.
+  matching*. For example, we can use pattern matching to define a function that
+  inverts a `bool`.
 *)
 
 Definition flip b :=
@@ -191,14 +191,6 @@ Definition flip b :=
 Compute flip true. (* `false` *)
 
 Compute flip false. (* `true` *)
-
-(*
-  For inductive data types with exactly two constructors (like `bool`), we can
-  use `if`/`then`/`else`. Note that we had to add a type annotation to the
-  argument `b`, since `if`/`then`/`else` works on other types too.
-*)
-
-Definition betterFlip (b : bool) := if b then false else true.
 
 (*
   Each case of an inductive data type may store some data. In order to use that
@@ -238,7 +230,7 @@ Compute mapOptionNat double (SomeNat 3). (* `SomeNat 6` *)
 Compute mapOptionNat double NoneNat. (* `NoneNat` *)
 
 (*
-  `optionNat` only works with `nat`s. We can add a type parameter to make it
+  `optionNat` only works with `nat`s. We can add a type *parameter* to make it
   work for any type. This results in a family of inductive data types, one for
   every choice of `T`. Note that each constructor returns an `option T`, rather
   than just an `option`.
