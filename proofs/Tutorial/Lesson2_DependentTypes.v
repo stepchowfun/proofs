@@ -46,10 +46,10 @@ Compute boolToSet true.
 Compute boolToSet false.
 
 (*
-  Coq considers two types *definitionally equal* if they compute to the
-  same type. This notion of equality between types is the one used for type
-  checking. For example, we can now give the value `42` two syntactically
-  different types which are definitionally equal:
+  Coq considers types *definitionally equal* if they compute to syntactically
+  identical types. This notion of equality between types is the one used for
+  type checking. For example, we can now give the value `42` two syntactically
+  different types which are nevertheless definitionally equal:
 *)
 
 Definition age1 : nat := 42.
@@ -59,7 +59,7 @@ Definition age2 : boolToSet true := 42.
 (*
   Using `boolToSet`, we can construct a function for which the return type
   depends on the argument. Note the use of the `return` keyword to annotate
-  the return type, which depends on `x`.
+  the return type, since it depends on `x`.
 *)
 
 Definition weird x :=
