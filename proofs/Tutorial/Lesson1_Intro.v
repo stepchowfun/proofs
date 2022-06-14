@@ -194,16 +194,16 @@ Compute flip false. (* `true` *)
 
 (*
   Each case of an inductive data type may store some data. In order to use that
-  feature, we can provide a type annotation each constructor describing what
-  data that constructor accepts. For example, we can define a type which *may*
-  hold a `nat` as follows:
+  feature, we can provide a type annotation for each constructor describing
+  what data that constructor accepts. For example, we can define a type such
+  that its elements *might* hold a `nat` as follows:
 *)
 
 Inductive optionNat :=
-| NoneNat : optionNat
+| NoNat : optionNat
 | SomeNat : nat -> optionNat.
 
-Check NoneNat. (* optionNat *)
+Check NoNat. (* optionNat *)
 
 Check SomeNat. (* nat -> optionNat *)
 
@@ -219,7 +219,7 @@ Check optionNat. (* `Set` *)
 
 Definition mapOptionNat f o :=
   match o with
-  | NoneNat => NoneNat
+  | NoNat => NoNat
   | SomeNat n => SomeNat (f n)
   end.
 
@@ -227,7 +227,7 @@ Check mapOptionNat. (* `(nat -> nat) -> optionNat -> optionNat` *)
 
 Compute mapOptionNat double (SomeNat 3). (* `SomeNat 6` *)
 
-Compute mapOptionNat double NoneNat. (* `NoneNat` *)
+Compute mapOptionNat double NoNat. (* `NoNat` *)
 
 (*
   `optionNat` only works with `nat`s. We can add a type *parameter* to make it
@@ -240,7 +240,11 @@ Inductive option (T : Set) :=
 | None : option T
 | Some : T -> option T.
 
-(* Each constructor automatically takes the parameter as an extra argument. *)
+(*
+  Each constructor automatically takes the parameter as an extra argument.
+  Thus, if we check the type of each constructor, we find it doesn't exactly
+  match the type we provided in the definition.
+*)
 
 Check None. (* `forall T : Set, option T` *)
 
@@ -250,7 +254,7 @@ Check option. (* `Set -> Set` *)
 
 (*
   When pattern matching, the parameter `T` is already known from the type of
-  the expression being matched on. There's no point on binding it to a variable
+  the expression being matched on. There's no point in binding it to a variable
   in each pattern. In fact, Coq doesn't even allow us to do so; we have to use
   `_` to ignore it.
 *)
@@ -271,10 +275,10 @@ Compute mapOption flip (Some bool false). (* `Some bool true` *)
 
 (*
   The type argument for `Some` can be deduced automatically from its other
-  argument, so we can make it implicit after the fact as shown below. We
-  couldn't do this with curly braces in the type we specified for this
-  constructor, since this type argument was automatically added by Coq as a
-  consequence of it being a parameter.
+  argument, so we can make it implicit as shown below. We couldn't do this with
+  curly braces in the definition, since this type argument was automatically
+  added by Coq as a consequence of it being a parameter. We could have made the
+  parameter implicit, but that would have affected `None` and `option` too.
 *)
 
 Arguments Some {_} _.
@@ -304,16 +308,6 @@ Check S (S O). (* `nat` *)
 Check S (S (S O)). (* `nat` *)
 
 (*
-  Conveniently, the Coq parser allows us to write numeric literals instead of
-  `S (S (S (...)))`. Numbers written this way use the `nat` type from the
-  standard library, rather than the one we defined above.
-*)
-
-Check 0. (* `Datatypes.nat` *)
-Check 1. (* `Datatypes.nat` *)
-Check 2. (* `Datatypes.nat` *)
-
-(*
   Addition can be defined recursively. Note that recursive definitions use the
   `Fixpoint` keyword instead of `Definition`.
 *)
@@ -328,7 +322,12 @@ Fixpoint add n m :=
 
 Compute add (S O) (S O). (* `S (S O)` *)
 
-(* If we use `nat`s from the standard library, we get nice numeric literals. *)
+(*
+  By default, the parser is configured to parse numeric literals into natural
+  numbers, but using the definition from the standard library rather than ours
+  above. So, when working with natural numbers from the standard library, we
+  don't have to write all those `S`s.
+*)
 
 Compute 1 + 1. (* `2` *)
 
