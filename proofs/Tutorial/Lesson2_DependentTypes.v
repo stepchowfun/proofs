@@ -227,11 +227,38 @@ Fixpoint concatenate
 
 Definition head {T n} (v : vector T (S n)) : T :=
   match v with
-  (* No need to handle the `nil` case! *)
   | cons x _ => x
   end.
 
-Compute head (cons "hello" (nil string)).
+(*
+  You might have noticed we didn't handle the `nil` case! What's going on here?
+*)
+
+Print head.
+
+(*
+  ```
+  fun (T : Set) (n : nat) (v : vector T (S n)) =>
+    match v
+    in (vector _ n0)
+    return match n0 with
+           | 0 => IDProp
+           | S _ => T
+           end
+    with
+    | nil _ => idProp
+    | @cons _ n0 x _ => x
+    end
+  ```
+
+  Coq is smart enough to know the `nil` case is impossible, so it handles it
+  automatically with a dummy value (`idProp`). The dummy value doesn't have the
+  same type as the `cons` case, so this is a dependent pattern match.
+
+  Let's try it out on a simple example.
+*)
+
+Compute head (cons "hello" (nil string)). (* `"hello"` *)
 
 (*
   The following doesn't type check:
