@@ -155,6 +155,13 @@ Check betterId. (* `?T -> ?T where ?T : [ |- Set]` *)
 
 Compute betterId (3 + 4). (* `7` *)
 
+(*
+  If Coq is unable to infer the implicit arguments, we can pass them explicitly
+  by prefixing the function with `@`.
+*)
+
+Compute @betterId nat (3 + 4). (* `7` *)
+
 (*******************************)
 (* Simple inductive data types *)
 (*******************************)
