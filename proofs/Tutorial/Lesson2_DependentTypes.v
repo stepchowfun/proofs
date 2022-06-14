@@ -219,3 +219,24 @@ Fixpoint concatenate
   | nil _ => v2 (* But `n3` = `0` here. *)
   | cons x v3 => cons x (concatenate v3 v2) (* And `n3` = `S (len v3)` here. *)
   end.
+
+(*
+  Here's a function which returns the first element of a `vector`. It's a type
+  error to call this function on an empty `vector`.
+*)
+
+Definition head {T n} (v : vector T (S n)) : T :=
+  match v with
+  (* No need to handle the `nil` case! *)
+  | cons x _ => x
+  end.
+
+Compute head (cons "hello" (nil string)).
+
+(*
+  The following doesn't type check:
+
+  ```
+  Compute head (nil string).
+  ```
+*)
