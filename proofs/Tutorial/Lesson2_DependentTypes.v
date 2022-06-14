@@ -30,7 +30,7 @@ Local Open Scope string_scope.
 
 (*
   In Lesson 1, we saw that functions can take types as arguments. Functions can
-  return types as well. Such functions are called *type families*.
+  return types as well. Functions that return types are called *type families*.
 *)
 
 Definition boolToSet x :=
@@ -58,8 +58,10 @@ Definition age2 : boolToSet true := 42.
 
 (*
   Using `boolToSet`, we can construct a function for which the return type
-  depends on the argument. Note the use of the `return` keyword to annotate
-  the return type, since it depends on `x`.
+  depends on the argument. Note the use of the `return` keyword to specify how
+  the type of the `match` expression depends on the value being matched on. In
+  general, such an annotation is needed when the branches of a pattern match
+  don't all have the same type.
 *)
 
 Definition weird x :=
@@ -74,14 +76,14 @@ Compute weird true. (* `42` *)
 
 Compute weird false. (* `"hello"` *)
 
-(**********************)
-(* Inductive families *)
-(**********************)
+(**************************************************)
+(* Parameters and indices of inductive data types *)
+(**************************************************)
 
 (*
   We saw in Lesson 1 that inductive data types can have type *parameters*.
-  However, parameters don't need to be types, as demonstrated by the following
-  contrived example:
+  However, parameters don't need to be types. In the following contrived
+  example, the parameter is a `nat`:
 *)
 
 Inductive contrived (x : nat) :=
@@ -93,6 +95,14 @@ Check contrived. (* `nat -> Set` *)
 Check contrivedFoo. (* `forall x : nat, contrived x` *)
 
 Check contrivedBar. (* `forall x : nat, contrived x` *)
+
+Definition contrivedToBool n (c : contrived n) :=
+  match c with
+  | contrivedFoo _ => true  (* Note the `_` for the parameter. *)
+  | contrivedBar _ => false (* Note the `_` for the parameter. *)
+  end.
+
+Check contrivedToBool. (* `forall n : nat, contrived n -> bool` *)
 
 (*
   Note that each constructor automatically takes the parameter (`x`) as an
@@ -111,73 +121,101 @@ Check alsoContrivedFoo. (* `alsoContrived 42` *)
 
 Check alsoContrivedBar. (* `alsoContrived 43` *)
 
+Definition alsoContrivedToBool n (c : alsoContrived n) :=
+  match c with
+  | alsoContrivedFoo => true  (* Note that there's no `_` for the index. *)
+  | alsoContrivedBar => false (* Note that there's no `_` for the index. *)
+  end.
+
+Check alsoContrivedToBool. (* `forall n : nat, alsoContrived n -> bool` *)
+
 (*
   Indices are strictly more general than parameters. For example, we can define
   the `contrived` family with an index instead of a parameter:
 *)
 
-Inductive evenMoreContrived : nat -> Set :=
-| evenMoreContrivedFoo : forall x, evenMoreContrived x
-| evenMoreContrivedBar : forall x, evenMoreContrived x.
+Inductive superContrived : nat -> Set :=
+| superContrivedFoo : forall x, superContrived x
+| superContrivedBar : forall x, superContrived x.
 
-Check evenMoreContrived. (* `nat -> Set` *)
+Check superContrived. (* `nat -> Set` *)
 
-Check evenMoreContrivedFoo. (* `forall x : nat, evenMoreContrived x` *)
+Check superContrivedFoo. (* `forall x : nat, superContrived x` *)
 
-Check evenMoreContrivedBar. (* `forall x : nat, evenMoreContrived x` *)
+Check superContrivedBar. (* `forall x : nat, superContrived x` *)
+
+Definition superContrivedToBool n (c : superContrived n) :=
+  match c with
+  | superContrivedFoo _ => true
+  | superContrivedBar _ => false
+  end.
+
+Check superContrivedToBool. (* `forall n : nat, superContrived n -> bool` *)
 
 (*
   The terminology is somewhat confusing. `contrived`, which has a parameter, is
-  called a *family of inductive types*. `alsoContrived` and
-  `evenMoreContrived`, which each have an index, are called
-  *inductively defined families*, or *inductive families* for short. Families
-  of inductive types, inductive families, and functions which return types are
-  all called *type families*.
+  called a *family of inductive types*. `alsoContrived` and `superContrived`,
+  which each have an index, are called *inductively defined families*, or
+  *inductive families* for short. Families of inductive types, inductive
+  families, and functions which return types are all called *type families*.
 *)
 
 (************************************)
 (* Case study: length-indexed lists *)
 (************************************)
 
-(* Length-indexed lists of strings *)
+(*
+  Putting all this together, we're going to define a type which features both
+  a parameter and an index. This type represents lists. The parameter indicates
+  the type of the elements. The index indicates the length of the list.
+*)
 
-Inductive slist : nat -> Type :=
-| snil : slist O
-| scons :
-    forall {n}, (* Length of the tail, implicit due to the curly braces *)
-    string ->   (* Head *)
-    slist n ->  (* Tail *)
-    slist (S n).
-
-(* Let's construct some `slists`. *)
-
-Check snil. (* `slist 0` *)
-Check scons "foo" snil. (* `slist 1` *)
-Check scons "hello" (scons "world" snil). (* `slist 2` *)
+Inductive vector (T : Set) : nat -> Type :=
+| nil : vector T O
+| cons :
+    forall {n},   (* Length of the tail, implicit due to the curly braces *)
+    T ->          (* Head *)
+    vector T n -> (* Tail *)
+    vector T (S n).
 
 (*
-  Here's a function which produces an `slist` of a given length containing
+  Make the `T` argument implicit in `cons`, since it can be determined
+  automatically from the other arguments.
+*)
+
+Arguments cons {_} {_} _ _.
+
+(* Let's construct some `vector`s. *)
+
+Check nil string. (* `vector string 0` *)
+Check cons "foo" (nil string). (* `vector string 1` *)
+Check cons "hello" (cons "world" (nil string)). (* `vector string 2` *)
+
+(*
+  Here's a function which produces an `vector` of a given length containing
   empty strings.
 *)
 
-Fixpoint empty_strings n1 : slist n1 :=
+Fixpoint emptyStrings n1 : vector string n1 :=
   match n1 with
-  | O => snil
-  | S n2 => scons "" (empty_strings n2)
+  | O => nil string
+  | S n2 => cons "" (emptyStrings n2)
   end.
 
 (*
-  Here's a function which concatenates two `slists`. This demonstrates how to
+  Here's a function which concatenates two `vector`s. This demonstrates how to
   do dependent pattern matching.
 *)
 
-Fixpoint concat {n1 n2}
-         (l1 : slist n1)
-         (l2 : slist n2) :
-         slist (n1 + n2) :=
-  match l1 in slist n3
-  return slist (n3 + n2) (* Here, `n3` = `n1`. *)
+Fixpoint concatenate
+           {T n1 n2}
+           (v1 : vector T n1)
+           (v2 : vector T n2) :
+           vector T (n1 + n2) :=
+  match v1
+  in vector _ n3
+  return vector T (n3 + n2) (* Here, `n3` = `n1`. *)
   with
-  | snil => l2 (* But `n3` = `0` here. *)
-  | scons x l3 => scons x (concat l3 l2) (* And `n3` = `S (len l3)` here. *)
+  | nil _ => v2 (* But `n3` = `0` here. *)
+  | cons x v3 => cons x (concatenate v3 v2) (* And `n3` = `S (len v3)` here. *)
   end.
