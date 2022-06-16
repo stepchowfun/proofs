@@ -266,19 +266,21 @@ Check option. (* `Set -> Set` *)
   `_` to ignore it.
 *)
 
-Definition mapOption {T} f (o : option T) :=
+Definition mapOption {T U} f (o : option T) :=
   match o with
-  | None _ => None T
-  | Some _ x => Some T (f x)
+  | None _ => None U
+  | Some _ x => Some U (f x)
   end.
 
-Check mapOption. (* `(?T -> ?T) -> option ?T -> option ?T` *)
+Check mapOption. (* `(?T -> ?U) -> option ?T -> option ?U` *)
 
 Compute mapOption (fun n => n + 1) (None nat). (* `None nat` *)
 
 Compute mapOption (fun n => n + 1) (Some nat 3). (* `Some nat 4` *)
 
 Compute mapOption flip (Some bool false). (* `Some bool true` *)
+
+Compute mapOption (fun n => true) (Some nat 3). (* `Some bool true` *)
 
 (*
   The type argument for `Some` can be deduced automatically from its other
