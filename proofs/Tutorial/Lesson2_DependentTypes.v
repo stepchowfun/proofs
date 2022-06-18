@@ -24,6 +24,10 @@ Require Import Coq.Strings.String.
 
 Local Open Scope string_scope.
 
+(* Here's a string: *)
+
+Check "Hello, World!".
+
 (*****************)
 (* Type families *)
 (*****************)
