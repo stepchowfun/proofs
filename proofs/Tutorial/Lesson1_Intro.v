@@ -107,7 +107,7 @@ Check idNat. (* `nat -> nat` *)
 
 Definition idBool (x : bool) := x.
 
-Check idBool. (* `nat -> nat` *)
+Check idBool. (* `bool -> bool` *)
 
 (*
   Those identity functions are almost exactly the same, except they're defined
