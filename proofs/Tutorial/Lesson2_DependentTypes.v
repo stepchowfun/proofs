@@ -80,83 +80,116 @@ Compute weird true. (* `42` *)
 
 Compute weird false. (* `"hello"` *)
 
+(*
+  If the expression being matched on is not a variable and we want to use it in
+  the `return` clause, we must bind a variable to it using an `as` clause.
+*)
+
+Definition weirder x :=
+  match negb x as y return boolToSet y with
+  | true => 42
+  | false => "hello"
+  end.
+
+Check weirder. (* `forall x : bool, boolToSet (negb x)` *)
+
+Compute weirder true. (* `"hello"` *)
+
+Compute weirder false. (* `42` *)
+
 (**************************************************)
 (* Parameters and indices of inductive data types *)
 (**************************************************)
 
-(*
-  We saw in Lesson 1 that inductive data types can have type *parameters*.
-  However, parameters don't need to be types. In the following contrived
-  example, the parameter is a `nat`:
-*)
+(* We saw in Lesson 1 that inductive data types can have type *parameters*: *)
 
-Inductive parameterized (x : nat) :=
-| parameterizedFoo : parameterized x
-| parameterizedBar : parameterized x.
+Inductive option (T : Set) :=
+| none : option T
+| some : T -> option T.
 
-Check parameterized. (* `nat -> Set` *)
+Check option. (* `Set -> Set` *)
 
 (* Each constructor automatically takes the parameters as extra arguments. *)
 
-Check parameterizedFoo. (* `forall x : nat, parameterized x` *)
+Check none. (* `forall T : Set, option T` *)
 
-Check parameterizedBar. (* `forall x : nat, parameterized x` *)
+Check some. (* `forall T : Set, T -> option T` *)
 
-(* When pattern matching, parameters are ignored. *)
+(* When pattern matching, parameters are ignored with `_`. *)
 
-Definition parameterizedToBool n (c : parameterized n) :=
-  match c with
-  | parameterizedFoo _ => true
-  | parameterizedBar _ => false
+Definition unwrap (o : option nat) :=
+  match o with
+  | none _ => 0
+  | some _ x => x
   end.
 
-Check parameterizedToBool. (* `forall n : nat, parameterized n -> bool` *)
+Check unwrap. (* `option nat -> nat` *)
 
 (*
-  Instead of defining the type with a parameter, we could have instead defined
-  it with an *index*. Unlike with parameters, indices are not automatically
-  added as an extra argument to each constructor. It's up to us to add such
-  arguments to each constructor.
+  Instead of defining `option` with a parameter, we could have instead defined
+  it with an *index*. Unlike parameters, indices are not automatically added as
+  extra arguments to each constructor. We can add them manually.
 *)
 
-Inductive indexed : nat -> Set :=
-| indexedFoo : forall x, indexed x
-| indexedBar : forall x, indexed x.
+Inductive option2 : Set -> Type :=
+| none2 : forall (T : Set), option2 T
+| some2 : forall (T : Set), T -> option2 T.
 
-Check indexed. (* `nat -> Set` *)
+(*
+  To prevent logical inconsistencies, Coq enforces the following restriction:
+  if an inductive type has a constructor which takes an argument of type
+  `T : Type_i`, the inductive type must be in a universe at least as large as
+  `Type_i`. This includes indices, but not parameters.
+
+  As a consequence, since we used an index instead of a parameter to define
+  `option2`, then we had to go up a universe. So the type of `option2` is
+  `Set -> Type` rather than `Set -> Set`.
+*)
+
+Check option2. (* `Set -> Type` *)
 
 (*
   With indexed inductive data types, the types of the constructors are exactly
   as we specified in the definition.
 *)
 
-Check indexedFoo. (* `forall x : nat, indexed x` *)
+Check none2. (* `forall T : Set, option2 T` *)
 
-Check indexedBar. (* `forall x : nat, indexed x` *)
+Check some2. (* `forall T : Set, T -> option2 T` *)
 
 (*
   So far, it seems like indices are just a more verbose form of parameters.
   However, they unlock a new power: the ability for each constructor to specify
-  particular values for the indices.
+  particular values for the indices. Consider the following example:
 *)
 
-Inductive contrived : nat -> Set :=
-| contrivedFoo : contrived 42
-| contrivedBar : contrived 43.
+Inductive boolOrNat : Set -> Set :=
+| someBool : bool -> boolOrNat bool
+| someNat : nat -> boolOrNat nat.
 
-Check contrived. (* `nat -> Set` *)
+Check boolOrNat. (* `Set -> Set` *)
 
-Check contrivedFoo. (* `indexed 42` *)
+Check someBool. (* `bool -> boolOrNat bool` *)
 
-Check contrivedBar. (* `indexed 43` *)
+Check someNat. (* `nat -> boolOrNat nat` *)
 
-Definition contrivedToBool n (c : contrived n) :=
-  match c with
-  | contrivedFoo => true
-  | contrivedBar => false
+(*
+  When pattern matching, we can use an `in` clause to bind variables to the
+  indices so they can be used in the `return` clause. In the following example,
+  we bind the variable `U` to the index and use that as the return type. This
+  may seem silly since the index is already a variable (`T`), but in general it
+  could be an arbitrary expression.
+*)
+
+Definition pluck {T : Set} (x : boolOrNat T) :=
+  match x in boolOrNat U return U with
+  | someBool b => b
+  | someNat n => n
   end.
 
-Check contrivedToBool. (* `forall n : nat, contrived n -> bool` *)
+Check pluck. (* `boolOrNat ?T -> ?T` *)
+
+Compute pluck (someNat 42). (* `42` *)
 
 (*
   The terminology is somewhat confusing. `parameterized` is called a *family of
@@ -205,22 +238,16 @@ Check zeroes. (* `forall n1 : nat, vector nat n1` *)
 
 Compute zeroes 3. (* `nonempty 0 (nonempty 0 (nonempty 0 (empty nat)))` *)
 
-(*
-  Here's a function which concatenates two `vector`s. This demonstrates how to
-  do dependent pattern matching.
-*)
+(* Here's a function which concatenates two `vector`s. *)
 
 Fixpoint concatenate
            {T n1 n2}
            (v1 : vector T n1)
            (v2 : vector T n2) :
            vector T (n1 + n2) :=
-  match v1
-  in vector _ n3 (* Bind the length of the `vector` to `n3`. *)
-  return vector T (n3 + n2) (* `n3` = `n1` *)
-  with
-  | empty _ => v2 (* `n3` = `0` *)
-  | nonempty x v3 => nonempty x (concatenate v3 v2) (* `n3` = `S (len v3)` *)
+  match v1 in vector _ n3 return vector T (n3 + n2) with
+  | empty _ => v2
+  | nonempty x v3 => nonempty x (concatenate v3 v2)
   end.
 
 (*
@@ -279,6 +306,8 @@ Compute head (nonempty true (empty bool)). (* `true` *)
 (*
   1. Explain the differences between parameters and indices. When should you
      use one over the other?
+  2. When pattern matching, what does `return` do? What does `as` do? What does
+     `in` do?
   2. Define a `tail` function which takes a `vector` and returns a new `vector`
      with the contents of the original `vector` but without the head. It should
      work with any vector as its input, including the empty vector.

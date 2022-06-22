@@ -207,34 +207,34 @@ Compute flip false. (* `true` *)
 *)
 
 Inductive optionNat :=
-| NoNat : optionNat
-| SomeNat : nat -> optionNat.
+| noNat : optionNat
+| someNat : nat -> optionNat.
 
-Check NoNat. (* optionNat *)
+Check noNat. (* optionNat *)
 
-Check SomeNat. (* nat -> optionNat *)
+Check someNat. (* nat -> optionNat *)
 
-Check SomeNat 3. (* optionNat *)
+Check someNat 3. (* optionNat *)
 
 Check optionNat. (* `Set` *)
 
 (*
   When pattern matching on an `optionNat`, we get access to the `nat` in the
-  `Some` case. Here is a function which will transform the `nat`, if it exists,
+  `some` case. Here is a function which will transform the `nat`, if it exists,
   by a user-provided function.
 *)
 
 Definition mapOptionNat f o :=
   match o with
-  | NoNat => NoNat
-  | SomeNat n => SomeNat (f n)
+  | noNat => noNat
+  | someNat n => someNat (f n)
   end.
 
 Check mapOptionNat. (* `(nat -> nat) -> optionNat -> optionNat` *)
 
-Compute mapOptionNat double (SomeNat 3). (* `SomeNat 6` *)
+Compute mapOptionNat double (someNat 3). (* `someNat 6` *)
 
-Compute mapOptionNat double NoNat. (* `NoNat` *)
+Compute mapOptionNat double noNat. (* `noNat` *)
 
 (*
   `optionNat` only works with `nat`s. We can add a type *parameter* to make it
@@ -244,8 +244,8 @@ Compute mapOptionNat double NoNat. (* `NoNat` *)
 *)
 
 Inductive option (T : Set) :=
-| None : option T
-| Some : T -> option T.
+| none : option T
+| some : T -> option T.
 
 (*
   Each constructor automatically takes the parameter as an extra argument.
@@ -253,13 +253,13 @@ Inductive option (T : Set) :=
   match the type we provided in the definition.
 *)
 
-Check None. (* `forall T : Set, option T` *)
+Check none. (* `forall T : Set, option T` *)
 
-Check None bool. (* `option bool` *)
+Check none bool. (* `option bool` *)
 
-Check Some. (* `forall T : Set, T -> option T` *)
+Check some. (* `forall T : Set, T -> option T` *)
 
-Check Some bool true. (* `option bool` *)
+Check some bool true. (* `option bool` *)
 
 Check option. (* `Set -> Set` *)
 
@@ -272,35 +272,35 @@ Check option. (* `Set -> Set` *)
 
 Definition mapOption {T U} f (o : option T) :=
   match o with
-  | None _ => None U
-  | Some _ x => Some U (f x)
+  | none _ => none U
+  | some _ x => some U (f x)
   end.
 
 Check mapOption. (* `(?T -> ?U) -> option ?T -> option ?U` *)
 
-Compute mapOption (fun n => n + 1) (None nat). (* `None nat` *)
+Compute mapOption (fun n => n + 1) (none nat). (* `none nat` *)
 
-Compute mapOption (fun n => n + 1) (Some nat 3). (* `Some nat 4` *)
+Compute mapOption (fun n => n + 1) (some nat 3). (* `some nat 4` *)
 
-Compute mapOption flip (Some bool false). (* `Some bool true` *)
+Compute mapOption flip (some bool false). (* `some bool true` *)
 
-Compute mapOption (fun n => true) (Some nat 3). (* `Some bool true` *)
+Compute mapOption (fun n => true) (some nat 3). (* `some bool true` *)
 
 (*
-  The type argument for `Some` can be deduced automatically from its other
+  The type argument for `some` can be deduced automatically from its other
   argument, so we can make it implicit as shown below. We couldn't do this with
   curly braces in the definition, since this type argument was automatically
   added by Coq as a consequence of it being a parameter. We could have made the
-  parameter implicit, but that would have affected `None` and `option` too.
+  parameter implicit, but that would have affected `none` and `option` too.
 *)
 
-Arguments Some {_} _.
+Arguments some {_} _.
 
-Check Some. (* `?T -> option ?T where ?T : [ |- Set]` *)
+Check some. (* `?T -> option ?T where ?T : [ |- Set]` *)
 
-Compute mapOption (fun n => n + 1) (Some 3). (* `Some 4` *)
+Compute mapOption (fun n => n + 1) (some 3). (* `some 4` *)
 
-Compute mapOption flip (Some false). (* `Some true` *)
+Compute mapOption flip (some false). (* `some true` *)
 
 (*
   Inductive data types can be recursive. For example, below is how natural
