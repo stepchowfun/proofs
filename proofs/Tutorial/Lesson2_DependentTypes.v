@@ -210,7 +210,7 @@ Compute pluck (someNat 42). (* `42` *)
   the type of the elements. The index indicates the length of the list.
 *)
 
-Inductive vector (T : Set) : nat -> Type :=
+Inductive vector (T : Set) : nat -> Set :=
 | empty : vector T O
 | nonempty : forall n, T -> vector T n -> vector T (S n).
 
