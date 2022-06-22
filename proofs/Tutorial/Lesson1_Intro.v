@@ -255,7 +255,11 @@ Inductive option (T : Set) :=
 
 Check None. (* `forall T : Set, option T` *)
 
+Check None bool. (* `option bool` *)
+
 Check Some. (* `forall T : Set, T -> option T` *)
+
+Check Some bool true. (* `option bool` *)
 
 Check option. (* `Set -> Set` *)
 
