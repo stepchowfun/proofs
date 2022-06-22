@@ -131,31 +131,32 @@ Check unwrap. (* `option nat -> nat` *)
   extra arguments to each constructor. We can add them manually.
 *)
 
-Inductive option2 : Set -> Type :=
-| none2 : forall (T : Set), option2 T
-| some2 : forall (T : Set), T -> option2 T.
+Inductive optionIndexed : Set -> Type :=
+| noneIndexed : forall (T : Set), optionIndexed T
+| someIndexed : forall (T : Set), T -> optionIndexed T.
 
 (*
   To prevent logical inconsistencies, Coq enforces the following restriction:
   if an inductive type has a constructor which takes an argument of type
   `T : Type_i`, the inductive type must be in a universe at least as large as
-  `Type_i`. This includes indices, but not parameters.
+  `Type_i`. This includes indices, but not parameters. See Lesson 5 for
+  details.
 
   As a consequence, since we used an index instead of a parameter to define
   `option2`, then we had to go up a universe. So the type of `option2` is
   `Set -> Type` rather than `Set -> Set`.
 *)
 
-Check option2. (* `Set -> Type` *)
+Check optionIndexed. (* `Set -> Type` *)
 
 (*
   With indexed inductive data types, the types of the constructors are exactly
   as we specified in the definition.
 *)
 
-Check none2. (* `forall T : Set, option2 T` *)
+Check noneIndexed. (* `forall T : Set, optionIndexed T` *)
 
-Check some2. (* `forall T : Set, T -> option2 T` *)
+Check someIndexed. (* `forall T : Set, T -> optionIndexed T` *)
 
 (*
   So far, it seems like indices are just a more verbose form of parameters.
