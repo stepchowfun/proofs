@@ -177,35 +177,33 @@ Check contrivedToBool. (* `forall n : nat, contrived n -> bool` *)
 *)
 
 Inductive vector (T : Set) : nat -> Type :=
-| nil : vector T O
-| cons :
-    forall {n},   (* Length of the tail, implicit due to the curly braces *)
-    T ->          (* Head *)
-    vector T n -> (* Tail *)
-    vector T (S n).
+| empty : vector T O
+| nonempty : forall n, T -> vector T n -> vector T (S n).
 
 (*
-  Make the `T` argument implicit in `cons`, since it can be determined
-  automatically from the other arguments.
+  Make the `T` and `n` arguments implicit in `nonempty`, since they can be
+  determined automatically from the tail.
 *)
 
-Arguments cons {_} {_} _ _.
+Arguments nonempty {_} {_} _ _.
 
 (* Let's construct some `vector`s. *)
 
-Check nil string. (* `vector string 0` *)
-Check cons "foo" (nil string). (* `vector string 1` *)
-Check cons "hello" (cons "world" (nil string)). (* `vector string 2` *)
+Check empty bool. (* `vector bool 0` *)
+Check nonempty true (empty bool). (* `vector bool 1` *)
+Check nonempty false (nonempty true (empty bool)). (* `vector bool 2` *)
 
-(* Here's a function which produces an `vector` of zeros of a given length. *)
+(* Here's a function which produces a `vector` of zeros of a given length. *)
 
-Fixpoint zeroes n1 : vector nat n1 :=
+Fixpoint zeroes n1 :=
   match n1 with
-  | O => nil nat
-  | S n2 => cons 0 (zeroes n2)
+  | O => empty nat
+  | S n2 => nonempty 0 (zeroes n2)
   end.
 
-Compute zeroes 5. (* `cons 0 (cons 0 (cons 0 (cons 0 (cons 0 (nil nat)))))` *)
+Check zeroes. (* `forall n1 : nat, vector nat n1` *)
+
+Compute zeroes 3. (* `nonempty 0 (nonempty 0 (nonempty 0 (empty nat)))` *)
 
 (*
   Here's a function which concatenates two `vector`s. This demonstrates how to
@@ -218,11 +216,11 @@ Fixpoint concatenate
            (v2 : vector T n2) :
            vector T (n1 + n2) :=
   match v1
-  in vector _ n3
-  return vector T (n3 + n2) (* Here, `n3` = `n1`. *)
+  in vector _ n3 (* Bind the length of the `vector` to `n3`. *)
+  return vector T (n3 + n2) (* `n3` = `n1` *)
   with
-  | nil _ => v2 (* But `n3` = `0` here. *)
-  | cons x v3 => cons x (concatenate v3 v2) (* And `n3` = `S (len v3)` here. *)
+  | empty _ => v2 (* `n3` = `0` *)
+  | nonempty x v3 => nonempty x (concatenate v3 v2) (* `n3` = `S (len v3)` *)
   end.
 
 (*
@@ -232,11 +230,12 @@ Fixpoint concatenate
 
 Definition head {T n} (v : vector T (S n)) : T :=
   match v with
-  | cons x _ => x
+  | nonempty x _ => x
   end.
 
 (*
-  You might have noticed we didn't handle the `nil` case! What's going on here?
+  You might have noticed we didn't handle the `empty` case! What's going on
+  here?
 *)
 
 Print head.
@@ -251,25 +250,25 @@ Print head.
            | S _ => T
            end
     with
-    | nil _ => idProp
-    | @cons _ n0 x _ => x
+    | empty _ => idProp
+    | @nonempty _ n0 x _ => x
     end
   ```
 
-  Coq is smart enough to know the `nil` case is impossible, so it handles it
+  Coq is smart enough to know the `empty` case is impossible, so it handles it
   automatically with a dummy value (`idProp`). The dummy value doesn't have the
-  same type as the `cons` case, so this is a dependent pattern match.
+  same type as the `nonempty` case, so this is a dependent pattern match.
 
   Let's try it out on a simple example.
 *)
 
-Compute head (cons "hello" (nil string)). (* `"hello"` *)
+Compute head (nonempty true (empty bool)). (* `true` *)
 
 (*
   The following doesn't type check:
 
   ```
-  Compute head (nil string).
+  Compute head (empty bool).
   ```
 *)
 
