@@ -90,78 +90,80 @@ Compute weird false. (* `"hello"` *)
   example, the parameter is a `nat`:
 *)
 
-Inductive contrived (x : nat) :=
-| contrivedFoo : contrived x
-| contrivedBar : contrived x.
+Inductive parameterized (x : nat) :=
+| parameterizedFoo : parameterized x
+| parameterizedBar : parameterized x.
+
+Check parameterized. (* `nat -> Set` *)
+
+(* Each constructor automatically takes the parameters as extra arguments. *)
+
+Check parameterizedFoo. (* `forall x : nat, parameterized x` *)
+
+Check parameterizedBar. (* `forall x : nat, parameterized x` *)
+
+(* When pattern matching, parameters are ignored. *)
+
+Definition parameterizedToBool n (c : parameterized n) :=
+  match c with
+  | parameterizedFoo _ => true
+  | parameterizedBar _ => false
+  end.
+
+Check parameterizedToBool. (* `forall n : nat, parameterized n -> bool` *)
+
+(*
+  Instead of defining the type with a parameter, we could have instead defined
+  it with an *index*. Unlike with parameters, indices are not automatically
+  added as an extra argument to each constructor. It's up to us to add such
+  arguments to each constructor.
+*)
+
+Inductive indexed : nat -> Set :=
+| indexedFoo : forall x, indexed x
+| indexedBar : forall x, indexed x.
+
+Check indexed. (* `nat -> Set` *)
+
+(*
+  With indexed inductive data types, the types of the constructors are exactly
+  as we specified in the definition.
+*)
+
+Check indexedFoo. (* `forall x : nat, indexed x` *)
+
+Check indexedBar. (* `forall x : nat, indexed x` *)
+
+(*
+  So far, it seems like indices are just a more verbose form of parameters.
+  However, they unlock a new power: the ability for each constructor to specify
+  particular values for the indices.
+*)
+
+Inductive contrived : nat -> Set :=
+| contrivedFoo : contrived 42
+| contrivedBar : contrived 43.
 
 Check contrived. (* `nat -> Set` *)
 
-Check contrivedFoo. (* `forall x : nat, contrived x` *)
+Check contrivedFoo. (* `indexed 42` *)
 
-Check contrivedBar. (* `forall x : nat, contrived x` *)
+Check contrivedBar. (* `indexed 43` *)
 
 Definition contrivedToBool n (c : contrived n) :=
   match c with
-  | contrivedFoo _ => true  (* Note the `_` for the parameter. *)
-  | contrivedBar _ => false (* Note the `_` for the parameter. *)
+  | contrivedFoo => true
+  | contrivedBar => false
   end.
 
 Check contrivedToBool. (* `forall n : nat, contrived n -> bool` *)
 
 (*
-  Note that each constructor automatically takes the parameter (`x`) as an
-  argument, leaving it up to the caller to decide what value it takes on. If we
-  replace the parameter with an *index*, each constructor can decide what the
-  value of the index should be for that particular case.
-*)
-
-Inductive alsoContrived : nat -> Set :=
-| alsoContrivedFoo : alsoContrived 42
-| alsoContrivedBar : alsoContrived 43.
-
-Check alsoContrived. (* `nat -> Set` *)
-
-Check alsoContrivedFoo. (* `alsoContrived 42` *)
-
-Check alsoContrivedBar. (* `alsoContrived 43` *)
-
-Definition alsoContrivedToBool n (c : alsoContrived n) :=
-  match c with
-  | alsoContrivedFoo => true  (* Note that there's no `_` for the index. *)
-  | alsoContrivedBar => false (* Note that there's no `_` for the index. *)
-  end.
-
-Check alsoContrivedToBool. (* `forall n : nat, alsoContrived n -> bool` *)
-
-(*
-  Indices are strictly more general than parameters. For example, we can define
-  the `contrived` family with an index instead of a parameter:
-*)
-
-Inductive superContrived : nat -> Set :=
-| superContrivedFoo : forall x, superContrived x
-| superContrivedBar : forall x, superContrived x.
-
-Check superContrived. (* `nat -> Set` *)
-
-Check superContrivedFoo. (* `forall x : nat, superContrived x` *)
-
-Check superContrivedBar. (* `forall x : nat, superContrived x` *)
-
-Definition superContrivedToBool n (c : superContrived n) :=
-  match c with
-  | superContrivedFoo _ => true
-  | superContrivedBar _ => false
-  end.
-
-Check superContrivedToBool. (* `forall n : nat, superContrived n -> bool` *)
-
-(*
-  The terminology is somewhat confusing. `contrived`, which has a parameter, is
-  called a *family of inductive types*. `alsoContrived` and `superContrived`,
-  which each have an index, are called *inductively defined families*, or
-  *inductive families* for short. Families of inductive types, inductive
-  families, and functions which return types are all called *type families*.
+  The terminology is somewhat confusing. `parameterized` is called a *family of
+  inductive types*. `indexed` and `contrived` are called *inductively defined
+  families*, or *inductive families* for short. Families of inductive types,
+  inductive families, and functions which return types are all called *type
+  families*.
 *)
 
 (************************************)
@@ -195,16 +197,15 @@ Check nil string. (* `vector string 0` *)
 Check cons "foo" (nil string). (* `vector string 1` *)
 Check cons "hello" (cons "world" (nil string)). (* `vector string 2` *)
 
-(*
-  Here's a function which produces an `vector` of a given length containing
-  empty strings.
-*)
+(* Here's a function which produces an `vector` of zeros of a given length. *)
 
-Fixpoint emptyStrings n1 : vector string n1 :=
+Fixpoint zeroes n1 : vector nat n1 :=
   match n1 with
-  | O => nil string
-  | S n2 => cons "" (emptyStrings n2)
+  | O => nil nat
+  | S n2 => cons 0 (zeroes n2)
   end.
+
+Compute zeroes 5. (* `cons 0 (cons 0 (cons 0 (cons 0 (cons 0 (nil nat)))))` *)
 
 (*
   Here's a function which concatenates two `vector`s. This demonstrates how to
@@ -270,4 +271,16 @@ Compute head (cons "hello" (nil string)). (* `"hello"` *)
   ```
   Compute head (nil string).
   ```
+*)
+
+(*************)
+(* Exercises *)
+(*************)
+
+(*
+  1. Explain the differences between parameters and indices. When should you
+     use one over the other?
+  2. Define a `tail` function which takes a `vector` and returns a new `vector`
+     with the contents of the original `vector` but without the head. It should
+     work with any vector as its input, including the empty vector.
 *)
