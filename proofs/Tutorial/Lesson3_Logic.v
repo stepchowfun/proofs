@@ -20,9 +20,7 @@ Inductive False : Prop := .
 Inductive and P Q : Prop := (* Notation: `P /\ Q` *)
 | conj : P -> Q -> and P Q.
 
-(* Make the `P` and `Q` arguments of conj implicit. *)
-
-Arguments conj {_} {_}.
+Arguments conj {_} {_} _ _.
 
 (* A proof of `True` *and* `True` *)
 
@@ -69,10 +67,8 @@ Inductive or P Q : Prop := (* Notation: `P \/ Q` *)
 | orIntroL : P -> or P Q
 | orIntroR : Q -> or P Q.
 
-(* Make the `P` and `Q` arguments of `orIntroL` and `orIntroR` implicit. *)
-
-Arguments orIntroL {_} {_}.
-Arguments orIntroR {_} {_}.
+Arguments orIntroL {_} {_} _.
+Arguments orIntroR {_} {_} _.
 
 (* Let's prove `True` *or* `False`. *)
 
@@ -84,7 +80,7 @@ Qed.
 
 (* Logical negation *)
 
-Definition not A := A -> False. (* Notation: ~ A *)
+Definition not A := A -> False. (* Notation: `~ A` *)
 
 (* A proof of *not* `False` *)
 
@@ -96,7 +92,7 @@ Proof.
   (* `intro` moves a premise of the goal into the context. *)
   intro.
 
-  (* H is a proof of the goal; let's use it! *)
+  (* `H` is a proof of the goal; let's use it! *)
   exact H.
 Qed.
 
@@ -105,13 +101,12 @@ Print not_false. (* `fun H : False => H` *)
 (* Propositional equality *)
 
 Inductive eq A (x : A) : A -> Prop := (* Notation: `x = x` *)
-| eq_refl : eq A x x. (* A dependent type! *)
+| eq_refl : eq A x x.
 
-(* Make the `A` argument of `eq_refl` implicit. *)
-
-Arguments eq_refl {_}.
+Arguments eq_refl {_} _.
 
 (* A simple proof that 0 = 0. *)
+
 Theorem zero_eq_zero : eq nat 0 0.
 Proof.
   reflexivity. (* Equivalent to: `apply eq_refl.` *)
@@ -166,7 +161,7 @@ Inductive ex A (P : A -> Prop) : Prop := (* Notation: `exists x, P x` *)
 
 (* Make the `A` and `P` arguments of `ex_intro` implicit. *)
 
-Arguments ex_intro {_} {_}.
+Arguments ex_intro {_} {_} _ _.
 
 (* A simple existence proof *)
 
