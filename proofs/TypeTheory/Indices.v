@@ -17,6 +17,11 @@ Require Import Main.Tactics.
   We define two inductive definitions and prove they are isomorphic. The first
   definition is an inductive family, and the second is a family of inductive
   types.
+
+  Note that `exp1` lives in `Type` because its `const1` constructor quantifies
+  over `Set`. `exp2`, however, can live in `Set` since parameter arguments are
+  not considered for universe constraints on inductive data types. In that
+  sense, we have gained something from using a parameter instead of an index.
 *)
 
 Inductive exp1 : Set -> Type :=
@@ -26,7 +31,7 @@ Inductive exp1 : Set -> Type :=
 
 #[export] Hint Constructors exp1 : main.
 
-Inductive exp2 (a : Set) : Type :=
+Inductive exp2 (a : Set) : Set :=
 | const2 : a -> exp2 a
 | add2 : nat = a -> exp2 nat -> exp2 nat -> exp2 a
 | lessThan2 : bool = a -> exp2 nat -> exp2 nat -> exp2 a.
