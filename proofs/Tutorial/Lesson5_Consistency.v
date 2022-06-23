@@ -120,7 +120,7 @@ Definition constraint : large := Set.
 (*
   If an inductive type has a constructor which takes an argument of type
   `T : Type_i`, the inductive type must be in a universe at least as large as
-  `Type_i`. This includes indices, but not parameters.
+  `Type_i`. Parameter arguments are not considered.
 *)
 
 Inductive foo1 : Set :=
