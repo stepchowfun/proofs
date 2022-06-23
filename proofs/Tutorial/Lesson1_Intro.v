@@ -264,10 +264,8 @@ Check some bool true. (* `option bool` *)
 Check option. (* `Set -> Set` *)
 
 (*
-  When pattern matching on an `option T`, we already have a way to refer to the
-  parameter `T`, so there's no point in binding it to a new variable in each
-  pattern. In fact, Coq doesn't even allow us to do so; we have to use `_` to
-  ignore it.
+  When pattern matching on an `option T`, add a `_` to each pattern to account
+  for the parameter argument.
 *)
 
 Definition mapOption {T U} f (o : option T) :=
@@ -353,12 +351,11 @@ Compute 1 + 1. (* `2` *)
      parameterized by the element type. Which arguments would you make
      implicit, if any?
   2. Define a function which computes the length of a list as defined above.
-  3. Define a function which reverses a list as defined above.
-  4. Define a `map` function for lists as defined above, analogous to the
+  3. Define a `map` function for lists as defined above, analogous to the
      `mapOption` function.
-  5. Define a function which compares two natural numbers for equality.
-  6. Define multiplication of natural numbers.
-  7. Define subtraction of natural numbers. The function should return an
+  4. Define a function which compares two natural numbers for equality.
+  5. Define multiplication of natural numbers.
+  6. Define subtraction of natural numbers. The function should return an
      `optionNat` (or `option nat`) to account for the fact that negative
      results can't be represented as natural numbers.
 *)

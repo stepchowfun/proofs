@@ -115,7 +115,7 @@ Check none. (* `forall T : Set, option T` *)
 
 Check some. (* `forall T : Set, T -> option T` *)
 
-(* When pattern matching, parameters are ignored with `_`. *)
+(* When pattern matching, ignore parameter arguments with `_`. *)
 
 Definition unwrap (o : option nat) :=
   match o with
@@ -136,15 +136,10 @@ Inductive optionIndexed : Set -> Type :=
 | someIndexed : forall (T : Set), T -> optionIndexed T.
 
 (*
-  To prevent logical inconsistencies, Coq enforces the following restriction:
-  if an inductive type has a constructor which takes an argument of type
-  `T : Type_i`, the inductive type must be in a universe at least as large as
-  `Type_i`. This includes indices, but not parameters. See Lesson 5 for
-  details.
-
-  As a consequence, since we used an index instead of a parameter to define
-  `option2`, then we had to go up a universe. So the type of `option2` is
-  `Set -> Type` rather than `Set -> Set`.
+  To prevent logical inconsistencies, Coq requires that our new type family
+  produce types in `Type` or `Prop`, not `Set`. This requirement applies if any
+  constructor takes a type argument, not considering parameter arguments. See
+  Lesson 5 for details.
 *)
 
 Check optionIndexed. (* `Set -> Type` *)
@@ -309,7 +304,7 @@ Compute head (nonempty true (empty bool)). (* `true` *)
      use one over the other?
   2. When pattern matching, what does `return` do? What does `as` do? What does
      `in` do?
-  2. Define a `tail` function which takes a `vector` and returns a new `vector`
+  3. Define a `tail` function which takes a `vector` and returns a new `vector`
      with the contents of the original `vector` but without the head. It should
      work with any vector as its input, including the empty vector.
 *)
