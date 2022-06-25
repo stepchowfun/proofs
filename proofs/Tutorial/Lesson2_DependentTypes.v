@@ -188,11 +188,11 @@ Check pluck. (* `boolOrNat ?T -> ?T` *)
 Compute pluck (someNat 42). (* `42` *)
 
 (*
-  The terminology is somewhat confusing. `parameterized` is called a *family of
-  inductive types*. `indexed` and `contrived` are called *inductively defined
-  families*, or *inductive families* for short. Families of inductive types,
-  inductive families, and functions which return types are all called *type
-  families*.
+  The terminology is somewhat confusing. `option` is called a *family of
+  inductive types*. `optionIndexed` and `boolOrNat` are called *inductively
+  defined families*, or *inductive families* for short. Families of inductive
+  types, inductive families, and functions which return types are all called
+  *type families*.
 *)
 
 (************************************)
