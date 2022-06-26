@@ -114,8 +114,12 @@ Check idBool. (* `bool -> bool` *)
   on different types. Wouldn't it be nice to define a universal identity
   function that works on all types? It turns out that types are data, just like
   numbers and functions. So all we need to do is take the type as an extra
-  argument. This idea is called "generics" or "templates" in some other
-  languages.
+  argument. The type of that argument will be `Set`, which is the type of types
+  like `nat`, `bool`, `nat -> bool`, and so on. A type which has types as
+  members is called a *universe*. Lesson 5 discusses universes in depth.
+
+  The idea of parameterizing a definition by a type is known as "generics" in
+  many languages, e.g., Java and Rust.
 *)
 
 Definition id (T : Set) (x : T) := x.
