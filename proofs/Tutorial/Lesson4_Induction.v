@@ -42,6 +42,11 @@ Print add.
 (*
   From this, it's clear why `0 + n = n`. But how do we prove `n + 0 = n`? We
   need induction.
+
+  We saw in previous lessons how to do pattern matching and recursion. Coq
+  automatically generates an *induction principle* for every inductive data
+  type, and using it is equivalent to pattern matching and recursing (if
+  applicable) on that type. Let's check the induction principle for `nat`:
 *)
 
 Check nat_ind.
