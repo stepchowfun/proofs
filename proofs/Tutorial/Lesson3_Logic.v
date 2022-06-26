@@ -1,10 +1,10 @@
-(*************************************************)
-(*************************************************)
-(****                                         ****)
-(****   Encoding logic with dependent types   ****)
-(****                                         ****)
-(*************************************************)
-(*************************************************)
+(****************************************************)
+(****************************************************)
+(****                                            ****)
+(****   Encoding logicical constructs as types   ****)
+(****                                            ****)
+(****************************************************)
+(****************************************************)
 
 (*
   Consider a mathematical statement you'd like to prove. An example of such a
@@ -104,9 +104,32 @@ Proof.
   - (* Stuck here... *)
 Abort.
 
+(*
+  We don't even need to define logical implication, since "P implies Q" is just
+  `P -> Q`. For example, here's a proof that `True` implies `True`:
+*)
+
+Theorem true_implies_true : True -> True.
+Proof.
+  (* `intro` moves a premise of the goal into the context. *)
+  intro.
+
+  (* `H` proves the goal. *)
+  apply H.
+Qed.
+
 (* If and only if *)
 
 Definition iff (P Q : Prop) := and (P -> Q) (Q -> P). (* Notation: `P <-> Q` *)
+
+Theorem true_iff_true : iff True True.
+Proof.
+  (* `unfold` replaces a name with its definition. *)
+  unfold iff.
+
+  (* Hold my beer! *)
+  apply conj; intro; apply H.
+Qed.
 
 (* Logical disjunction *)
 
@@ -116,8 +139,6 @@ Inductive or (P Q : Prop) : Prop := (* Notation: `P \/ Q` *)
 
 Arguments orIntroL {_} {_} _.
 Arguments orIntroR {_} {_} _.
-
-(* Let's prove `True` *or* `False`. *)
 
 Theorem true_or_false : or True False.
 Proof.
@@ -129,18 +150,11 @@ Qed.
 
 Definition not (A : Prop) := A -> False. (* Notation: `~ A` *)
 
-(* A proof of *not* `False` *)
-
 Theorem not_false : not False.
 Proof.
-  (* `unfold` replaces a name with its definition. *)
   unfold not.
-
-  (* `intro` moves a premise of the goal into the context. *)
   intro.
-
-  (* `H` is a proof of the goal; let's use it! *)
-  exact H.
+  apply H.
 Qed.
 
 Print not_false. (* `fun H : False => H` *)
@@ -149,8 +163,6 @@ Print not_false. (* `fun H : False => H` *)
 
 Inductive eq {A} (x : A) : A -> Prop := (* Notation: `x = x` *)
 | eq_refl : eq x x.
-
-(* A simple proof that 0 = 0. *)
 
 Theorem zero_eq_zero : eq 0 0.
 Proof.
