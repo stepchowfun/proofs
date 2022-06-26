@@ -1,15 +1,15 @@
-(****************************************************)
-(****************************************************)
-(****                                            ****)
-(****   Encoding logicical constructs as types   ****)
-(****                                            ****)
-(****************************************************)
-(****************************************************)
+(*********************************************************)
+(*********************************************************)
+(****                                                 ****)
+(****   Encoding mathematical propositions as types   ****)
+(****                                                 ****)
+(*********************************************************)
+(*********************************************************)
 
 (*
-  Consider a mathematical statement you'd like to prove. An example of such a
-  proposition might be that addition of natural numbers is commutative. In Coq,
-  we'd represent that proposition as a type:
+  Consider a mathematical statement, i.e., a *proposition*, that you'd like to
+  prove. An example of a proposition is that addition of natural numbers is
+  commutative. In Coq, we'd represent that proposition as a type:
 
   ```
   forall x y, x + y = y + x
@@ -40,25 +40,25 @@ Inductive True : Prop :=
   Note that we put `True` in a universe called `Prop` instead of `Set`. In
   general, propositions will live in `Prop`. This is an easy way to distinguish
   proofs from programs, and it'll allow Coq to erase all the proofs when
-  extracting the code into another programming language. See Lesson 5 for
-  details about universes and Lesson 6 for details about program extraction.
+  extracting the code to another programming language. See Lesson 5 for details
+  about universes and Lesson 6 for details about program extraction.
 
-  It'll also be useful to have a proposition which is trivially false. We'll
-  call that proposition `False`:
+  Along the same lines as `True`, it'll also be useful to have a proposition
+  which is trivially false:
 *)
 
 Inductive False : Prop := .
 
 (*
-  Note that `False` has no constructors, and therefore no proofs!
+  Note that `False` has no constructors and therefore no proofs!
 
   One of the most familiar logical concepts is *conjunction*, also known as
-  "and". To prove "P and Q", we need to provide a proof of "P" and a proof of
-  "Q". We can define this in Coq as follows:
+  "and". To prove "A and B", we need to provide a proof of "A" and a proof of
+  "B". We can define this in Coq as follows:
 *)
 
-Inductive and (P Q : Prop) : Prop := (* Notation: `P /\ Q` *)
-| conj : P -> Q -> and P Q.
+Inductive and (A B : Prop) : Prop := (* Notation: `A /\ B` *)
+| conj : A -> B -> and A B.
 
 Arguments conj {_} {_} _ _.
 
@@ -105,8 +105,10 @@ Proof.
 Abort.
 
 (*
-  We don't even need to define logical implication, since "P implies Q" is just
-  `P -> Q`. For example, here's a proof that `True` implies `True`:
+  We don't need to define *implication*, since "A implies B" is just `A -> B`.
+  In other words, a proof of "A implies B" is a function which transforms a
+  proof of "A" into a proof of "B". For example, here's a proof that `True`
+  implies `True`:
 *)
 
 Theorem true_implies_true : True -> True.
@@ -118,9 +120,12 @@ Proof.
   apply H.
 Qed.
 
-(* If and only if *)
+(*
+  To prove the *equivalence* "A if and only if B", we have to prove "A" and "B"
+  imply each other.
+*)
 
-Definition iff (P Q : Prop) := and (P -> Q) (Q -> P). (* Notation: `P <-> Q` *)
+Definition iff (A B : Prop) := and (A -> B) (B -> A). (* Notation: `A <-> B` *)
 
 Theorem true_iff_true : iff True True.
 Proof.
@@ -131,11 +136,14 @@ Proof.
   apply conj; intro; apply H.
 Qed.
 
-(* Logical disjunction *)
+(*
+  To prove the *disjunction* "A or B", we must provide either a proof of "A" or
+  a proof of "B".
+*)
 
-Inductive or (P Q : Prop) : Prop := (* Notation: `P \/ Q` *)
-| orIntroL : P -> or P Q
-| orIntroR : Q -> or P Q.
+Inductive or (A B : Prop) : Prop := (* Notation: `A \/ B` *)
+| orIntroL : A -> or A B
+| orIntroR : B -> or A B.
 
 Arguments orIntroL {_} {_} _.
 Arguments orIntroR {_} {_} _.
@@ -146,7 +154,7 @@ Proof.
   apply I.
 Qed.
 
-(* Logical negation *)
+(* In Coq, the *negation* "not A" is defined as "A implies False". *)
 
 Definition not (A : Prop) := A -> False. (* Notation: `~ A` *)
 
