@@ -172,30 +172,14 @@ Print not_false. (* `fun H : False => H` *)
 Inductive eq {A} (x : A) : A -> Prop := (* Notation: `x = x` *)
 | eq_refl : eq x x.
 
-Theorem zero_eq_zero : eq 0 0.
+Theorem one_plus_one_equals_two : eq (1 + 1) 2.
 Proof.
   reflexivity. (* Equivalent to: `apply eq_refl.` *)
 Qed.
 
 (*
-  We saw in previous lessons how to do pattern matching and recursion. Coq
-  automatically generates an *induction principle* for every inductive data
-  type, and using it is equivalent to pattern matching and recursing (if
-  applicable) on that type. Let's check the induction principle for `eq`:
-*)
-
-Check eq_ind.
-
-(*
-  ```
-  forall (A : Type) (x : A) (P : A -> Prop),
-  P x -> forall y : A, eq A x y -> P y
-  ```
-*)
-
-(*
   Universal quantification (`forall`) is built into the language. Existential
-  quantification, however, is definable as follows:
+  quantification can be defined:
 *)
 
 Inductive ex A (P : A -> Prop) : Prop := (* Notation: `exists x, P x` *)
@@ -203,10 +187,22 @@ Inductive ex A (P : A -> Prop) : Prop := (* Notation: `exists x, P x` *)
 
 Arguments ex_intro {_} {_} _ _.
 
-(* A simple existence proof *)
-
 Theorem half_of_4_exists : ex nat (fun x => eq (x + x) 4).
 Proof.
   exists 2. (* Equivalent to `apply ex_intro with (x := 2).` *)
   reflexivity.
 Qed.
+
+(*************)
+(* Exercises *)
+(*************)
+
+(*
+  1. Prove `False -> True`.
+  2. Prove `forall A B, iff (and A B) (and B A)`.
+  3. Prove `forall A B, iff (or A B) (or B A)`.
+  4. Prove `forall A B, and A B -> or A B`.
+  5. Prove `forall A : Prop, not (not (not A)) -> not A`.
+  6. Prove `forall x, eq 3 x -> eq (x * 2) 6`.
+  7. Prove `ex bool (fun x => eq (negb x) false)`.
+*)
