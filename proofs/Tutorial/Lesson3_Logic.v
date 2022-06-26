@@ -9,7 +9,7 @@
 (* A proposition which is trivially provable *)
 
 Inductive True : Prop :=
-| trivial : True.
+| I : True.
 
 (* A proposition which is not provable *)
 
@@ -17,7 +17,7 @@ Inductive False : Prop := .
 
 (* Logical conjunction *)
 
-Inductive and P Q : Prop := (* Notation: `P /\ Q` *)
+Inductive and (P Q : Prop) : Prop := (* Notation: `P /\ Q` *)
 | conj : P -> Q -> and P Q.
 
 Arguments conj {_} {_} _ _.
@@ -25,7 +25,7 @@ Arguments conj {_} {_} _ _.
 (* A proof of `True` *and* `True` *)
 
 Definition true_and_true_1 : and True True :=
-  conj trivial trivial.
+  conj I I.
 
 (* The same proof, but written in "proof mode" *)
 
@@ -33,37 +33,37 @@ Theorem true_and_true_2 : and True True.
 Proof.
   (* Our first example of a tactic: `apply` *)
   apply conj.
-  - apply trivial.
-  - apply trivial.
+  - apply I.
+  - apply I.
 Qed.
 
-Print true_and_true_2. (* `conj trivial trivial` *)
+Print true_and_true_2. (* `conj I I` *)
 
 (* The same proof, but written using the `;` tactical *)
 
 Theorem true_and_true_3 : and True True.
 Proof.
-  apply conj; apply trivial.
+  apply conj; apply I.
 Qed.
 
-Print true_and_true_3. (* `conj trivial trivial` *)
+Print true_and_true_3. (* `conj I I` *)
 
 (* Let's see what happens when we try to prove `True` *and* `False`. *)
 
 Theorem true_and_false : and True False.
 Proof.
   apply conj.
-  - apply trivial.
+  - apply I.
   - (* Stuck here... *)
 Abort.
 
 (* If and only if *)
 
-Definition iff P Q := and (P -> Q) (Q -> P). (* Notation: `P <-> Q` *)
+Definition iff (P Q : Prop) := and (P -> Q) (Q -> P). (* Notation: `P <-> Q` *)
 
 (* Logical disjunction *)
 
-Inductive or P Q : Prop := (* Notation: `P \/ Q` *)
+Inductive or (P Q : Prop) : Prop := (* Notation: `P \/ Q` *)
 | orIntroL : P -> or P Q
 | orIntroR : Q -> or P Q.
 
@@ -75,12 +75,12 @@ Arguments orIntroR {_} {_} _.
 Theorem true_or_false : or True False.
 Proof.
   left. (* Equivalent to `apply orIntroL.` *)
-  apply trivial.
+  apply I.
 Qed.
 
 (* Logical negation *)
 
-Definition not A := A -> False. (* Notation: `~ A` *)
+Definition not (A : Prop) := A -> False. (* Notation: `~ A` *)
 
 (* A proof of *not* `False` *)
 
