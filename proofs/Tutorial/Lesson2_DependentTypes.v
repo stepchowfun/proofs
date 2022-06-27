@@ -287,11 +287,15 @@ Print head.
 
 Compute head (nonempty true (empty bool)). (* `true` *)
 
-(*
-  The following doesn't type check:
+(* By design, we can't take the `head` of an empty vector: *)
 
+Fail Compute head (empty bool).
+
+(*
   ```
-  Compute head (empty bool).
+  The command has indeed failed with message:
+  The term "empty bool" has type "vector bool 0"
+  while it is expected to have type "vector bool (S ?n)".
   ```
 *)
 

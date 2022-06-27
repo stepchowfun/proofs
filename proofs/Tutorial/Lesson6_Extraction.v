@@ -37,13 +37,22 @@ Definition flipFlop (proof : myProp) : myProp :=
   make sense, it's important that none of the extracted code makes decisions
   based on the erased proofs. Coq guarantees this with a restriction on pattern
   matching. The following is rejected because the return type is not in `Prop`:
+*)
 
+Fail Definition myPropToNat (proof : myProp) : nat :=
+  match proof with
+  | proof1 => 0
+  | proof2 => 1
+  end.
+
+(*
   ```
-  Definition myPropToNat (proof : myProp) : nat :=
-    match proof with
-    | proof1 => 0
-    | proof2 => 1
-    end.
+  The command has indeed failed with message:
+  Incorrect elimination of "proof" in the inductive type "myProp":
+  the return type has sort "Set" while it should be "SProp" or "Prop".
+  Elimination of an inductive object of sort Prop
+  is not allowed on a predicate in sort Set
+  because proofs can be eliminated only to build proofs.
   ```
 
   However, if a proposition has zero constructors or one constructor for which
