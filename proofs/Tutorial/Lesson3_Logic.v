@@ -78,7 +78,7 @@ Arguments conj {_} {_} _ _.
 
 Notation "A /\ B" := (and A B) : type_scope.
 
-(* Here's a proof of `True` *and* `True` *)
+(* Let's write a proof! *)
 
 Definition true_and_true_1 : True /\ True := conj I I.
 
@@ -91,8 +91,13 @@ Definition true_and_true_1 : True /\ True := conj I I.
 
 Theorem true_and_true_2 : True /\ True.
 Proof.
-  apply conj. (* Our first *tactic*: `apply` *)
+  (* Use `split` to prove each half of a conjunction individually. *)
+  split.
+
+  (* Use `apply` to prove the goal via some known fact. *)
   - apply I.
+
+  (* Déjà vu! *)
   - apply I.
 Qed.
 
@@ -105,7 +110,7 @@ Print true_and_true_2. (* `conj I I` *)
 
 Theorem true_and_true_3 : True /\ True.
 Proof.
-  apply conj; apply I.
+  split; apply I.
 Qed.
 
 Print true_and_true_3. (* `conj I I` *)
@@ -114,25 +119,53 @@ Print true_and_true_3. (* `conj I I` *)
 
 Theorem true_and_false : True /\ False.
 Proof.
-  apply conj.
+  split.
   - apply I.
-  - (* Stuck here... *)
+  - (* We're stuck here! *)
 Abort.
 
 (*
   We don't need to define *implication*, since "A implies B" is just `A -> B`.
   In other words, a proof of "A implies B" is a function which transforms a
-  proof of "A" into a proof of "B". For example, here's a proof that `True`
-  implies `True`:
+  proof of "A" into a proof of "B".
 *)
 
-Theorem true_implies_true : True -> True.
+Theorem A_and_B_implies_A : forall A B, A /\ B -> A.
 Proof.
-  (* `intro` moves a premise of the goal into the context. *)
-  intro.
+  (* `intros` moves the premises of the goal into the context. *)
+  intros.
 
-  (* `H` proves the goal. *)
+  (*
+    If we have a conjunction in the context, we can use `destruct` to get
+    access to the two components.
+  *)
+  destruct H.
+
+  (* The new `H` proves the goal. *)
   apply H.
+Qed.
+
+Theorem A_and_B_implies_B : forall A B, A /\ B -> B.
+Proof.
+  intros.
+  destruct H.
+  apply H0.
+Qed.
+
+Definition explosion_1 (A : Prop) (H: False) : A :=
+  match H with
+  (* No cases to worry about! *)
+  end.
+
+Check explosion_1. (* `forall A : Prop, False -> A` *)
+
+Theorem explosion_2 : forall A : Prop, False -> A.
+Proof.
+  (* You know the drill. *)
+  intros.
+
+  (* We can `destruct` a proof of `False` to prove anything! *)
+  destruct H.
 Qed.
 
 (*
@@ -144,13 +177,20 @@ Definition iff (A B : Prop) := (A -> B) /\ (B -> A).
 
 Notation "A <-> B" := (iff A B) : type_scope.
 
-Theorem true_iff_true : True <-> True.
+Theorem A_iff_A : forall A, A <-> A.
 Proof.
-  (* `unfold` replaces a name with its definition. *)
-  unfold iff.
+  intro. (* `intro` is like `intros` but only applies to a single premise. *)
+  unfold iff. (* `unfold` replaces a name with its definition. *)
+  split; intro; apply H.
+Qed.
 
-  (* Hold my beer! *)
-  apply conj; intro; apply H.
+Theorem A_iff_B_and_A_implies_B : forall A B, (A <-> B) -> A -> B.
+Proof.
+  intros.
+  unfold iff in H. (* Same as before but now in a hypothesis *)
+  destruct H.
+  apply H. (* If we `apply` an implication, we have to prove its premise(s). *)
+  apply H0.
 Qed.
 
 (*
@@ -173,20 +213,38 @@ Proof.
   apply I.
 Qed.
 
+Theorem disjunction_symmetric : forall A B, (A \/ B) -> (B \/ A).
+Proof.
+  intros.
+  destruct H. (* `destruct` does case analysis on a disjunctive hypothesis. *)
+  - right. (* Equivalent to `apply orIntroR.` *)
+    apply H.
+  - left.
+    apply H.
+Qed.
+
 (* In Coq, the *negation* "not A" is defined as "A implies False". *)
 
 Definition not (A : Prop) := A -> False.
 
 Notation "~ x" := (not x) : type_scope.
 
-Theorem not_false : ~ False.
+Theorem not_false : ~False.
 Proof.
   unfold not.
   intro.
   apply H.
 Qed.
 
-Print not_false. (* `fun H : False => H` *)
+Theorem triple_negation : forall A, ~~~A -> ~A.
+Proof.
+  unfold not.
+  intros.
+  apply H.
+  intro.
+  apply H1.
+  apply H0.
+Qed.
 
 (* Propositional equality *)
 
@@ -230,10 +288,10 @@ Qed.
 
 (*
   1. Prove `False -> True`.
+  1. Prove `forall A, A /\ ~A -> False`.
   2. Prove `forall A B, (A /\ B) <-> (B /\ A)`.
   3. Prove `forall A B, (A \/ B) <-> (B \/ A)`.
   4. Prove `forall A B, (A /\ B) -> (A \/ B)`.
-  5. Prove `forall A : Prop, ~~~A -> ~A`.
-  6. Prove `forall x, 3 = x -> x * 2 = 6`.
-  7. Prove `exists x, negb x = false`.
+  5. Prove `forall x, 3 = x -> x * 2 = 6`.
+  6. Prove `exists x, negb x = false`.
 *)
