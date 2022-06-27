@@ -138,41 +138,37 @@ Abort.
   proof of "A" into a proof of "B".
 *)
 
-Definition modus_ponens_1 A B : (A -> B) -> A -> B := fun H1 H2 => H1 H2.
+Definition modus_ponens_1 (A B : Prop) : (A -> B) -> A -> B :=
+  fun H1 H2 => H1 H2.
 
-Theorem modus_ponens_2 A B : (A -> B) -> A -> B.
+Theorem modus_ponens_2 (A B : Prop) : (A -> B) -> A -> B.
 Proof.
   intros.
-  apply X.
-  apply X0.
+  apply H.
+  apply H0.
 Qed.
 
-Definition A_and_B_implies_A_1 A B : A /\ B -> A :=
+Definition A_and_B_implies_B_and_A_1 A B : A /\ B -> B /\ A :=
   fun H1 =>
     match H1 with
-    | conj H2 _ => H2
+    | conj H2 H3 => conj H3 H2
     end.
 
-Theorem A_and_B_implies_A_2 : forall A B, A /\ B -> A.
+Theorem A_and_B_implies_A_2 : forall A B, A /\ B -> B /\ A.
 Proof.
   (* `intros` moves the premises of the goal into the context. *)
   intros.
 
   (*
-    `destruct` implements pattern matching. If we have a proof of `A /\ B`, we
-    can `destruct` it to get access to the proofs of `A` and `B`.
+    `destruct` does pattern matching. We can `destruct` a proof of `A /\ B`, to
+    get access to the proofs of `A` and `B`.
   *)
   destruct H.
 
-  (* The new `H` proves the goal. *)
-  apply H.
-Qed.
-
-Theorem A_and_B_implies_B : forall A B, A /\ B -> B.
-Proof.
-  intros.
-  destruct H.
-  apply H0.
+  (* The rest is familiar. *)
+  split.
+  - apply H0.
+  - apply H.
 Qed.
 
 Definition explosion_1 (A : Prop) : False -> A :=
@@ -209,21 +205,6 @@ Proof.
   intros.
   unfold iff. (* `unfold` replaces a name with its definition. *)
   split; intro; apply H.
-Qed.
-
-Definition A_iff_B_and_A_implies_B_1 A B : (A <-> B) -> A -> B :=
-  fun H1 H2 =>
-    match H1 with
-    | conj H3 _ => H3 H2
-    end.
-
-Theorem A_iff_B_and_A_implies_B_2 : forall A B, (A <-> B) -> A -> B.
-Proof.
-  intros.
-  unfold iff in H. (* Same as before but now in a hypothesis *)
-  destruct H.
-  apply H. (* If we `apply` an implication, we have to prove its premise(s). *)
-  apply H0.
 Qed.
 
 (*
@@ -443,15 +424,12 @@ Qed.
 (*************)
 
 (*
-  1. Prove `False -> True` both manually and using proof mode.
-  1. Prove `forall A, A /\ ~A -> False` both manually and using proof mode.
-  2. Prove `forall A B, (A /\ B) <-> (B /\ A)` both manually and using proof
+  1. Prove `forall (A B C : Prop), (A -> B) -> (A -> C) -> A -> B /\ C` both
+     manually and using proof mode.
+  2. Prove `forall (A B : Prop), (A /\ B) -> (A \/ B)` both manually and using
+     proof mode.
+  3. Prove `forall A : Prop, ~(A /\ ~A)` both manually and using proof mode.
+  4. Prove `forall A : Prop, ~~~A -> ~A` both manually and using proof mode.
+  5. Prove `forall x, x = 0 \/ exists y, S y = x` both manually and using proof
      mode.
-  3. Prove `forall A B, (A \/ B) <-> (B \/ A)` both manually and using proof
-     mode.
-  4. Prove `forall A B, (A /\ B) -> (A \/ B)` both manually and using proof
-     mode.
-  5. Prove `forall A, ~~~A -> ~A` both manually and using proof mode.
-  6. Prove `forall x, x = 3 -> x * 2 = 6` both manually and using proof mode.
-  7. Prove `exists x, negb x = false` both manually and using proof mode.
 *)
