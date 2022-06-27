@@ -7,6 +7,14 @@
 (*********************************************************)
 
 (*
+  In this lesson, we're going to redefine some things from the standard library
+  to explain their definitions. We're also going to rebind some notations to
+  our definitions, so we silence the relevant warning with this:
+*)
+
+Local Set Warnings "-notation-overridden".
+
+(*
   Consider a mathematical statement, i.e., a *proposition*, that you'd like to
   prove. An example of a proposition is that addition of natural numbers is
   commutative. In Coq, we'd represent that proposition as a type:
@@ -57,14 +65,22 @@ Inductive False : Prop := .
   "B". We can define this in Coq as follows:
 *)
 
-Inductive and (A B : Prop) : Prop := (* Notation: `A /\ B` *)
+Inductive and (A B : Prop) : Prop :=
 | conj : A -> B -> and A B.
 
 Arguments conj {_} {_} _ _.
 
+(*
+  The following specifies that the notation `A /\ B` will be used as shorthand
+  for `and A B`. The `type_scope` notation scope indicates that this notation
+  only applies in contexts where a type is expected.
+*)
+
+Notation "A /\ B" := (and A B) : type_scope.
+
 (* Here's a proof of `True` *and* `True` *)
 
-Definition true_and_true_1 : and True True := conj I I.
+Definition true_and_true_1 : True /\ True := conj I I.
 
 (*
   Writing proofs by hand can be extremely tedious in practice. Coq has a
@@ -73,7 +89,7 @@ Definition true_and_true_1 : and True True := conj I I.
   proof mode:
 *)
 
-Theorem true_and_true_2 : and True True.
+Theorem true_and_true_2 : True /\ True.
 Proof.
   (* Our first example of a tactic: `apply` *)
   apply conj.
@@ -88,7 +104,7 @@ Print true_and_true_2. (* `conj I I` *)
   situations like that, we can use the `;` tactical to reduce duplication:
 *)
 
-Theorem true_and_true_3 : and True True.
+Theorem true_and_true_3 : True /\ True.
 Proof.
   apply conj; apply I.
 Qed.
@@ -97,7 +113,7 @@ Print true_and_true_3. (* `conj I I` *)
 
 (* Let's see what happens when we try to prove `True` *and* `False`. *)
 
-Theorem true_and_false : and True False.
+Theorem true_and_false : True /\ True.
 Proof.
   apply conj.
   - apply I.
@@ -125,9 +141,11 @@ Qed.
   imply each other.
 *)
 
-Definition iff (A B : Prop) := and (A -> B) (B -> A). (* Notation: `A <-> B` *)
+Definition iff (A B : Prop) := (A -> B) /\ (B -> A).
 
-Theorem true_iff_true : iff True True.
+Notation "A <-> B" := (iff A B) : type_scope.
+
+Theorem true_iff_true : True <-> True.
 Proof.
   (* `unfold` replaces a name with its definition. *)
   unfold iff.
@@ -141,14 +159,16 @@ Qed.
   a proof of "B".
 *)
 
-Inductive or (A B : Prop) : Prop := (* Notation: `A \/ B` *)
+Inductive or (A B : Prop) : Prop :=
 | orIntroL : A -> or A B
 | orIntroR : B -> or A B.
 
 Arguments orIntroL {_} {_} _.
 Arguments orIntroR {_} {_} _.
 
-Theorem true_or_false : or True False.
+Notation "A \/ B" := (or A B) : type_scope.
+
+Theorem true_or_false : True \/ False.
 Proof.
   left. (* Equivalent to `apply orIntroL.` *)
   apply I.
@@ -156,9 +176,11 @@ Qed.
 
 (* In Coq, the *negation* "not A" is defined as "A implies False". *)
 
-Definition not (A : Prop) := A -> False. (* Notation: `~ A` *)
+Definition not (A : Prop) := A -> False.
 
-Theorem not_false : not False.
+Notation "~ x" := (not x) : type_scope.
+
+Theorem not_false : ~ False.
 Proof.
   unfold not.
   intro.
@@ -169,10 +191,12 @@ Print not_false. (* `fun H : False => H` *)
 
 (* Propositional equality *)
 
-Inductive eq {A} (x : A) : A -> Prop := (* Notation: `x = x` *)
+Inductive eq {A} (x : A) : A -> Prop :=
 | eq_refl : eq x x.
 
-Theorem one_plus_one_equals_two : eq (1 + 1) 2.
+Notation "x = y" := (eq x y) : type_scope.
+
+Theorem one_plus_one_equals_two : 1 + 1 = 2.
 Proof.
   reflexivity. (* Equivalent to: `apply eq_refl.` *)
 Qed.
@@ -182,12 +206,20 @@ Qed.
   quantification can be defined:
 *)
 
-Inductive ex A (P : A -> Prop) : Prop := (* Notation: `exists x, P x` *)
-  ex_intro : forall x : A, P x -> ex A P.
+Inductive ex {A : Type} (P : A -> Prop) : Prop :=
+  ex_intro : forall x : A, P x -> ex P.
 
 Arguments ex_intro {_} {_} _ _.
 
-Theorem half_of_4_exists : ex nat (fun x => eq (x + x) 4).
+(*
+  The notation for existentials is somewhat tricky to specify. If you're
+  curious about the details, consult the Coq reference manual.
+*)
+
+Notation "'exists' x .. y , p" := (ex (fun x => .. (ex (fun y => p)) ..))
+  (at level 200, x binder, right associativity) : type_scope.
+
+Theorem half_of_4_exists : exists x, x + x = 4.
 Proof.
   exists 2. (* Equivalent to `apply ex_intro with (x := 2).` *)
   reflexivity.
@@ -199,10 +231,10 @@ Qed.
 
 (*
   1. Prove `False -> True`.
-  2. Prove `forall A B, iff (and A B) (and B A)`.
-  3. Prove `forall A B, iff (or A B) (or B A)`.
-  4. Prove `forall A B, and A B -> or A B`.
-  5. Prove `forall A : Prop, not (not (not A)) -> not A`.
-  6. Prove `forall x, eq 3 x -> eq (x * 2) 6`.
-  7. Prove `ex bool (fun x => eq (negb x) false)`.
+  2. Prove `forall A B, (A /\ B) <-> (B /\ A)`.
+  3. Prove `forall A B, (A \/ B) <-> (B \/ A)`.
+  4. Prove `forall A B, (A /\ B) -> (A \/ B)`.
+  5. Prove `forall A : Prop, ~~~A -> ~A`.
+  6. Prove `forall x, 3 = x -> x * 2 = 6`.
+  7. Prove `exists x, negb x = false`.
 *)
