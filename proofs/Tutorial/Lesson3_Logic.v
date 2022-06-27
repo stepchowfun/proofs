@@ -140,8 +140,8 @@ Proof.
   intros.
 
   (*
-    If we have a conjunction in the context, we can use `destruct` to get
-    access to the two components.
+    `destruct` implements pattern matching. If we have a proof of `A /\ B`, we
+    can `destruct` it to get access to the proofs of `A` and `B`.
   *)
   destruct H.
 
@@ -186,7 +186,7 @@ Definition A_iff_A_1 A : A <-> A :=
 
 Theorem A_iff_A_2 : forall A, A <-> A.
 Proof.
-  intro. (* `intro` is like `intros` but only applies to a single premise. *)
+  intros.
   unfold iff. (* `unfold` replaces a name with its definition. *)
   split; intro; apply H.
 Qed.
@@ -254,7 +254,7 @@ Definition not_false_1 : ~False := fun H => H.
 Theorem not_false_2 : ~False.
 Proof.
   unfold not.
-  intro.
+  intros.
   apply H.
 Qed.
 
@@ -267,7 +267,7 @@ Proof.
   unfold not.
   intros.
   apply H.
-  intro.
+  intros.
   apply H1.
   apply H0.
 Qed.
@@ -373,9 +373,25 @@ Proof.
 Qed.
 
 (*
-  Universal quantification (`forall`) is built into the language. Existential
-  quantification can be defined:
+  *Universal quantification* corresponds to the built-in `forall` syntax. Thus,
+  we don't need to define it explicitly.
 *)
+
+Definition negb_involution_1 b :=
+  match b return negb (negb b) = b with
+  | true => eq_refl true
+  | false => eq_refl false
+  end.
+
+Check negb_involution_1. (* `forall b : bool, negb (negb b) = b` *)
+
+Theorem negb_involution_2 : forall b, negb (negb b) = b.
+Proof.
+  intros.
+  destruct b; reflexivity.
+Qed.
+
+(* *Existential quantification* can be defined as follows: *)
 
 Inductive ex {A : Type} (P : A -> Prop) : Prop :=
   ex_intro : forall x : A, P x -> ex P.
@@ -390,9 +406,9 @@ Arguments ex_intro {_} {_} _ _.
 Notation "'exists' x .. y , p" := (ex (fun x => .. (ex (fun y => p)) ..))
   (at level 200, x binder, right associativity) : type_scope.
 
-Theorem half_of_4_exists : exists x, x + x = 4.
+Theorem half_of_6_exists : exists x, 2 * x = 6.
 Proof.
-  exists 2. (* Equivalent to `apply ex_intro with (x := 2).` *)
+  exists 3. (* Equivalent to `apply ex_intro with (x := 3).` *)
   reflexivity.
 Qed.
 
@@ -401,11 +417,14 @@ Qed.
 (*************)
 
 (*
-  1. Prove `False -> True`.
-  1. Prove `forall A, A /\ ~A -> False`.
-  2. Prove `forall A B, (A /\ B) <-> (B /\ A)`.
-  3. Prove `forall A B, (A \/ B) <-> (B \/ A)`.
-  4. Prove `forall A B, (A /\ B) -> (A \/ B)`.
-  5. Prove `forall x, 3 = x -> x * 2 = 6`.
-  6. Prove `exists x, negb x = false`.
+  1. Prove `False -> True` both manually and using proof mode.
+  1. Prove `forall A, A /\ ~A -> False` both manually and using proof mode.
+  2. Prove `forall A B, (A /\ B) <-> (B /\ A)` both manually and using proof
+     mode.
+  3. Prove `forall A B, (A \/ B) <-> (B \/ A)` both manually and using proof
+     mode.
+  4. Prove `forall A B, (A /\ B) -> (A \/ B)` both manually and using proof
+     mode.
+  5. Prove `forall x, x = 3 -> x * 2 = 6` both manually and using proof mode.
+  6. Prove `exists x, negb x = false` both manually and using proof mode.
 *)

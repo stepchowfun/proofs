@@ -196,15 +196,15 @@ Check bool. (* `Set` *)
   inverts a `bool`.
 *)
 
-Definition flip b :=
+Definition negb b :=
   match b with
   | true => false
   | false => true
   end.
 
-Compute flip true. (* `false` *)
+Compute negb true. (* `false` *)
 
-Compute flip false. (* `true` *)
+Compute negb false. (* `true` *)
 
 (*
   Each case of an inductive data type may store some data. In order to use that
@@ -287,7 +287,7 @@ Compute mapOption (fun n => n + 1) (none nat). (* `none nat` *)
 
 Compute mapOption (fun n => n + 1) (some nat 3). (* `some nat 4` *)
 
-Compute mapOption flip (some bool false). (* `some bool true` *)
+Compute mapOption negb (some bool false). (* `some bool true` *)
 
 Compute mapOption (fun n => true) (some nat 3). (* `some bool true` *)
 
@@ -305,7 +305,7 @@ Check some. (* `?T -> option ?T where ?T : [ |- Set]` *)
 
 Compute mapOption (fun n => n + 1) (some 3). (* `some 4` *)
 
-Compute mapOption flip (some false). (* `some true` *)
+Compute mapOption negb (some false). (* `some true` *)
 
 (*
   Inductive data types can be recursive. For example, below is how natural
