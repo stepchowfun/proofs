@@ -91,8 +91,7 @@ Definition true_and_true_1 : True /\ True := conj I I.
 
 Theorem true_and_true_2 : True /\ True.
 Proof.
-  (* Our first example of a tactic: `apply` *)
-  apply conj.
+  apply conj. (* Our first *tactic*: `apply` *)
   - apply I.
   - apply I.
 Qed.
@@ -101,7 +100,7 @@ Print true_and_true_2. (* `conj I I` *)
 
 (*
   The proof above had two subgoals, and both were solved by `apply I`. In
-  situations like that, we can use the `;` tactical to reduce duplication:
+  situations like that, we can use the `;` *tactical* to reduce duplication:
 *)
 
 Theorem true_and_true_3 : True /\ True.
@@ -113,7 +112,7 @@ Print true_and_true_3. (* `conj I I` *)
 
 (* Let's see what happens when we try to prove `True` *and* `False`. *)
 
-Theorem true_and_false : True /\ True.
+Theorem true_and_false : True /\ False.
 Proof.
   apply conj.
   - apply I.
