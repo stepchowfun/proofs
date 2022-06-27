@@ -160,7 +160,7 @@ Proof.
   intros.
 
   (*
-    `destruct` does pattern matching. We can `destruct` a proof of `A /\ B`, to
+    `destruct` does pattern matching. We can `destruct` a proof of `A /\ B` to
     get access to the proofs of `A` and `B`.
   *)
   destruct H.
