@@ -202,7 +202,8 @@ Compute pluck (someNat 42). (* `42` *)
 (*
   Putting all this together, we're going to define a type which features both
   a parameter and an index. This type represents lists. The parameter indicates
-  the type of the elements. The index indicates the length of the list.
+  the type of the elements. The index indicates the length of the list. Lists
+  which feature their length in their type are called *vectors*:
 *)
 
 Inductive vector (T : Set) : nat -> Set :=
