@@ -243,7 +243,7 @@ Qed.
 
 Definition not (A : Prop) := A -> False.
 
-Notation "~ x" := (not x) : type_scope.
+Notation "~ A" := (not A) : type_scope.
 
 Definition not_false_1 : ~False := fun H => H.
 
@@ -268,16 +268,104 @@ Proof.
   apply H0.
 Qed.
 
-(* Propositional equality *)
+(*
+  In Lesson 2, we learned that Coq has a built-in notion of equality which is
+  used for type checking: two expressions are considered equal if they compute
+  to syntatically identical expressions. This is definitional equality.
+
+  Thus, `0 + n` is definitionally equal to `n`, because `+` pattern matches on
+  the `0` and returns `n` in that case. However, `n + 0` is not definitionally
+  equal to `n`. How unfortunate!
+
+  We can define a more flexible version of equality as an inductive family.
+  This kind of equality isn't as convenient to work with, since the type
+  checker can't use it automatically by doing computation. However, it allows
+  us to *prove* that `n + 0 = n`, and then we can use such a proof to freely
+  substitute one side for the other. This notion of equality which requires
+  proof is called *propositional equality*:
+*)
 
 Inductive eq {A} (x : A) : A -> Prop :=
 | eq_refl : eq x x.
 
 Notation "x = y" := (eq x y) : type_scope.
 
-Theorem one_plus_one_equals_two : 1 + 1 = 2.
+Definition one_plus_one_equals_two_1 : 1 + 1 = 2 := eq_refl 2.
+
+Theorem one_plus_one_equals_two_2 : 1 + 1 = 2.
 Proof.
-  reflexivity. (* Equivalent to: `apply eq_refl.` *)
+  reflexivity. (* Equivalent to `apply eq_refl.` *)
+Qed.
+
+Definition eq_symmetric_1 A (x y : A) (H : x = y) : y = x :=
+  match H in eq _ z return eq z x with
+  | eq_refl _ => eq_refl x
+  end.
+
+Theorem eq_symmetric_2 : forall A (x y : A), x = y -> y = x.
+Proof.
+  intros.
+  rewrite H. (* Replace `x` with `y` in the goal. *)
+  reflexivity.
+Qed.
+
+Theorem eq_symmetric_3 : forall A (x y : A), x = y -> y = x.
+Proof.
+  intros.
+  rewrite <- H. (* Replace `y` with `x` in the goal. *)
+  reflexivity.
+Qed.
+
+Theorem eq_symmetric_4 : forall A (x y : A), x = y -> y = x.
+Proof.
+  intros.
+  symmetry. (* Turn `y = x` into `x = y` in the goal. *)
+  apply H.
+Qed.
+
+Theorem eq_symmetric_5 : forall A (x y : A), x = y -> y = x.
+Proof.
+  intros.
+  symmetry in H. (* Turn `x = y` into `y = x` in hypothesis `H`. *)
+  apply H.
+Qed.
+
+Definition eq_transitive_1 A (x y z : A) (H1 : x = y) (H2 : y = z): x = z :=
+  match H2 in eq _ v return eq x v with
+  | eq_refl _ =>
+    match H1 in eq _ u return eq x u with
+    | eq_refl _ => eq_refl x
+    end
+  end.
+
+Theorem eq_transitive_2 : forall A (x y z : A), x = y -> y = z -> x = z.
+Proof.
+  intros.
+  rewrite H.
+  rewrite H0.
+  reflexivity.
+Qed.
+
+Theorem eq_transitive_3 : forall A (x y z : A), x = y -> y = z -> x = z.
+Proof.
+  intros.
+  rewrite <- H0.
+  rewrite <- H.
+  reflexivity.
+Qed.
+
+Theorem eq_transitive_4 : forall A (x y z : A), x = y -> y = z -> x = z.
+Proof.
+  intros.
+  rewrite H0 in H. (* Replace `y` with `z` in hypothesis `H`. *)
+  apply H.
+Qed.
+
+Theorem eq_transitive_5 : forall A (x y z : A), x = y -> y = z -> x = z.
+Proof.
+  intros.
+  rewrite <- H in H0. (* Replace `y` with `x` in hypothesis `H0`. *)
+  apply H0.
 Qed.
 
 (*
