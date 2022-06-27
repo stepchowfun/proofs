@@ -10,12 +10,25 @@
 (* All functions must be statically known to terminate. *)
 (********************************************************)
 
+(* Coq rejects all nonterminating functions: *)
+
+Fail Fixpoint f (n : nat) : False := f n.
+
 (*
-  If we were allowed to write nonterminating functions, we could prove `False`.
+  ```
+  The command has indeed failed with message:
+  Recursive definition of f is ill-formed.
+  In environment
+  f : nat -> False
+  n : nat
+  Recursive call to f has principal argument equal to
+  "n" instead of a subterm of "n".
+  Recursive definition is: "fun n : nat => f n".
+  ```
+
+  If we were allowed to write that function, we could use it to prove `False`:
 
   ```
-  Fixpoint f (n : nat) : False := f n.
-
   Definition paradox : False := f 0.
   ```
 
@@ -80,13 +93,18 @@ Check idProp (forall t : Prop, t -> t) idProp. (* `forall t : Prop, t -> t` *)
 (*
   But `Set` (a.k.a. `Type_0`) is predicative, so we can't apply `idSet` to
   itself:
-
-  ```
-  Check idSet (forall t : Set, t -> t) idSet.
-  ```
 *)
 
+Fail Check idSet (forall t : Set, t -> t) idSet.
+
 (*
+  ```
+  The command has indeed failed with message:
+  The term "forall t : Set, t -> t" has type "Type"
+  while it is expected to have type "Set"
+  (universe inconsistency: Cannot enforce Set+1 <= Set).
+  ```
+
   When we write `Type`, Coq automatically figures out which level `i` should be
   used. In fact, there is no way to explicitly specify it.
 
@@ -99,11 +117,17 @@ Definition universe := Type.
 
 Definition idUniverse (t : universe) (x : t) := x.
 
-(*
-  Like with `idSet`, predicativity forbids the following:
+(* Like with `idSet`, predicativity forbids the following: *)
 
+Fail Check idUniverse (forall t : universe, t -> t) idUniverse.
+
+(*
   ```
-  Check idUniverse (forall t : universe, t -> t) idUniverse.
+  The command has indeed failed with message:
+  The term "forall t : universe, t -> t" has type "Type"
+  while it is expected to have type "universe"
+  (universe inconsistency: Cannot enforce universe.u0 < universe.u0 because
+  universe.u0 = universe.u0).
   ```
 *)
 
@@ -126,12 +150,24 @@ Definition constraint : large := Set.
 Inductive foo1 : Set :=
 | makeFoo1 : forall (x : nat), foo1.
 
-(*
-  Inductive foo2 : Set :=
-  | makeFoo2 : Set -> foo2.
+Fail Inductive foo2 : Set :=
+| makeFoo2 : Set -> foo2.
 
-  Inductive foo3 : Set -> Set :=
-  | makeFoo3 : forall (x : Set), foo3 x.
+(*
+  ```
+  The command has indeed failed with message:
+  Large non-propositional inductive types must be in Type.
+  ```
+*)
+
+Fail Inductive foo3 : Set -> Set :=
+| makeFoo3 : forall (x : Set), foo3 x.
+
+(*
+  ```
+  The command has indeed failed with message:
+  Large non-propositional inductive types must be in Type.
+  ```
 *)
 
 Inductive foo4 : Prop :=
@@ -177,15 +213,19 @@ Inductive weird :=
 Inductive weirder :=
 | makeWeirder : (nat -> weirder) -> weirder.
 
+(* However, the following is not allowed: *)
+
+Fail Inductive bad :=
+| makeBad : (bad -> nat) -> bad.
+
 (*
-  However, the following is not allowed:
-
   ```
-  Inductive bad :=
-  | makeBad : (bad -> nat) -> bad.
+  The command has indeed failed with message:
+  Non strictly positive occurrence of "bad" in "(bad -> nat) -> bad".
   ```
 
-  Why not? Suppose `bad` were allowed. Consider the following function:
+  Why does coq reject `bad`? Suppose it were allowed. Consider the following
+  function:
 
   ```
   Definition evil (x : bad) : nat :=
@@ -201,13 +241,13 @@ Inductive weirder :=
   ```
 
   This is also rejected:
+*)
 
-  ```
-  Inductive alsoBad :=
-  | makeAlsoBad : ((alsoBad -> nat) -> nat) -> alsoBad.
-  ```
+Fail Inductive alsoBad :=
+| makeAlsoBad : ((alsoBad -> nat) -> nat) -> alsoBad.
 
-  `alsoBad` can be used to construct a diverging function in an impredicative
+(*
+  `alsoBad` could be used to construct a diverging function in an impredicative
   universe, as demonstrated in this paper:
 
     Coquand, T., Paulin, C. (1990). Inductively defined types. In: Martin-Löf,
