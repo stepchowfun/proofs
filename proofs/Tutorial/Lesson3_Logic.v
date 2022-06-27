@@ -14,6 +14,10 @@
 
 #[local] Set Warnings "-notation-overridden".
 
+(* One of our proofs will use `Nat.mul_assoc` from this module: *)
+
+Require Import Coq.Arith.PeanoNat.
+
 (*
   Consider a mathematical statement, i.e., a *proposition*, that you'd like to
   prove. An example of a proposition is that addition of natural numbers is
@@ -134,7 +138,22 @@ Abort.
   proof of "A" into a proof of "B".
 *)
 
-Theorem A_and_B_implies_A : forall A B, A /\ B -> A.
+Definition modus_ponens_1 A B : (A -> B) -> A -> B := fun H1 H2 => H1 H2.
+
+Theorem modus_ponens_2 A B : (A -> B) -> A -> B.
+Proof.
+  intros.
+  apply X.
+  apply X0.
+Qed.
+
+Definition A_and_B_implies_A_1 A B : A /\ B -> A :=
+  fun H1 =>
+    match H1 with
+    | conj H2 _ => H2
+    end.
+
+Theorem A_and_B_implies_A_2 : forall A B, A /\ B -> A.
 Proof.
   (* `intros` moves the premises of the goal into the context. *)
   intros.
@@ -156,10 +175,11 @@ Proof.
   apply H0.
 Qed.
 
-Definition explosion_1 (A : Prop) (H : False) : A :=
-  match H with
-  (* No cases to worry about! *)
-  end.
+Definition explosion_1 (A : Prop) : False -> A :=
+  fun H =>
+    match H with
+    (* No cases to worry about! *)
+    end.
 
 Check explosion_1. (* `forall A : Prop, False -> A` *)
 
@@ -191,10 +211,11 @@ Proof.
   split; intro; apply H.
 Qed.
 
-Definition A_iff_B_and_A_implies_B_1 A B (H1 : A <-> B) (H2 : A) : B :=
-  match H1 with
-  | conj H3 _ => H3 H2
-  end.
+Definition A_iff_B_and_A_implies_B_1 A B : (A <-> B) -> A -> B :=
+  fun H1 H2 =>
+    match H1 with
+    | conj H3 _ => H3 H2
+    end.
 
 Theorem A_iff_B_and_A_implies_B_2 : forall A B, (A <-> B) -> A -> B.
 Proof.
@@ -219,19 +240,12 @@ Arguments orIntroR {_} {_} _.
 
 Notation "A \/ B" := (or A B) : type_scope.
 
-Definition true_or_false_1 : True \/ False := orIntroL I.
-
-Theorem true_or_false_2 : True \/ False.
-Proof.
-  left. (* Equivalent to `apply orIntroL.` *)
-  apply I.
-Qed.
-
-Definition disjunction_symmetric_1 A B (H1 : A \/ B) : (B \/ A) :=
-  match H1 with
-  | orIntroL H2 => orIntroR H2
-  | orIntroR H2 => orIntroL H2
-  end.
+Definition disjunction_symmetric_1 A B : (A \/ B) -> (B \/ A) :=
+  fun H1 =>
+    match H1 with
+    | orIntroL H2 => orIntroR H2
+    | orIntroR H2 => orIntroL H2
+    end.
 
 Theorem disjunction_symmetric_2 : forall A B, (A \/ B) -> (B \/ A).
 Proof.
@@ -239,7 +253,7 @@ Proof.
   destruct H. (* `destruct` does case analysis on a disjunctive hypothesis. *)
   - right. (* Equivalent to `apply orIntroR.` *)
     apply H.
-  - left.
+  - left. (* Equivalent to `apply orIntroL.` *)
     apply H.
 Qed.
 
@@ -256,20 +270,6 @@ Proof.
   unfold not.
   intros.
   apply H.
-Qed.
-
-Definition triple_negation_1 A : ~~~A -> ~A :=
-  fun (H1 : ((A -> False) -> False) -> False) (H2 : A) =>
-    H1 (fun H3 : A -> False => H3 H2).
-
-Theorem triple_negation_2 : forall A, ~~~A -> ~A.
-Proof.
-  unfold not.
-  intros.
-  apply H.
-  intros.
-  apply H1.
-  apply H0.
 Qed.
 
 (*
@@ -301,10 +301,11 @@ Proof.
   reflexivity. (* Equivalent to `apply eq_refl.` *)
 Qed.
 
-Definition eq_symmetric_1 A (x y : A) (H : x = y) : y = x :=
-  match H in eq _ z return eq z x with
-  | eq_refl _ => eq_refl x
-  end.
+Definition eq_symmetric_1 A (x y : A) : x = y -> y = x :=
+  fun H =>
+    match H in eq _ z return eq z x with
+    | eq_refl _ => eq_refl x
+    end.
 
 Theorem eq_symmetric_2 : forall A (x y : A), x = y -> y = x.
 Proof.
@@ -334,13 +335,14 @@ Proof.
   apply H.
 Qed.
 
-Definition eq_transitive_1 A (x y z : A) (H1 : x = y) (H2 : y = z): x = z :=
-  match H2 in eq _ v return eq x v with
-  | eq_refl _ =>
-    match H1 in eq _ u return eq x u with
-    | eq_refl _ => eq_refl x
-    end
-  end.
+Definition eq_transitive_1 A (x y z : A) : x = y -> y = z -> x = z :=
+  fun H1 H2 =>
+    match H2 in eq _ v return eq x v with
+    | eq_refl _ =>
+      match H1 in eq _ u return eq x u with
+      | eq_refl _ => eq_refl x
+      end
+    end.
 
 Theorem eq_transitive_2 : forall A (x y z : A), x = y -> y = z -> x = z.
 Proof.
@@ -391,6 +393,17 @@ Proof.
   destruct b; reflexivity.
 Qed.
 
+Theorem weird_function :
+  forall f,
+  (forall x, f (f x) = 1 + x) ->
+  forall y, f (f (f (f y))) = 2 + y.
+Proof.
+  intros.
+  rewrite H.
+  rewrite H.
+  reflexivity.
+Qed.
+
 (* *Existential quantification* can be defined as follows: *)
 
 Inductive ex {A : Type} (P : A -> Prop) : Prop :=
@@ -406,10 +419,23 @@ Arguments ex_intro {_} {_} _ _.
 Notation "'exists' x .. y , p" := (ex (fun x => .. (ex (fun y => p)) ..))
   (at level 200, x binder, right associativity) : type_scope.
 
-Theorem half_of_6_exists : exists x, 2 * x = 6.
+Definition half_of_6_exists_1 : exists x, 2 * x = 6 :=
+  ex_intro 3 (eq_refl 6).
+
+Theorem half_of_6_exists_2 : exists x, 2 * x = 6.
 Proof.
   exists 3. (* Equivalent to `apply ex_intro with (x := 3).` *)
   reflexivity.
+Qed.
+
+Theorem divisible_by_4_implies_even :
+  forall x, (exists y, 4 * y = x) -> (exists z, 2 * z = x).
+Proof.
+  intros.
+  destruct H. (* What is `y`? *)
+  exists (2 * x0).
+  rewrite Nat.mul_assoc.
+  apply H.
 Qed.
 
 (*************)
@@ -425,6 +451,7 @@ Qed.
      mode.
   4. Prove `forall A B, (A /\ B) -> (A \/ B)` both manually and using proof
      mode.
-  5. Prove `forall x, x = 3 -> x * 2 = 6` both manually and using proof mode.
-  6. Prove `exists x, negb x = false` both manually and using proof mode.
+  5. Prove `forall A, ~~~A -> ~A` both manually and using proof mode.
+  6. Prove `forall x, x = 3 -> x * 2 = 6` both manually and using proof mode.
+  7. Prove `exists x, negb x = false` both manually and using proof mode.
 *)
