@@ -339,9 +339,10 @@ Compute add (S O) (S O). (* `S (S O)` *)
 
 (*
   By default, the parser is configured to parse numeric literals into natural
-  numbers, but using the definition from the standard library rather than ours
-  above. So, when working with natural numbers from the standard library, we
-  don't have to write all those `S`s.
+  numbers, but using the definition from the standard library rather than our
+  identical definition above. So, when working with natural numbers from the
+  standard library, we don't have to write all those `S`s. The standard library
+  also defines the `+` operator as shorthand for `add`, so we can simply write:
 *)
 
 Compute 1 + 1. (* `2` *)

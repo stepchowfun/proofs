@@ -22,7 +22,7 @@ Require Import Coq.Strings.String.
   represent them with the `string` type we just imported.
 *)
 
-Local Open Scope string_scope.
+#[local] Open Scope string_scope.
 
 (* Here's a string: *)
 
