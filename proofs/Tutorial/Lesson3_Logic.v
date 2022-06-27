@@ -12,7 +12,7 @@
   our definitions, so we silence the relevant warning with this:
 *)
 
-Local Set Warnings "-notation-overridden".
+#[local] Set Warnings "-notation-overridden".
 
 (*
   Consider a mathematical statement, i.e., a *proposition*, that you'd like to
