@@ -152,7 +152,7 @@ Proof.
   apply H0.
 Qed.
 
-Definition explosion_1 (A : Prop) (H: False) : A :=
+Definition explosion_1 (A : Prop) (H : False) : A :=
   match H with
   (* No cases to worry about! *)
   end.
@@ -177,14 +177,22 @@ Definition iff (A B : Prop) := (A -> B) /\ (B -> A).
 
 Notation "A <-> B" := (iff A B) : type_scope.
 
-Theorem A_iff_A : forall A, A <-> A.
+Definition A_iff_A_1 A : A <-> A :=
+  conj (fun H => H) (fun H => H).
+
+Theorem A_iff_A_2 : forall A, A <-> A.
 Proof.
   intro. (* `intro` is like `intros` but only applies to a single premise. *)
   unfold iff. (* `unfold` replaces a name with its definition. *)
   split; intro; apply H.
 Qed.
 
-Theorem A_iff_B_and_A_implies_B : forall A B, (A <-> B) -> A -> B.
+Definition A_iff_B_and_A_implies_B_1 A B (H1 : A <-> B) (H2 : A) : B :=
+  match H1 with
+  | conj H3 _ => H3 H2
+  end.
+
+Theorem A_iff_B_and_A_implies_B_2 : forall A B, (A <-> B) -> A -> B.
 Proof.
   intros.
   unfold iff in H. (* Same as before but now in a hypothesis *)
@@ -207,13 +215,21 @@ Arguments orIntroR {_} {_} _.
 
 Notation "A \/ B" := (or A B) : type_scope.
 
-Theorem true_or_false : True \/ False.
+Definition true_or_false_1 : True \/ False := orIntroL I.
+
+Theorem true_or_false_2 : True \/ False.
 Proof.
   left. (* Equivalent to `apply orIntroL.` *)
   apply I.
 Qed.
 
-Theorem disjunction_symmetric : forall A B, (A \/ B) -> (B \/ A).
+Definition disjunction_symmetric_1 A B (H1 : A \/ B) : (B \/ A) :=
+  match H1 with
+  | orIntroL H2 => orIntroR H2
+  | orIntroR H2 => orIntroL H2
+  end.
+
+Theorem disjunction_symmetric_2 : forall A B, (A \/ B) -> (B \/ A).
 Proof.
   intros.
   destruct H. (* `destruct` does case analysis on a disjunctive hypothesis. *)
@@ -229,14 +245,20 @@ Definition not (A : Prop) := A -> False.
 
 Notation "~ x" := (not x) : type_scope.
 
-Theorem not_false : ~False.
+Definition not_false_1 : ~False := fun H => H.
+
+Theorem not_false_2 : ~False.
 Proof.
   unfold not.
   intro.
   apply H.
 Qed.
 
-Theorem triple_negation : forall A, ~~~A -> ~A.
+Definition triple_negation_1 A : ~~~A -> ~A :=
+  fun (H1 : ((A -> False) -> False) -> False) (H2 : A) =>
+    H1 (fun H3 : A -> False => H3 H2).
+
+Theorem triple_negation_2 : forall A, ~~~A -> ~A.
 Proof.
   unfold not.
   intros.
