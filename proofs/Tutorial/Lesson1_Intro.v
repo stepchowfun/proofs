@@ -12,9 +12,12 @@
 
 (*
   Sometimes it's useful to ask Coq for the type of an expression. We can use
-  the `Check` command for that. In this case, the type is `nat`, which stands
-  for "natural number". Natural numbers are non-negative integers, and they're
-  the most common type of number in Coq.
+  the `Check` command for that. In the example below, the type is `nat`, which
+  stands for "natural number". Natural numbers are non-negative integers, and
+  they're the most common type of number in Coq.
+
+  To use these commands interactively, be sure you're using an IDE that
+  supports Coq, such as CoqIDE or Visual Studio Code with the VsCoq plugin.
 *)
 
 Check 3 + 4. (* `nat` *)

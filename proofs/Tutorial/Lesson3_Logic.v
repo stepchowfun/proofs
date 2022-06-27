@@ -85,8 +85,12 @@ Definition true_and_true_1 : True /\ True := conj I I.
 (*
   Writing proofs by hand can be extremely tedious in practice. Coq has a
   scripting language called *Ltac* to help us construct proofs. We can use Ltac
-  in *proof mode*. Here is the same proof as above, but written in Ltac using
-  proof mode:
+  in *proof mode*. Below is the same proof as above, but written in Ltac using
+  proof mode.
+
+  To write proofs using proof mode, it's essential that you're using an IDE
+  that supports Coq, such as CoqIDE or Visual Studio Code with the VsCoq
+  plugin.
 *)
 
 Theorem true_and_true_2 : True /\ True.
