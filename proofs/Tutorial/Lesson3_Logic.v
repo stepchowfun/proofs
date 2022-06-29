@@ -151,7 +151,7 @@ Proof.
   apply H0.
 Qed.
 
-Definition A_and_B_implies_B_and_A A B : A /\ B -> B /\ A :=
+Definition conjunction_symmetric A B : A /\ B -> B /\ A :=
   fun H1 =>
     match H1 with
     | conj H2 H3 => conj H3 H2
