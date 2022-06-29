@@ -95,6 +95,9 @@ Definition true_and_true_1 : True /\ True := conj I I.
   To write proofs using proof mode, it's essential that you're using an IDE
   that supports Coq, such as CoqIDE or Visual Studio Code with the VsCoq
   plugin.
+
+  We use `Theorem` when we want to give a name to the proof (e.g., to use it in
+  a later proof) and `Goal` if the proof doesn't need a name.
 *)
 
 Theorem true_and_true_2 : True /\ True.
@@ -125,7 +128,7 @@ Print true_and_true_3. (* `conj I I` *)
 
 (* Let's see what happens when we try to prove `True` *and* `False`. *)
 
-Theorem true_and_false : True /\ False.
+Goal True /\ False.
 Proof.
   split.
   - apply I.
@@ -138,23 +141,23 @@ Abort.
   proof of "A" into a proof of "B".
 *)
 
-Definition modus_ponens_1 (A B : Prop) : (A -> B) -> A -> B :=
+Definition modus_ponens (A B : Prop) : (A -> B) -> A -> B :=
   fun H1 H2 => H1 H2.
 
-Theorem modus_ponens_2 (A B : Prop) : (A -> B) -> A -> B.
+Goal forall A B : Prop, (A -> B) -> A -> B.
 Proof.
   intros.
   apply H.
   apply H0.
 Qed.
 
-Definition A_and_B_implies_B_and_A_1 A B : A /\ B -> B /\ A :=
+Definition A_and_B_implies_B_and_A A B : A /\ B -> B /\ A :=
   fun H1 =>
     match H1 with
     | conj H2 H3 => conj H3 H2
     end.
 
-Theorem A_and_B_implies_A_2 : forall A B, A /\ B -> B /\ A.
+Goal forall A B, A /\ B -> B /\ A.
 Proof.
   (* `intros` moves the premises of the goal into the context. *)
   intros.
@@ -171,15 +174,15 @@ Proof.
   - apply H.
 Qed.
 
-Definition explosion_1 (A : Prop) : False -> A :=
+Definition explosion (A : Prop) : False -> A :=
   fun H =>
     match H with
     (* No cases to worry about! *)
     end.
 
-Check explosion_1. (* `forall A : Prop, False -> A` *)
+Check explosion. (* `forall A : Prop, False -> A` *)
 
-Theorem explosion_2 : forall A : Prop, False -> A.
+Goal forall A : Prop, False -> A.
 Proof.
   (* You know the drill. *)
   intros.
@@ -197,10 +200,10 @@ Definition iff (A B : Prop) := (A -> B) /\ (B -> A).
 
 Notation "A <-> B" := (iff A B) : type_scope.
 
-Definition A_iff_A_1 A : A <-> A :=
+Definition A_iff_A A : A <-> A :=
   conj (fun H => H) (fun H => H).
 
-Theorem A_iff_A_2 : forall A, A <-> A.
+Goal forall A, A <-> A.
 Proof.
   intros.
   unfold iff. (* `unfold` replaces a name with its definition. *)
@@ -221,14 +224,14 @@ Arguments orIntroR {_} {_} _.
 
 Notation "A \/ B" := (or A B) : type_scope.
 
-Definition disjunction_symmetric_1 A B : (A \/ B) -> (B \/ A) :=
+Definition disjunction_symmetric A B : (A \/ B) -> (B \/ A) :=
   fun H1 =>
     match H1 with
     | orIntroL H2 => orIntroR H2
     | orIntroR H2 => orIntroL H2
     end.
 
-Theorem disjunction_symmetric_2 : forall A B, (A \/ B) -> (B \/ A).
+Goal forall A B, (A \/ B) -> (B \/ A).
 Proof.
   intros.
   destruct H. (* `destruct` does case analysis on a disjunctive hypothesis. *)
@@ -244,9 +247,9 @@ Definition not (A : Prop) := A -> False.
 
 Notation "~ A" := (not A) : type_scope.
 
-Definition not_false_1 : ~False := fun H => H.
+Definition not_false : ~False := fun H => H.
 
-Theorem not_false_2 : ~False.
+Goal ~False.
 Proof.
   unfold not.
   intros.
@@ -275,48 +278,48 @@ Inductive eq {A} (x : A) : A -> Prop :=
 
 Notation "x = y" := (eq x y) : type_scope.
 
-Definition one_plus_one_equals_two_1 : 1 + 1 = 2 := eq_refl 2.
+Definition one_plus_one_equals_two : 1 + 1 = 2 := eq_refl 2.
 
-Theorem one_plus_one_equals_two_2 : 1 + 1 = 2.
+Goal 1 + 1 = 2.
 Proof.
   reflexivity. (* Equivalent to `apply eq_refl.` *)
 Qed.
 
-Definition eq_symmetric_1 A (x y : A) : x = y -> y = x :=
+Definition eq_symmetric A (x y : A) : x = y -> y = x :=
   fun H =>
     match H in eq _ z return eq z x with
     | eq_refl _ => eq_refl x
     end.
 
-Theorem eq_symmetric_2 : forall A (x y : A), x = y -> y = x.
+Goal forall A (x y : A), x = y -> y = x.
 Proof.
   intros.
   rewrite H. (* Replace `x` with `y` in the goal. *)
   reflexivity.
 Qed.
 
-Theorem eq_symmetric_3 : forall A (x y : A), x = y -> y = x.
+Goal forall A (x y : A), x = y -> y = x.
 Proof.
   intros.
   rewrite <- H. (* Replace `y` with `x` in the goal. *)
   reflexivity.
 Qed.
 
-Theorem eq_symmetric_4 : forall A (x y : A), x = y -> y = x.
+Goal forall A (x y : A), x = y -> y = x.
 Proof.
   intros.
   symmetry. (* Turn `y = x` into `x = y` in the goal. *)
   apply H.
 Qed.
 
-Theorem eq_symmetric_5 : forall A (x y : A), x = y -> y = x.
+Goal forall A (x y : A), x = y -> y = x.
 Proof.
   intros.
   symmetry in H. (* Turn `x = y` into `y = x` in hypothesis `H`. *)
   apply H.
 Qed.
 
-Definition eq_transitive_1 A (x y z : A) : x = y -> y = z -> x = z :=
+Definition eq_transitive A (x y z : A) : x = y -> y = z -> x = z :=
   fun H1 H2 =>
     match H2 in eq _ v return eq x v with
     | eq_refl _ =>
@@ -325,7 +328,7 @@ Definition eq_transitive_1 A (x y z : A) : x = y -> y = z -> x = z :=
       end
     end.
 
-Theorem eq_transitive_2 : forall A (x y z : A), x = y -> y = z -> x = z.
+Goal forall A (x y z : A), x = y -> y = z -> x = z.
 Proof.
   intros.
   rewrite H.
@@ -333,7 +336,7 @@ Proof.
   reflexivity.
 Qed.
 
-Theorem eq_transitive_3 : forall A (x y z : A), x = y -> y = z -> x = z.
+Goal forall A (x y z : A), x = y -> y = z -> x = z.
 Proof.
   intros.
   rewrite <- H0.
@@ -341,14 +344,14 @@ Proof.
   reflexivity.
 Qed.
 
-Theorem eq_transitive_4 : forall A (x y z : A), x = y -> y = z -> x = z.
+Goal forall A (x y z : A), x = y -> y = z -> x = z.
 Proof.
   intros.
   rewrite H0 in H. (* Replace `y` with `z` in hypothesis `H`. *)
   apply H.
 Qed.
 
-Theorem eq_transitive_5 : forall A (x y z : A), x = y -> y = z -> x = z.
+Goal forall A (x y z : A), x = y -> y = z -> x = z.
 Proof.
   intros.
   rewrite <- H in H0. (* Replace `y` with `x` in hypothesis `H0`. *)
@@ -360,21 +363,21 @@ Qed.
   we don't need to define it explicitly.
 *)
 
-Definition negb_involution_1 b :=
+Definition negb_involution b :=
   match b return negb (negb b) = b with
   | true => eq_refl true
   | false => eq_refl false
   end.
 
-Check negb_involution_1. (* `forall b : bool, negb (negb b) = b` *)
+Check negb_involution. (* `forall b : bool, negb (negb b) = b` *)
 
-Theorem negb_involution_2 : forall b, negb (negb b) = b.
+Goal forall b, negb (negb b) = b.
 Proof.
   intros.
   destruct b; reflexivity.
 Qed.
 
-Theorem weird_function :
+Goal
   forall f,
   (forall x, f (f x) = 1 + x) ->
   forall y, f (f (f (f y))) = 2 + y.
@@ -400,17 +403,16 @@ Arguments ex_intro {_} {_} _ _.
 Notation "'exists' x .. y , p" := (ex (fun x => .. (ex (fun y => p)) ..))
   (at level 200, x binder, right associativity) : type_scope.
 
-Definition half_of_6_exists_1 : exists x, 2 * x = 6 :=
+Definition half_of_6_exists : exists x, 2 * x = 6 :=
   ex_intro 3 (eq_refl 6).
 
-Theorem half_of_6_exists_2 : exists x, 2 * x = 6.
+Goal exists x, 2 * x = 6.
 Proof.
   exists 3. (* Equivalent to `apply ex_intro with (x := 3).` *)
   reflexivity.
 Qed.
 
-Theorem divisible_by_4_implies_even :
-  forall x, (exists y, 4 * y = x) -> (exists z, 2 * z = x).
+Goal forall x, (exists y, 4 * y = x) -> (exists z, 2 * z = x).
 Proof.
   intros.
   destruct H. (* What is `y`? *)
