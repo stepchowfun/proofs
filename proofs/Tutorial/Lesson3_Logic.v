@@ -321,9 +321,9 @@ Qed.
 
 Definition eq_transitive A (x y z : A) : x = y -> y = z -> x = z :=
   fun H1 H2 =>
-    match H2 in eq _ v return eq x v with
+    match H2 in _ = v return x = v with
     | eq_refl _ =>
-      match H1 in eq _ u return eq x u with
+      match H1 in _ = u return x = u with
       | eq_refl _ => eq_refl x
       end
     end.
@@ -382,9 +382,9 @@ Definition weird f :
   forall y, f (f (f (f y))) = 2 + y
 :=
   fun H1 y =>
-    match H1 (1 + y) in eq _ z return f (f (f (f y))) = z with
+    match H1 (1 + y) in _ = z return f (f (f (f y))) = z with
     | eq_refl _ =>
-      match H1 y in eq _ z return f (f (f (f y))) = f (f z) with
+      match H1 y in _ = z return f (f (f (f y))) = f (f z) with
       | eq_refl _ => eq_refl (f (f (f (f y))))
       end
     end.
