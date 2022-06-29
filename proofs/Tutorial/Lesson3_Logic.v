@@ -377,6 +377,18 @@ Proof.
   destruct b; reflexivity.
 Qed.
 
+Definition weird f :
+  (forall x, f (f x) = 1 + x) ->
+  forall y, f (f (f (f y))) = 2 + y
+:=
+  fun H1 y =>
+    match H1 (1 + y) in eq _ z return f (f (f (f y))) = z with
+    | eq_refl _ =>
+      match H1 y in eq _ z return f (f (f (f y))) = f (f z) with
+      | eq_refl _ => eq_refl (f (f (f (f y))))
+      end
+    end.
+
 Goal
   forall f,
   (forall x, f (f x) = 1 + x) ->
@@ -411,6 +423,20 @@ Proof.
   exists 3. (* Equivalent to `apply ex_intro with (x := 3).` *)
   reflexivity.
 Qed.
+
+Definition divisible_by_4_implies_even x :
+  (exists y, 4 * y = x) ->
+  (exists z, 2 * z = x)
+:=
+  fun H1 =>
+    match H1 with
+    | ex_intro y H2 =>
+      ex_intro
+        (2 * y)
+        match eq_sym (Nat.mul_assoc 2 2 y) in Logic.eq _ z return z = x with
+        | Logic.eq_refl _ => H2
+        end
+    end.
 
 Goal forall x, (exists y, 4 * y = x) -> (exists z, 2 * z = x).
 Proof.
