@@ -6,7 +6,9 @@
 (*********************************)
 (*********************************)
 
-Require Import Coq.Init.Nat.
+(*************)
+(* Induction *)
+(*************)
 
 (* Let's prove that zero is a left identity for addition. *)
 
@@ -27,7 +29,7 @@ Abort.
 
 (* Recall the definition of addition. *)
 
-Print add.
+Print "+".
 
 (*
   ```
