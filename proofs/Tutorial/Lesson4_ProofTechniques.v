@@ -1,10 +1,59 @@
-(*********************************)
-(*********************************)
-(****                         ****)
-(****   Proofs by induction   ****)
-(****                         ****)
-(*********************************)
-(*********************************)
+(******************************)
+(******************************)
+(****                      ****)
+(****   Proof techniques   ****)
+(****                      ****)
+(******************************)
+(******************************)
+
+(*******************************)
+(* Injectivity of constructors *)
+(*******************************)
+
+(* Let's prove `S n1 = S n2` implies `n1 = n2`. *)
+
+Definition successor_injective n1 n2 : S n1 = S n2 -> n1 = n2 :=
+  fun H =>
+    match H in _ = x return pred (S n1) = pred x with
+    | eq_refl => eq_refl (pred (S n1))
+    end.
+
+(* Fortunately, the `inversion` tactic makes this much easier. *)
+
+Goal forall n1 n2, S n1 = S n2 -> n1 = n2.
+Proof.
+  intros.
+  inversion H. (* Generate a proof of `n1 = n2` and substitute in the goal. *)
+  reflexivity.
+Qed.
+
+(********************************)
+(* Disjointness of constructors *)
+(********************************)
+
+(* Let's prove `true <> false`. *)
+
+Definition true_neq_false : true <> false :=
+  fun H =>
+    match H
+    in _ = x
+    return
+      match x with
+      | true => True
+      | false => False
+      end
+    with
+    | eq_refl => I
+    end.
+
+(* Fortunately, the `inversion` tactic makes this much easier too. *)
+
+Goal true <> false.
+Proof.
+  unfold not.
+  intros.
+  inversion H. (* Solve the goal with a self-contradictory hypothesis. *)
+Qed.
 
 (*************)
 (* Induction *)
@@ -12,19 +61,18 @@
 
 (* Let's prove that zero is a left identity for addition. *)
 
-Theorem zero_plus_n : forall n, 0 + n = n.
+Theorem zero_plus_n_equals_n : forall n, 0 + n = n.
 Proof.
-  intro.
-  cbn.
+  intros.
   reflexivity.
 Qed.
 
 (* Great, that was easy! Now let's prove that zero is also a right identity. *)
 
-Theorem n_plus_zero : forall n, n + 0 = n.
+Theorem n_plus_zero_equals_n : forall n, n + 0 = n.
 Proof.
-  intro.
-  cbn. (* Uh oh, nothing happened! *)
+  intros.
+  (* reflexivity. *) (* `Unable to unify "n" with "n + 0".` *)
 Abort.
 
 (* Recall the definition of addition. *)

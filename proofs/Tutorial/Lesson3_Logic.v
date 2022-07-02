@@ -82,6 +82,10 @@ Arguments conj {_} {_} _ _.
 
 Notation "A /\ B" := (and A B) : type_scope.
 
+(* You can look up a notation with `Locate`. *)
+
+Locate "/\". (* `Notation "A /\ B" := (and A B) : type_scope` *)
+
 (* Let's write a proof! *)
 
 Definition true_and_true_1 : True /\ True := conj I I.
@@ -277,6 +281,7 @@ Inductive eq {A} (x : A) : A -> Prop :=
 | eq_refl : eq x x.
 
 Notation "x = y" := (eq x y) : type_scope.
+Notation "x <> y" := (~ (x = y)) : type_scope.
 
 Definition one_plus_one_equals_two : 1 + 1 = 2 := eq_refl 2.
 
@@ -287,7 +292,7 @@ Qed.
 
 Definition eq_symmetric A (x y : A) : x = y -> y = x :=
   fun H =>
-    match H in eq _ z return eq z x with
+    match H in _ = z return z = x with
     | eq_refl _ => eq_refl x
     end.
 
