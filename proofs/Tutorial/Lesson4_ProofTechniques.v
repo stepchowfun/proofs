@@ -18,7 +18,7 @@ Definition successor_injective n1 n2 : S n1 = S n2 -> n1 = n2 :=
     | eq_refl => eq_refl (pred (S n1))
     end.
 
-(* Fortunately, the `inversion` tactic makes this much easier. *)
+(* Fortunately, the `inversion` tactic automates this. *)
 
 Goal forall n1 n2, S n1 = S n2 -> n1 = n2.
 Proof.
@@ -31,7 +31,11 @@ Qed.
 (* Disjointness of constructors *)
 (********************************)
 
-(* Let's prove `true <> false`. *)
+(*
+  Let's prove `true <> false`. Note that this only works for constructors of
+  types in the `Set` or `Type` universes, not `Prop`. See Lessons 5 and 6 for
+  details about universes.
+*)
 
 Definition true_neq_false : true <> false :=
   fun H =>
@@ -46,7 +50,7 @@ Definition true_neq_false : true <> false :=
     | eq_refl => I
     end.
 
-(* Fortunately, the `inversion` tactic makes this much easier too. *)
+(* Fortunately, the `inversion` tactic automates this too. *)
 
 Goal true <> false.
 Proof.
