@@ -93,21 +93,35 @@ Qed.
 
 (* Let's prove that zero is a left identity for addition. *)
 
-Theorem zero_plus_n_equals_n : forall n, 0 + n = n.
+Definition zero_plus_n_equals_n n : 0 + n = n := eq_refl n.
+
+Goal forall n, 0 + n = n.
 Proof.
   intros.
   reflexivity.
 Qed.
 
-(* Great, that was easy! Now let's prove that zero is also a right identity. *)
+(* That was easy! Now let's prove that zero is also a right identity. *)
 
-Theorem n_plus_zero_equals_n : forall n, n + 0 = n.
+Fail Definition n_plus_zero_equals_n n : n + 0 = n := eq_refl n.
+
+(*
+  ```
+  The command has indeed failed with message:
+  In environment
+  n : nat
+  The term "eq_refl" has type "n = n" while it is expected to have type
+  "n + 0 = n".
+  ```
+*)
+
+Goal forall n, n + 0 = n.
 Proof.
   intros.
   (* reflexivity. *) (* `Unable to unify "n" with "n + 0".` *)
 Abort.
 
-(* Recall the definition of addition. *)
+(* What went wrong? Recall the definition of addition. *)
 
 Print "+".
 
@@ -123,12 +137,23 @@ Print "+".
 
 (*
   From this, it's clear why `0 + n = n`. But how do we prove `n + 0 = n`? We
-  need induction.
+  need *induction*. Just as we defined recursive functions with `Fixpoint` in
+  Lesson 1, we can use `Fixpoint` to write a proof by induction.
+*)
 
-  We saw in previous lessons how to do pattern matching and recursion. Coq
-  automatically generates an *induction principle* for every inductive data
-  type, and using it is equivalent to pattern matching and recursing (if
-  applicable) on that type. Let's check the induction principle for `nat`:
+Fixpoint n_plus_zero_equals_n n : n + 0 = n :=
+  match n return n + 0 = n with
+  | O => eq_refl 0
+  | S p =>
+    match n_plus_zero_equals_n p in _ = x return S p + 0 = S x with
+    | eq_refl => eq_refl ((S p) + 0)
+    end
+  end.
+
+(*
+  To help with doing induction in proof mode, Coq automatically constructs an
+  induction principle for every inductive type. For example, here's the
+  induction principle for `nat`:
 *)
 
 Check nat_ind.
@@ -136,22 +161,21 @@ Check nat_ind.
 (*
   ```
   forall P : nat -> Prop,
-  P 0 -> (forall n : nat, P n -> P (S n)) -> forall n : nat, P n
+  P 0 ->
+  (forall n : nat, P n -> P (S n)) ->
+  forall n : nat, P n
   ```
+
+  Let's use that induction principle to prove our theorem.
 *)
 
-(*
-  Let's use that induction principle to prove that zero is a neutral element of
-  addition.
-*)
-
-Theorem n_plus_zero : forall n, n + 0 = n.
+Goal forall n, n + 0 = n.
 Proof.
-  intro.
+  intros.
 
   (*
-    Instead of applying `nat_ind` directly, it's easier to use the `induction`
-    tactic.
+    We could write `apply (nat_ind (fun q => q + 0 = q))`, but it's easier to
+    just write `induction n`.
   *)
   induction n.
 
@@ -163,26 +187,9 @@ Proof.
     reflexivity.
 Qed.
 
-Print n_plus_zero.
+(* For extra practice, let's prove that addition is associative. *)
 
-(*
-  ```
-  fun n : nat => nat_ind
-    (fun n0 : nat => n0 + 0 = n0)
-    eq_refl
-    (
-      fun (n0 : nat) (IHn : n0 + 0 = n0) =>
-        eq_ind_r (fun n1 : nat => S n1 = S n0) eq_refl IHn
-    )
-    n
-  ```
-*)
-
-(* Let's prove that addition is associative. *)
-
-Theorem add_assoc :
-  forall n m p,
-  n + (m + p) = (n + m) + p.
+Goal forall n m p, n + (m + p) = (n + m) + p.
 Proof.
   intros.
   induction n.

@@ -49,7 +49,7 @@ Proof.
     destruct H.
     destruct H0.
     apply functional_extensionality.
-    intro.
+    intros.
     apply injective_projections.
     + replace (fst (f x0)) with (qx x0); [idtac | magic].
       replace (fst (g x0)) with (qx x0); [magic | rewrite H0; magic].
