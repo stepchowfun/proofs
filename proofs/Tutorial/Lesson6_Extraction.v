@@ -6,9 +6,6 @@
 (**************************************)
 (**************************************)
 
-Require Import Coq.micromega.Lia.
-From Coq Require Extraction.
-
 (*************************************************)
 (* Information cannot leave the `Prop` universe. *)
 (*************************************************)
@@ -80,44 +77,73 @@ Definition eqToNat (proof : false = false) : nat :=
   | eq_refl _ => 0
   end.
 
-(***************************************************)
-(* Extracting a simple verified program to Haskell *)
-(***************************************************)
+(*************************************)
+(* Extracting verified code to OCaml *)
+(*************************************)
 
-Extraction Language Haskell.
+(* This allows us to use Boolean operators such as `&&` and `||`. *)
 
-(*
-  For simple enumerated data types, we can simply give the translation of the
-  type and its constructors.
-*)
+#[local] Open Scope bool_scope.
 
-Extract Inductive bool => "Bool" [ "True" "False" ].
+(* Let's define an xor function and prove it correct. *)
 
-(*
-  For inductive data types for which the constructors have arguments, we must
-  also provide a function for pattern matching.
-*)
+Definition xor b1 b2 :=
+  match (b1, b2) with
+  | (true, true) => false
+  | (false, false) => false
+  | (true, false) => true
+  | (false, true) => true
+  end.
 
-Extract Inductive nat =>
-  "Integer"
-  [ "0" "(+1)" ]
-  "(\zero succ n -> if n == 0 then zero () else succ (n - 1))".
-
-(* We can also give translations for constants. *)
-
-Extract Constant plus => "(+)".
-Extract Constant mult => "(*)".
-
-(*
-  Let's write a simple program, prove it correct, and extract it to Haskell.
-*)
-
-Definition double x := x * 2.
-
-Theorem doubleCorrect : forall x, double x = x + x.
+Theorem xor_correct : forall b1 b2, xor b1 b2 = (b1 || b2) && negb (b1 && b2).
 Proof.
-  unfold double.
-  lia.
+  intros.
+  destruct b1; destruct b2; reflexivity.
 Qed.
 
-Recursive Extraction double.
+(* Now let's extract the code to OCaml. *)
+
+From Coq Require Extraction.
+
+Recursive Extraction xor.
+
+(*
+  ```
+  type bool =
+  | True
+  | False
+
+  (** val xor : bool -> bool -> bool **)
+
+  let xor b1 b2 =
+    match b1 with
+    | True -> (match b2 with
+               | True -> False
+               | False -> True)
+    | False -> b2
+  ```
+
+  This code works, but it would be better if `xor` took an OCaml `bool` rather
+  than an extracted copy of it. We can tell Coq not to extract `bool` and
+  instead any code which uses it will use OCaml's `bool`.
+*)
+
+Extract Inductive bool => "bool" [ "true" "false" ].
+
+Recursive Extraction xor.
+
+(*
+  ```
+  (** val xor : bool -> bool -> bool **)
+
+  let xor b1 b2 =
+    if b1 then if b2 then false else true else b2
+  ```
+
+  We've formally verified a function and extracted it to OCaml! In practice,
+  we'd extract the code to a file to be fed to the OCaml compiler:
+
+  ```
+  Extraction "xor.ml" xor.
+  ```
+*)
