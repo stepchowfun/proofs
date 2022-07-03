@@ -6,11 +6,38 @@
 (******************************)
 (******************************)
 
+(**********************************)
+(* Indiscernibility of identicals *)
+(**********************************)
+
+(*
+  To prove two applications of a function or constructor are equal, we can
+  prove the arguments are pairwise equal.
+*)
+
+Definition successors_equal n1 n2 : n1 = n2 -> S n1 = S n2 :=
+  fun H =>
+    match H in _ = x return S n1 = S x with
+    | eq_refl => eq_refl (S n1)
+    end.
+
+(* We can use the `f_equal` tactic to do this. *)
+
+Goal forall n1 n2, n1 = n2 -> S n1 = S n2.
+Proof.
+  intros.
+  f_equal.
+  apply H.
+Qed.
+
 (*******************************)
 (* Injectivity of constructors *)
 (*******************************)
 
-(* Let's prove `S n1 = S n2` implies `n1 = n2`. *)
+(*
+  Given an equality between two applications of a constructor, we can conclude
+  that the arguments are pairwise equal.
+*)
 
 Definition successor_injective n1 n2 : S n1 = S n2 -> n1 = n2 :=
   fun H =>
@@ -32,9 +59,10 @@ Qed.
 (********************************)
 
 (*
-  Let's prove `true <> false`. Note that this only works for constructors of
-  types in the `Set` or `Type` universes, not `Prop`. See Lessons 5 and 6 for
-  details about universes.
+  Here we show how to refute the equality between applications of two different
+  constructors. This only works for constructors of types in the `Set` or
+  `Type` universes, not `Prop`. See Lessons 5 and 6 for details about
+  universes.
 *)
 
 Definition true_neq_false : true <> false :=
