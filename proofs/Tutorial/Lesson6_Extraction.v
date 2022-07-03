@@ -95,7 +95,7 @@ Definition xor b1 b2 :=
   | (false, true) => true
   end.
 
-Theorem xor_correct : forall b1 b2, xor b1 b2 = (b1 || b2) && negb (b1 && b2).
+Goal forall b1 b2, xor b1 b2 = (b1 || b2) && negb (b1 && b2).
 Proof.
   intros.
   destruct b1; destruct b2; reflexivity.
@@ -123,9 +123,9 @@ Recursive Extraction xor.
     | False -> b2
   ```
 
-  This code works, but it would be better if `xor` took an OCaml `bool` rather
-  than an extracted copy of it. We can tell Coq not to extract `bool` and
-  instead any code which uses it will use OCaml's `bool`.
+  This code works, but it would be better if the arguments of `xor` were OCaml
+  `bool`s rather than using an extracted copy of `bool`. To address this, we
+  can teach Coq about OCaml `bool`s.
 *)
 
 Extract Inductive bool => "bool" [ "true" "false" ].
@@ -145,5 +145,71 @@ Recursive Extraction xor.
 
   ```
   Extraction "xor.ml" xor.
+  ```
+
+  Instead of writing code and separately proving theorems about it, we can
+  write code which manipulates proofs.
+
+  First, let's teach Coq about OCaml integers. Note that this is not completely
+  correct, because OCaml integers are bounded while Coq's `nat` has no upper
+  bound. We proceed anyway since we want to keep the example simple.
+*)
+
+Extract Inductive nat => "int"
+  [ "0" "(fun x -> x + 1)" ]
+  "(fun zero succ n -> if n = 0 then zero () else succ (n - 1))".
+
+Extract Constant plus => "( + )".
+
+(*
+  The Coq standard library defines the following:
+
+  ```
+  Inductive sig (A : Type) (P : A -> Prop) : Type :=
+  | exist : forall x : A, P x -> sig P.
+
+  Notation "{ x | P }" := (sig (fun x => P)) : type_scope.
+  ```
+
+  This can be used to define *subset types*, such as the type of even `nat`s:
+*)
+
+Definition evenNat := { n : nat | exists m, n = 2 * m }.
+
+(* We can define addition on `evenNat`s: *)
+
+Require Import Coq.micromega.Lia.
+
+Theorem addEvenNat : forall (n m : evenNat), evenNat.
+  unfold evenNat.
+  refine (fun n m => _). (* Define a function and postpone the body. *)
+  destruct n. (* Unpack `n` into a `nat` and a proof of its evenness. *)
+  destruct m. (* Do the same for `m`. *)
+  refine (exist _ (x + x0) _). (* Add the `nat`s and postpone the proof. *)
+  destruct e.
+  destruct e0.
+  exists (x1 + x2).
+  lia.
+Defined. (* Unlike `Qed`, `Defined` grants access to the implementation. *)
+
+Recursive Extraction addEvenNat.
+
+(*
+  The extracted code omits the proofs:
+
+  ```
+  type 'a sig0 = 'a
+    (* singleton inductive, whose constructor was exist *)
+
+  (** val add : int -> int -> int **)
+
+  let rec add = ( + )
+
+  type evenNat = int
+
+  (** val addEvenNat : evenNat -> evenNat -> evenNat **)
+
+  let addEvenNat =
+    add
   ```
 *)

@@ -88,7 +88,7 @@ Locate "/\". (* `Notation "A /\ B" := (and A B) : type_scope` *)
 
 (* Let's write a proof! *)
 
-Definition true_and_true_1 : True /\ True := conj I I.
+Definition trueAndTrue1 : True /\ True := conj I I.
 
 (*
   Writing proofs by hand can be extremely tedious in practice. Coq has a
@@ -104,7 +104,7 @@ Definition true_and_true_1 : True /\ True := conj I I.
   a later proof) and `Goal` if the proof doesn't need a name.
 *)
 
-Theorem true_and_true_2 : True /\ True.
+Theorem trueAndTrue2 : True /\ True.
 Proof.
   (* Use `split` to prove each half of a conjunction individually. *)
   split.
@@ -116,19 +116,19 @@ Proof.
   - apply I.
 Qed.
 
-Print true_and_true_2. (* `conj I I` *)
+Print trueAndTrue2. (* `conj I I` *)
 
 (*
   The proof above had two subgoals, and both were solved by `apply I`. In
   situations like that, we can use the `;` *tactical* to reduce duplication:
 *)
 
-Theorem true_and_true_3 : True /\ True.
+Theorem trueAndTrue3 : True /\ True.
 Proof.
   split; apply I.
 Qed.
 
-Print true_and_true_3. (* `conj I I` *)
+Print trueAndTrue3. (* `conj I I` *)
 
 (* Let's see what happens when we try to prove `True` *and* `False`. *)
 
@@ -145,7 +145,7 @@ Abort.
   proof of "A" into a proof of "B".
 *)
 
-Definition modus_ponens (A B : Prop) : (A -> B) -> A -> B :=
+Definition modusPonens (A B : Prop) : (A -> B) -> A -> B :=
   fun H1 H2 => H1 H2.
 
 Goal forall A B : Prop, (A -> B) -> A -> B.
@@ -155,7 +155,7 @@ Proof.
   apply H0.
 Qed.
 
-Definition conjunction_symmetric A B : A /\ B -> B /\ A :=
+Definition conjunctionSymmetric A B : A /\ B -> B /\ A :=
   fun H1 =>
     match H1 with
     | conj H2 H3 => conj H3 H2
@@ -204,7 +204,7 @@ Definition iff (A B : Prop) := (A -> B) /\ (B -> A).
 
 Notation "A <-> B" := (iff A B) : type_scope.
 
-Definition A_iff_A A : A <-> A :=
+Definition AIffA A : A <-> A :=
   conj (fun H => H) (fun H => H).
 
 Goal forall A, A <-> A.
@@ -228,7 +228,7 @@ Arguments orIntroR {_} {_} _.
 
 Notation "A \/ B" := (or A B) : type_scope.
 
-Definition disjunction_symmetric A B : (A \/ B) -> (B \/ A) :=
+Definition disjunctionSymmetric A B : (A \/ B) -> (B \/ A) :=
   fun H1 =>
     match H1 with
     | orIntroL H2 => orIntroR H2
@@ -251,7 +251,7 @@ Definition not (A : Prop) := A -> False.
 
 Notation "~ A" := (not A) : type_scope.
 
-Definition not_false : ~False := fun H => H.
+Definition notFalse : ~False := fun H => H.
 
 Goal ~False.
 Proof.
@@ -283,14 +283,14 @@ Inductive eq {A} (x : A) : A -> Prop :=
 Notation "x = y" := (eq x y) : type_scope.
 Notation "x <> y" := (~ (x = y)) : type_scope.
 
-Definition one_plus_one_equals_two : 1 + 1 = 2 := eq_refl 2.
+Definition onePlusOneEqualsTwo : 1 + 1 = 2 := eq_refl 2.
 
 Goal 1 + 1 = 2.
 Proof.
   reflexivity. (* Equivalent to `apply eq_refl.` *)
 Qed.
 
-Definition eq_symmetric A (x y : A) : x = y -> y = x :=
+Definition eqSymmetric A (x y : A) : x = y -> y = x :=
   fun H =>
     match H in _ = z return z = x with
     | eq_refl _ => eq_refl x
@@ -324,7 +324,7 @@ Proof.
   apply H.
 Qed.
 
-Definition eq_transitive A (x y z : A) : x = y -> y = z -> x = z :=
+Definition eqTransitive A (x y z : A) : x = y -> y = z -> x = z :=
   fun H1 H2 =>
     match H2 in _ = v return x = v with
     | eq_refl _ =>
@@ -368,13 +368,13 @@ Qed.
   we don't need to define it explicitly.
 *)
 
-Definition negb_involution b :=
+Definition negbInvolution b :=
   match b return negb (negb b) = b with
   | true => eq_refl true
   | false => eq_refl false
   end.
 
-Check negb_involution. (* `forall b : bool, negb (negb b) = b` *)
+Check negbInvolution. (* `forall b : bool, negb (negb b) = b` *)
 
 Goal forall b, negb (negb b) = b.
 Proof.
@@ -420,7 +420,7 @@ Arguments ex_intro {_} {_} _ _.
 Notation "'exists' x .. y , p" := (ex (fun x => .. (ex (fun y => p)) ..))
   (at level 200, x binder, right associativity) : type_scope.
 
-Definition half_of_6_exists : exists x, 2 * x = 6 :=
+Definition halfOf6Exists : exists x, 2 * x = 6 :=
   ex_intro 3 (eq_refl 6).
 
 Goal exists x, 2 * x = 6.
@@ -429,7 +429,7 @@ Proof.
   reflexivity.
 Qed.
 
-Definition divisible_by_4_implies_even x :
+Definition divisibleBy4ImpliesEven x :
   (exists y, 4 * y = x) ->
   (exists z, 2 * z = x)
 :=
