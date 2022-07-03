@@ -180,7 +180,7 @@ Definition evenNat := { n : nat | exists m, n = 2 * m }.
 
 Require Import Coq.micromega.Lia.
 
-Theorem addEvenNat : forall (n m : evenNat), evenNat.
+Theorem addEvenNat1 : forall (n m : evenNat), evenNat.
   unfold evenNat.
   refine (fun n m => _). (* Define a function and postpone the body. *)
   destruct n. (* Unpack `n` into a `nat` and a proof of its evenness. *)
@@ -192,7 +192,7 @@ Theorem addEvenNat : forall (n m : evenNat), evenNat.
   lia.
 Defined. (* Unlike `Qed`, `Defined` grants access to the implementation. *)
 
-Recursive Extraction addEvenNat.
+Recursive Extraction addEvenNat1.
 
 (*
   The extracted code omits the proofs:
@@ -207,9 +207,44 @@ Recursive Extraction addEvenNat.
 
   type evenNat = int
 
-  (** val addEvenNat : evenNat -> evenNat -> evenNat **)
+  (** val addEvenNat1 : evenNat -> evenNat -> evenNat **)
 
-  let addEvenNat =
+  let addEvenNat1 =
+    add
+  ```
+
+  Coq provides a more convenient way to write this style of code:
+*)
+
+Program Definition addEvenNat2 (n m : evenNat) : evenNat := n + m.
+Next Obligation.
+  destruct n.
+  destruct m.
+  destruct e.
+  destruct e0.
+  exists (x1 + x2).
+  cbn. (* Simplify the goal. *)
+  lia.
+Defined.
+
+Recursive Extraction addEvenNat2.
+
+(*
+  The extracted code is essentially the same as before:
+
+  ```
+  type 'a sig0 = 'a
+    (* singleton inductive, whose constructor was exist *)
+
+  (** val add : int -> int -> int **)
+
+  let rec add = ( + )
+
+  type evenNat = int
+
+  (** val addEvenNat2 : evenNat -> evenNat -> evenNat **)
+
+  let addEvenNat2 =
     add
   ```
 *)
