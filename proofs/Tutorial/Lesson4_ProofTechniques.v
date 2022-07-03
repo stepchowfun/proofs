@@ -15,7 +15,7 @@
   prove the arguments are pairwise equal.
 *)
 
-Definition successors_equal n1 n2 : n1 = n2 -> S n1 = S n2 :=
+Definition successorsEqual n1 n2 : n1 = n2 -> S n1 = S n2 :=
   fun H =>
     match H in _ = x return S n1 = S x with
     | eq_refl => eq_refl (S n1)
@@ -39,7 +39,7 @@ Qed.
   that the arguments are pairwise equal.
 *)
 
-Definition successor_injective n1 n2 : S n1 = S n2 -> n1 = n2 :=
+Definition successorInjective n1 n2 : S n1 = S n2 -> n1 = n2 :=
   fun H =>
     match H in _ = x return pred (S n1) = pred x with
     | eq_refl => eq_refl (pred (S n1))
@@ -65,7 +65,7 @@ Qed.
   universes.
 *)
 
-Definition true_neq_false : true <> false :=
+Definition trueNeqFalse : true <> false :=
   fun H =>
     match H
     in _ = x
@@ -93,7 +93,7 @@ Qed.
 
 (* Let's prove that zero is a left identity for addition. *)
 
-Definition zero_plus_n_equals_n n : 0 + n = n := eq_refl n.
+Definition zeroPlusNEqualsN n : 0 + n = n := eq_refl n.
 
 Goal forall n, 0 + n = n.
 Proof.
@@ -103,7 +103,7 @@ Qed.
 
 (* That was easy! Now let's prove that zero is also a right identity. *)
 
-Fail Definition n_plus_zero_equals_n n : n + 0 = n := eq_refl n.
+Fail Definition nPlusZeroEqualsN n : n + 0 = n := eq_refl n.
 
 (*
   ```
@@ -141,11 +141,11 @@ Print "+".
   Lesson 1, we can use `Fixpoint` to write a proof by induction.
 *)
 
-Fixpoint n_plus_zero_equals_n n : n + 0 = n :=
+Fixpoint nPlusZeroEqualsN n : n + 0 = n :=
   match n return n + 0 = n with
   | O => eq_refl 0
   | S p =>
-    match n_plus_zero_equals_n p in _ = x return S p + 0 = S x with
+    match nPlusZeroEqualsN p in _ = x return S p + 0 = S x with
     | eq_refl => eq_refl ((S p) + 0)
     end
   end.
