@@ -147,4 +147,4 @@ Tactic Notation "gen" constr(e1) constr(e2) constr(e3) constr(e4) constr(e5) :=
 
 (* This is like the `inversion` tactic, but leaves less junk around. *)
 
-Ltac invert H := inversion H; try clear H; subst.
+Ltac invert H := inversion H; clear H; subst.

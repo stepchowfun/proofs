@@ -199,3 +199,36 @@ Proof.
     rewrite IHn.
     reflexivity.
 Qed.
+
+(**************)
+(* Automation *)
+(**************)
+
+(*
+  The `auto` tactic can solve some goals automatically. It can make proofs much
+  shorter and easier to write!
+*)
+
+Goal forall n, n + 0 = n.
+Proof.
+  intros.
+  induction n; auto.
+Qed.
+
+(* The `congruence` tactic can solve many goals by equational reasoning. *)
+
+Goal forall f (x y z : nat), f x = y -> f y = z -> f (f x) = z.
+Proof.
+  intros.
+  congruence.
+Qed.
+
+(* The `lia` tactic can solve many goals that deal with integers. *)
+
+Require Import Coq.micromega.Lia.
+
+Goal forall x y z, x * (y + z) = x * y + x * z.
+Proof.
+  intros.
+  lia.
+Qed.
