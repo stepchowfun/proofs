@@ -189,14 +189,14 @@ Qed.
 
 (* For extra practice, let's prove that addition is associative. *)
 
-Goal forall n m p, n + (m + p) = (n + m) + p.
+Goal forall n1 n2 n3, n1 + (n2 + n3) = (n1 + n2) + n3.
 Proof.
   intros.
-  induction n.
+  induction n1.
   - cbn.
     reflexivity.
   - cbn.
-    rewrite IHn.
+    rewrite IHn1.
     reflexivity.
 Qed.
 
@@ -206,7 +206,8 @@ Qed.
 
 (*
   The `auto` tactic can solve some goals automatically. It can make proofs much
-  shorter and easier to write!
+  shorter and easier to write! You can even provide *hints* (e.g., lemmas) to
+  make `auto` smarter; consult the Coq documentation for details.
 *)
 
 Goal forall n, n + 0 = n.
@@ -217,7 +218,7 @@ Qed.
 
 (* The `congruence` tactic can solve many goals by equational reasoning. *)
 
-Goal forall f (x y z : nat), f x = y -> f y = z -> f (f x) = z.
+Goal forall f (n1 n2 n3 : nat), f n1 = n2 -> f n2 = n3 -> f (f n1) = n3.
 Proof.
   intros.
   congruence.
@@ -227,7 +228,7 @@ Qed.
 
 Require Import Coq.micromega.Lia.
 
-Goal forall x y z, x * (y + z) = x * y + x * z.
+Goal forall n1 n2 n3, n1 * (n2 + n3) = n1 * n2 + n1 * n3.
 Proof.
   intros.
   lia.
