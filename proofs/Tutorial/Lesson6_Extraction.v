@@ -176,11 +176,12 @@ Extract Constant plus => "( + )".
 
 Definition evenNat := { n : nat | exists m, n = 2 * m }.
 
-(* We can define addition on `evenNat`s: *)
+(* We can define addition on `evenNat`s using proof mode. *)
 
 Require Import Coq.micromega.Lia.
 
-Theorem addEvenNat1 : forall (n m : evenNat), evenNat.
+Definition addEvenNat1 : forall (n m : evenNat), evenNat.
+Proof.
   unfold evenNat.
   refine (fun n m => _). (* Define a function and postpone the body. *)
   destruct n. (* Unpack `n` into a `nat` and a proof of its evenness. *)
@@ -190,7 +191,7 @@ Theorem addEvenNat1 : forall (n m : evenNat), evenNat.
   destruct e0.
   exists (x1 + x2).
   lia.
-Defined. (* Unlike `Qed`, `Defined` grants access to the implementation. *)
+Defined. (* Unlike `Qed`, `Defined` grants us access to the implementation. *)
 
 Recursive Extraction addEvenNat1.
 
@@ -247,4 +248,14 @@ Recursive Extraction addEvenNat2.
   let addEvenNat2 =
     add
   ```
+*)
+
+(*************)
+(* Exercises *)
+(*************)
+
+(*
+  1. Explain why Coq doesn't generally let us pattern match on a proof to
+     produce something which is not a proof. What are the exceptions to this
+     rule?
 *)

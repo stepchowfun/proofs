@@ -54,7 +54,7 @@ Fail Fixpoint f (n : nat) : False := f n.
 
   So, instead of having `Type : Type`, we have an infinite heirarchy of
   universes `Type_i` for all `i` >= 0. For convenience, universes are
-  cummulative, so `x : Type_i` implies `x : Type_(i+1)`. `Type_0` is called
+  cumulative, so `x : Type_i` implies `x : Type_(i+1)`. `Type_0` is called
   `Set`. All of these `Type_i` universes, including `Set`, are "predicative",
   which will be explained below. However, in the same universe as `Set`
   (namely, `Type_1`), we also have an "impredicative" universe called `Prop`.
@@ -70,7 +70,7 @@ Check Prop -> Set. (* `Type@{Set+1}` *)
 
 (*
   If `A` and `B` are in different universes, there will be some higher universe
-  which contains them both due to cummulativity.
+  which contains them both due to cumulativity.
 *)
 
 Check Set -> nat. (* `Type@{Set+1}` *)
@@ -258,4 +258,19 @@ Fail Inductive alsoBad :=
   `alsoBad` is not known to cause any theoretical issues in predicative
   universes, but Coq still rejects it regardless of the universe in which it's
   defined.
+*)
+
+(*************)
+(* Exercises *)
+(*************)
+
+(*
+  1. Explain why Coq requires that all functions terminate on all inputs. How
+     does Coq enforce this?
+  2. No type can be its own type, yet `Check Type` reports `Type : Type`.
+     What's really going on here?
+  3. Describe cumulativity. Can you think of an example in which it's useful?
+  4. Describe impredicativity. Does `Set` have it? Does `Prop` have it? Do the
+     `Type` universes have it?
+  5. Describe the restrictions Coq imposes on inductive data types.
 *)
