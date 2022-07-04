@@ -187,17 +187,25 @@ Proof.
     reflexivity.
 Qed.
 
-(* For extra practice, let's prove that addition is associative. *)
+(*
+  To illustrate a few more useful techniques, let's prove addition is
+  commutative.
+*)
 
-Goal forall n1 n2 n3, n1 + (n2 + n3) = (n1 + n2) + n3.
+Goal forall n1 n2, n1 + n2 = n2 + n1.
 Proof.
   intros.
   induction n1.
-  - cbn.
+  - rewrite nPlusZeroEqualsN. (* We can use our previous theorem! *)
     reflexivity.
-  - cbn.
+  - cbn. (* `cbn` simplifies the goal by computation. *)
     rewrite IHn1.
-    reflexivity.
+    clear IHn1. (* We won't need this hypothesis anymore, so remove it. *)
+    induction n2. (* An induction proof within an induction proof! *)
+    + reflexivity. (* Use `+` instead of `-` for nested subgoals. *)
+    + cbn.
+      rewrite IHn2.
+      reflexivity.
 Qed.
 
 (**************)
@@ -207,7 +215,8 @@ Qed.
 (*
   The `auto` tactic can solve some goals automatically. It can make proofs much
   shorter and easier to write! You can even provide *hints* (e.g., lemmas) to
-  make `auto` smarter; consult the Coq documentation for details.
+  make `auto` smarter; consult the Coq documentation for details. Here we prove
+  two theorems from earlier, but using `auto` to make the proofs shorter.
 *)
 
 Goal forall n, n + 0 = n.
@@ -216,11 +225,20 @@ Proof.
   induction n; auto.
 Qed.
 
+Goal forall n1 n2, n1 + n2 = n2 + n1.
+Proof.
+  intros.
+  induction n1.
+  - auto.
+  - cbn.
+    rewrite IHn1.
+    induction n2; auto.
+Qed.
+
 (* The `congruence` tactic can solve many goals by equational reasoning. *)
 
 Goal forall f (n1 n2 n3 : nat), f n1 = n2 -> f n2 = n3 -> f (f n1) = n3.
 Proof.
-  intros.
   congruence.
 Qed.
 
@@ -230,6 +248,14 @@ Require Import Coq.micromega.Lia.
 
 Goal forall n1 n2 n3, n1 * (n2 + n3) = n1 * n2 + n1 * n3.
 Proof.
-  intros.
   lia.
 Qed.
+
+(*************)
+(* Exercises *)
+(*************)
+
+(*
+  1. Prove that addition is associative, i.e.,
+     `forall n1 n2 n3, n1 + (n2 + n3) = (n1 + n2) + n3`.
+*)
