@@ -216,14 +216,8 @@ Qed.
   The `auto` tactic can solve some goals automatically. It can make proofs much
   shorter and easier to write! You can even provide *hints* (e.g., lemmas) to
   make `auto` smarter; consult the Coq documentation for details. Here we prove
-  two theorems from earlier, but using `auto` to make the proofs shorter.
+  the commutativity theorem again, now using `auto` to make the proof shorter.
 *)
-
-Goal forall n, n + 0 = n.
-Proof.
-  intros.
-  induction n; auto.
-Qed.
 
 Goal forall n1 n2, n1 + n2 = n2 + n1.
 Proof.
