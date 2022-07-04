@@ -101,7 +101,7 @@ Proof.
   reflexivity.
 Qed.
 
-(* That was easy! Now let's prove that zero is also a right identity. *)
+(* That was easy! Now let's try to prove that zero is also a right identity. *)
 
 Fail Definition nPlusZeroEqualsN n : n + 0 = n := eq_refl n.
 
