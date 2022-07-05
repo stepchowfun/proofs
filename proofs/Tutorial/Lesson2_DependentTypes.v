@@ -26,7 +26,7 @@ Require Import Coq.Strings.String.
 
 (* Here's a string: *)
 
-Check "Hello, World!".
+Check "Hello, World!". (* `string` *)
 
 (*****************)
 (* Type families *)
