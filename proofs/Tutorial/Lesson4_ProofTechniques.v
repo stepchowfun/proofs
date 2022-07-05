@@ -253,7 +253,9 @@ Qed.
   1. Prove `0 <> 1`.
   2. Prove that addition is associative, i.e.,
      `forall n1 n2 n3, n1 + (n2 + n3) = (n1 + n2) + n3`.
-  3. Prove the strong induction principle:
+  3. Look up the induction principle for `eq` with `Check eq_ind.`. Informally,
+     what does it mean?
+  4. Prove the following *strong induction* principle for natural numbers:
 
      ```
      forall P : nat -> Prop,
@@ -261,6 +263,7 @@ Qed.
      forall n, P n.
      ```
 
-     Hint: Start the proof with `intros`, then use `assert` to prove a fact
-     involving `P` and `n`. The goal should easily follow from that fact.
+     Hint: Start the proof with `intros`, then use a tactic called `assert` to
+     prove a fact involving `P` and `n`. The goal should easily follow from
+     that fact.
 *)
