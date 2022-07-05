@@ -118,32 +118,38 @@ Ltac feed H1 :=
     | ?T -> _ => assert (H2 : T); [ | specialize (H1 H2); clear H2 ]
     end; magic.
 
-(* This notation performs `generalize dependent` on multiple terms at once. *)
+(* This notation performs `revert dependent` on multiple terms at once. *)
 
-Tactic Notation "gen" constr(e1) :=
-  generalize dependent e1.
+Tactic Notation "outro" constr(e1) :=
+  revert dependent e1.
 
-Tactic Notation "gen" constr(e1) constr(e2) :=
-  generalize dependent e2;
-  generalize dependent e1.
+Tactic Notation "outro" constr(e1) constr(e2) :=
+  revert dependent e2;
+  revert dependent e1.
 
-Tactic Notation "gen" constr(e1) constr(e2) constr(e3) :=
-  generalize dependent e3;
-  generalize dependent e2;
-  generalize dependent e1.
+Tactic Notation "outro" constr(e1) constr(e2) constr(e3) :=
+  revert dependent e3;
+  revert dependent e2;
+  revert dependent e1.
 
-Tactic Notation "gen" constr(e1) constr(e2) constr(e3) constr(e4) :=
-  generalize dependent e4;
-  generalize dependent e3;
-  generalize dependent e2;
-  generalize dependent e1.
+Tactic Notation "outro" constr(e1) constr(e2) constr(e3) constr(e4) :=
+  revert dependent e4;
+  revert dependent e3;
+  revert dependent e2;
+  revert dependent e1.
 
-Tactic Notation "gen" constr(e1) constr(e2) constr(e3) constr(e4) constr(e5) :=
-  generalize dependent e5;
-  generalize dependent e4;
-  generalize dependent e3;
-  generalize dependent e2;
-  generalize dependent e1.
+Tactic Notation "outro"
+  constr(e1)
+  constr(e2)
+  constr(e3)
+  constr(e4)
+  constr(e5)
+:=
+  revert dependent e5;
+  revert dependent e4;
+  revert dependent e3;
+  revert dependent e2;
+  revert dependent e1.
 
 (* This is like the `inversion` tactic, but leaves less junk around. *)
 

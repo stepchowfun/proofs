@@ -24,7 +24,7 @@ Theorem ttSubIntro :
   ~ In x (tFreeVars t1) ->
   ttOpen t1 i t2 = (ttSub (ttOpen t1 i (tFreeVar x)) x t2).
 Proof.
-  clean. gen i. induction t1; magic.
+  clean. outro i. induction t1; magic.
 Qed.
 
 #[export] Hint Resolve ttSubIntro : main.
@@ -58,7 +58,7 @@ Theorem ttttSubOpen :
   tLocallyClosed t2 i ->
   ttSub (ttOpen t1 i t3) x t2 = ttOpen (ttSub t1 x t2) i (ttSub t3 x t2).
 Proof.
-  clean. gen i. induction t1; magic; clean.
+  clean. outro i. induction t1; magic; clean.
   - destruct (nameEq x n); magic. rewrite tttOpenLocallyClosed; magic.
   - specialize (IHt1 (S i)). feed IHt1.
     apply tLocalClosureMonotonic with (i1 := i); magic.
@@ -71,7 +71,7 @@ Theorem eeeeSubOpen :
   eLocallyClosed e2 ie it ->
   eeSub (eeOpen e1 ie e3) x e2 = eeOpen (eeSub e1 x e2) ie (eeSub e3 x e2).
 Proof.
-  clean. gen ie. induction e1; magic; clean.
+  clean. outro ie. induction e1; magic; clean.
   - destruct (nameEq x n); magic.
     rewrite eeeOpenLocallyClosed with (it := it); magic.
   - specialize (IHe1 (S ie)). feed IHe1.
@@ -85,7 +85,7 @@ Theorem eeetSubOpen :
   eLocallyClosed e2 ie it ->
   eeSub (etOpen e1 it t) x e2 = etOpen (eeSub e1 x e2) it t.
 Proof.
-  clean. gen it. induction e1; magic; clean.
+  clean. outro it. induction e1; magic; clean.
   - destruct (nameEq x n); magic.
     rewrite eetOpenLocallyClosed with (ie := ie) (it := it); magic.
   - specialize (IHe1 (S it)). feed IHe1.
@@ -99,7 +99,7 @@ Theorem eteeSubOpen :
   tLocallyClosed t i ->
   etSub (eeOpen e1 i e2) x t = eeOpen (etSub e1 x t) i (etSub e2 x t).
 Proof.
-  clean. gen i. induction e1; magic; clean.
+  clean. outro i. induction e1; magic; clean.
   specialize (IHe1 (S i)). feed IHe1.
   apply tLocalClosureMonotonic with (i1 := i); magic.
 Qed.
@@ -111,7 +111,7 @@ Theorem etetSubOpen :
   tLocallyClosed t1 i ->
   etSub (etOpen e i t2) x t1 = etOpen (etSub e x t1) i (ttSub t2 x t1).
 Proof.
-  clean. gen i. induction e; magic; clean.
+  clean. outro i. induction e; magic; clean.
   specialize (IHe (S i)). feed IHe.
   apply tLocalClosureMonotonic with (i1 := i); magic.
 Qed.

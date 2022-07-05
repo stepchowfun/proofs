@@ -85,7 +85,7 @@ Theorem ttSubLocallyClosed :
   tLocallyClosed t2 i ->
   tLocallyClosed (ttSub t1 x t2) i.
 Proof.
-  clean. gen i. induction t1; magic; clean; invert H; magic.
+  clean. outro i. induction t1; magic; clean; invert H; magic.
   constructor. apply IHt1; magic.
   apply tLocalClosureMonotonic with (i1 := i); magic.
 Qed.
@@ -98,7 +98,7 @@ Theorem eeSubLocallyClosed :
   eLocallyClosed e2 ie it ->
   eLocallyClosed (eeSub e1 x e2) ie it.
 Proof.
-  clean. gen ie it. induction e1; magic; clean; invert H; magic;
+  clean. outro ie it. induction e1; magic; clean; invert H; magic;
     constructor; magic; apply IHe1; magic;
     apply eLocalClosureMonotonic with (ie1 := ie) (it1 := it); magic.
 Qed.
@@ -111,7 +111,7 @@ Theorem etSubLocallyClosed :
   tLocallyClosed t it ->
   eLocallyClosed (etSub e x t) ie it.
 Proof.
-  clean. gen ie it. induction e; magic; clean; invert H; magic.
+  clean. outro ie it. induction e; magic; clean; invert H; magic.
   constructor. apply IHe; magic.
   apply tLocalClosureMonotonic with (i1 := it); magic.
 Qed.
