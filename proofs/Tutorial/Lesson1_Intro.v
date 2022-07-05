@@ -358,9 +358,10 @@ Compute 1 + 1. (* `2` *)
   1. Define the concept of lists as an inductive data type which is
      parameterized by the element type. Which arguments would you make
      implicit, if any?
-  2. Define a function which computes the length of a list as defined above.
-  3. Define a `map` function for lists as defined above, analogous to the
-     `mapOption` function.
+  2. Define a function which computes the length of a list as defined in the
+     previous question.
+  3. Define a `map` function for lists as defined in the first question,
+     analogous to the `mapOption` function defined in the lesson.
   4. Define a function which compares two natural numbers for equality.
   5. Define multiplication of natural numbers.
   6. Define subtraction of natural numbers. The function should return an

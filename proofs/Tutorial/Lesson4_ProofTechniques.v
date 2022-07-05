@@ -255,7 +255,7 @@ Qed.
      `forall n1 n2 n3, n1 + (n2 + n3) = (n1 + n2) + n3`.
   3. Look up the induction principle for `eq` with `Check eq_ind.`. Informally,
      what does it mean?
-  4. Prove the following *strong induction* principle for natural numbers:
+  4. Prove the *strong induction* principle for natural numbers:
 
      ```
      forall P : nat -> Prop,
