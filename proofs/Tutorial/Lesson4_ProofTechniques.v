@@ -6,9 +6,9 @@
 (******************************)
 (******************************)
 
-(**********************************)
-(* Indiscernibility of identicals *)
-(**********************************)
+(****************************)
+(* Equality of applications *)
+(****************************)
 
 (*
   To prove two applications of a function or constructor are equal, we can
@@ -226,7 +226,7 @@ Proof.
   - auto.
   - cbn.
     rewrite IHn1.
-    induction n2; auto.
+    auto.
 Qed.
 
 (* The `congruence` tactic can solve many goals by equational reasoning. *)
