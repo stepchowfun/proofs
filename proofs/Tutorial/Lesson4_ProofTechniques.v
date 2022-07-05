@@ -250,6 +250,17 @@ Qed.
 (*************)
 
 (*
-  1. Prove that addition is associative, i.e.,
+  1. Prove `0 <> 1`.
+  2. Prove that addition is associative, i.e.,
      `forall n1 n2 n3, n1 + (n2 + n3) = (n1 + n2) + n3`.
+  3. Prove the strong induction principle:
+
+     ```
+     forall P : nat -> Prop,
+     (forall n1, (forall n2, n2 < n1 -> P n2) -> P n1) ->
+     forall n, P n.
+     ```
+
+     Hint: Start the proof with `intros`, then use `assert` to prove a fact
+     involving `P` and `n`. The goal should easily follow from that fact.
 *)

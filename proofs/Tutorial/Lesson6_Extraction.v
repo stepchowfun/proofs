@@ -258,4 +258,14 @@ Recursive Extraction addEvenNat2.
   1. Explain why Coq doesn't generally let us pattern match on a proof to
      produce something which is not a proof. What are the exceptions to this
      rule?
+  2. Write a function of type `nat -> nat` which takes a `nat` and doubles it,
+     prove some property about it, and extract it to OCaml.
+  3. Write a function which takes a `nat` and doubles it, but give the function
+     a type that guarantees the property from the previous question. Extract it
+     to OCaml.
+  4. We've seen two styles of writing formally verified code: (1) write the
+     code in an ordinary functional style and prove properties about it
+     separately (as we did with `xor`), and (2) write the code and proofs
+     together (as we did with `addEvenNat1` and `addEvenNat2`). When might you
+     use one style over the other?
 *)
