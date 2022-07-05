@@ -89,7 +89,7 @@ Theorem ttLocallyClosedOpen :
   tLocallyClosed (ttOpen t1 i t2) i ->
   tLocallyClosed t1 (S i).
 Proof.
-  clean. gen t1 i.
+  clean. outro t1 i.
   induction t1; magic; clean.
   - destruct (eq_dec i n); magic.
     apply tLocalClosureMonotonic with (i1 := i); magic.
@@ -104,7 +104,7 @@ Theorem eeLocallyClosedOpen :
   eLocallyClosed (eeOpen e1 ie e2) ie it ->
   eLocallyClosed e1 (S ie) it.
 Proof.
-  clean. gen e1 ie it.
+  clean. outro e1 ie it.
   induction e1; magic; clean.
   - destruct (eq_dec ie n); magic.
     apply eLocalClosureMonotonic with (ie1 := ie) (it1 := it); magic.
@@ -121,7 +121,7 @@ Theorem etLocallyClosedOpen :
   eLocallyClosed (etOpen e it t) ie it ->
   eLocallyClosed e ie (S it).
 Proof.
-  clean. gen e ie it.
+  clean. outro e ie it.
   induction e; magic; clean.
   - apply eLocalClosureMonotonic with (ie1 := ie) (it1 := it); magic.
   - invert H. eMagic.
@@ -141,7 +141,7 @@ Theorem tttFreeOpen :
   incl (tFreeVars (ttOpen t1 i t2)) (tFreeVars t2 ++ tFreeVars t1) /\
   incl (tFreeVars t1) (tFreeVars (ttOpen t1 i t2)).
 Proof.
-  clean. split; gen i.
+  clean. split; outro i.
   - induction t1; magic. clean. apply incl_app.
     + apply incl_tran with (m := tFreeVars t2 ++ tFreeVars t1_1); magic.
     + apply incl_tran with (m := tFreeVars t2 ++ tFreeVars t1_2); magic.
@@ -155,7 +155,7 @@ Theorem eeeeFreeOpen :
   incl (eeFreeVars (eeOpen e1 i e2)) (eeFreeVars e2 ++ eeFreeVars e1) /\
   incl (eeFreeVars e1) (eeFreeVars (eeOpen e1 i e2)).
 Proof.
-  clean. split; gen i.
+  clean. split; outro i.
   - induction e1; magic. clean. apply incl_app.
     + apply incl_tran with (m := eeFreeVars e2 ++ eeFreeVars e1_1); magic.
     + apply incl_tran with (m := eeFreeVars e2 ++ eeFreeVars e1_2); magic.
@@ -169,7 +169,7 @@ Theorem eeetFreeOpen :
   incl (eeFreeVars (etOpen e i t)) (eeFreeVars e) /\
   incl (eeFreeVars e) (eeFreeVars (etOpen e i t)).
 Proof.
-  clean. split; gen i; induction e; magic.
+  clean. split; outro i; induction e; magic.
 Qed.
 
 #[export] Hint Resolve eeetFreeOpen : main.
@@ -179,7 +179,7 @@ Theorem eteeFreeOpen :
   incl (etFreeVars (eeOpen e1 i e2)) (etFreeVars e2 ++ etFreeVars e1) /\
   incl (etFreeVars e1) (etFreeVars (eeOpen e1 i e2)).
 Proof.
-  clean. split; gen i.
+  clean. split; outro i.
   - induction e1; magic; clean.
     + specialize (IHe1 (S i)). apply incl_app; magic.
       apply incl_tran with (m := etFreeVars e2 ++ etFreeVars e1); magic.
@@ -198,7 +198,7 @@ Theorem etetFreeOpen :
   incl (etFreeVars (etOpen e i t)) (tFreeVars t ++ etFreeVars e) /\
   incl (etFreeVars e) (etFreeVars (etOpen e i t)).
 Proof.
-  clean. split; gen i.
+  clean. split; outro i.
   - induction e; magic; clean; apply incl_app.
     + apply incl_tran with (m := tFreeVars t0 ++ tFreeVars t1); magic.
       apply tttFreeOpen.
@@ -227,7 +227,7 @@ Theorem locallyClosedOpenForAll :
   tLocallyClosed (ttOpen t1 i t2) i.
 Proof.
   clean. invert H.
-  remember (S i). assert (n <= S i); magic. clear Heqn. gen t2 i.
+  remember (S i). assert (n <= S i); magic. clear Heqn. outro t2 i.
   induction H2; magic; clean.
   - destruct (eq_dec i n1); magic. apply tlcBoundVar. lia.
   - constructor; magic.
@@ -245,7 +245,7 @@ Theorem locallyClosedOpenAbs :
   eLocallyClosed (eeOpen e1 ie e2) ie it.
 Proof.
   clean. invert H. clear t0 H3.
-  remember (S ie). assert (n <= S ie); magic. clear Heqn. gen e2 ie.
+  remember (S ie). assert (n <= S ie); magic. clear Heqn. outro e2 ie.
   induction H6; magic; clean.
   - destruct (eq_dec ie ne1); magic. apply elcBoundVar. lia.
   - constructor; magic.
@@ -267,12 +267,12 @@ Theorem locallyClosedOpenTAbs :
   eLocallyClosed (etOpen e it t) ie it.
 Proof.
   clean. invert H.
-  remember (S it). assert (n <= S it); magic. clear Heqn. gen t it.
+  remember (S it). assert (n <= S it); magic. clear Heqn. outro t0 it.
   induction H2; magic; constructor; magic; clean.
   - apply locallyClosedOpenForAll; magic.
     constructor.
     apply tLocalClosureMonotonic with (i1 := nt); magic.
-  - specialize (IHeLocallyClosed t (S it)).
+  - specialize (IHeLocallyClosed t0 (S it)).
     feed IHeLocallyClosed.
     apply tLocalClosureMonotonic with (i1 := it); magic.
   - apply locallyClosedOpenForAll; magic.

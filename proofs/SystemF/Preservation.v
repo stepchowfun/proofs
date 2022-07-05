@@ -24,7 +24,7 @@ Theorem eSubstitutionPreservesTyping :
   hasType c1 e2 t2 ->
   hasType (cConcat c1 c2) (eeSub e1 x e2) t1.
 Proof.
-  clean. remember (cConcat (cEExtend c1 x t2) c2). gen c2.
+  clean. remember (cConcat (cEExtend c1 x t2) c2). outro c2.
   induction H; eMagic; clean.
   - destruct (nameEq x x0); clean.
     + fact (cELookupNone (cEExtend c1 x0 t2) c2 t2 x0). clean.
@@ -69,7 +69,7 @@ Theorem tSubstitutionPreservesTyping :
   tWellFormed c1 t2 ->
   hasType (cConcat c1 (cSub c2 x t2)) (etSub e x t2) (ttSub t1 x t2).
 Proof.
-  clean. remember (cConcat (cTExtend c1 x) c2). gen c2.
+  clean. remember (cConcat (cTExtend c1 x) c2). outro c2.
   induction H; eMagic; clean.
   - constructor.
     + apply cWellFormedTSkip; magic.
@@ -130,7 +130,7 @@ Theorem preservation :
   step e1 e2 ->
   hasType cEmpty e2 t.
 Proof.
-  clean. gen e2. remember cEmpty. induction H; magic; clean.
+  clean. outro e2. remember cEmpty. induction H; magic; clean.
   - invert H; magic; invert H1; eMagic.
     fact (nameFresh (eeFreeVars e ++ l)). clean.
     specialize (H5 x). feed H5.

@@ -110,7 +110,7 @@ Theorem contextWeakening :
   cWellFormed (cConcat (cConcat c1 c2) c3) ->
   hasType (cConcat (cConcat c1 c2) c3) e t.
 Proof.
-  clean. remember (cConcat c1 c3). gen c3. induction H; eMagic; clean.
+  clean. remember (cConcat c1 c3). outro c3. induction H; eMagic; clean.
   - rewrite cConcatAssoc in *. constructor; magic.
     fact (cConcatELookup c1 c3 t x H0). eMagic.
   - apply htAbs with (l := l ++ eDomain c3 ++ eDomain c2 ++ eDomain c1). clean.
