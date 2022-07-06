@@ -118,7 +118,7 @@ Fail Definition nPlusZeroEqualsN n : n + 0 = n := eq_refl n.
 Goal forall n, n + 0 = n.
 Proof.
   intros.
-  (* reflexivity. *) (* `Unable to unify "n" with "n + 0".` *)
+  (* `reflexivity.` reports `Unable to unify "n" with "n + 0".` *)
 Abort.
 
 (* What went wrong? Recall the definition of addition. *)
