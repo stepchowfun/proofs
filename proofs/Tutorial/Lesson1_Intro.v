@@ -129,7 +129,7 @@ Check idBool. (* `bool -> bool` *)
 
 Definition id (T : Set) (x : T) := x.
 
-Compute id nat (3 + 4). (* `7`*)
+Compute id nat (3 + 4). (* `7` *)
 
 (*
   What's the type of `id`? `id` is a curried function of two arguments, but the
@@ -219,11 +219,11 @@ Inductive optionNat :=
 | noNat : optionNat
 | someNat : nat -> optionNat.
 
-Check noNat. (* optionNat *)
+Check noNat. (* `optionNat` *)
 
-Check someNat. (* nat -> optionNat *)
+Check someNat. (* `nat -> optionNat` *)
 
-Check someNat 3. (* optionNat *)
+Check someNat 3. (* `optionNat` *)
 
 Check optionNat. (* `Set` *)
 
