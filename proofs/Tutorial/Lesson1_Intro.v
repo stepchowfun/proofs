@@ -12,9 +12,9 @@
 
 (*
   Sometimes it's useful to ask Coq for the type of an expression. We can use
-  the `Check` command for that. In the example below, the type is `nat`, which
-  stands for "natural number". Natural numbers are non-negative integers, and
-  they're the most common type of number in Coq.
+  the `Check` command for that. For example, the type of the expression below
+  is `nat`, which stands for "natural number". Natural numbers are unsigned
+  integers, and they're the most common type of number in Coq.
 
   To use these commands interactively, be sure you're using an IDE that
   supports Coq, such as CoqIDE or Visual Studio Code with the VsCoq plugin.
@@ -27,15 +27,17 @@ Check 3 + 4. (* `nat` *)
 Compute 3 + 4. (* `7` *)
 
 (*
-  We can define variables with the `Definition` keyword. Note that Coq is able
-  to infer the type of this variable automatically.
+  We can define variables with the `Definition` keyword. Coq is able to infer
+  that the type of this variable is `nat`.
 *)
 
 Definition myVariable := 42.
 
+Check myVariable. (* `nat` *)
+
 (*
   Functions are data too, so we can also use `Definition` to introduce
-  functions. Note that Coq is able to infer that the type of the function is
+  functions. Coq is able to infer that the type of this function is
   `nat -> nat` based on how `+` is used in the body.
 *)
 
