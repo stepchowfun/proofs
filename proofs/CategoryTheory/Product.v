@@ -31,7 +31,10 @@ Theorem productUnique C (x y : object C) :
 Proof.
   clean.
   unfold uniqueUpToIsomorphism. unfold product. clean.
-  fact (H y0 x1 x2). fact (H0 x0 x3 x4). fact (H x0 x3 x4). fact (H0 y0 x1 x2).
+  pose proof (H y0 x1 x2).
+  pose proof (H0 x0 x3 x4).
+  pose proof (H x0 x3 x4).
+  pose proof (H0 y0 x1 x2).
   clear H H0.
   unfold universal in *. clean. clear H H3 H5 H6.
   unfold arrowExists in *. destruct H1. destruct H. destruct H2. destruct H2.
@@ -78,7 +81,7 @@ Theorem productCommutative
 Proof.
   clean.
   apply productCommutator in H0.
-  fact (productUnique C x y).
+  pose proof (productUnique C x y).
   unfold uniqueUpToIsomorphism in H1.
   apply H1; eMagic.
 Qed.
@@ -111,22 +114,22 @@ Proof.
     do 3 destruct H;
     sort.
 
-  fact (H x_yz x_yz_to_x (compose yz_to_y x_yz_to_yz)).
+  pose proof (H x_yz x_yz_to_x (compose yz_to_y x_yz_to_yz)).
   instantiateUniversal H3.
   rename x0 into x_yz_to_xy.
   clear H4.
 
-  fact (H0 xy_z (compose xy_to_y xy_z_to_xy) xy_z_to_z).
+  pose proof (H0 xy_z (compose xy_to_y xy_z_to_xy) xy_z_to_z).
   instantiateUniversal H4.
   rename x0 into xy_z_to_yz.
   clear H6.
 
-  fact (H2 xy_z (compose xy_to_x xy_z_to_xy) xy_z_to_yz).
+  pose proof (H2 xy_z (compose xy_to_x xy_z_to_xy) xy_z_to_yz).
   instantiateUniversal H6.
   rename x0 into xy_z_to_x_yz.
   clear H8.
 
-  fact (H1 x_yz x_yz_to_xy (compose yz_to_z x_yz_to_yz)).
+  pose proof (H1 x_yz x_yz_to_xy (compose yz_to_z x_yz_to_yz)).
   instantiateUniversal H8.
   rename x0 into x_yz_to_xy_z.
   clear H10.
@@ -152,7 +155,7 @@ Proof.
         rewrite <- H8.
         rewrite cAssoc.
         magic.
-      * fact (
+      * pose proof (
           H
           xy_z
           (
@@ -181,7 +184,7 @@ Proof.
           compose xy_z_to_z (compose x_yz_to_xy_z xy_z_to_x_yz) = xy_z_to_z
         ); [rewrite cAssoc; rewrite <- H11; magic | idtac].
 
-        fact (H1 xy_z xy_z_to_xy xy_z_to_z).
+        pose proof (H1 xy_z xy_z_to_xy xy_z_to_z).
         unfold universal in H15.
         magic.
   - assert (id = compose xy_z_to_x_yz x_yz_to_xy_z).
@@ -205,7 +208,7 @@ Proof.
            rewrite <- H9.
            rewrite cAssoc.
            magic.
-        -- fact (
+        -- pose proof (
              H0
              x_yz
              (
@@ -235,7 +238,7 @@ Proof.
                x_yz_to_x
            ); [rewrite cAssoc; rewrite <- H6; magic | idtac].
 
-           fact (H2 x_yz x_yz_to_x x_yz_to_yz).
+           pose proof (H2 x_yz x_yz_to_x x_yz_to_yz).
            unfold universal in H16.
            magic.
     + unfold isomorphic.
@@ -257,7 +260,7 @@ Theorem productTerminal
 Proof.
   unfold terminal.
   clean.
-  fact (H0 y).
+  pose proof (H0 y).
   clean.
   assert (product x y y x0 id).
   - clear H1.
@@ -272,7 +275,7 @@ Proof.
       magic.
     + unfold arrowUnique.
       magic.
-  - fact (productUnique C x y).
+  - pose proof (productUnique C x y).
     unfold uniqueUpToIsomorphism in H3.
     specialize (H3 xy y).
     eMagic.

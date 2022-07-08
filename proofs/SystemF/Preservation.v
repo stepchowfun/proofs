@@ -27,8 +27,8 @@ Proof.
   clean. remember (cConcat (cEExtend c1 x t2) c2). outro c2.
   induction H; eMagic; clean.
   - destruct (nameEq x x0); clean.
-    + fact (cELookupNone (cEExtend c1 x0 t2) c2 t2 x0). clean.
-      fact (cELookupConcatLeft (cEExtend c1 x0 t2) c2 t2 x0). clean.
+    + pose proof (cELookupNone (cEExtend c1 x0 t2) c2 t2 x0). clean.
+      pose proof (cELookupConcatLeft (cEExtend c1 x0 t2) c2 t2 x0). clean.
       assert (t = t2); magic. clean. clear H3.
       replace (cConcat c1 c2) with (cConcat (cConcat c1 c2) cEmpty); magic.
       apply contextWeakening; magic. clean.
@@ -43,7 +43,7 @@ Proof.
     ) with (
       cConcat c1 (cEExtend c2 x0 t0)
     ); magic.
-    fact (typingRegularity c1 e2 t2).
+    pose proof (typingRegularity c1 e2 t2).
     replace (eFreeVar x0) with (eeSub (eFreeVar x0) x e2); magic.
     rewrite <- eeeeSubOpen with (it := 0); magic.
   - apply htTAbs with (l := x :: l). clean.
@@ -53,7 +53,7 @@ Proof.
     ) with (
       cConcat c1 (cTExtend c2 x0)
     ); magic.
-    fact (typingRegularity c1 e2 t2).
+    pose proof (typingRegularity c1 e2 t2).
     rewrite <- eeetSubOpen with (ie := 0); magic.
   - apply htTApp; magic.
     unfold tWellFormed in *. clean. split; magic.
@@ -75,7 +75,7 @@ Proof.
     + apply cWellFormedTSkip; magic.
     + clear H0. induction c2; invert H; magic; clean.
       rewrite tttSubBound; magic.
-      fact (tWellFormedClosed c1 t x).
+      pose proof (tWellFormedClosed c1 t x).
       feed H. apply tLookupWellFormed with (x := x0); magic.
   - apply htAbs with (l := x :: l). clean.
     specialize (H1 x0). feed H1.
@@ -112,13 +112,15 @@ Proof.
       m := tFreeVars t2 ++ remove nameEq x (tFreeVars t0)
     ); magic.
     unfold incl in *. clean.
-    fact (in_app_or (tFreeVars t2) (remove nameEq x (tFreeVars t0)) a H4).
+    pose proof (
+      in_app_or (tFreeVars t2) (remove nameEq x (tFreeVars t0)) a H4
+    ).
     clear H4. destruct H5; magic.
     rewrite tDomainConcat in *.
-    fact (nameInRemove (tFreeVars t0) a x H4). clean. clear H4.
+    pose proof (nameInRemove (tFreeVars t0) a x H4). clean. clear H4.
     specialize (H3 a). feed H3.
     rewrite cSubTDomain.
-    fact (in_app_or (tDomain c2) (x :: tDomain c1) a H3).
+    pose proof (in_app_or (tDomain c2) (x :: tDomain c1) a H3).
     destruct H4; magic.
 Qed.
 
@@ -132,12 +134,12 @@ Theorem preservation :
 Proof.
   clean. outro e2. remember cEmpty. induction H; magic; clean.
   - invert H; magic; invert H1; eMagic.
-    fact (nameFresh (eeFreeVars e ++ l)). clean.
+    pose proof (nameFresh (eeFreeVars e ++ l)). clean.
     specialize (H5 x). feed H5.
     rewrite eeSubIntro with (x := x); magic.
     replace cEmpty with (cConcat cEmpty cEmpty); eMagic.
   - invert H0; magic; invert H1; magic.
-    fact (nameFresh (etFreeVars e0 ++ tFreeVars t1 ++ l)). clean.
+    pose proof (nameFresh (etFreeVars e0 ++ tFreeVars t1 ++ l)). clean.
     specialize (H5 x). feed H5.
     rewrite etSubIntro with (x := x); magic.
     rewrite ttSubIntro with (x := x); magic.

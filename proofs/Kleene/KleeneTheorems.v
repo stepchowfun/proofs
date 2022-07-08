@@ -106,7 +106,7 @@ Module KleeneTheorems (Kleene : KleeneData).
     monotone f ->
     leq (approx f n) (approx f m) \/ leq (approx f m) (approx f n).
   Proof.
-    clean. fact (natDiff n m). clean. destruct H0.
+    clean. pose proof (natDiff n m). clean. destruct H0.
     - right. clean. induction m; magic.
     - left. clean. induction n; magic.
   Qed.
@@ -125,7 +125,7 @@ Module KleeneTheorems (Kleene : KleeneData).
     unfold directed.
     split; clean.
     - exists bottom. exists 0. magic.
-    - fact (omegaChain f x x0 H). destruct H0.
+    - pose proof (omegaChain f x x0 H). destruct H0.
       + exists (approx f x0). eMagic.
       + exists (approx f x). eMagic.
   Qed.
@@ -154,7 +154,7 @@ Module KleeneTheorems (Kleene : KleeneData).
     pose (P := fun x2 : T => exists n : nat, x2 = approx f n).
     assert (directed P).
     - apply kleeneChainDirected. apply continuousImpliesMonotone in H. magic.
-    - fact (directedComplete P H0). clean. exists x. split; magic. split.
+    - pose proof (directedComplete P H0). clean. exists x. split; magic. split.
       + unfold continuous in H.
         specialize (H P x H0 H1).
         set (Q := fun x2 : T => exists x3 : T, P x3 /\ x2 = f x3) in H.
@@ -175,7 +175,7 @@ Module KleeneTheorems (Kleene : KleeneData).
         * unfold P in H3. clean.
           induction x0; magic.
           clean. rewrite <- H2.
-          fact (continuousImpliesMonotone f H). magic.
+          pose proof (continuousImpliesMonotone f H). magic.
         * unfold supremum in H1. magic.
   Qed.
 

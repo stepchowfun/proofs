@@ -127,7 +127,7 @@ Qed.
   incl (l1 ++ remove nameEq x l2) (l1 ++ remove nameEq x (l2 ++ l3)).
 Proof.
   unfold incl. clean.
-  fact (in_app_or l1 (remove nameEq x l2) a H).
+  pose proof (in_app_or l1 (remove nameEq x l2) a H).
   destruct H0; magic.
   apply in_or_app. right.
   induction l2; magic.
@@ -140,7 +140,7 @@ Qed.
   incl (l1 ++ remove nameEq x l3) (l1 ++ remove nameEq x (l2 ++ l3)).
 Proof.
   unfold incl. clean.
-  fact (in_app_or l1 (remove nameEq x l3) a H).
+  pose proof (in_app_or l1 (remove nameEq x l3) a H).
   destruct H0; magic.
   apply in_or_app. right.
   induction l2; magic.

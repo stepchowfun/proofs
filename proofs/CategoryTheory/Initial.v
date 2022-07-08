@@ -23,8 +23,8 @@ Proof.
   unfold isomorphic.
   unfold isomorphism.
   clean.
-  fact (H x). specialize (H y).
-  fact (H0 x). specialize (H0 y).
+  pose proof (H x). specialize (H y).
+  pose proof (H0 x). specialize (H0 y).
   clean.
   exists x3.
   exists x0.

@@ -47,7 +47,7 @@ Proof.
   clean. outro c t2. induction e2; clean; invert H; eMagic; clean.
   - destruct (nameEq x n); destruct (nameEq n x); magic.
     apply contextInvariance with (c1 := cEmpty); magic.
-    clean. fact (typingJudgmentClosed cEmpty e1 x0 t1). magic.
+    clean. pose proof (typingJudgmentClosed cEmpty e1 x0 t1). magic.
   - destruct (nameEq x n); apply htAbs.
     + apply contextInvariance with (c1 := cExtend (cExtend c n t1) n t); magic.
     + apply IHe2.

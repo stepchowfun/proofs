@@ -52,7 +52,7 @@ Proof.
   clean.
   rewrite opCoproductProduct in *.
   rewrite opIsomorphic.
-  fact (productUnique (oppositeCategory C) x y y0 x0).
+  pose proof (productUnique (oppositeCategory C) x y y0 x0).
   eMagic.
 Qed.
 
