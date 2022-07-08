@@ -84,7 +84,7 @@ Theorem stepStarRegularity :
   stepStar e1 e2 ->
   eLocallyClosed e1 0 0 /\ eLocallyClosed e2 0 0.
 Proof.
-  clean. induction H; magic. fact (stepRegularity e1 e2). magic.
+  clean. induction H; magic. pose proof (stepRegularity e1 e2). magic.
 Qed.
 
 #[export] Hint Resolve stepStarRegularity : main.

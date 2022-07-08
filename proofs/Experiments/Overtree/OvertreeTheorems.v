@@ -35,7 +35,7 @@ Module OvertreeTheorems (Graph : Overtree).
   Proof.
     clean.
     assert (clos_refl_trans_n1 proxies n root); magic.
-    fact rootProxy.
+    pose proof rootProxy.
     induction H0; magic.
     assert (y = z); magic.
   Qed.
@@ -182,7 +182,7 @@ Module OvertreeTheorems (Graph : Overtree).
           apply rt_trans with (y := z); magic.
         * assert (x = y); magic.
     - destruct (classic (n1 = n2)); magic.
-      fact (rootUniquelyReachable n2).
+      pose proof (rootUniquelyReachable n2).
       magic.
   Qed.
 

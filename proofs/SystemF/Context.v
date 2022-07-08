@@ -331,7 +331,7 @@ Proof.
   clean. induction c2; invert H; magic; clean; constructor; magic.
   - rewrite eDomainConcat in *. clean.
     unfold not in *. clean.
-    fact (in_app_or (eDomain c2) (eDomain c1) n H).
+    pose proof (in_app_or (eDomain c2) (eDomain c1) n H).
     destruct H0; magic.
   - unfold tWellFormed in *. split; magic. clean.
     rewrite tDomainConcat in *. magic.
@@ -364,10 +364,10 @@ Proof.
     rewrite cSubTDomain.
     unfold incl in *. clean.
     specialize (H1 a). feed H1.
-    + fact (nameInRemove (tFreeVars t0) a x H3). magic.
-    + fact (remove_In nameEq (tFreeVars t0) x).
+    + pose proof (nameInRemove (tFreeVars t0) a x H3). magic.
+    + pose proof (remove_In nameEq (tFreeVars t0) x).
       assert (a <> x); magic. clear H5.
-      fact (in_app_or (tDomain c2) (x :: tDomain c1) a H1).
+      pose proof (in_app_or (tDomain c2) (x :: tDomain c1) a H1).
       destruct H5; magic.
   - rewrite tDomainConcat in *.
     unfold not in *. clean.

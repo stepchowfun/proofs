@@ -64,7 +64,7 @@ Proof.
   - split; magic. split; magic. unfold tWellFormed.
     split; induction H; magic; unfold tWellFormed in H1; magic; clean.
     destruct (nameEq x x0); magic. invert H0. magic.
-  - fact (nameFresh l). clean. specialize (H0 x H1). clean. split.
+  - pose proof (nameFresh l). clean. specialize (H0 x H1). clean. split.
     + invert H0. magic.
     + split.
       * constructor; clean.
@@ -80,7 +80,7 @@ Proof.
         -- apply eeLocallyClosedOpen with (e2 := eFreeVar x). magic.
   - split; magic. split; magic.
     unfold tWellFormed in H5. clean. invert H5. constructor; eMagic.
-  - fact (nameFresh (l ++ tFreeVars t)). clean.
+  - pose proof (nameFresh (l ++ tFreeVars t)). clean.
     specialize (H0 x). feed H0. clean. split.
     + invert H0. magic.
     + split.
@@ -112,14 +112,14 @@ Theorem contextWeakening :
 Proof.
   clean. remember (cConcat c1 c3). outro c3. induction H; eMagic; clean.
   - rewrite cConcatAssoc in *. constructor; magic.
-    fact (cConcatELookup c1 c3 t x H0). eMagic.
+    pose proof (cConcatELookup c1 c3 t x H0). eMagic.
   - apply htAbs with (l := l ++ eDomain c3 ++ eDomain c2 ++ eDomain c1). clean.
     specialize (H0 x). clean.
     specialize (H0 (cEExtend c3 x t2)). clean.
     apply H0.
     constructor; magic.
     + do 2 rewrite eDomainConcat. magic.
-    + fact (
+    + pose proof (
         typingRegularity
         (cEExtend (cConcat c1 c3) x t2)
         (eeOpen e 0 (eFreeVar x))
@@ -140,7 +140,7 @@ Proof.
     constructor; magic.
     do 2 rewrite tDomainConcat. magic.
   - constructor; magic.
-    fact (typingRegularity (cConcat c1 c3) e (tForAll t1)). clean.
+    pose proof (typingRegularity (cConcat c1 c3) e (tForAll t1)). clean.
     unfold tWellFormed in H. clean.
     constructor; magic.
     rewrite tDomainConcat in H5.
