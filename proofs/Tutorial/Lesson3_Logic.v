@@ -106,7 +106,10 @@ Definition trueAndTrue1 : True /\ True := conj I I.
 
 Theorem trueAndTrue2 : True /\ True.
 Proof.
-  (* Use `split` to prove each half of a conjunction individually. *)
+  (*
+    Use `split` to prove each half of a conjunction individually. Equivalently,
+    we could use `apply conj`.
+  *)
   split.
 
   (* Use `apply` to prove the goal via some known fact. *)
