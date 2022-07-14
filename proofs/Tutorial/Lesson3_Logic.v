@@ -211,7 +211,7 @@ Goal forall A, A <-> A.
 Proof.
   intros.
   unfold iff. (* `unfold` replaces a name with its definition. *)
-  split; intro; apply H.
+  split; intros; apply H.
 Qed.
 
 (*
