@@ -159,7 +159,8 @@ Check id. (* `forall T : Set, T -> T` *)
   - `forall T : Set, forall x : T, T`
   - `forall (T : Set) (x : T), T`
 
-  The first way is generally best.
+  The first way is best, since it makes it clear that the return type doesn't
+  depend on the value of the second argument.
 
   It's awkward to have to explicitly provide the type argument whenever we call
   the `id` function. We can declare the argument *implicit* by using curly
