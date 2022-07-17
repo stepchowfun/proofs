@@ -97,13 +97,22 @@ Check addAndMultiply. (* `nat -> nat -> nat -> nat` *)
 Compute addAndMultiply 3 4 5. (* `23` *)
 
 (*
-  Sometimes, the type of a function's argument is ambiguous.
+  Sometimes, the type of a function's argument can't be inferred automatically.
+  For example, the following ambiguous definition is rejected:
+*)
 
+Fail Definition id x := x.
+
+(*
   ```
-  Definition id x := x.
+  The command has indeed failed with message:
+  The following term contains unresolved implicit arguments:
+    (fun x : ?T => x)
+  More precisely:
+  - ?T: Cannot infer the type of x.
   ```
 
-  To resolve this ambiguity, we need to provide a type annotation.
+  To resolve this ambiguity, we need to provide a type annotation for `x`:
 *)
 
 Definition idNat (x : nat) := x.
