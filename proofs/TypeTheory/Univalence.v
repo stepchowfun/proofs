@@ -9,10 +9,10 @@
 Definition equivalence {X Y : Set} (f : X -> Y) :=
   forall y,
   let fiber := { x | f x = y }
-  in exists x : fiber, forall z : fiber, x = z.
+  in { x : fiber | forall z : fiber, x = z }.
 
 Definition equalityToEquivalence (X Y : Set) (H : X = Y) :
-  { f : X -> Y | equivalence f }.
+  { f : X -> Y & equivalence f }.
 Proof.
   rewrite <- H.
   exists (@id X).
