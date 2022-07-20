@@ -330,10 +330,7 @@ Qed.
 Definition eqTransitive A (x y z : A) : x = y -> y = z -> x = z :=
   fun H1 H2 =>
     match H2 in _ = v return x = v with
-    | eq_refl _ =>
-      match H1 in _ = u return x = u with
-      | eq_refl _ => eq_refl x
-      end
+    | eq_refl _ => H1
     end.
 
 Goal forall A (x y z : A), x = y -> y = z -> x = z.
