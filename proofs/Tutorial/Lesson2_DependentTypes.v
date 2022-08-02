@@ -45,9 +45,9 @@ Definition boolToSet x :=
 
 Check boolToSet. (* `bool -> Set` *)
 
-Compute boolToSet true.
+Compute boolToSet true. (* `nat` *)
 
-Compute boolToSet false.
+Compute boolToSet false. (* `string` *)
 
 (*
   Coq considers types *definitionally equal* if they compute to syntactically
