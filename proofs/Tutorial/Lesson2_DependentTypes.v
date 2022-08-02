@@ -101,7 +101,7 @@ Compute weirder false. (* `42` *)
 (* Parameters and indices of inductive data types *)
 (**************************************************)
 
-(* We saw in Lesson 1 that inductive data types can have type *parameters*: *)
+(* We saw in Lesson 1 that inductive data types can have *parameters*: *)
 
 Inductive option (T : Set) :=
 | none : option T
