@@ -101,7 +101,10 @@ Compute weirder false. (* `42` *)
 (* Parameters and indices of inductive data types *)
 (**************************************************)
 
-(* We saw in Lesson 1 that inductive data types can have *parameters*: *)
+(*
+  We saw in Lesson 1 that inductive data types can have *parameters*.
+  Parameters give us another way to define type families.
+*)
 
 Inductive option (T : Set) :=
 | none : option T
@@ -126,37 +129,9 @@ Definition unwrap (o : option nat) :=
 Check unwrap. (* `option nat -> nat` *)
 
 (*
-  Instead of defining `option` with a parameter, we could have instead defined
-  it with an *index*. Unlike parameters, indices are not automatically added as
-  extra arguments to each constructor. We can add them manually.
-*)
-
-Inductive optionIndexed : Set -> Type :=
-| noneIndexed : forall (T : Set), optionIndexed T
-| someIndexed : forall (T : Set), T -> optionIndexed T.
-
-(*
-  To prevent logical inconsistencies, Coq requires that our new type family
-  produce types in `Type` or `Prop`, not `Set`. This requirement applies if any
-  constructor takes a type argument, not considering parameter arguments. See
-  Lesson 5 for details.
-*)
-
-Check optionIndexed. (* `Set -> Type` *)
-
-(*
-  With indexed inductive data types, the types of the constructors are exactly
-  as we specified in the definition.
-*)
-
-Check noneIndexed. (* `forall T : Set, optionIndexed T` *)
-
-Check someIndexed. (* `forall T : Set, T -> optionIndexed T` *)
-
-(*
-  So far, it seems like indices are just a more verbose form of parameters.
-  However, they unlock a new power: the ability for each constructor to specify
-  particular values for the indices. Consider the following example:
+  A third way to define type families is to use *indices*. Indices are like
+  parameters, but they unlock a new power: each constructor specifies a value
+  for the index. Consider the following example:
 *)
 
 Inductive boolOrNat : Set -> Set :=
@@ -189,10 +164,9 @@ Compute pluck (someNat 42). (* `42` *)
 
 (*
   The terminology is somewhat confusing. `option` is called a *family of
-  inductive types*. `optionIndexed` and `boolOrNat` are called *inductively
-  defined families*, or *inductive families* for short. Families of inductive
-  types, inductive families, and functions which return types are all called
-  *type families*.
+  inductive types*. `boolOrNat` is called an *inductively defined family*, or
+  *inductive family* for short. Families of inductive types, inductive
+  families, and functions which return types are all called *type families*.
 *)
 
 (************************************)
