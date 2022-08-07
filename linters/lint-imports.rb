@@ -33,7 +33,7 @@ import_validation_regex = Regexp.new(import_validation_regex_str, nil)
 
 # Make sure the build command has exactly one '?'.
 if build_command.count('?') != 1
-  STDERR.puts("Error: #{ARGV[1]}")
+  STDERR.puts("Error: invalid build command `#{build_command}`")
   exit(1)
 end
 
