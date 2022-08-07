@@ -104,10 +104,17 @@ tasks:
           -name 'Makefile' \
         \) -print
       )
+      # [ref:flags]
       ./linters/lint-imports.rb \
         '^\s*Require ' \
         '^\s*Require Import (Coq|Extraction|Main)\.' \
-        'coqc -set "Loose Hint Behavior=Strict" -Q proofs Main ?' \
+        "coqc \
+          -set 'Default Goal Selector=\!' \
+          -set 'Loose Hint Behavior=Strict' \
+          -set 'Primitive Projections' \
+          -set 'Printing Projections' \
+          -unset 'Printing Primitive Projection Parameters' \
+          -Q proofs Main ?" \
         $(
           find . -type d \( \
             -path ./.git \
@@ -115,10 +122,17 @@ tasks:
             -name '*.v' \
           \) -print
         )
+      # [ref:flags]
       ./linters/lint-imports.rb \
         '^\s*Import ' \
         '^\s*Import ' \
-        'coqc -set "Loose Hint Behavior=Strict" -Q proofs Main ?' \
+        "coqc \
+          -set 'Default Goal Selector=\!' \
+          -set 'Loose Hint Behavior=Strict' \
+          -set 'Primitive Projections' \
+          -set 'Printing Projections' \
+          -unset 'Printing Primitive Projection Parameters' \
+          -Q proofs Main ?" \
         $(
           find . -type d \( \
             -path ./.git \
