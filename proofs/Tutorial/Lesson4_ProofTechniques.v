@@ -192,7 +192,7 @@ Qed.
   commutative.
 *)
 
-Goal forall n1 n2, n1 + n2 = n2 + n1.
+Theorem commutativity : forall n1 n2, n1 + n2 = n2 + n1.
 Proof.
   intros.
   induction n1.
@@ -212,21 +212,53 @@ Qed.
 (* Automation *)
 (**************)
 
+(* We can use our `commutativity` theorem to prove a simple theorem: *)
+
+Goal forall n, 42 + n = n + 42.
+Proof.
+  apply commutativity.
+Qed.
+
 (*
-  The `auto` tactic can solve some goals automatically. It can make proofs much
-  shorter and easier to write! You can even provide *hints* (e.g., lemmas) to
-  make `auto` smarter; consult the Coq documentation for details. Here we prove
-  the commutativity theorem again, now using `auto` to make the proof shorter.
+  You can often save time writing proofs by letting Coq search for proofs
+  automatically. The first step is to create a database of *hints* (e.g.,
+  lemmas) that Coq is allowed to use when synthesizing proofs. Let's create one
+  called `myHintDb`.
 *)
 
-Goal forall n1 n2, n1 + n2 = n2 + n1.
+Create HintDb myHintDb.
+
+(*
+  Now let's add our theorem to the database. Change `local` to `export` if you
+  want this hint to work in other modules that `Import` this one.
+*)
+
+#[local] Hint Resolve commutativity : myHintDb.
+
+(*
+  Now we can use `auto with myHintDb` to do automatic proof search using our
+  hint database.
+*)
+
+Goal forall n, 42 + n = n + 42.
 Proof.
-  intros.
-  induction n1.
-  - auto.
-  - cbn.
-    rewrite IHn1.
-    auto.
+  auto with myHintDb. (* Coq found a proof for us! *)
+Qed.
+
+(*
+  Coq has a few built-in hint databases. The most important one is `core`,
+  which has basic facts about logical connectives. By default, `auto` uses
+  `core` implicitly, so there's no need to write `with core`.
+
+  The `arith` database, when appropriate modules are loaded, contains facts
+  about natural numbers. It contains a commutativity theorem just like ours.
+*)
+
+Require Import Coq.Arith.Arith.
+
+Goal forall n, 42 + n = n + 42.
+Proof.
+  auto with arith.
 Qed.
 
 (* The `congruence` tactic can solve many goals by equational reasoning. *)
