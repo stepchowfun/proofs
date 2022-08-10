@@ -272,6 +272,17 @@ Proof.
   auto with arith.
 Qed.
 
+(*
+  If `auto` doesn't find a proof of your goal, you can always try asking it to
+  search harder. This will make `auto` take more time, though.
+*)
+
+Goal False \/ False \/ False \/ False \/ False \/ True.
+Proof.
+  auto. (* Nothing? *)
+  auto 6. (* Increase the maximum search depth. The default is 5. *)
+Qed.
+
 (***********************************)
 (* Other useful automation tactics *)
 (***********************************)
