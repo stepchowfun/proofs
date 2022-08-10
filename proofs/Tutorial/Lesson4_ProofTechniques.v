@@ -208,14 +208,16 @@ Proof.
       reflexivity.
 Qed.
 
-(**************)
-(* Automation *)
-(**************)
+(**************************)
+(* Automation with `auto` *)
+(**************************)
 
 (* We can use our `commutativity` theorem to prove a simple theorem: *)
 
-Goal forall n, 42 + n = n + 42.
+Goal forall n, n + 42 = n \/ n + 42 = 42 + n.
 Proof.
+  intros.
+  right.
   apply commutativity.
 Qed.
 
@@ -240,26 +242,32 @@ Create HintDb myHintDb.
   hint database.
 *)
 
-Goal forall n, 42 + n = n + 42.
+Goal forall n, n + 42 = n \/ n + 42 = 42 + n.
 Proof.
   auto with myHintDb. (* Coq found a proof for us! *)
 Qed.
 
 (*
-  Coq has a few built-in hint databases. The most important one is `core`,
-  which has basic facts about logical connectives. By default, `auto` uses
-  `core` implicitly, so there's no need to write `with core`.
+  Coq has a few built-in hint databases. One such database is `core`, which has
+  basic facts about logical connectives, e.g., `forall (A : Type) (x y : A),
+  x <> y -> y <> x`. By default, `auto` uses `core` implicitly, so there's no
+  need to write `with core`.
 
-  The `arith` database, when appropriate modules are loaded, contains facts
-  about natural numbers. It contains a commutativity theorem just like ours.
+  Another built-in database is `arith`, which contains useful facts about
+  natural numbers when the appropriate modules are loaded. For example, it
+  contains a commutativity theorem just like ours.
 *)
 
 Require Import Coq.Arith.Arith.
 
-Goal forall n, 42 + n = n + 42.
+Goal forall n, n + 42 = n \/ n + 42 = 42 + n.
 Proof.
   auto with arith.
 Qed.
+
+(***********************************)
+(* Other useful automation tactics *)
+(***********************************)
 
 (* The `congruence` tactic can solve many goals by equational reasoning. *)
 
