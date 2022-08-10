@@ -212,27 +212,18 @@ Qed.
 (* Automation with `auto` *)
 (**************************)
 
-(* We can use our `commutativity` theorem to prove a simple theorem: *)
-
-Goal forall n, n + 42 = n \/ n + 42 = 42 + n.
-Proof.
-  intros.
-  right.
-  apply commutativity.
-Qed.
-
 (*
-  You can often save time writing proofs by letting Coq search for proofs
-  automatically. The first step is to create a database of *hints* (e.g.,
-  lemmas) that Coq is allowed to use when synthesizing proofs. Let's create one
-  called `myHintDb`.
+  We can often save time by asking Coq to find proofs automatically. The first
+  step is to create a database of *hints* (e.g., lemmas) that Coq is allowed to
+  use when synthesizing proofs. Let's create one called `myHintDb`.
 *)
 
 Create HintDb myHintDb.
 
 (*
-  Now let's add our theorem to the database. Change `local` to `export` if you
-  want this hint to work in other modules that `Import` this one.
+  Now let's add our `commutativity` theorem to the database. Change `local` to
+  `export` if you want the hint to also work in other modules that `Import`
+  this one.
 *)
 
 #[local] Hint Resolve commutativity : myHintDb.
@@ -247,12 +238,28 @@ Proof.
   auto with myHintDb. (* Coq found a proof for us! *)
 Qed.
 
+(* Without automation, the proof looks like this: *)
+
+Goal forall n, n + 42 = n \/ n + 42 = 42 + n.
+Proof.
+  intros.
+  right.
+  apply commutativity.
+Qed.
+
 (*
   Coq has a few built-in hint databases. One such database is `core`, which has
   basic facts about logical connectives, e.g., `forall (A : Type) (x y : A),
   x <> y -> y <> x`. By default, `auto` uses `core` implicitly, so there's no
   need to write `with core`.
+*)
 
+Goal forall (A : Type) (x y : A), x = y -> False \/ (True /\ y = x).
+Proof.
+  auto. (* The `core` database has everything we need here. *)
+Qed.
+
+(*
   Another built-in database is `arith`, which contains useful facts about
   natural numbers when the appropriate modules are loaded. For example, it
   contains a commutativity theorem just like ours.
