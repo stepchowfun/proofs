@@ -142,13 +142,13 @@ Definition large := Type.
 Definition constraint : large := Set.
 
 (*
-  If an inductive type has a constructor which takes an argument of type
-  `T : Type_i`, the inductive type must be in a universe at least as large as
-  `Type_i`. Parameter arguments are not considered.
+  If an inductive type in `Type_i` has a constructor which takes an argument of
+  type `T : Type_j`, `i` must be at least as large as `j`. Parameter arguments
+  are not considered.
 *)
 
 Inductive foo1 : Set :=
-| makeFoo1 : forall (x : nat), foo1.
+| makeFoo1 : nat -> foo1.
 
 Fail Inductive foo2 : Set :=
 | makeFoo2 : Set -> foo2.
@@ -160,44 +160,35 @@ Fail Inductive foo2 : Set :=
   ```
 *)
 
-Fail Inductive foo3 : Set -> Set :=
-| makeFoo3 : forall (x : Set), foo3 x.
+Inductive foo3 : large :=
+| makeFoo3 : Set -> foo3.
 
-(*
-  ```
-  The command has indeed failed with message:
-  Large non-propositional inductive types must be in Type.
-  ```
-*)
+(* This restriction doesn't apply to inductive types in `Prop`. *)
 
 Inductive foo4 : Prop :=
-| makeFoo4 : forall (x : Set), foo4.
-
-Inductive foo5 : Prop :=
-| makeFoo5 : Set -> foo5.
-
-Inductive foo6 : Set -> Prop :=
-| makeFoo6 : forall (x : Set), foo6 x.
-
-Inductive foo7 : Prop :=
-| makeFoo7 : forall (x : large), foo7.
-
-Inductive foo8 : Prop :=
-| makeFoo8 : large -> foo8.
-
-Inductive foo9 : large -> Prop :=
-| makeFoo9 : forall (x : large), foo9 x.
+| makeFoo4 : Set -> foo4.
 
 (*
-  There's no constraint between the universe of an inductive type and the
+  There are no constraints between the universe of an inductive type and the
+  universes of its indices.
+*)
+
+Inductive foo5 : large -> Set :=
+| makeFoo5 : foo5 Set.
+
+Inductive foo6 : large -> Prop :=
+| makeFoo6 : foo6 Set.
+
+(*
+  There are no constraints between the universe of an inductive type and the
   universes of its parameters.
 *)
 
-Inductive foo10 (x : Set) : Set :=
-| makeFoo10 : foo10 x.
+Inductive foo7 (x : large) : Set :=
+| makeFoo7 : foo7 x.
 
-Inductive foo11 (x : large) : Set :=
-| makeFoo11 : foo11 x.
+Inductive foo8 (x : large) : Prop :=
+| makeFoo8 : foo8 x.
 
 (***********************************************************)
 (* Inductive types have a "strict positivity requirement". *)
