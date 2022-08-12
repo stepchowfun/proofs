@@ -54,7 +54,7 @@ Fail Fixpoint f (n : nat) : False := f n.
 
   So, instead of having `Type : Type`, we have an infinite heirarchy of
   universes `Type_i` for all `i` >= 0. For convenience, universes are
-  cumulative, so `x : Type_i` implies `x : Type_(i+1)`. `Type_0` is called
+  cumulative, so `x : Type_i` implies `x : Type_{i+1}`. `Type_0` is called
   `Set`. All of these `Type_i` universes, including `Set`, are "predicative",
   which will be explained below. However, in the universe containing `Set`
   (namely, `Type_1`), we also have an "impredicative" universe called `Prop`.
