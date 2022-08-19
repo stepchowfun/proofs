@@ -21,7 +21,16 @@ Definition successorsEqual n1 n2 : n1 = n2 -> S n1 = S n2 :=
     | eq_refl => eq_refl (S n1)
     end.
 
-(* We can use the `f_equal` tactic to do this. *)
+(* We can use the `rewrite` tactic to prove this with forward reasoning. *)
+
+Goal forall n1 n2, n1 = n2 -> S n1 = S n2.
+Proof.
+  intros.
+  rewrite H.
+  reflexivity.
+Qed.
+
+(* We can use the `f_equal` tactic to prove this with backward reasoning. *)
 
 Goal forall n1 n2, n1 = n2 -> S n1 = S n2.
 Proof.
@@ -36,7 +45,7 @@ Qed.
 
 (*
   Given an equality between two applications of a constructor, we can conclude
-  that the arguments are pairwise equal.
+  the arguments are pairwise equal.
 *)
 
 Definition successorInjective n1 n2 : S n1 = S n2 -> n1 = n2 :=
@@ -45,7 +54,7 @@ Definition successorInjective n1 n2 : S n1 = S n2 -> n1 = n2 :=
     | eq_refl => eq_refl (pred (S n1))
     end.
 
-(* Fortunately, the `inversion` tactic automates this. *)
+(* We can use the `inversion` (or `injection`) tactic to prove this. *)
 
 Goal forall n1 n2, S n1 = S n2 -> n1 = n2.
 Proof.
@@ -78,13 +87,11 @@ Definition trueNeqFalse : true <> false :=
     | eq_refl => I
     end.
 
-(* Fortunately, the `inversion` tactic automates this too. *)
+(* Fortunately, the `discriminate` tactic automates this. *)
 
-Goal true <> false.
+Goal true <> false. (* Unfolds to `true = false -> False` *)
 Proof.
-  unfold not.
-  intros.
-  inversion H. (* Solve the goal with a self-contradictory hypothesis. *)
+  discriminate. (* Prove the goal via an impossible structural equality. *)
 Qed.
 
 (*************)

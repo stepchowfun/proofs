@@ -143,8 +143,8 @@ Definition constraint : large := Set.
 
 (*
   If an inductive type in `Type_i` has a constructor which takes an argument of
-  type `T : Type_j`, `i` must be at least as large as `j`. Parameter arguments
-  are not considered.
+  type `T` in universe `Type_j`, `i` must be at least as large as `j`.
+  Parameter arguments are not considered.
 *)
 
 Inductive foo1 : Set :=
