@@ -86,53 +86,6 @@ Qed.
 (* The correctness proof *)
 (*************************)
 
-(* Reversing a sorted list results in a list sorted the other way. *)
-
-Theorem sortedRev :
-  forall A (l : list A) (R : A -> A -> Prop),
-  Sorted R l ->
-  Sorted (fun x y => R y x) (rev l).
-Proof.
-  intros.
-  induction l; search.
-  invert H.
-  invert H3; search.
-  clean.
-  induction (rev l0); search.
-  clean.
-  apply Sorted_cons; invert IHl; search.
-  destruct l; invert H4; search.
-Qed.
-
-#[local] Hint Resolve sortedRev : core.
-
-(* The concatenation of sorted lists is sometimes sorted. *)
-
-Theorem sortedApp :
-  forall A (l1 l2 : list A) (x : A) (R : A -> A -> Prop),
-  Sorted R l1 ->
-  Sorted R l2 ->
-  Forall (fun y => R y x) l1 ->
-  HdRel R x l2 ->
-  Sorted R (l1 ++ x :: l2).
-Proof.
-  intros.
-  induction l1; search.
-  cbn.
-  apply Sorted_cons.
-  - apply IHl1; [invert H | invert H1]; search.
-  - invert H.
-    destruct l1.
-    + invert H1.
-      search.
-    + cbn.
-      apply HdRel_cons.
-      invert H6.
-      search.
-Qed.
-
-#[local] Hint Resolve sortedApp : core.
-
 (* The prefix of a sorted list is sorted. *)
 
 Theorem sortedFirstn :
@@ -166,6 +119,33 @@ Proof.
 Qed.
 
 #[local] Hint Resolve sortedSkipn : core.
+
+(* The concatenation of sorted lists is sometimes sorted. *)
+
+Theorem sortedApp :
+  forall A (l1 l2 : list A) (x : A) (R : A -> A -> Prop),
+  Sorted R l1 ->
+  Sorted R l2 ->
+  Forall (fun y => R y x) l1 ->
+  HdRel R x l2 ->
+  Sorted R (l1 ++ x :: l2).
+Proof.
+  intros.
+  induction l1; search.
+  cbn.
+  apply Sorted_cons.
+  - apply IHl1; [invert H | invert H1]; search.
+  - invert H.
+    destruct l1.
+    + invert H1.
+      search.
+    + cbn.
+      apply HdRel_cons.
+      invert H6.
+      search.
+Qed.
+
+#[local] Hint Resolve sortedApp : core.
 
 (* Facts about `firstn` *)
 
