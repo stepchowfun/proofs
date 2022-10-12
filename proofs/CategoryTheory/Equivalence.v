@@ -35,7 +35,7 @@ Proof.
   exists idFunctor.
   exists idFunctor.
   assert (idFunctor = @compFunctor C C C idFunctor idFunctor); [
-    rewrite compFunctorIdentLeft; magic |
+    rewrite compFunctorIdentLeft; search |
     idtac
   ].
   exists (
@@ -62,7 +62,7 @@ Proof.
     unfold isomorphism;
     exists id;
     unfold inverse;
-    magic.
+    search.
 Qed.
 
 #[export] Hint Resolve equivalentRefl : main.

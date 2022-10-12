@@ -170,7 +170,7 @@ Check id. (* `forall T : Set, T -> T` *)
 
 Definition betterId {T : Set} (x : T) := x.
 
-Check betterId. (* `?T -> ?T where ?T : [ |- Set]` *)
+Check betterId. (* `?T -> ?T where ?T : [|- Set]` *)
 
 Compute betterId (3 + 4). (* `7` *)
 
@@ -313,7 +313,7 @@ Compute mapOption (fun n => true) (some nat 3). (* `some bool true` *)
 
 Arguments some {_} _.
 
-Check some. (* `?T -> option ?T where ?T : [ |- Set]` *)
+Check some. (* `?T -> option ?T where ?T : [|- Set]` *)
 
 Compute mapOption (fun n => n + 1) (some 3). (* `some 4` *)
 

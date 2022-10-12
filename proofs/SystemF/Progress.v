@@ -19,17 +19,17 @@ Theorem progress :
   value e1 \/ exists e2, step e1 e2.
 Proof.
   clean. remember cEmpty. pose proof (typingRegularity c e1 t H).
-  induction H; magic; right; clean.
+  induction H; search; right; clean.
   - pose proof (typingRegularity cEmpty e2 t2 H1).
     pose proof (typingRegularity cEmpty e1 (tArrow t2 t1) H).
     clean.
-    destruct IHhasType1; destruct IHhasType2; eMagic.
-    invert H; eMagic.
+    destruct IHhasType1; destruct IHhasType2; eSearch.
+    invert H; eSearch.
   - pose proof (typingRegularity cEmpty e (tForAll t1) H1).
     clean.
     destruct IHhasType; clean.
-    + invert H1; magic. exists (etOpen e0 0 t2). invert H. magic.
-    + exists (eTApp x t2). invert H. magic.
+    + invert H1; search. exists (etOpen e0 0 t2). invert H. search.
+    + exists (eTApp x t2). invert H. search.
 Qed.
 
 #[export] Hint Resolve progress : main.

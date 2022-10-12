@@ -24,7 +24,7 @@ Proof.
   unfold isomorphic.
   unfold isomorphism.
   unfold inverse.
-  eMagic.
+  eSearch.
 Qed.
 
 #[export] Hint Resolve isomorphicRefl : main.
@@ -42,11 +42,11 @@ Proof.
   - rewrite cAssoc.
     rewrite <- (cAssoc x3).
     rewrite H.
-    magic.
+    search.
   - rewrite cAssoc.
     rewrite <- (cAssoc x0).
     rewrite H1.
-    magic.
+    search.
 Qed.
 
 (*
@@ -59,7 +59,7 @@ Proof.
   unfold isomorphic.
   unfold isomorphism.
   unfold inverse.
-  eMagic.
+  eSearch.
 Qed.
 
 (*
@@ -73,7 +73,7 @@ Proof.
   unfold isomorphic.
   split; clean; exists x0; [
     rewrite <- opIsomorphism | rewrite opIsomorphism
-  ]; magic.
+  ]; search.
 Qed.
 
 #[export] Hint Resolve opIsomorphic : main.

@@ -36,7 +36,7 @@ Arguments just {_}.
 Proof.
   clean.
   apply functional_extensionality.
-  destruct x0; magic.
+  destruct x0; search.
 Qed.
 
 #[local] Theorem maybeFComp
@@ -68,7 +68,7 @@ Qed.
 Proof.
   clean.
   apply functional_extensionality.
-  destruct x0; magic.
+  destruct x0; search.
 Qed.
 
 Definition maybeFunctor : functor setCategory setCategory := newFunctor
@@ -93,7 +93,7 @@ Definition maybeFunctor : functor setCategory setCategory := newFunctor
   @compose setCategory _ _ _ just (fMap idFunctor f) =
   @compose setCategory _ _ _ (fMap maybeFunctor f) just.
 Proof.
-  magic.
+  search.
 Qed.
 
 Definition maybeEta : naturalTransformation idFunctor maybeFunctor :=
@@ -128,7 +128,7 @@ Definition maybeEta : naturalTransformation idFunctor maybeFunctor :=
 Proof.
   clean.
   apply functional_extensionality.
-  destruct x0; magic.
+  destruct x0; search.
 Qed.
 
 Definition maybeMu :
@@ -158,7 +158,7 @@ Proof.
   apply functional_extensionality_dep.
   clean.
   apply functional_extensionality.
-  destruct x0; magic.
+  destruct x0; search.
 Qed.
 
 #[local] Theorem maybeMIdent1 :
@@ -166,7 +166,7 @@ Qed.
     vertCompNaturalTransformation maybeMu (leftWhisker maybeEta maybeFunctor)
   ) = eta idNaturalTransformation.
 Proof.
-  magic.
+  search.
 Qed.
 
 #[local] Theorem maybeMIdent2 :
@@ -178,7 +178,7 @@ Proof.
   apply functional_extensionality_dep.
   clean.
   apply functional_extensionality.
-  destruct x0; magic.
+  destruct x0; search.
 Qed.
 
 Definition maybeMonad : monad maybeEta maybeMu := newMonad

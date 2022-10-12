@@ -26,7 +26,7 @@ Module Name : NameSig.
 
   Theorem nameEq : forall x1 x2 : nat, { x1 = x2 } + { x1 <> x2 }.
   Proof.
-    induction x1; magic.
+    induction x1; search.
   Qed.
 
   #[export] Hint Resolve nameEq : main.
@@ -35,10 +35,10 @@ Module Name : NameSig.
   Proof.
     clean. exists (S (fold_right max 0 l)). unfold not. clean.
     assert (forall n, In n l -> n < S (fold_right Nat.max 0 l)).
-    - clear H. clean. induction l; magic.
-      assert ((fold_right max 0 l) < S (max a (fold_right max 0 l))); magic.
-      destruct H; magic.
-    - specialize (H0 (S (fold_right Nat.max 0 l))). magic.
+    - clear H. clean. induction l; search.
+      assert ((fold_right max 0 l) < S (max a (fold_right max 0 l))); search.
+      destruct H; search.
+    - specialize (H0 (S (fold_right Nat.max 0 l))). search.
   Qed.
 
   #[export] Hint Resolve nameFresh : main.
@@ -56,7 +56,7 @@ Theorem nameInRemove :
   In x1 (remove nameEq x2 l) ->
   In x1 l /\ x1 <> x2.
 Proof.
-  clean. induction l; magic.
+  clean. induction l; search.
 Qed.
 
 #[export] Hint Resolve nameInRemove : main.

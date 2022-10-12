@@ -53,7 +53,7 @@ Proof.
   - apply proof_irrelevance.
   - destruct Eta.
     destruct Mu.
-    magic.
+    search.
 Qed.
 
 #[export] Hint Resolve eqNaturalTransformation : main.
@@ -67,7 +67,7 @@ Qed.
 : compose (fMap H (eta Eta y)) (fMap (compFunctor H F) f) =
   compose (fMap (compFunctor H G) f)  (fMap H (eta Eta x)).
 Proof.
-  magic.
+  search.
 Qed.
 
 Definition rightWhisker
@@ -90,7 +90,7 @@ Definition rightWhisker
 : compose (eta Eta (oMap H y)) (fMap (compFunctor F H) f) =
   compose (fMap (compFunctor G H) f) (eta Eta (oMap H x)).
 Proof.
-  magic.
+  search.
 Qed.
 
 Definition leftWhisker
@@ -110,7 +110,7 @@ Definition leftWhisker
   (f : arrow x y)
 : compose id (fMap F f) = compose (fMap F f) id.
 Proof.
-  magic.
+  search.
 Qed.
 
 Definition idNaturalTransformation
@@ -131,9 +131,9 @@ Proof.
   rewrite cAssoc.
   rewrite <- cAssoc.
   replace (compose (eta Mu y) (fMap F f)) with
-    (compose (fMap G f) (eta Mu x)); magic.
+    (compose (fMap G f) (eta Mu x)); search.
   replace (compose (fMap H f) (eta Eta x)) with
-    (compose (eta Eta y) (fMap G f)); magic.
+    (compose (eta Eta y) (fMap G f)); search.
 Qed.
 
 Definition vertCompNaturalTransformation
@@ -169,7 +169,7 @@ Proof.
   apply eqNaturalTransformation.
   clean.
   apply functional_extensionality_dep.
-  magic.
+  search.
 Qed.
 
 #[export] Hint Resolve horCompNaturalTransformationAlt : main.

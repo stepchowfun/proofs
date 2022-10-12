@@ -57,11 +57,11 @@ Theorem stepRegularity :
   step e1 e2 ->
   eLocallyClosed e1 0 0 /\ eLocallyClosed e2 0 0.
 Proof.
-  clean. induction H; split; magic; clean.
-  - invert H0; magic.
-  - apply locallyClosedOpenAbs with (t := t); magic. invert H0; magic.
-  - invert H; magic.
-  - invert H; magic.
+  clean. induction H; split; search; clean.
+  - invert H0; search.
+  - apply locallyClosedOpenAbs with (t := t); search. invert H0; search.
+  - invert H; search.
+  - invert H; search.
 Qed.
 
 #[export] Hint Resolve stepRegularity : main.
@@ -84,7 +84,7 @@ Theorem stepStarRegularity :
   stepStar e1 e2 ->
   eLocallyClosed e1 0 0 /\ eLocallyClosed e2 0 0.
 Proof.
-  clean. induction H; magic. pose proof (stepRegularity e1 e2). magic.
+  clean. induction H; search. pose proof (stepRegularity e1 e2). search.
 Qed.
 
 #[export] Hint Resolve stepStarRegularity : main.

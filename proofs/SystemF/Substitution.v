@@ -50,7 +50,7 @@ Theorem tttSubBound :
   ~ In x (tFreeVars t1) ->
   ttSub t1 x t2 = t1.
 Proof.
-  induction t1; magic.
+  induction t1; search.
 Qed.
 
 #[export] Hint Resolve tttSubBound : main.
@@ -60,7 +60,7 @@ Theorem eeeSubBound :
   ~ In x (eeFreeVars e1) ->
   eeSub e1 x e2 = e1.
 Proof.
-  induction e1; magic.
+  induction e1; search.
 Qed.
 
 #[export] Hint Resolve eeeSubBound : main.
@@ -70,7 +70,7 @@ Theorem eetSubBound :
   ~ In x (etFreeVars e) ->
   etSub e x t = e.
 Proof.
-  induction e; magic; clean; f_equal; magic; apply tttSubBound; magic.
+  induction e; search; clean; f_equal; search; apply tttSubBound; search.
 Qed.
 
 #[export] Hint Resolve eetSubBound : main.
@@ -85,9 +85,9 @@ Theorem ttSubLocallyClosed :
   tLocallyClosed t2 i ->
   tLocallyClosed (ttSub t1 x t2) i.
 Proof.
-  clean. outro i. induction t1; magic; clean; invert H; magic.
-  constructor. apply IHt1; magic.
-  apply tLocalClosureMonotonic with (i1 := i); magic.
+  clean. outro i. induction t1; search; clean; invert H; search.
+  constructor. apply IHt1; search.
+  apply tLocalClosureMonotonic with (i1 := i); search.
 Qed.
 
 #[export] Hint Resolve ttSubLocallyClosed : main.
@@ -98,9 +98,9 @@ Theorem eeSubLocallyClosed :
   eLocallyClosed e2 ie it ->
   eLocallyClosed (eeSub e1 x e2) ie it.
 Proof.
-  clean. outro ie it. induction e1; magic; clean; invert H; magic;
-    constructor; magic; apply IHe1; magic;
-    apply eLocalClosureMonotonic with (ie1 := ie) (it1 := it); magic.
+  clean. outro ie it. induction e1; search; clean; invert H; search;
+    constructor; search; apply IHe1; search;
+    apply eLocalClosureMonotonic with (ie1 := ie) (it1 := it); search.
 Qed.
 
 #[export] Hint Resolve eeSubLocallyClosed : main.
@@ -111,9 +111,9 @@ Theorem etSubLocallyClosed :
   tLocallyClosed t it ->
   eLocallyClosed (etSub e x t) ie it.
 Proof.
-  clean. outro ie it. induction e; magic; clean; invert H; magic.
-  constructor. apply IHe; magic.
-  apply tLocalClosureMonotonic with (i1 := it); magic.
+  clean. outro ie it. induction e; search; clean; invert H; search.
+  constructor. apply IHe; search.
+  apply tLocalClosureMonotonic with (i1 := it); search.
 Qed.
 
 #[export] Hint Resolve etSubLocallyClosed : main.
@@ -128,9 +128,9 @@ Qed.
 Proof.
   unfold incl. clean.
   pose proof (in_app_or l1 (remove nameEq x l2) a H).
-  destruct H0; magic.
+  destruct H0; search.
   apply in_or_app. right.
-  induction l2; magic.
+  induction l2; search.
 Qed.
 
 #[local] Hint Resolve inclAppRemoveWeakeningLeft : main.
@@ -141,9 +141,9 @@ Qed.
 Proof.
   unfold incl. clean.
   pose proof (in_app_or l1 (remove nameEq x l3) a H).
-  destruct H0; magic.
+  destruct H0; search.
   apply in_or_app. right.
-  induction l2; magic.
+  induction l2; search.
 Qed.
 
 #[local] Hint Resolve inclAppRemoveWeakeningRight : main.
@@ -154,13 +154,13 @@ Theorem tttFreeSub :
     (tFreeVars (ttSub t1 x t2))
     (tFreeVars t2 ++ remove nameEq x (tFreeVars t1)).
 Proof.
-  clean. induction t1; magic. clean. apply incl_app.
+  clean. induction t1; search. clean. apply incl_app.
   - apply incl_tran with (
       m := tFreeVars t2 ++ remove nameEq x (tFreeVars t1_1)
-    ); magic.
+    ); search.
   - apply incl_tran with (
       m := tFreeVars t2 ++ remove nameEq x (tFreeVars t1_2)
-    ); magic.
+    ); search.
 Qed.
 
 #[export] Hint Resolve tttFreeSub : main.
@@ -171,13 +171,13 @@ Theorem eeeeFreeSub :
     (eeFreeVars (eeSub e1 x e2))
     (eeFreeVars e2 ++ remove nameEq x (eeFreeVars e1)).
 Proof.
-  clean. induction e1; magic. clean. apply incl_app.
+  clean. induction e1; search. clean. apply incl_app.
   - apply incl_tran with (
       m := eeFreeVars e2 ++ remove nameEq x (eeFreeVars e1_1)
-    ); magic.
+    ); search.
   - apply incl_tran with (
       m := eeFreeVars e2 ++ remove nameEq x (eeFreeVars e1_2)
-    ); magic.
+    ); search.
 Qed.
 
 #[export] Hint Resolve eeeeFreeSub : main.
@@ -186,7 +186,7 @@ Theorem eeetFreeSub :
   forall e t x,
   incl (eeFreeVars (etSub e x t)) (eeFreeVars e).
 Proof.
-  clean. induction e; magic.
+  clean. induction e; search.
 Qed.
 
 #[export] Hint Resolve eeetFreeSub : main.
@@ -195,13 +195,13 @@ Theorem eteeFreeSub :
   forall e1 e2 x,
   incl (etFreeVars (eeSub e1 x e2)) (etFreeVars e2 ++ etFreeVars e1).
 Proof.
-  clean. induction e1; magic; clean; apply incl_app.
-  - apply incl_tran with (m := etFreeVars e2 ++ tFreeVars t); magic.
-  - apply incl_tran with (m := etFreeVars e2 ++ etFreeVars e1); magic.
-  - apply incl_tran with (m := etFreeVars e2 ++ etFreeVars e1_1); magic.
-  - apply incl_tran with (m := etFreeVars e2 ++ etFreeVars e1_2); magic.
-  - apply incl_tran with (m := etFreeVars e2 ++ etFreeVars e1); magic.
-  - apply incl_tran with (m := etFreeVars e1 ++ tFreeVars t); magic.
+  clean. induction e1; search; clean; apply incl_app.
+  - apply incl_tran with (m := etFreeVars e2 ++ tFreeVars t); search.
+  - apply incl_tran with (m := etFreeVars e2 ++ etFreeVars e1); search.
+  - apply incl_tran with (m := etFreeVars e2 ++ etFreeVars e1_1); search.
+  - apply incl_tran with (m := etFreeVars e2 ++ etFreeVars e1_2); search.
+  - apply incl_tran with (m := etFreeVars e2 ++ etFreeVars e1); search.
+  - apply incl_tran with (m := etFreeVars e1 ++ tFreeVars t); search.
 Qed.
 
 #[export] Hint Resolve eteeFreeSub : main.
@@ -212,25 +212,25 @@ Theorem etetFreeSub :
     (etFreeVars (etSub e x t))
     (tFreeVars t ++ remove nameEq x (etFreeVars e)).
 Proof.
-  clean. induction e; magic; clean; apply incl_app.
+  clean. induction e; search; clean; apply incl_app.
   - apply incl_tran with (
       m := tFreeVars t ++ remove nameEq x (tFreeVars t0)
-    ); magic.
+    ); search.
   - apply incl_tran with (
       m := tFreeVars t ++ remove nameEq x (etFreeVars e)
-    ); magic.
+    ); search.
   - apply incl_tran with (
       m := tFreeVars t ++ remove nameEq x (etFreeVars e1)
-    ); magic.
+    ); search.
   - apply incl_tran with (
       m := tFreeVars t ++ remove nameEq x (etFreeVars e2)
-    ); magic.
+    ); search.
   - apply incl_tran with (
       m := tFreeVars t ++ remove nameEq x (etFreeVars e)
-    ); magic.
+    ); search.
   - apply incl_tran with (
       m := tFreeVars t ++ remove nameEq x (tFreeVars t0)
-    ); magic.
+    ); search.
 Qed.
 
 #[export] Hint Resolve etetFreeSub : main.

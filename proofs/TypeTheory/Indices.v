@@ -63,7 +63,7 @@ Theorem exp1ToExp2ToExp1 :
   forall (a : Set) (e : exp1 a), exp2ToExp1 a (exp1ToExp2 a e) = e.
 Proof.
   clean.
-  induction e; magic.
+  induction e; search.
 Qed.
 
 #[export] Hint Resolve exp1ToExp2ToExp1 : main.
@@ -72,7 +72,7 @@ Theorem exp2ToExp1ToExp2 :
   forall (a : Set) (e : exp2 a), exp1ToExp2 a (exp2ToExp1 a e) = e.
 Proof.
   clean.
-  induction e; magic.
+  induction e; search.
 Qed.
 
 #[export] Hint Resolve exp2ToExp1ToExp2 : main.
@@ -106,11 +106,11 @@ Theorem exp1ToExp2PreservesEval :
   forall (a : Set) (e : exp1 a), eval1 a e = eval2 a (exp1ToExp2 a e).
 Proof.
   clean.
-  induction e; magic.
+  induction e; search.
   clean.
   rewrite IHe1.
   rewrite IHe2.
-  magic.
+  search.
 Qed.
 
 #[export] Hint Resolve exp1ToExp2PreservesEval : main.
@@ -119,11 +119,11 @@ Theorem exp2ToExp1PreservesEval :
   forall (a : Set) (e : exp2 a), eval2 a e = eval1 a (exp2ToExp1 a e).
 Proof.
   clean.
-  induction e; magic.
+  induction e; search.
   clean.
   rewrite IHe1.
   rewrite IHe2.
-  magic.
+  search.
 Qed.
 
 #[export] Hint Resolve exp2ToExp1PreservesEval : main.

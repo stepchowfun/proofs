@@ -41,10 +41,10 @@ Proof.
   unfold isomorphic. unfold isomorphism. unfold inverse. exists x6. exists x5.
   unfold arrowUnique in *.
   split.
-  - apply H0; magic.
-    split; rewrite cAssoc; magic.
-  - apply H4; magic.
-    split; rewrite cAssoc; magic.
+  - apply H0; search.
+    split; rewrite cAssoc; search.
+  - apply H4; search.
+    split; rewrite cAssoc; search.
 Qed.
 
 #[export] Hint Resolve productUnique : main.
@@ -62,7 +62,7 @@ Proof.
   unfold arrowUnique.
   clean.
   specialize (H z qy qx).
-  eMagic.
+  eSearch.
 Qed.
 
 (*
@@ -83,7 +83,7 @@ Proof.
   apply productCommutator in H0.
   pose proof (productUnique C x y).
   unfold uniqueUpToIsomorphism in H1.
-  apply H1; eMagic.
+  apply H1; eSearch.
 Qed.
 
 #[export] Hint Resolve productCommutative : main.
@@ -145,7 +145,7 @@ Proof.
       rewrite cAssoc.
       rewrite <- H5.
       rewrite <- cAssoc.
-      magic.
+      search.
     + assert (
         compose xy_to_x (
           compose xy_z_to_xy (compose x_yz_to_xy_z xy_z_to_x_yz)
@@ -154,7 +154,7 @@ Proof.
       * rewrite (@cAssoc C xy_z x_yz xy_z xy).
         rewrite <- H8.
         rewrite cAssoc.
-        magic.
+        search.
       * pose proof (
           H
           xy_z
@@ -182,11 +182,11 @@ Proof.
 
         assert (
           compose xy_z_to_z (compose x_yz_to_xy_z xy_z_to_x_yz) = xy_z_to_z
-        ); [rewrite cAssoc; rewrite <- H11; magic | idtac].
+        ); [rewrite cAssoc; rewrite <- H11; search | idtac].
 
         pose proof (H1 xy_z xy_z_to_xy xy_z_to_z).
         unfold universal in H15.
-        magic.
+        search.
   - assert (id = compose xy_z_to_x_yz x_yz_to_xy_z).
     + assert (
         compose yz_to_y (
@@ -198,7 +198,7 @@ Proof.
         rewrite cAssoc.
         rewrite <- H4.
         rewrite <- cAssoc.
-        magic.
+        search.
       * assert (
           compose yz_to_z (
             compose x_yz_to_yz (compose xy_z_to_x_yz x_yz_to_xy_z)
@@ -207,7 +207,7 @@ Proof.
         -- rewrite (cAssoc x_yz_to_xy_z).
            rewrite <- H9.
            rewrite cAssoc.
-           magic.
+           search.
         -- pose proof (
              H0
              x_yz
@@ -236,17 +236,17 @@ Proof.
            assert (
              compose x_yz_to_x (compose xy_z_to_x_yz x_yz_to_xy_z) =
                x_yz_to_x
-           ); [rewrite cAssoc; rewrite <- H6; magic | idtac].
+           ); [rewrite cAssoc; rewrite <- H6; search | idtac].
 
            pose proof (H2 x_yz x_yz_to_x x_yz_to_yz).
            unfold universal in H16.
-           magic.
+           search.
     + unfold isomorphic.
       exists xy_z_to_x_yz.
       unfold isomorphism.
       exists x_yz_to_xy_z.
       unfold inverse.
-      magic.
+      search.
 Qed.
 
 #[export] Hint Resolve productAssociative : main.
@@ -270,15 +270,15 @@ Proof.
     split.
     + unfold arrowExists.
       exists qy.
-      split; magic.
+      split; search.
       specialize (H0 z).
-      magic.
+      search.
     + unfold arrowUnique.
-      magic.
+      search.
   - pose proof (productUnique C x y).
     unfold uniqueUpToIsomorphism in H3.
     specialize (H3 xy y).
-    eMagic.
+    eSearch.
 Qed.
 
 #[export] Hint Resolve productTerminal : main.

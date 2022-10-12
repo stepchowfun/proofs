@@ -42,7 +42,7 @@ Definition endofunctor C := functor C C.
   (x : object C)
 : fMap G (fMap F (@id C x)) = id.
 Proof.
-  magic.
+  search.
 Qed.
 
 #[local] Theorem compFComp
@@ -55,7 +55,7 @@ Qed.
 : compose (fMap G (fMap F g)) (fMap G (fMap F f)) =
   fMap G (fMap F (compose g f)).
 Proof.
-  magic.
+  search.
 Qed.
 
 Definition compFunctor
@@ -71,7 +71,7 @@ Definition compFunctor
 
 #[local] Theorem idFIdent {C} (x : object C) : @id C x = id.
 Proof.
-  magic.
+  search.
 Qed.
 
 #[local] Theorem idFComp
@@ -81,7 +81,7 @@ Qed.
   (g : arrow y z)
 : compose g f = compose g f.
 Proof.
-  magic.
+  search.
 Qed.
 
 Definition idFunctor {C} : functor C C := newFunctor C C

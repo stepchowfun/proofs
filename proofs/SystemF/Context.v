@@ -117,7 +117,7 @@ Theorem eDomainLookup :
   forall c x,
   In x (eDomain c) <-> exists t, eLookup c x = Some t.
 Proof.
-  clean. split; induction c; eMagic. clean. destruct H; eMagic.
+  clean. split; induction c; eSearch. clean. destruct H; eSearch.
 Qed.
 
 #[export] Hint Resolve -> eDomainLookup : main.
@@ -127,7 +127,7 @@ Theorem tDomainLookup :
   forall c x,
   In x (tDomain c) <-> tLookup c x = true.
 Proof.
-  clean. induction c; magic.
+  clean. induction c; search.
 Qed.
 
 #[export] Hint Resolve -> tDomainLookup : main.
@@ -143,7 +143,7 @@ Theorem tWellFormedClosed :
   In x (tFreeVars t) ->
   In x (tDomain c).
 Proof.
-  clean. apply tDomainLookup. invert H. magic.
+  clean. apply tDomainLookup. invert H. search.
 Qed.
 
 #[export] Hint Resolve tWellFormedClosed : main.
@@ -154,8 +154,8 @@ Theorem tLookupWellFormed :
   eLookup c x = Some t ->
   tWellFormed c t.
 Proof.
-  clean. unfold tWellFormed. induction H; magic. clean.
-  destruct (nameEq x x0); magic. clean. invert H0. magic.
+  clean. unfold tWellFormed. induction H; search. clean.
+  destruct (nameEq x x0); search. clean. invert H0. search.
 Qed.
 
 #[export] Hint Resolve tLookupWellFormed : main.
@@ -168,7 +168,7 @@ Theorem cSubEDomain :
   forall c x t,
   eDomain (cSub c x t) = eDomain c.
 Proof.
-  induction c; magic.
+  induction c; search.
 Qed.
 
 #[export] Hint Resolve cSubEDomain : main.
@@ -177,7 +177,7 @@ Theorem cSubTDomain :
   forall c x t,
   tDomain (cSub c x t) = tDomain c.
 Proof.
-  induction c; magic.
+  induction c; search.
 Qed.
 
 #[export] Hint Resolve cSubTDomain : main.
@@ -188,7 +188,7 @@ Qed.
 
 Theorem cConcatEmpty : forall c, cConcat cEmpty c = c.
 Proof.
-  induction c; magic.
+  induction c; search.
 Qed.
 
 #[export] Hint Resolve cConcatEmpty : main.
@@ -197,7 +197,7 @@ Theorem cConcatAssoc :
   forall c1 c2 c3,
   cConcat (cConcat c1 c2) c3 = cConcat c1 (cConcat c2 c3).
 Proof.
-  induction c2; induction c3; magic.
+  induction c2; induction c3; search.
 Qed.
 
 #[export] Hint Resolve cConcatAssoc : main.
@@ -210,7 +210,7 @@ Theorem eDomainConcat :
   forall c1 c2,
   eDomain (cConcat c1 c2) = eDomain c2 ++ eDomain c1.
 Proof.
-  induction c2; magic.
+  induction c2; search.
 Qed.
 
 #[export] Hint Resolve eDomainConcat : main.
@@ -219,7 +219,7 @@ Theorem tDomainConcat :
   forall c1 c2,
   tDomain (cConcat c1 c2) = tDomain c2 ++ tDomain c1.
 Proof.
-  induction c2; magic.
+  induction c2; search.
 Qed.
 
 #[export] Hint Resolve tDomainConcat : main.
@@ -233,7 +233,7 @@ Theorem cConcatELookup :
   eLookup (cConcat c1 c2) x = Some t ->
   eLookup c1 x = Some t \/ eLookup c2 x = Some t.
 Proof.
-  induction c2; magic.
+  induction c2; search.
 Qed.
 
 #[export] Hint Resolve cConcatELookup : main.
@@ -243,7 +243,7 @@ Theorem cConcatTLookup :
   tLookup (cConcat c1 c2) x = true ->
   tLookup c1 x = true \/ tLookup c2 x = true.
 Proof.
-  induction c2; magic.
+  induction c2; search.
 Qed.
 
 #[export] Hint Resolve cConcatTLookup : main.
@@ -253,7 +253,7 @@ Theorem cELookupConcatRight :
   eLookup c2 x = Some t ->
   eLookup (cConcat c1 c2) x = Some t.
 Proof.
-  induction c2; magic.
+  induction c2; search.
 Qed.
 
 #[export] Hint Resolve cELookupConcatRight : main.
@@ -264,7 +264,7 @@ Theorem cELookupConcatLeft :
   eLookup c2 x = None ->
   eLookup (cConcat c1 c2) x = Some t.
 Proof.
-  induction c2; magic.
+  induction c2; search.
 Qed.
 
 #[export] Hint Resolve cELookupConcatLeft : main.
@@ -274,7 +274,7 @@ Theorem cTLookupConcatRight :
   tLookup c2 x = true ->
   tLookup (cConcat c1 c2) x = true.
 Proof.
-  induction c2; magic.
+  induction c2; search.
 Qed.
 
 #[export] Hint Resolve cTLookupConcatRight : main.
@@ -284,7 +284,7 @@ Theorem cTLookupConcatLeft :
   tLookup c1 x = true ->
   tLookup (cConcat c1 c2) x = true.
 Proof.
-  induction c2; magic.
+  induction c2; search.
 Qed.
 
 #[export] Hint Resolve cTLookupConcatLeft : main.
@@ -295,11 +295,11 @@ Theorem cELookupNone :
   cWellFormed (cConcat c1 c2) ->
   eLookup c2 x = None.
 Proof.
-  clean. induction c2; magic; invert H0; feed IHc2; clean.
-  destruct (nameEq x n); magic. clean.
-  assert (In n (eDomain c1)); eMagic.
+  clean. induction c2; search; invert H0; feed IHc2; clean.
+  destruct (nameEq x n); search. clean.
+  assert (In n (eDomain c1)); eSearch.
   rewrite eDomainConcat in H4.
-  unfold not in H4. magic.
+  unfold not in H4. search.
 Qed.
 
 #[export] Hint Resolve cELookupNone : main.
@@ -310,11 +310,11 @@ Theorem cTLookupNone :
   cWellFormed (cConcat c1 c2) ->
   tLookup c2 x = false.
 Proof.
-  clean. induction c2; magic; invert H0; feed IHc2; clean.
-  destruct (nameEq x n); magic. clean.
-  assert (In n (tDomain c1)); [eMagic | idtac].
+  clean. induction c2; search; invert H0; feed IHc2; clean.
+  destruct (nameEq x n); search. clean.
+  assert (In n (tDomain c1)); [eSearch | idtac].
   rewrite tDomainConcat in H3.
-  unfold not in H3. magic.
+  unfold not in H3. search.
 Qed.
 
 #[export] Hint Resolve cTLookupNone : main.
@@ -328,14 +328,14 @@ Theorem cWellFormedESkip :
   cWellFormed (cConcat (cEExtend c1 x t) c2) ->
   cWellFormed (cConcat c1 c2).
 Proof.
-  clean. induction c2; invert H; magic; clean; constructor; magic.
+  clean. induction c2; invert H; search; clean; constructor; search.
   - rewrite eDomainConcat in *. clean.
     unfold not in *. clean.
     pose proof (in_app_or (eDomain c2) (eDomain c1) n H).
-    destruct H0; magic.
-  - unfold tWellFormed in *. split; magic. clean.
-    rewrite tDomainConcat in *. magic.
-  - rewrite tDomainConcat in *. magic.
+    destruct H0; search.
+  - unfold tWellFormed in *. split; search. clean.
+    rewrite tDomainConcat in *. search.
+  - rewrite tDomainConcat in *. search.
 Qed.
 
 #[export] Hint Resolve cWellFormedESkip : main.
@@ -346,34 +346,34 @@ Theorem cWellFormedTSkip :
   tWellFormed c1 t ->
   cWellFormed (cConcat c1 (cSub c2 x t)).
 Proof.
-  clean. induction c2; invert H; magic; clean; constructor; magic.
+  clean. induction c2; invert H; search; clean; constructor; search.
   - unfold tWellFormed in H5.
     rewrite eDomainConcat in *. rewrite cSubEDomain.
     unfold not in *. clean.
-    assert (In n (eDomain c2) \/ In n (eDomain c1)); magic.
-  - unfold tWellFormed in *. split; magic. clean.
+    assert (In n (eDomain c2) \/ In n (eDomain c1)); search.
+  - unfold tWellFormed in *. split; search. clean.
     apply incl_tran with (
       m := tFreeVars t ++ remove nameEq x (tFreeVars t0)
-    ); magic.
+    ); search.
     rewrite tDomainConcat. rewrite tDomainConcat in H1.
     assert (
       incl
         (remove nameEq x (tFreeVars t0))
         (tDomain (cSub c2 x t) ++ tDomain c1)
-    ); magic.
+    ); search.
     rewrite cSubTDomain.
     unfold incl in *. clean.
     specialize (H1 a). feed H1.
-    + pose proof (nameInRemove (tFreeVars t0) a x H3). magic.
+    + pose proof (nameInRemove (tFreeVars t0) a x H3). search.
     + pose proof (remove_In nameEq (tFreeVars t0) x).
-      assert (a <> x); magic. clear H5.
+      assert (a <> x); search. clear H5.
       pose proof (in_app_or (tDomain c2) (x :: tDomain c1) a H1).
-      destruct H5; magic.
+      destruct H5; search.
   - rewrite tDomainConcat in *.
     unfold not in *. clean.
-    assert (In n (tDomain (cSub c2 x t)) \/ In n (tDomain c1)); magic.
-    destruct H1; magic.
-    rewrite cSubTDomain in H1. magic.
+    assert (In n (tDomain (cSub c2 x t)) \/ In n (tDomain c1)); search.
+    destruct H1; search.
+    rewrite cSubTDomain in H1. search.
 Qed.
 
 #[export] Hint Resolve cWellFormedTSkip : main.

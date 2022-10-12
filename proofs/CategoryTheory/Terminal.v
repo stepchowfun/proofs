@@ -20,7 +20,7 @@ Definition terminal {C} (x : object C) :=
 Theorem opInitialTerminal C x :
   @initial C x <-> @terminal (oppositeCategory C) x.
 Proof.
-  magic.
+  search.
 Qed.
 
 #[export] Hint Resolve opInitialTerminal : main.
@@ -28,7 +28,7 @@ Qed.
 Theorem opTerminalInitial C x :
   @terminal C x <-> @initial (oppositeCategory C) x.
 Proof.
-  magic.
+  search.
 Qed.
 
 #[export] Hint Resolve opTerminalInitial : main.
@@ -39,7 +39,7 @@ Proof.
   clean.
   rewrite opTerminalInitial in *.
   rewrite opIsomorphic.
-  apply initialUnique; magic.
+  apply initialUnique; search.
 Qed.
 
 #[export] Hint Resolve terminalUnique : main.

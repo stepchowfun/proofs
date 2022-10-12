@@ -61,41 +61,41 @@ Theorem typingRegularity :
   cWellFormed c /\ tWellFormed c t /\ eLocallyClosed e 0 0.
 Proof.
   clean. induction H; clean.
-  - split; magic. split; magic. unfold tWellFormed.
-    split; induction H; magic; unfold tWellFormed in H1; magic; clean.
-    destruct (nameEq x x0); magic. invert H0. magic.
+  - split; search. split; search. unfold tWellFormed.
+    split; induction H; search; unfold tWellFormed in H1; search; clean.
+    destruct (nameEq x x0); search. invert H0. search.
   - pose proof (nameFresh l). clean. specialize (H0 x H1). clean. split.
-    + invert H0. magic.
+    + invert H0. search.
     + split.
       * constructor; clean.
         -- constructor.
-           ++ invert H0. unfold tWellFormed in H8. magic.
-           ++ unfold tWellFormed in H2. magic.
+           ++ invert H0. unfold tWellFormed in H8. search.
+           ++ unfold tWellFormed in H2. search.
         -- invert H0.
            unfold tWellFormed in H8.
            unfold tWellFormed in H2.
-           magic.
+           search.
       * constructor.
-        -- invert H0. unfold tWellFormed in H8. magic.
-        -- apply eeLocallyClosedOpen with (e2 := eFreeVar x). magic.
-  - split; magic. split; magic.
-    unfold tWellFormed in H5. clean. invert H5. constructor; eMagic.
+        -- invert H0. unfold tWellFormed in H8. search.
+        -- apply eeLocallyClosedOpen with (e2 := eFreeVar x). search.
+  - split; search. split; search.
+    unfold tWellFormed in H5. clean. invert H5. constructor; eSearch.
   - pose proof (nameFresh (l ++ tFreeVars t)). clean.
     specialize (H0 x). feed H0. clean. split.
-    + invert H0. magic.
+    + invert H0. search.
     + split.
       * constructor; clean.
         -- constructor. invert H2.
-           apply ttLocallyClosedOpen with (t2 := tFreeVar x). magic.
+           apply ttLocallyClosedOpen with (t2 := tFreeVar x). search.
         -- invert H2. clean. unfold incl in *. clean.
-           specialize (H5 a). feed H5. apply tttFreeOpen. magic.
-      * constructor. apply etLocallyClosedOpen with (t := tFreeVar x). magic.
-  - split; magic. unfold tWellFormed in H. clean. split; magic.
+           specialize (H5 a). feed H5. apply tttFreeOpen. search.
+      * constructor. apply etLocallyClosedOpen with (t := tFreeVar x). search.
+  - split; search. unfold tWellFormed in H. clean. split; search.
     constructor.
-    + unfold tWellFormed in H2. apply locallyClosedOpenForAll; magic.
+    + unfold tWellFormed in H2. apply locallyClosedOpenForAll; search.
     + apply incl_tran with (m := tFreeVars t2 ++ tFreeVars t1).
       * apply tttFreeOpen.
-      * unfold tWellFormed in H2. magic.
+      * unfold tWellFormed in H2. search.
 Qed.
 
 #[export] Hint Resolve typingRegularity : main.
@@ -110,15 +110,15 @@ Theorem contextWeakening :
   cWellFormed (cConcat (cConcat c1 c2) c3) ->
   hasType (cConcat (cConcat c1 c2) c3) e t.
 Proof.
-  clean. remember (cConcat c1 c3). outro c3. induction H; eMagic; clean.
-  - rewrite cConcatAssoc in *. constructor; magic.
-    pose proof (cConcatELookup c1 c3 t x H0). eMagic.
+  clean. remember (cConcat c1 c3). outro c3. induction H; eSearch; clean.
+  - rewrite cConcatAssoc in *. constructor; search.
+    pose proof (cConcatELookup c1 c3 t x H0). eSearch.
   - apply htAbs with (l := l ++ eDomain c3 ++ eDomain c2 ++ eDomain c1). clean.
     specialize (H0 x). clean.
     specialize (H0 (cEExtend c3 x t2)). clean.
     apply H0.
-    constructor; magic.
-    + do 2 rewrite eDomainConcat. magic.
+    constructor; search.
+    + do 2 rewrite eDomainConcat. search.
     + pose proof (
         typingRegularity
         (cEExtend (cConcat c1 c3) x t2)
@@ -126,28 +126,28 @@ Proof.
         t1
       ). clean.
       invert H3.
-      unfold tWellFormed in *. clean. split; magic.
+      unfold tWellFormed in *. clean. split; search.
       rewrite tDomainConcat in H6.
       do 2 rewrite tDomainConcat.
       unfold incl in *. clean.
       specialize (H6 a). clean.
-      assert (In a (tDomain c3) \/ In a (tDomain c1)); magic.
+      assert (In a (tDomain c3) \/ In a (tDomain c1)); search.
   - apply htTAbs with (l := l ++ tDomain c3 ++ tDomain c2 ++ tDomain c1).
     clean.
     specialize (H0 x). clean.
     specialize (H0 (cTExtend c3 x)). clean.
     apply H0.
-    constructor; magic.
-    do 2 rewrite tDomainConcat. magic.
-  - constructor; magic.
+    constructor; search.
+    do 2 rewrite tDomainConcat. search.
+  - constructor; search.
     pose proof (typingRegularity (cConcat c1 c3) e (tForAll t1)). clean.
     unfold tWellFormed in H. clean.
-    constructor; magic.
+    constructor; search.
     rewrite tDomainConcat in H5.
     do 2 rewrite tDomainConcat.
     unfold incl in *. clean.
     specialize (H5 a). clean.
-    assert (In a (tDomain c3) \/ In a (tDomain c1)); magic.
+    assert (In a (tDomain c3) \/ In a (tDomain c1)); search.
 Qed.
 
 #[export] Hint Resolve contextWeakening : main.
