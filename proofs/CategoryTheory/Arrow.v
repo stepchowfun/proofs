@@ -50,7 +50,7 @@ Theorem opIsomorphism C x y f :
 Proof.
   unfold isomorphism.
   unfold inverse.
-  split; clean; exists x0; magic.
+  split; clean; exists x0; search.
 Qed.
 
 #[export] Hint Resolve opIsomorphism : main.
@@ -58,7 +58,7 @@ Qed.
 Theorem opMonoEpi C x y f :
   @monomorphism C x y f <-> @epimorphism (oppositeCategory C) y x f.
 Proof.
-  magic.
+  search.
 Qed.
 
 #[export] Hint Resolve opMonoEpi : main.
@@ -66,7 +66,7 @@ Qed.
 Theorem opEpiMono C x y f :
   @epimorphism C x y f <-> @monomorphism (oppositeCategory C) y x f.
 Proof.
-  magic.
+  search.
 Qed.
 
 #[export] Hint Resolve opEpiMono : main.
@@ -74,7 +74,7 @@ Qed.
 Theorem opRetSec C x y f :
   @retraction C x y f <-> @section (oppositeCategory C) y x f.
 Proof.
-  magic.
+  search.
 Qed.
 
 #[export] Hint Resolve opRetSec : main.
@@ -82,7 +82,7 @@ Qed.
 Theorem opSecRet C x y f :
   @section C x y f <-> @retraction (oppositeCategory C) y x f.
 Proof.
-  magic.
+  search.
 Qed.
 
 #[export] Hint Resolve opSecRet : main.
@@ -92,7 +92,7 @@ Proof.
   unfold isomorphism.
   exists id.
   unfold inverse.
-  magic.
+  search.
 Qed.
 
 #[export] Hint Resolve idIso : main.
@@ -106,7 +106,7 @@ Proof.
   clean.
   specialize (H x id).
   specialize (H0 x id).
-  magic.
+  search.
 Qed.
 
 #[export] Hint Resolve rightIdUnique : main.
@@ -120,7 +120,7 @@ Proof.
   clean.
   specialize (H x id).
   specialize (H0 x id).
-  magic.
+  search.
 Qed.
 
 #[export] Hint Resolve leftIdUnique : main.
@@ -131,10 +131,10 @@ Proof.
   unfold arrowUnique.
   unfold inverse.
   clean.
-  assert (compose f0 (compose f g) = compose (compose f0 f) g); magic.
+  assert (compose f0 (compose f g) = compose (compose f0 f) g); search.
   rewrite H0 in H3.
   rewrite H2 in H3.
-  magic.
+  search.
 Qed.
 
 #[export] Hint Resolve inverseUnique : main.
@@ -145,9 +145,9 @@ Proof.
   unfold inverse.
   clean.
   assert (f = compose f (compose g h)).
-  - rewrite H0. magic.
-  - assert (h = compose f (compose g h)); magic.
-    rewrite cAssoc. rewrite H. magic.
+  - rewrite H0. search.
+  - assert (h = compose f (compose g h)); search.
+    rewrite cAssoc. rewrite H. search.
 Qed.
 
 #[export] Hint Resolve inverseInvolution : main.
@@ -160,10 +160,10 @@ Proof.
   clean.
   assert (
     compose (compose g f) x0 = compose (compose h f) x0
-  ); magic.
+  ); search.
   repeat rewrite <- cAssoc in H2.
   repeat rewrite H in H2.
-  magic.
+  search.
 Qed.
 
 #[export] Hint Resolve isoImpliesEpi : main.
@@ -174,7 +174,7 @@ Proof.
   rewrite opMonoEpi.
   apply isoImpliesEpi.
   rewrite <- opIsomorphism.
-  magic.
+  search.
 Qed.
 
 #[export] Hint Resolve isoImpliesMono : main.
@@ -186,10 +186,10 @@ Proof.
   clean.
   assert (
     compose x0 (compose f g) = compose x0 (compose f h)
-  ); magic.
+  ); search.
   repeat rewrite cAssoc in H1.
   repeat rewrite H in H1.
-  magic.
+  search.
 Qed.
 
 #[export] Hint Resolve secImpliesMono : main.
@@ -199,7 +199,7 @@ Proof.
   clean.
   rewrite opRetSec in H.
   rewrite opEpiMono.
-  magic.
+  search.
 Qed.
 
 #[export] Hint Resolve retImpliesEpi : main.
@@ -213,20 +213,20 @@ Proof.
   unfold inverse.
   split; clean.
   - exists x0.
-    split; magic.
+    split; search.
     specialize (H x (compose x0 f) id).
     feed H.
     rewrite cAssoc.
     rewrite H0.
-    magic.
-  - split; eMagic.
+    search.
+  - split; eSearch.
     clean.
     assert (
       compose x0 (compose f g) = compose x0 (compose f h)
-    ); magic.
+    ); search.
     repeat rewrite cAssoc in H2.
     rewrite H0 in H2.
-    magic.
+    search.
 Qed.
 
 #[export] Hint Resolve monoRetEquivIso : main.
@@ -238,7 +238,7 @@ Proof.
   rewrite opEpiMono.
   rewrite opSecRet.
   rewrite opIsomorphism.
-  magic.
+  search.
 Qed.
 
 #[export] Hint Resolve epiSecEquivIso : main.

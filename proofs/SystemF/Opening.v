@@ -54,7 +54,7 @@ Theorem tttOpenLocallyClosed :
   tLocallyClosed t1 i ->
   ttOpen t1 i t2 = t1.
 Proof.
-  clean. induction H; magic.
+  clean. induction H; search.
 Qed.
 
 #[export] Hint Resolve tttOpenLocallyClosed : main.
@@ -64,7 +64,7 @@ Theorem eeeOpenLocallyClosed :
   eLocallyClosed e1 ie it ->
   eeOpen e1 ie e2 = e1.
 Proof.
-  clean. induction H; magic.
+  clean. induction H; search.
 Qed.
 
 #[export] Hint Resolve eeeOpenLocallyClosed : main.
@@ -74,7 +74,7 @@ Theorem eetOpenLocallyClosed :
   eLocallyClosed e ie it ->
   etOpen e it t = e.
 Proof.
-  clean. induction H; magic.
+  clean. induction H; search.
 Qed.
 
 #[export] Hint Resolve eetOpenLocallyClosed : main.
@@ -90,11 +90,11 @@ Theorem ttLocallyClosedOpen :
   tLocallyClosed t1 (S i).
 Proof.
   clean. outro t1 i.
-  induction t1; magic; clean.
-  - destruct (eq_dec i n); magic.
-    apply tLocalClosureMonotonic with (i1 := i); magic.
-  - invert H. magic.
-  - invert H. magic.
+  induction t1; search; clean.
+  - destruct (eq_dec i n); search.
+    apply tLocalClosureMonotonic with (i1 := i); search.
+  - invert H. search.
+  - invert H. search.
 Qed.
 
 #[export] Hint Resolve ttLocallyClosedOpen : main.
@@ -105,13 +105,13 @@ Theorem eeLocallyClosedOpen :
   eLocallyClosed e1 (S ie) it.
 Proof.
   clean. outro e1 ie it.
-  induction e1; magic; clean.
-  - destruct (eq_dec ie n); magic.
-    apply eLocalClosureMonotonic with (ie1 := ie) (it1 := it); magic.
-  - invert H. magic.
-  - invert H. magic.
-  - invert H. magic.
-  - invert H. magic.
+  induction e1; search; clean.
+  - destruct (eq_dec ie n); search.
+    apply eLocalClosureMonotonic with (ie1 := ie) (it1 := it); search.
+  - invert H. search.
+  - invert H. search.
+  - invert H. search.
+  - invert H. search.
 Qed.
 
 #[export] Hint Resolve eeLocallyClosedOpen : main.
@@ -122,12 +122,12 @@ Theorem etLocallyClosedOpen :
   eLocallyClosed e ie (S it).
 Proof.
   clean. outro e ie it.
-  induction e; magic; clean.
-  - apply eLocalClosureMonotonic with (ie1 := ie) (it1 := it); magic.
-  - invert H. eMagic.
-  - invert H. magic.
-  - invert H. magic.
-  - invert H. eMagic.
+  induction e; search; clean.
+  - apply eLocalClosureMonotonic with (ie1 := ie) (it1 := it); search.
+  - invert H. eSearch.
+  - invert H. search.
+  - invert H. search.
+  - invert H. eSearch.
 Qed.
 
 #[export] Hint Resolve etLocallyClosedOpen : main.
@@ -142,10 +142,10 @@ Theorem tttFreeOpen :
   incl (tFreeVars t1) (tFreeVars (ttOpen t1 i t2)).
 Proof.
   clean. split; outro i.
-  - induction t1; magic. clean. apply incl_app.
-    + apply incl_tran with (m := tFreeVars t2 ++ tFreeVars t1_1); magic.
-    + apply incl_tran with (m := tFreeVars t2 ++ tFreeVars t1_2); magic.
-  - induction t1; magic. unfold incl. magic.
+  - induction t1; search. clean. apply incl_app.
+    + apply incl_tran with (m := tFreeVars t2 ++ tFreeVars t1_1); search.
+    + apply incl_tran with (m := tFreeVars t2 ++ tFreeVars t1_2); search.
+  - induction t1; search. unfold incl. search.
 Qed.
 
 #[export] Hint Resolve tttFreeOpen : main.
@@ -156,10 +156,10 @@ Theorem eeeeFreeOpen :
   incl (eeFreeVars e1) (eeFreeVars (eeOpen e1 i e2)).
 Proof.
   clean. split; outro i.
-  - induction e1; magic. clean. apply incl_app.
-    + apply incl_tran with (m := eeFreeVars e2 ++ eeFreeVars e1_1); magic.
-    + apply incl_tran with (m := eeFreeVars e2 ++ eeFreeVars e1_2); magic.
-  - induction e1; magic. unfold incl. magic.
+  - induction e1; search. clean. apply incl_app.
+    + apply incl_tran with (m := eeFreeVars e2 ++ eeFreeVars e1_1); search.
+    + apply incl_tran with (m := eeFreeVars e2 ++ eeFreeVars e1_2); search.
+  - induction e1; search. unfold incl. search.
 Qed.
 
 #[export] Hint Resolve eeeeFreeOpen : main.
@@ -169,7 +169,7 @@ Theorem eeetFreeOpen :
   incl (eeFreeVars (etOpen e i t)) (eeFreeVars e) /\
   incl (eeFreeVars e) (eeFreeVars (etOpen e i t)).
 Proof.
-  clean. split; outro i; induction e; magic.
+  clean. split; outro i; induction e; search.
 Qed.
 
 #[export] Hint Resolve eeetFreeOpen : main.
@@ -180,15 +180,15 @@ Theorem eteeFreeOpen :
   incl (etFreeVars e1) (etFreeVars (eeOpen e1 i e2)).
 Proof.
   clean. split; outro i.
-  - induction e1; magic; clean.
-    + specialize (IHe1 (S i)). apply incl_app; magic.
-      apply incl_tran with (m := etFreeVars e2 ++ etFreeVars e1); magic.
-    + specialize (IHe1_1 i). specialize (IHe1_2 i). apply incl_app; magic.
-      * apply incl_tran with (m := etFreeVars e2 ++ etFreeVars e1_1); magic.
-      * apply incl_tran with (m := etFreeVars e2 ++ etFreeVars e1_2); magic.
-    + specialize (IHe1 i). apply incl_app; magic.
-      apply incl_tran with (m := etFreeVars e2 ++ etFreeVars e1); magic.
-  - induction e1; magic. unfold incl. magic.
+  - induction e1; search; clean.
+    + specialize (IHe1 (S i)). apply incl_app; search.
+      apply incl_tran with (m := etFreeVars e2 ++ etFreeVars e1); search.
+    + specialize (IHe1_1 i). specialize (IHe1_2 i). apply incl_app; search.
+      * apply incl_tran with (m := etFreeVars e2 ++ etFreeVars e1_1); search.
+      * apply incl_tran with (m := etFreeVars e2 ++ etFreeVars e1_2); search.
+    + specialize (IHe1 i). apply incl_app; search.
+      apply incl_tran with (m := etFreeVars e2 ++ etFreeVars e1); search.
+  - induction e1; search. unfold incl. search.
 Qed.
 
 #[export] Hint Resolve eteeFreeOpen : main.
@@ -199,18 +199,18 @@ Theorem etetFreeOpen :
   incl (etFreeVars e) (etFreeVars (etOpen e i t)).
 Proof.
   clean. split; outro i.
-  - induction e; magic; clean; apply incl_app.
-    + apply incl_tran with (m := tFreeVars t0 ++ tFreeVars t1); magic.
+  - induction e; search; clean; apply incl_app.
+    + apply incl_tran with (m := tFreeVars t0 ++ tFreeVars t1); search.
       apply tttFreeOpen.
-    + apply incl_tran with (m := tFreeVars t0 ++ etFreeVars e); magic.
-    + apply incl_tran with (m := tFreeVars t0 ++ etFreeVars e1); magic.
-    + apply incl_tran with (m := tFreeVars t0 ++ etFreeVars e2); magic.
-    + apply incl_tran with (m := tFreeVars t0 ++ etFreeVars e); magic.
-    + apply incl_tran with (m := tFreeVars t0 ++ tFreeVars t1); magic.
+    + apply incl_tran with (m := tFreeVars t0 ++ etFreeVars e); search.
+    + apply incl_tran with (m := tFreeVars t0 ++ etFreeVars e1); search.
+    + apply incl_tran with (m := tFreeVars t0 ++ etFreeVars e2); search.
+    + apply incl_tran with (m := tFreeVars t0 ++ etFreeVars e); search.
+    + apply incl_tran with (m := tFreeVars t0 ++ tFreeVars t1); search.
       apply tttFreeOpen.
-  - induction e; magic; clean;
-      specialize (IHe i); apply incl_app; magic;
-      apply incl_tran with (m := tFreeVars (ttOpen t1 i t0)); magic;
+  - induction e; search; clean;
+      specialize (IHe i); apply incl_app; search;
+      apply incl_tran with (m := tFreeVars (ttOpen t1 i t0)); search;
       apply tttFreeOpen.
 Qed.
 
@@ -227,13 +227,13 @@ Theorem locallyClosedOpenForAll :
   tLocallyClosed (ttOpen t1 i t2) i.
 Proof.
   clean. invert H.
-  remember (S i). assert (n <= S i); magic. clear Heqn. outro t2 i.
-  induction H2; magic; clean.
-  - destruct (eq_dec i n1); magic. apply tlcBoundVar. lia.
-  - constructor; magic.
+  remember (S i). assert (n <= S i); search. clear Heqn. outro t2 i.
+  induction H2; search; clean.
+  - destruct (eq_dec i n1); search. apply tlcBoundVar. lia.
+  - constructor; search.
     specialize (IHtLocallyClosed t2 (S i)).
     feed IHtLocallyClosed.
-    apply tLocalClosureMonotonic with (i1 := i); magic.
+    apply tLocalClosureMonotonic with (i1 := i); search.
 Qed.
 
 #[export] Hint Resolve locallyClosedOpenForAll : main.
@@ -245,17 +245,17 @@ Theorem locallyClosedOpenAbs :
   eLocallyClosed (eeOpen e1 ie e2) ie it.
 Proof.
   clean. invert H. clear t0 H3.
-  remember (S ie). assert (n <= S ie); magic. clear Heqn. outro e2 ie.
-  induction H6; magic; clean.
-  - destruct (eq_dec ie ne1); magic. apply elcBoundVar. lia.
-  - constructor; magic.
+  remember (S ie). assert (n <= S ie); search. clear Heqn. outro e2 ie.
+  induction H6; search; clean.
+  - destruct (eq_dec ie ne1); search. apply elcBoundVar. lia.
+  - constructor; search.
     specialize (IHeLocallyClosed e2 (S ie)).
-    apply IHeLocallyClosed; magic.
-    apply eLocalClosureMonotonic with (ie1 := ie) (it1 := nt); magic.
+    apply IHeLocallyClosed; search.
+    apply eLocalClosureMonotonic with (ie1 := ie) (it1 := nt); search.
   - constructor.
     specialize (IHeLocallyClosed e2 ie).
-    apply IHeLocallyClosed; magic.
-    apply eLocalClosureMonotonic with (ie1 := ie) (it1 := nt); magic.
+    apply IHeLocallyClosed; search.
+    apply eLocalClosureMonotonic with (ie1 := ie) (it1 := nt); search.
 Qed.
 
 #[export] Hint Resolve locallyClosedOpenAbs : main.
@@ -267,17 +267,17 @@ Theorem locallyClosedOpenTAbs :
   eLocallyClosed (etOpen e it t) ie it.
 Proof.
   clean. invert H.
-  remember (S it). assert (n <= S it); magic. clear Heqn. outro t0 it.
-  induction H2; magic; constructor; magic; clean.
-  - apply locallyClosedOpenForAll; magic.
+  remember (S it). assert (n <= S it); search. clear Heqn. outro t0 it.
+  induction H2; search; constructor; search; clean.
+  - apply locallyClosedOpenForAll; search.
     constructor.
-    apply tLocalClosureMonotonic with (i1 := nt); magic.
+    apply tLocalClosureMonotonic with (i1 := nt); search.
   - specialize (IHeLocallyClosed t0 (S it)).
     feed IHeLocallyClosed.
-    apply tLocalClosureMonotonic with (i1 := it); magic.
-  - apply locallyClosedOpenForAll; magic.
+    apply tLocalClosureMonotonic with (i1 := it); search.
+  - apply locallyClosedOpenForAll; search.
     constructor.
-    apply tLocalClosureMonotonic with (i1 := nt); magic.
+    apply tLocalClosureMonotonic with (i1 := nt); search.
 Qed.
 
 #[export] Hint Resolve locallyClosedOpenTAbs : main.

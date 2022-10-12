@@ -128,7 +128,7 @@ Recursive Extraction xor.
   can teach Coq about OCaml `bool`s.
 *)
 
-Extract Inductive bool => "bool" [ "true" "false" ].
+Extract Inductive bool => "bool" ["true" "false"].
 
 Recursive Extraction xor.
 
@@ -156,7 +156,7 @@ Recursive Extraction xor.
 *)
 
 Extract Inductive nat => "int"
-  [ "0" "(fun x -> x + 1)" ]
+  ["0" "(fun x -> x + 1)"]
   "(fun zero succ n -> if n = 0 then zero () else succ (n - 1))".
 
 Extract Constant plus => "( + )".

@@ -23,7 +23,7 @@ Module Name : NameSig.
 
   Theorem nameEq : forall x1 x2 : nat, { x1 = x2 } + { x1 <> x2 }.
   Proof.
-    induction x1; magic.
+    induction x1; search.
   Qed.
 
   #[export] Hint Resolve nameEq : main.

@@ -43,7 +43,7 @@ Module TrivialContextGraph <: ContextGraph.
     verticallyReachable n2 n1 ->
     n1 = n2.
   Proof.
-    magic.
+    search.
   Qed.
 
   #[export] Hint Resolve verticalAntisymmetry : main.
@@ -54,7 +54,7 @@ Module TrivialContextGraph <: ContextGraph.
 
   Theorem rootReach : forall n, verticallyReachable root n.
   Proof.
-    magic.
+    search.
   Qed.
 
   #[export] Hint Resolve rootReach : main.

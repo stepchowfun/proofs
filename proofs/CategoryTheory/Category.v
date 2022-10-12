@@ -46,19 +46,19 @@ Arguments cIdentRight {_} {_} {_}.
   (h : arrow z y)
 : compose (compose f g) h = compose f (compose g h).
 Proof.
-  magic.
+  search.
 Qed.
 
 #[local] Theorem opCIdentLeft {C} (x y : object C) (f : arrow y x) :
   compose f id = f.
 Proof.
-  magic.
+  search.
 Qed.
 
 #[local] Theorem opCIdentRight {C} (x y : object C) (f : arrow y x) :
   compose id f = f.
 Proof.
-  magic.
+  search.
 Qed.
 
 Definition oppositeCategory C : category := newCategory

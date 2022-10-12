@@ -16,8 +16,8 @@ Create HintDb main.
 
 (*
   This tactic does a variety of simplifications on the goal and hypotheses.
-  It's used by the `magic` tactics below. If you just want to clean up the goal
-  and context for easier reading, use the `clean` tactic below.
+  It's used by the `search` tactics below. If you just want to clean up the
+  goal and context for easier reading, use the `clean` tactic below.
 *)
 
 #[local] Ltac simplify tactic :=
@@ -26,16 +26,16 @@ Create HintDb main.
     subst;
     cbn in *;
     try match goal with
-        | [ H : ?T = ?T |- _ ] => clear H
-        | [ H : ex _ |- _ ] => destruct H
-        | [ H : _ /\ _ |- _ ] => destruct H
-        | [ H : _ <-> _ |- _ ] => destruct H
-        | [ H1 : ?T -> _ |- _ ] =>
+        | [H : ?T = ?T |- _] => clear H
+        | [H : ex _ |- _] => destruct H
+        | [H : _ /\ _ |- _] => destruct H
+        | [H : _ <-> _ |- _] => destruct H
+        | [H1 : ?T -> _ |- _] =>
           match type of T with
           | Prop =>
             let H2 := fresh "H" in
             assert (H2 : T); [
-              solve [ tactic ] |
+              solve [tactic] |
               specialize (H1 H2); clear H2
             ]
           end
@@ -43,12 +43,12 @@ Create HintDb main.
   ).
 
 (*
-  The `magic` tactic tries a variety of approaches to solve a goal. The
-  `eMagic` tactic does everything `magic` does but uses `eauto` instead of
+  The `search` tactic tries a variety of approaches to solve a goal. The
+  `eSearch` tactic does everything `search` does but uses `eauto` instead of
   `auto`.
 *)
 
-#[local] Ltac magicWith tactic :=
+#[local] Ltac searchWith tactic :=
   try solve [tactic];
   try solve [
     simplify tactic;
@@ -57,30 +57,30 @@ Create HintDb main.
     try solve [congruence];
     try solve [dintuition (simplify tactic; tactic)];
     try solve [lia];
-    try solve [progress f_equal; magicWith tactic];
+    try solve [progress f_equal; searchWith tactic];
     try solve [
       match goal with
-      | [ X : unit |- _ ] => destruct X; magicWith tactic; fail
-      | [ |- context[if ?X then _ else _] ] =>
-        destruct X; magicWith tactic; fail
-      | [ _ : context[if ?X then _ else _] |- _ ] =>
-        destruct X; magicWith tactic; fail
-      | [ H : _ |- _ ] => inversion H; fail
+      | [X : unit |- _] => destruct X; searchWith tactic; fail
+      | [|- context[if ?X then _ else _]] =>
+        destruct X; searchWith tactic; fail
+      | [_ : context[if ?X then _ else _] |- _] =>
+        destruct X; searchWith tactic; fail
+      | [H : _ |- _] => inversion H; fail
       end
     ]
   ].
 
-Tactic Notation "magic" integer(n) :=
+Tactic Notation "search" integer(n) :=
   let autoTactic := auto n with arith datatypes main
-  in magicWith autoTactic.
+  in searchWith autoTactic.
 
-Tactic Notation "magic" := magic 5.
+Tactic Notation "search" := search 5.
 
-Tactic Notation "eMagic" integer(n) :=
+Tactic Notation "eSearch" integer(n) :=
   let eautoTactic := eauto n with arith datatypes main
-  in magicWith eautoTactic.
+  in searchWith eautoTactic.
 
-Tactic Notation "eMagic" := eMagic 5.
+Tactic Notation "eSearch" := eSearch 5.
 
 (*
   This tactic reorders the context such that definitions come before
@@ -89,16 +89,16 @@ Tactic Notation "eMagic" := eMagic 5.
 
 Ltac sort :=
   try match goal with
-  | [ H : ?T |- _ ] =>
+  | [H : ?T |- _] =>
     match type of T with
     | context[Prop] => revert H; sort; intro H
     end
-  | [ H : context[Prop] |- _ ] => revert H; sort; intro H
+  | [H : context[Prop] |- _] => revert H; sort; intro H
   end.
 
 (* This tactic cleans up the goal and context for easier reading. *)
 
-Ltac clean := let magicTactic := magic in simplify magicTactic; sort.
+Ltac clean := let searchTactic := search in simplify searchTactic; sort.
 
 (*
   This tactic is useful if you have a hypothesis `H : P -> Q` and you want to
@@ -110,8 +110,8 @@ Ltac feed H1 :=
   let H2 := fresh "H"
   in
     match type of H1 with
-    | ?T -> _ => assert (H2 : T); [ | specialize (H1 H2); clear H2 ]
-    end; magic.
+    | ?T -> _ => assert (H2 : T); [| specialize (H1 H2); clear H2]
+    end; search.
 
 (* This notation performs `revert dependent` on multiple terms at once. *)
 

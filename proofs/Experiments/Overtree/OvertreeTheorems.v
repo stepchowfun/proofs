@@ -34,10 +34,10 @@ Module OvertreeTheorems (Graph : Overtree).
     n = root.
   Proof.
     clean.
-    assert (clos_refl_trans_n1 proxies n root); magic.
+    assert (clos_refl_trans_n1 proxies n root); search.
     pose proof rootProxy.
-    induction H0; magic.
-    assert (y = z); magic.
+    induction H0; search.
+    assert (y = z); search.
   Qed.
 
   #[export] Hint Resolve rootUniquelyReachable : main.
@@ -47,7 +47,7 @@ Module OvertreeTheorems (Graph : Overtree).
   Theorem rootProxyUniqueness : forall n, proxy n = n -> n = root.
   Proof.
     clean.
-    induction (rootReach n); magic.
+    induction (rootReach n); search.
   Qed.
 
   #[export] Hint Resolve rootProxyUniqueness : main.
@@ -59,7 +59,7 @@ Module OvertreeTheorems (Graph : Overtree).
     (forall n2, verticallyReachable n1 n2) ->
     n1 = root.
   Proof.
-    magic.
+    search.
   Qed.
 
   #[export] Hint Resolve rootReachUniqueness : main.
@@ -80,8 +80,8 @@ Module OvertreeTheorems (Graph : Overtree).
     reachable n1 n2.
   Proof.
     clean.
-    induction H; magic.
-    apply rt_trans with (y := y); magic.
+    induction H; search.
+    apply rt_trans with (y := y); search.
   Qed.
 
   #[export] Hint Resolve horizontalSoundness : main.
@@ -96,7 +96,7 @@ Module OvertreeTheorems (Graph : Overtree).
     proxy n1 = proxy n2.
   Proof.
     clean.
-    induction H; magic.
+    induction H; search.
   Qed.
 
   #[export] Hint Resolve horizontalCovalency : main.
@@ -109,7 +109,7 @@ Module OvertreeTheorems (Graph : Overtree).
     proxies n2 n3 ->
     n1 = n2.
   Proof.
-    magic.
+    search.
   Qed.
 
   #[export] Hint Resolve proxyUniqueness : main.
@@ -122,11 +122,11 @@ Module OvertreeTheorems (Graph : Overtree).
     assert (clos_refl_trans_n1 proxies root n).
     - apply clos_rt_rtn1. apply rootReach.
     - invert H.
-      + split; magic.
+      + split; search.
         exists root.
-        split; magic.
+        split; search.
       + invert H0.
-        magic.
+        search.
   Qed.
 
   #[export] Hint Resolve proxySoundness : main.
@@ -135,7 +135,7 @@ Module OvertreeTheorems (Graph : Overtree).
 
   Theorem verticalProxyReach : forall n, verticallyReachable (proxy n) n.
   Proof.
-    magic.
+    search.
   Qed.
 
   #[export] Hint Resolve verticalProxyReach : main.
@@ -148,13 +148,13 @@ Module OvertreeTheorems (Graph : Overtree).
     reachable n1 n2.
   Proof.
     clean.
-    induction H; magic.
+    induction H; search.
     - invert H.
       invert H1.
-      apply rt_trans with (y := x); magic.
+      apply rt_trans with (y := x); search.
       apply horizontalSoundness.
-      magic.
-    - apply rt_trans with (y := y); magic.
+      search.
+    - apply rt_trans with (y := y); search.
   Qed.
 
   #[export] Hint Resolve verticalSoundness : main.
@@ -172,18 +172,18 @@ Module OvertreeTheorems (Graph : Overtree).
     - assert (clos_refl_trans_1n proxies root n1).
       + apply clos_rt_rt1n.
         apply rootReach.
-      + induction H1; magic.
+      + induction H1; search.
         clean.
-        assert (clos_refl_trans_n1 proxies n2 y); magic.
+        assert (clos_refl_trans_n1 proxies n2 y); search.
         destruct H4.
-        * assert (clos_refl_trans_n1 proxies z n2); magic.
-          destruct H4; magic.
-          assert (x = y); magic.
-          apply rt_trans with (y := z); magic.
-        * assert (x = y); magic.
-    - destruct (classic (n1 = n2)); magic.
+        * assert (clos_refl_trans_n1 proxies z n2); search.
+          destruct H4; search.
+          assert (x = y); search.
+          apply rt_trans with (y := z); search.
+        * assert (x = y); search.
+    - destruct (classic (n1 = n2)); search.
       pose proof (rootUniquelyReachable n2).
-      magic.
+      search.
   Qed.
 
   #[export] Hint Resolve verticalAntisymmetry : main.
@@ -198,10 +198,10 @@ Module OvertreeTheorems (Graph : Overtree).
     verticallyReachable n2 n1.
   Proof.
     clean.
-    assert (clos_refl_trans_n1 proxies n1 n3); magic.
-    induction H1; magic.
-    assert (clos_refl_trans_n1 proxies n2 z); magic.
-    destruct H3; magic.
+    assert (clos_refl_trans_n1 proxies n1 n3); search.
+    induction H1; search.
+    assert (clos_refl_trans_n1 proxies n2 z); search.
+    destruct H3; search.
   Qed.
 
   #[export] Hint Resolve verticalAncestorsTotallyOrdered : main.

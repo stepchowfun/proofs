@@ -28,7 +28,7 @@ Proof.
   clean.
   exists x3.
   exists x0.
-  split; magic.
+  split; search.
 Qed.
 
 #[export] Hint Resolve initialUnique : main.

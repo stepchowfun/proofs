@@ -36,7 +36,7 @@ Require Import Main.Tactics.
       (snd f)
   ).
 Proof.
-  magic.
+  search.
 Qed.
 
 #[local] Theorem productCategoryCIdentLeft
@@ -48,7 +48,7 @@ Qed.
     compose (snd (@id C (fst y), @id D (snd y))) (snd f)
   ) = f.
 Proof.
-  magic.
+  search.
 Qed.
 
 #[local] Theorem productCategoryCIdentRight
@@ -60,7 +60,7 @@ Qed.
     compose (snd f) (snd (@id C (fst x), @id D (snd x)))
   ) = f.
 Proof.
-  magic.
+  search.
 Qed.
 
 Definition productCategory C D : category := newCategory
@@ -77,7 +77,7 @@ Definition productCategory C D : category := newCategory
   (x : object (productCategory C D))
 : fst (@id (productCategory C D) x) = id.
 Proof.
-  magic.
+  search.
 Qed.
 
 #[local] Theorem productCategoryProj1FComp
@@ -87,7 +87,7 @@ Qed.
   (g : arrow y z)
 : compose (fst g) (fst f) = fst (compose g f).
 Proof.
-  magic.
+  search.
 Qed.
 
 Definition productCategoryProj1 C D :
@@ -102,7 +102,7 @@ Definition productCategoryProj1 C D :
   (x : object (productCategory C D))
 : snd (@id (productCategory C D) x) = id.
 Proof.
-  magic.
+  search.
 Qed.
 
 #[local] Theorem productCategoryProj2FComp
@@ -112,7 +112,7 @@ Qed.
   (g : arrow y z)
 : compose (snd g) (snd f) = snd (compose g f).
 Proof.
-  magic.
+  search.
 Qed.
 
 Definition productCategoryProj2 C D :

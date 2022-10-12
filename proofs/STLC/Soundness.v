@@ -18,7 +18,7 @@ Theorem soundness :
   stepStar e1 e2 ->
   (value e2 \/ exists e3, step e2 e3).
 Proof.
-  clean. induction H0; eMagic.
+  clean. induction H0; eSearch.
 Qed.
 
 #[export] Hint Resolve soundness : main.

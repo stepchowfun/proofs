@@ -57,14 +57,14 @@ Module TrivialOvertree <: Overtree.
 
   Theorem rootLoop : edge root root.
   Proof.
-    magic.
+    search.
   Qed.
 
   #[export] Hint Resolve rootLoop : main.
 
   Theorem rootProxy : proxy root = root.
   Proof.
-    magic.
+    search.
   Qed.
 
   #[export] Hint Resolve rootProxy : main.
@@ -72,7 +72,7 @@ Module TrivialOvertree <: Overtree.
 
   Theorem rootReach : forall n, verticallyReachable root n.
   Proof.
-    magic.
+    search.
   Qed.
 
   #[export] Hint Resolve rootReach : main.

@@ -24,7 +24,7 @@ Theorem ttSubIntro :
   ~ In x (tFreeVars t1) ->
   ttOpen t1 i t2 = (ttSub (ttOpen t1 i (tFreeVar x)) x t2).
 Proof.
-  clean. outro i. induction t1; magic.
+  clean. outro i. induction t1; search.
 Qed.
 
 #[export] Hint Resolve ttSubIntro : main.
@@ -34,7 +34,7 @@ Theorem eeSubIntro :
   ~ In x (eeFreeVars e1) ->
   eeOpen e1 i e2 = (eeSub (eeOpen e1 i (eFreeVar x)) x e2).
 Proof.
-  induction e1; magic.
+  induction e1; search.
 Qed.
 
 #[export] Hint Resolve eeSubIntro : main.
@@ -44,7 +44,7 @@ Theorem etSubIntro :
   ~ In x (etFreeVars e) ->
   etOpen e i t = (etSub (etOpen e i (tFreeVar x)) x t).
 Proof.
-  induction e; magic; clean; rewrite ttSubIntro with (x := x); magic.
+  induction e; search; clean; rewrite ttSubIntro with (x := x); search.
 Qed.
 
 #[export] Hint Resolve etSubIntro : main.
@@ -58,10 +58,10 @@ Theorem ttttSubOpen :
   tLocallyClosed t2 i ->
   ttSub (ttOpen t1 i t3) x t2 = ttOpen (ttSub t1 x t2) i (ttSub t3 x t2).
 Proof.
-  clean. outro i. induction t1; magic; clean.
-  - destruct (nameEq x n); magic. rewrite tttOpenLocallyClosed; magic.
+  clean. outro i. induction t1; search; clean.
+  - destruct (nameEq x n); search. rewrite tttOpenLocallyClosed; search.
   - specialize (IHt1 (S i)). feed IHt1.
-    apply tLocalClosureMonotonic with (i1 := i); magic.
+    apply tLocalClosureMonotonic with (i1 := i); search.
 Qed.
 
 #[export] Hint Resolve ttttSubOpen : main.
@@ -71,11 +71,11 @@ Theorem eeeeSubOpen :
   eLocallyClosed e2 ie it ->
   eeSub (eeOpen e1 ie e3) x e2 = eeOpen (eeSub e1 x e2) ie (eeSub e3 x e2).
 Proof.
-  clean. outro ie. induction e1; magic; clean.
-  - destruct (nameEq x n); magic.
-    rewrite eeeOpenLocallyClosed with (it := it); magic.
+  clean. outro ie. induction e1; search; clean.
+  - destruct (nameEq x n); search.
+    rewrite eeeOpenLocallyClosed with (it := it); search.
   - specialize (IHe1 (S ie)). feed IHe1.
-    apply eLocalClosureMonotonic with (ie1 := ie) (it1 := it); magic.
+    apply eLocalClosureMonotonic with (ie1 := ie) (it1 := it); search.
 Qed.
 
 #[export] Hint Resolve eeeeSubOpen : main.
@@ -85,11 +85,11 @@ Theorem eeetSubOpen :
   eLocallyClosed e2 ie it ->
   eeSub (etOpen e1 it t) x e2 = etOpen (eeSub e1 x e2) it t.
 Proof.
-  clean. outro it. induction e1; magic; clean.
-  - destruct (nameEq x n); magic.
-    rewrite eetOpenLocallyClosed with (ie := ie) (it := it); magic.
+  clean. outro it. induction e1; search; clean.
+  - destruct (nameEq x n); search.
+    rewrite eetOpenLocallyClosed with (ie := ie) (it := it); search.
   - specialize (IHe1 (S it)). feed IHe1.
-    apply eLocalClosureMonotonic with (ie1 := ie) (it1 := it); magic.
+    apply eLocalClosureMonotonic with (ie1 := ie) (it1 := it); search.
 Qed.
 
 #[export] Hint Resolve eeetSubOpen : main.
@@ -99,9 +99,9 @@ Theorem eteeSubOpen :
   tLocallyClosed t i ->
   etSub (eeOpen e1 i e2) x t = eeOpen (etSub e1 x t) i (etSub e2 x t).
 Proof.
-  clean. outro i. induction e1; magic; clean.
+  clean. outro i. induction e1; search; clean.
   specialize (IHe1 (S i)). feed IHe1.
-  apply tLocalClosureMonotonic with (i1 := i); magic.
+  apply tLocalClosureMonotonic with (i1 := i); search.
 Qed.
 
 #[export] Hint Resolve eteeSubOpen : main.
@@ -111,9 +111,9 @@ Theorem etetSubOpen :
   tLocallyClosed t1 i ->
   etSub (etOpen e i t2) x t1 = etOpen (etSub e x t1) i (ttSub t2 x t1).
 Proof.
-  clean. outro i. induction e; magic; clean.
+  clean. outro i. induction e; search; clean.
   specialize (IHe (S i)). feed IHe.
-  apply tLocalClosureMonotonic with (i1 := i); magic.
+  apply tLocalClosureMonotonic with (i1 := i); search.
 Qed.
 
 #[export] Hint Resolve etetSubOpen : main.

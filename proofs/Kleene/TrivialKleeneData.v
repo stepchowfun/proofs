@@ -21,21 +21,21 @@ Module TrivialKleeneData <: KleeneData.
 
   Theorem reflexivity : forall x, leq x x.
   Proof.
-    magic.
+    search.
   Qed.
 
   #[local] Hint Resolve reflexivity : main.
 
   Theorem transitivity : forall x y z, leq x y -> leq y z -> leq x z.
   Proof.
-    magic.
+    search.
   Qed.
 
   #[local] Hint Resolve transitivity : main.
 
   Theorem antisymmetry : forall x y, leq x y -> leq y x -> x = y.
   Proof.
-    magic.
+    search.
   Qed.
 
   #[local] Hint Resolve antisymmetry : main.
@@ -59,7 +59,7 @@ Module TrivialKleeneData <: KleeneData.
     directed P ->
     exists x, supremum P x.
   Proof.
-    magic.
+    search.
   Qed.
 
   #[local] Hint Resolve directedComplete : main.
@@ -70,7 +70,7 @@ Module TrivialKleeneData <: KleeneData.
 
   Theorem bottomLeast : forall x, leq bottom x.
   Proof.
-    magic.
+    search.
   Qed.
 
   #[local] Hint Resolve bottomLeast : main.

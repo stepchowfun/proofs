@@ -32,7 +32,7 @@ Definition coproduct
 Theorem opCoproductProduct C x y xy px py :
   @coproduct C x y xy px py <-> @product (oppositeCategory C) x y xy px py.
 Proof.
-  magic.
+  search.
 Qed.
 
 #[export] Hint Resolve opCoproductProduct : main.
@@ -40,7 +40,7 @@ Qed.
 Theorem opProductCoproduct C x y xy px py :
   @product C x y xy px py <-> @coproduct (oppositeCategory C) x y xy px py.
 Proof.
-  magic.
+  search.
 Qed.
 
 #[export] Hint Resolve opProductCoproduct : main.
@@ -53,7 +53,7 @@ Proof.
   rewrite opCoproductProduct in *.
   rewrite opIsomorphic.
   pose proof (productUnique (oppositeCategory C) x y y0 x0).
-  eMagic.
+  eSearch.
 Qed.
 
 #[export] Hint Resolve coproductUnique : main.

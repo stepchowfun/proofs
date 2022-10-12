@@ -71,7 +71,7 @@ Theorem tLocalClosureMonotonic :
   tLocallyClosed t i1 ->
   tLocallyClosed t i2.
 Proof.
-  clean. outro i2 H. induction H0; magic.
+  clean. outro i2 H. induction H0; search.
   clean. apply tlcBoundVar. lia.
 Qed.
 
@@ -85,8 +85,8 @@ Theorem eLocalClosureMonotonic :
   eLocallyClosed e ie2 it2.
 Proof.
   clean. outro ie2 it2 H H0.
-  induction H1; magic; constructor; magic; clean;
-    apply tLocalClosureMonotonic with (i1 := nt); magic.
+  induction H1; search; constructor; search; clean;
+    apply tLocalClosureMonotonic with (i1 := nt); search.
 Qed.
 
 (*

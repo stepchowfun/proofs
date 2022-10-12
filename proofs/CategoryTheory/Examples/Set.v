@@ -19,12 +19,12 @@ Require Import Main.Tactics.
 #[local] Theorem setCAssoc w x y z (f : w -> x) (g : x -> y) (h : y -> z) :
   (fun e : w => h (g (f e))) = (fun e : w => h (g (f e))).
 Proof.
-  magic.
+  search.
 Qed.
 
 #[local] Theorem setCIdent x y (f : x -> y) : (fun e : x => f e) = f.
 Proof.
-  magic.
+  search.
 Qed.
 
 Definition setCategory : category := newCategory
@@ -43,7 +43,7 @@ Proof.
   clean.
   unfold universal.
   split.
-  - exists (fun w => (qx w, qy w)). magic.
+  - exists (fun w => (qx w, qy w)). search.
   - unfold arrowUnique.
     intros.
     destruct H.
@@ -51,8 +51,8 @@ Proof.
     apply functional_extensionality.
     intros.
     apply injective_projections.
-    + replace (fst (f x0)) with (qx x0); [idtac | magic].
-      replace (fst (g x0)) with (qx x0); [magic | rewrite H0; magic].
-    + replace (snd (f x0)) with (qy x0); [idtac | magic].
-      replace (snd (g x0)) with (qy x0); [magic | rewrite H2; magic].
+    + replace (fst (f x0)) with (qx x0); [idtac | search].
+      replace (fst (g x0)) with (qx x0); [search | rewrite H0; search].
+    + replace (snd (f x0)) with (qy x0); [idtac | search].
+      replace (snd (g x0)) with (qy x0); [search | rewrite H2; search].
 Qed.
