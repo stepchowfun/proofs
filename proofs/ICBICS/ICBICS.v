@@ -191,12 +191,10 @@ Theorem consFirstnNth :
 Proof.
   intros.
   outro i.
-  induction l.
-  - intros. destruct i; search.
-  - intros. destruct i; search.
-    change (firstn (S i) (a :: l) ++ [nth (S i) (a :: l) d])
-      with (a :: firstn i l ++ [nth i l d]).
-    rewrite IHl; search.
+  induction l; intros; destruct i; search.
+  change (firstn (S i) (a :: l) ++ [nth (S i) (a :: l) d])
+    with (a :: firstn i l ++ [nth i l d]).
+  rewrite IHl; search.
 Qed.
 
 #[local] Hint Resolve consFirstnNth : main.
