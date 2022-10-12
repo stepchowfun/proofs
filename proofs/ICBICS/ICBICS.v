@@ -11,7 +11,8 @@
   The "I can't believe it can sort" algorithm verified below comes from [1].
 
   [1] Stanley P. Y. Fung (2021). Is this the simplest (and most surprising)
-      sorting algorithm ever? CoRR, abs/2110.01111.
+      sorting algorithm ever? https://doi.org/10.48550/arXiv.2110.01111
+
 *)
 
 Require Import Coq.Arith.Compare_dec.
