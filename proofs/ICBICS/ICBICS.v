@@ -86,7 +86,7 @@ Qed.
 (* The correctness proof *)
 (*************************)
 
-(* The prefix of a sorted list is sorted. *)
+(* Miscellaneous facts that could be in the standard library *)
 
 Theorem sortedFirstn :
   forall A (l : list A) (R : A -> A -> Prop) n,
@@ -104,8 +104,6 @@ Qed.
 
 #[local] Hint Resolve sortedFirstn : core.
 
-(* The suffix of a sorted list is sorted. *)
-
 Theorem sortedSkipn :
   forall A (l : list A) (R : A -> A -> Prop) n,
   Sorted R l ->
@@ -119,8 +117,6 @@ Proof.
 Qed.
 
 #[local] Hint Resolve sortedSkipn : core.
-
-(* The concatenation of sorted lists is sometimes sorted. *)
 
 Theorem sortedApp :
   forall A (l1 l2 : list A) (x : A) (R : A -> A -> Prop),
@@ -146,8 +142,6 @@ Proof.
 Qed.
 
 #[local] Hint Resolve sortedApp : core.
-
-(* Facts about `firstn` *)
 
 Theorem nthFirstn :
   forall A d i j (l : list A),
@@ -178,8 +172,6 @@ Proof.
 Qed.
 
 #[local] Hint Resolve consFirstnNth : main.
-
-(* Facts about `skipn` *)
 
 Theorem nthSkipn :
   forall A d i j (l : list A), nth i (skipn j l) d = nth (i + j) l d.
