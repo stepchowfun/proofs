@@ -91,7 +91,7 @@ Qed.
 (* The correctness proof *)
 (*************************)
 
-(* Miscellaneous facts that could be in the standard library *)
+(* Miscellaneous facts that could be added to the standard library *)
 
 Theorem sortedFirstn :
   forall A (l : list A) (R : A -> A -> Prop) n,
