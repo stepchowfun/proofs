@@ -598,7 +598,6 @@ Theorem sortCompareAndSwapAdvancesMaximizedPrefix :
   j < length l ->
   k <= j ->
   (forall h : nat, h < j -> nth h l 0 <= nth i l 0) ->
-  Sorted le (firstn i l) ->
   nth k (compareAndSwap i j l) 0 <= nth i (compareAndSwap i j l) 0.
 Proof.
   intros.
