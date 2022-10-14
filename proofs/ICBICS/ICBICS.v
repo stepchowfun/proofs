@@ -123,7 +123,7 @@ Qed.
 #[local] Hint Resolve sortedSkipn : core.
 
 Theorem sortedApp :
-  forall A (l1 l2 : list A) (x : A) (R : A -> A -> Prop),
+  forall A (x : A) l1 l2 (R : A -> A -> Prop),
   Sorted R l1 ->
   Sorted R l2 ->
   Forall (fun y => R y x) l1 ->
@@ -446,17 +446,27 @@ Qed.
 
 (* Facts about `sort` *)
 
+Theorem sortInnerLoopPreservesLength :
+  forall l i,
+  i < length l ->
+  length (forLoop (fun j : nat => compareAndSwap i j) l) = length l.
+Proof.
+  intros.
+  apply (forLoopInduction (fun _ l3 => length l3 = length l)); search.
+  intros.
+  rewrite <- H1.
+  apply compareAndSwapPreservesLength; search.
+Qed.
+
+#[local] Hint Resolve sortInnerLoopPreservesLength : main.
+
 Theorem sortPreservesLength : forall l, length (sort l) = length l.
 Proof.
   intros.
-  unfold sort.
-  pose proof forLoopInduction (fun _ l2 => length l2 = length l).
-  apply H; search.
-  intros i ? ? ?.
-  apply H; search.
-  intros j ? ? ?.
-  rewrite <- H3.
-  apply compareAndSwapPreservesLength; search.
+  apply (forLoopInduction (fun _ l2 => length l2 = length l)); search.
+  intros.
+  rewrite <- H0 in *.
+  search.
 Qed.
 
 #[local] Hint Resolve sortPreservesLength : main.
@@ -480,12 +490,186 @@ Qed.
 
 #[local] Hint Resolve sortPermutes : main.
 
+Theorem sortCompareAndSwapPreservesSortedPrefix :
+  forall i j l,
+  i < length l ->
+  j < length l ->
+  (forall k : nat, k < j -> nth k l 0 <= nth i l 0) ->
+  Sorted le (firstn i l) ->
+  Sorted le (firstn i (compareAndSwap i j l)).
+Proof.
+  intros.
+  unfold compareAndSwap.
+  set (iv := nth i l 0).
+  set (jv := nth j l 0).
+  destruct (lt_dec iv jv).
+  - replace (iv <? jv) with true.
+    + destruct (le_lt_dec i j).
+      * replace (firstn i (swap i j l)) with (firstn i l); search.
+        apply nth_ext with (d := 0) (d' := 0).
+        -- repeat rewrite firstn_length; search.
+           rewrite swapPreservesLength; search.
+        -- intros.
+           rewrite firstn_length in H3.
+           repeat rewrite nthFirstn; search.
+           rewrite nthSwapOther; search.
+      * rewrite <- (firstn_skipn j).
+        replace (firstn j (firstn i (swap i j l)))
+          with (firstn j (swap i j l)).
+        -- replace (firstn j (swap i j l)) with (firstn j l).
+           ++ replace (skipn j (firstn i (swap i j l)))
+                with (nth i l 0 :: skipn (S j) (firstn i l)).
+              ** apply sortedApp; search.
+                 --- replace (firstn j l)
+                       with (firstn j (firstn i l)); search.
+                     rewrite firstn_firstn.
+                     search.
+                 --- apply Forall_nth.
+                     intros.
+                     rewrite firstn_length in H3.
+                     rewrite nthFirstn; search.
+                     rewrite nth_indep with (d := d) (d' := 0);
+                     search.
+                     apply H1.
+                     search.
+                 --- change (S j) with (1 + j).
+                     rewrite <- skipnSkipn.
+                     assert (Sorted le (skipn j (firstn i l)));
+                     search.
+                     invert H3; search.
+                     cbn.
+                     assert (a = jv).
+                     +++ change a with (nth 0 (a :: l2) 0).
+                         rewrite H4.
+                         rewrite nthSkipn.
+                         rewrite nthFirstn; search.
+                     +++ destruct H6; search.
+                         apply HdRel_cons; search.
+              ** apply nth_ext with (d := 0) (d' := 0).
+                 --- change (
+                       S (length (skipn (S j) (firstn i l))) =
+                       length (skipn j (firstn i (swap i j l)))
+                     ).
+                     repeat rewrite skipn_length.
+                     repeat rewrite firstn_length.
+                     rewrite swapPreservesLength; search.
+                 --- intros.
+                     change (
+                       n < S (length (skipn (S j) (firstn i l)))
+                     ) in H3.
+                     rewrite skipn_length in H3.
+                     rewrite firstn_length in H3.
+                     replace (Nat.min i (length l)) with i in H3;
+                     search.
+                     rewrite nthSkipn.
+                     rewrite nthFirstn; search.
+                     destruct n.
+                     +++ rewrite nthSwapRight; search.
+                     +++ rewrite nthSwapOther; search.
+                         change (
+                           nth n (skipn (S j) (firstn i l)) 0 =
+                           nth (S n + j) l 0
+                         ).
+                         rewrite nthSkipn.
+                         rewrite nthFirstn; search.
+           ++ apply nth_ext with (d := 0) (d' := 0).
+              ** repeat rewrite firstn_length.
+                 rewrite swapPreservesLength; search.
+              ** intros.
+                 rewrite firstn_length in H3.
+                 repeat rewrite nthFirstn; search.
+                 rewrite nthSwapOther; search.
+        -- rewrite firstn_firstn.
+           search.
+    + symmetry.
+      apply (ltb_lt iv jv).
+      search.
+  - replace (iv <? jv) with false; search.
+    symmetry.
+    apply (ltb_ge iv jv).
+    search.
+Qed.
+
+#[local] Hint Resolve sortCompareAndSwapPreservesSortedPrefix : main.
+
+Theorem sortCompareAndSwapAdvancesMaximizedPrefix :
+  forall i j k l,
+  i < length l ->
+  j < length l ->
+  k <= j ->
+  (forall h : nat, h < j -> nth h l 0 <= nth i l 0) ->
+  Sorted le (firstn i l) ->
+  nth k (compareAndSwap i j l) 0 <= nth i (compareAndSwap i j l) 0.
+Proof.
+  intros.
+  unfold compareAndSwap.
+  set (iv := nth i l 0).
+  set (jv := nth j l 0).
+  destruct (lt_dec iv jv).
+  - replace (iv <? jv) with true.
+    + destruct (lt_eq_lt_dec k j); [destruct s | idtac]; search.
+      * destruct (eq_dec k i); search.
+        rewrite nthSwapLeft; search.
+        rewrite nthSwapOther; search.
+        specialize (H2 k).
+        search.
+      * rewrite e.
+        rewrite nthSwapRight; search.
+        rewrite nthSwapLeft; search.
+    + symmetry.
+      apply (ltb_lt iv jv).
+      search.
+  - replace (iv <? jv) with false.
+    + destruct (lt_eq_lt_dec k j); [destruct s | idtac]; search.
+    + symmetry.
+      apply (ltb_ge iv jv).
+      search.
+Qed.
+
+#[local] Hint Resolve sortCompareAndSwapAdvancesMaximizedPrefix : main.
+
+Theorem sortInnerLoopAdvancesSortedPrefix :
+  forall i l,
+  i < length l ->
+  Sorted le (firstn i l) ->
+  Sorted le (firstn (S i) (forLoop (fun j : nat => compareAndSwap i j) l)).
+Proof.
+  intros.
+  remember (length l).
+  cut (
+    let state := forLoop (fun j : nat => compareAndSwap i j) l in
+    Sorted le (firstn i state) /\
+    (forall k, k < length l -> nth k state 0 <= nth i state 0) /\
+    length state = n
+  ); cbv zeta.
+  + generalize dependent (forLoop (fun j : nat => compareAndSwap i j) l).
+    intros.
+    destruct H1.
+    destruct H2.
+    rewrite <- consFirstnNth with (d := 0); search.
+    apply sortedApp; search.
+    apply Forall_nth.
+    intros.
+    rewrite firstn_length in H4.
+    rewrite nthFirstn; search.
+    rewrite nth_indep with (d := d) (d' := 0); search.
+    apply H2.
+    search.
+  + apply forLoopInduction; [idtac | intros j ? ? ?]; repeat split; search.
+    * apply sortCompareAndSwapPreservesSortedPrefix; search.
+    * intros.
+      apply sortCompareAndSwapAdvancesMaximizedPrefix; search.
+    * rewrite compareAndSwapPreservesLength; search.
+Qed.
+
+#[local] Hint Resolve sortInnerLoopAdvancesSortedPrefix : main.
+
 Theorem sortOrders : forall l, Sorted le (sort l).
 Proof.
   intros.
   rewrite <- firstn_all.
   rewrite sortPreservesLength.
-  set (n := length l).
+  remember (length l).
   cut (
     let sorted := sort l in
     Sorted le (firstn (length l) sorted) /\
@@ -498,148 +682,7 @@ Proof.
   intros i ? ? ?.
   destruct H0.
   rewrite <- H1 in *.
-  clear H1 l.
-  split.
-  - set (n := length l2).
-    cut (
-      let state := forLoop (fun j : nat => compareAndSwap i j) l2 in
-      Sorted le (firstn i state) /\
-      (forall n1, n1 < length l2 -> nth n1 state 0 <= nth i state 0) /\
-      length state = n
-    ); cbv zeta.
-    + generalize dependent (forLoop (fun j : nat => compareAndSwap i j) l2).
-      intros.
-      destruct H1.
-      destruct H2.
-      rewrite <- consFirstnNth with (d := 0); search.
-      apply sortedApp; search.
-      apply Forall_nth.
-      intros.
-      rewrite firstn_length in H4.
-      rewrite nthFirstn; search.
-      rewrite nth_indep with (d := d) (d' := 0); search.
-      apply H2.
-      search.
-    + apply forLoopInduction; [idtac | intros j ? ? ?]; repeat split; search.
-      * destruct H2, H3.
-        unfold compareAndSwap.
-        set (iv := nth i l0 0).
-        set (jv := nth j l0 0).
-        destruct (lt_dec iv jv).
-        -- replace (iv <? jv) with true.
-           ++ destruct (le_lt_dec i j).
-              ** replace (firstn i (swap i j l0)) with (firstn i l0); search.
-                 apply nth_ext with (d := 0) (d' := 0).
-                 --- repeat rewrite firstn_length; search.
-                     rewrite swapPreservesLength; search.
-                 --- intros.
-                     rewrite firstn_length in H5.
-                     repeat rewrite nthFirstn; search.
-                     rewrite nthSwapOther; search.
-              ** rewrite <- (firstn_skipn j).
-                 replace (firstn j (firstn i (swap i j l0)))
-                   with (firstn j (swap i j l0)).
-                 --- replace (firstn j (swap i j l0)) with (firstn j l0).
-                     +++ replace (skipn j (firstn i (swap i j l0)))
-                           with (nth i l0 0 :: skipn (S j) (firstn i l0)).
-                         *** apply sortedApp; search.
-                             ---- replace (firstn j l0)
-                                    with (firstn j (firstn i l0)); search.
-                                  rewrite firstn_firstn.
-                                  search.
-                             ---- apply Forall_nth.
-                                  intros.
-                                  rewrite firstn_length in H5.
-                                  rewrite nthFirstn; search.
-                                  rewrite nth_indep with (d := d) (d' := 0);
-                                    search.
-                                  apply H3.
-                                  search.
-                             ---- change (S j) with (1 + j).
-                                  rewrite <- skipnSkipn.
-                                  assert (Sorted le (skipn j (firstn i l0)));
-                                    search.
-                                  invert H5; search.
-                                  cbn.
-                                  assert (a = jv).
-                                  ++++ change a with (nth 0 (a :: l3) 0).
-                                       rewrite H6.
-                                       rewrite nthSkipn.
-                                       rewrite nthFirstn; search.
-                                  ++++ destruct H8; search.
-                                       apply HdRel_cons; search.
-                         *** apply nth_ext with (d := 0) (d' := 0).
-                             ---- change (
-                                    S (length (skipn (S j) (firstn i l0))) =
-                                    length (skipn j (firstn i (swap i j l0)))
-                                  ).
-                                  repeat rewrite skipn_length.
-                                  repeat rewrite firstn_length.
-                                  rewrite swapPreservesLength; search.
-                             ---- intros.
-                                  change (
-                                    n0 < S (length (skipn (S j) (firstn i l0)))
-                                  ) in H5.
-                                  rewrite skipn_length in H5.
-                                  rewrite firstn_length in H5.
-                                  replace (Nat.min i (length l0)) with i in H5;
-                                    search.
-                                  rewrite nthSkipn.
-                                  rewrite nthFirstn; search.
-                                  destruct n0.
-                                  ++++ rewrite nthSwapRight; search.
-                                  ++++ rewrite nthSwapOther; search.
-                                       change (
-                                         nth n0 (skipn (S j) (firstn i l0)) 0 =
-                                           nth (S n0 + j) l0 0
-                                       ).
-                                       rewrite nthSkipn.
-                                       rewrite nthFirstn; search.
-                     +++ apply nth_ext with (d := 0) (d' := 0).
-                         *** repeat rewrite firstn_length.
-                             rewrite swapPreservesLength; search.
-                         *** intros.
-                             rewrite firstn_length in H5.
-                             repeat rewrite nthFirstn; search.
-                             rewrite nthSwapOther; search.
-                 --- rewrite firstn_firstn.
-                     search.
-           ++ symmetry.
-              apply (ltb_lt iv jv).
-              search.
-        -- replace (iv <? jv) with false; search.
-           symmetry.
-           apply (ltb_ge iv jv).
-           search.
-      * intros.
-        destruct H2, H4.
-        unfold compareAndSwap.
-        set (iv := nth i l0 0).
-        set (jv := nth j l0 0).
-        destruct (lt_dec iv jv).
-        -- replace (iv <? jv) with true.
-           ++ destruct (lt_eq_lt_dec n1 j); [destruct s | idtac]; search.
-              ** destruct (eq_dec n1 i); search.
-                 rewrite nthSwapLeft; search.
-                 rewrite nthSwapOther; search.
-                 specialize (H4 n1).
-                 search.
-              ** rewrite e.
-                 rewrite nthSwapRight; search.
-                 rewrite nthSwapLeft; search.
-           ++ symmetry.
-              apply (ltb_lt iv jv).
-              search.
-        -- replace (iv <? jv) with false.
-           ++ destruct (lt_eq_lt_dec n1 j); [destruct s | idtac]; search.
-           ++ symmetry.
-              apply (ltb_ge iv jv).
-              search.
-      * rewrite compareAndSwapPreservesLength; search.
-  - apply (forLoopInduction (fun _ l3 => length l3 = length l2)); search.
-    intros.
-    rewrite <- H2.
-    apply compareAndSwapPreservesLength; search.
+  split; search.
 Qed.
 
 #[local] Hint Resolve sortOrders : main.
