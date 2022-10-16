@@ -7,8 +7,8 @@
 (*******************************************)
 
 (*
-  This file proves the correctness of the simple and surprising "I can't
-  believe it can sort" algorithm [1]:
+  This file proves the correctness of the simple and surprising *I can't
+  believe it can sort* algorithm [1]:
 
   for 0 <= i < n
     for 0 <= j < n
