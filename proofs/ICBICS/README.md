@@ -1,6 +1,6 @@
 # I can't believe it can sort
 
-This directory contains a proof of the correctness of the *I can't believe it can sort* algorithm [1]:
+This directory contains a proof of the correctness of the simple and surprising *I can't believe it can sort* algorithm [1]:
 
 ```
 for 0 <= i < n
