@@ -27,19 +27,19 @@ Module TrivialProxyGraph <: ProxyGraph.
 
   #[export] Hint Unfold proxy : main.
 
-  (* Coq requires that we copy this verbatim from `Proxy graph`. *)
+  (* Coq requires that we copy this verbatim from `ProxyGraph`. *)
   Definition horizontallyReachable p := clos_refl_trans (
     fun n1 n2 => edge n1 n2 /\ proxy p n2
   ).
 
   #[export] Hint Unfold horizontallyReachable : main.
 
-  (* Coq requires that we copy this verbatim from `Proxy graph`. *)
+  (* Coq requires that we copy this verbatim from `ProxyGraph`. *)
   Definition proxies p := horizontallyReachable p p.
 
   #[export] Hint Unfold proxies : main.
 
-  (* Coq requires that we copy this verbatim from `Proxy graph`. *)
+  (* Coq requires that we copy this verbatim from `ProxyGraph`. *)
   Definition verticallyReachable := clos_refl_trans proxies.
 
   #[export] Hint Unfold verticallyReachable : main.
