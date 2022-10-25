@@ -8,6 +8,7 @@
 
 Require Import Coq.Relations.Relation_Operators.
 Require Import Main.Experiments.ContextGraph.ContextGraph.
+Require Import Main.Experiments.ContextGraph.ContextGraphTheorems.
 Require Import Main.Tactics.
 
 Module TrivialContextGraph <: ContextGraph.
@@ -59,3 +60,5 @@ Module TrivialContextGraph <: ContextGraph.
 
   #[export] Hint Resolve rootReach : main.
 End TrivialContextGraph.
+
+Module TrivialContextGraphTheorems := ContextGraphTheorems TrivialContextGraph.

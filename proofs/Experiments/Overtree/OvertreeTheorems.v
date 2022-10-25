@@ -80,8 +80,7 @@ Module OvertreeTheorems (Graph : Overtree).
     reachable n1 n2.
   Proof.
     clean.
-    induction H; search.
-    apply rt_trans with (y := y); search.
+    induction H; eSearch.
   Qed.
 
   #[export] Hint Resolve horizontalSoundness : main.
@@ -120,11 +119,10 @@ Module OvertreeTheorems (Graph : Overtree).
   Proof.
     clean.
     assert (clos_refl_trans_n1 proxies root n).
-    - apply clos_rt_rtn1. apply rootReach.
+    - apply clos_rt_rtn1.
+      apply rootReach.
     - invert H.
-      + split; search.
-        exists root.
-        split; search.
+      + split; eSearch.
       + invert H0.
         search.
   Qed.
@@ -148,13 +146,12 @@ Module OvertreeTheorems (Graph : Overtree).
     reachable n1 n2.
   Proof.
     clean.
-    induction H; search.
-    - invert H.
-      invert H1.
-      apply rt_trans with (y := x); search.
-      apply horizontalSoundness.
-      search.
-    - apply rt_trans with (y := y); search.
+    induction H; eSearch.
+    invert H.
+    invert H1.
+    apply rt_trans with (y := x); search.
+    apply horizontalSoundness.
+    search.
   Qed.
 
   #[export] Hint Resolve verticalSoundness : main.
@@ -175,12 +172,9 @@ Module OvertreeTheorems (Graph : Overtree).
       + induction H1; search.
         clean.
         assert (clos_refl_trans_n1 proxies n2 y); search.
-        destruct H4.
-        * assert (clos_refl_trans_n1 proxies z n2); search.
-          destruct H4; search.
-          assert (x = y); search.
-          apply rt_trans with (y := z); search.
-        * assert (x = y); search.
+        destruct H4; eSearch.
+        assert (clos_refl_trans_n1 proxies z n2); search.
+        destruct H4; eSearch.
     - destruct (classic (n1 = n2)); search.
       pose proof (rootUniquelyReachable n2).
       search.
