@@ -36,25 +36,36 @@ Module Type ContextGraph.
   #[export] Hint Unfold horizontallyReachable : main.
 
   (*
-    A context *proxies* a node if the node is horizontally reachable in and
-    from that context.
+    A node *contextualizes* another node iff that other node is horizontally
+    reachable in and from it.
   *)
 
-  Definition proxies c := horizontallyReachable c c.
+  Definition contextualizes c := horizontallyReachable c c.
 
-  #[export] Hint Unfold proxies : main.
+  #[export] Hint Unfold contextualizes : main.
 
   (*
-    *Vertical reachability* is the reflexive transitive closure of proxying.
+    *Vertical reachability* is the reflexive transitive closure of
+    contextualization.
   *)
 
-  Definition verticallyReachable := clos_refl_trans proxies.
+  Definition verticallyReachable := clos_refl_trans contextualizes.
 
   #[export] Hint Unfold verticallyReachable : main.
 
+  (* There are no spurious edges. *)
+
+  Axiom contextualSoundness :
+    forall c n1 n2,
+    edge c n1 n2 ->
+    contextualizes c n1.
+
+  #[export] Hint Resolve contextualSoundness : main.
+
   (*
-    Proxying is intended to signify nesting. To codify that intention, we
-    require vertical reachability to be antisymmetric and thus a partial order.
+    Contextualization is intended to signify nesting. To codify that intention,
+    we require vertical reachability to be antisymmetric and thus a partial
+    order.
   *)
 
   Axiom verticalAntisymmetry :
