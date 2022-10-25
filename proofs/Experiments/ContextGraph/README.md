@@ -1,3 +1,3 @@
 # Context graphs
 
-This directory introduces *context graphs*. Each node in a context graph provides its own local view of the graph.
+This directory introduces *context graphs*. A context graph is locally structured like an arbitrary graph but globally structured like a rooted DAG.
