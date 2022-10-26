@@ -1,18 +1,18 @@
-(*****************************************)
-(*****************************************)
-(****                                 ****)
-(****   Theorems about proxy graphs   ****)
-(****                                 ****)
-(*****************************************)
-(*****************************************)
+(*******************************************)
+(*******************************************)
+(****                                   ****)
+(****   Theorems about context graphs   ****)
+(****                                   ****)
+(*******************************************)
+(*******************************************)
 
 Require Import Coq.Logic.Classical_Prop.
 Require Import Coq.Relations.Operators_Properties.
 Require Import Coq.Relations.Relation_Operators.
-Require Import Main.Experiments.ProxyGraph.ProxyGraph.
+Require Import Main.ContextGraph.ContextGraph.
 Require Import Main.Tactics.
 
-Module ProxyGraphTheorems (Graph : ProxyGraph).
+Module ContextGraphTheorems (Graph : ContextGraph).
   Import Graph.
 
   #[local] Arguments clos_refl_trans {A} _ _ _.
@@ -43,10 +43,13 @@ Module ProxyGraphTheorems (Graph : ProxyGraph).
   #[export] Hint Resolve rootReachUniqueness : main.
 
   (*
-    *Reachability* is the reflexive transitive closure of the edge relation.
+    *Reachability* is the reflexive transitive closure of the edge relation
+    existentially quantified over the context.
   *)
 
-  Definition reachable := clos_refl_trans edge.
+  Definition reachable := clos_refl_trans (
+    fun n1 n2 => exists n3, edge n3 n1 n2
+  ).
 
   #[export] Hint Unfold reachable : main.
 
@@ -75,4 +78,4 @@ Module ProxyGraphTheorems (Graph : ProxyGraph).
   Qed.
 
   #[export] Hint Resolve verticalSoundness : main.
-End ProxyGraphTheorems.
+End ContextGraphTheorems.

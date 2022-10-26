@@ -7,8 +7,8 @@
 (*************************************************)
 
 Require Import Coq.Relations.Relation_Operators.
-Require Import Main.Experiments.ContextGraph.ContextGraph.
-Require Import Main.Experiments.ContextGraph.ContextGraphTheorems.
+Require Import Main.ContextGraph.ContextGraph.
+Require Import Main.ContextGraph.ContextGraphTheorems.
 Require Import Main.Tactics.
 
 Module TrivialContextGraph <: ContextGraph.
