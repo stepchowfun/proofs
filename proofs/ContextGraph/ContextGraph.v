@@ -44,6 +44,12 @@ Module Type ContextGraph.
 
   #[export] Hint Unfold contains : main.
 
+  (* The subgraph associated with a context is rooted at that context. *)
+
+  Axiom connectedness : forall c n1 n2, edge c n1 n2 -> contains c n1.
+
+  #[export] Hint Resolve connectedness : main.
+
   (*
     *Vertical reachability* is the reflexive transitive closure of containment.
   *)
@@ -51,12 +57,6 @@ Module Type ContextGraph.
   Definition verticallyReachable := clos_refl_trans contains.
 
   #[export] Hint Unfold verticallyReachable : main.
-
-  (* There are no spurious edges. *)
-
-  Axiom connectedness : forall c n1 n2, edge c n1 n2 -> contains c n1.
-
-  #[export] Hint Resolve connectedness : main.
 
   (*
     Containment is intended to signify nesting. To codify that intention, we
