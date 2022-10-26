@@ -11,18 +11,10 @@ be "collapsed" into single nodes, resulting in a coarser view of the graph which
 can be further collapsed, until ultimately the entire graph has been collapsed
 into a single *root* node.
 
-Context graphs are directed by default, but can be made undirected by
-introducing a symmetry axiom. Context graphs support sharing of substructure in
-the sense that an individual node may show up in the exploded subgraphs of
-multiple nodes, although an additional axiom can be postulated to forbid such
-sharing. Context graphs by default do not allow for cyclic exploding in which
-distinct nodes are mutually contained within each other, although such models
-can be admitted by removing the antisymmetry axiom.
-
 Each edge of a context graph is associated with a particular node called its
-*context*. The context of an edge is the node that needs to be exploded to
-reveal that edge. All the edges sharing a context can be considered to belong
-to the same collapsible subgraph.
+*context*. The context of an edge is the node that explodes to reveal that
+edge. All the edges sharing a context can be considered to belong to the same
+collapsible subgraph.
 
 Context graphs support two notions of reachability from one node to another:
 
@@ -37,3 +29,11 @@ the target (or, equivalently, collapse subgraphs to reach the source), whereas
 horizontal reachability is not.
 
 Every node is required to be vertically reachable from the root.
+
+Context graphs are directed by default, but can be made undirected by
+introducing a symmetry axiom. Context graphs support sharing of substructure in
+the sense that the collapsible subgraphs may contain overlapping nodes (which
+can be exploded into shared subgraphs), although an additional axiom can be
+postulated to forbid that. Context graphs by default do not allow for cyclic
+exploding in which distinct nodes are mutually contained within each other,
+although such models can be admitted by removing the antisymmetry axiom.
