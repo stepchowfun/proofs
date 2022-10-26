@@ -18,6 +18,25 @@ Module ContextGraphTheorems (Graph : ContextGraph).
   #[local] Arguments clos_refl_trans {A} _ _ _.
   #[local] Hint Constructors clos_refl_trans : main.
 
+  (* The root only appears in the root context. *)
+
+  Theorem rootContextLeft : forall c n, edge c root n -> c = root.
+  Proof.
+    eSearch.
+  Qed.
+
+  #[export] Hint Resolve rootContextLeft : main.
+
+
+  Theorem rootContextRight : forall c n, edge c n root -> c = root.
+  Proof.
+    clean.
+    pose proof (connectedness c n root H).
+    assert (contains c root); eSearch.
+  Qed.
+
+  #[export] Hint Resolve rootContextRight : main.
+
   (* The only node that can vertically reach the root is itself. *)
 
   Theorem rootUniquelyReachable :
@@ -29,18 +48,6 @@ Module ContextGraphTheorems (Graph : ContextGraph).
   Qed.
 
   #[export] Hint Resolve rootUniquelyReachable : main.
-
-  (* The root is the only node which can vertically reach every other node. *)
-
-  Theorem rootReachUniqueness :
-    forall n1,
-    (forall n2, verticallyReachable n1 n2) ->
-    n1 = root.
-  Proof.
-    search.
-  Qed.
-
-  #[export] Hint Resolve rootReachUniqueness : main.
 
   (*
     *Reachability* is the reflexive transitive closure of the edge relation
