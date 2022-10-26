@@ -36,36 +36,31 @@ Module Type ContextGraph.
   #[export] Hint Unfold horizontallyReachable : main.
 
   (*
-    A node *contextualizes* another node iff that other node is horizontally
+    A node *contains* another node when that other node is horizontally
     reachable in and from it.
   *)
 
-  Definition contextualizes c := horizontallyReachable c c.
+  Definition contains c := horizontallyReachable c c.
 
-  #[export] Hint Unfold contextualizes : main.
+  #[export] Hint Unfold contains : main.
 
   (*
-    *Vertical reachability* is the reflexive transitive closure of
-    contextualization.
+    *Vertical reachability* is the reflexive transitive closure of containment.
   *)
 
-  Definition verticallyReachable := clos_refl_trans contextualizes.
+  Definition verticallyReachable := clos_refl_trans contains.
 
   #[export] Hint Unfold verticallyReachable : main.
 
   (* There are no spurious edges. *)
 
-  Axiom contextualSoundness :
-    forall c n1 n2,
-    edge c n1 n2 ->
-    contextualizes c n1.
+  Axiom connectedness : forall c n1 n2, edge c n1 n2 -> contains c n1.
 
-  #[export] Hint Resolve contextualSoundness : main.
+  #[export] Hint Resolve connectedness : main.
 
   (*
-    Contextualization is intended to signify nesting. To codify that intention,
-    we require vertical reachability to be antisymmetric and thus a partial
-    order.
+    Containment is intended to signify nesting. To codify that intention, we
+    require vertical reachability to be antisymmetric and thus a partial order.
   *)
 
   Axiom verticalAntisymmetry :

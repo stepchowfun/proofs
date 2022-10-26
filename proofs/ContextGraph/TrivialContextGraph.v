@@ -29,24 +29,21 @@ Module TrivialContextGraph <: ContextGraph.
   #[export] Hint Unfold horizontallyReachable : main.
 
   (* Coq requires that we copy this verbatim from `ContextGraph`. *)
-  Definition contextualizes c := horizontallyReachable c c.
+  Definition contains c := horizontallyReachable c c.
 
-  #[export] Hint Unfold contextualizes : main.
+  #[export] Hint Unfold contains : main.
 
   (* Coq requires that we copy this verbatim from `ContextGraph`. *)
-  Definition verticallyReachable := clos_refl_trans contextualizes.
+  Definition verticallyReachable := clos_refl_trans contains.
 
   #[export] Hint Unfold verticallyReachable : main.
 
-  Theorem contextualSoundness :
-    forall c n1 n2,
-    edge c n1 n2 ->
-    contextualizes c n1.
+  Theorem connectedness : forall c n1 n2, edge c n1 n2 -> contains c n1.
   Proof.
     search.
   Qed.
 
-  #[export] Hint Resolve contextualSoundness : main.
+  #[export] Hint Resolve connectedness : main.
 
   Theorem verticalAntisymmetry :
     forall n1 n2,
