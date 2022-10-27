@@ -1,6 +1,6 @@
 # Granularity graphs
 
-This directory presents an original notion we call *granularity graph*.
+This directory presents an original notion we call the *granularity graph*.
 
 Informally speaking, a granularity graph is a graph in which nodes can be
 "unfolded" in a sense to reveal further graph structure, the nodes of which can
@@ -21,5 +21,5 @@ between them.
   postulating a symmetry axiom.
 - Granularity graphs by default do not allow for cyclic unfolding in which
   multiple nodes are mutually contained within each other, although such models
-  can be admitted by removing the antisymmetry axiom.
+  can be admitted by removing the `containment` axiom.
 - Sharing of substructure can be forbidden with an additional axiom.
