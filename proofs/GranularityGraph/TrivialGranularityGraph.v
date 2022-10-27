@@ -45,7 +45,6 @@ Module TrivialGranularityGraph <: GranularityGraph.
 
   #[export] Hint Unfold contains : main.
 
-  (* Coq requires that we copy this verbatim from `GranularityGraph`. *)
   Theorem reflection :
     forall g n1 n2 n3,
     visible g n1 ->
