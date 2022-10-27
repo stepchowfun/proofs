@@ -67,7 +67,7 @@ Module Type GranularityGraph.
     visible g n2 ->
     contains n1 n3 ->
     contains n2 n3 ->
-    reachable g n1 n2 \/ reachable g n2 n1.
+    reachable g n1 n2.
 
   #[export] Hint Resolve sharing : main.
 
