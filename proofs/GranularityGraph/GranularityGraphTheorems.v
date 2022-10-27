@@ -18,15 +18,6 @@ Module GranularityGraphTheorems (Graph : GranularityGraph).
   #[local] Arguments clos_refl_trans {A} _ _ _.
   #[local] Hint Constructors clos_refl_trans : main.
 
-  (* Every node in a grain has a loop in that grain. *)
-
-  Theorem reflexivity : forall g n, visible g n -> edge g n n.
-  Proof.
-    eSearch.
-  Qed.
-
-  #[export] Hint Resolve reflexivity : main.
-
   (* The root only appears in the root grain. *)
 
   Theorem rootGranularityLeft : forall g n, edge g root n -> g = root.

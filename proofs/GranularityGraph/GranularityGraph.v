@@ -57,19 +57,19 @@ Module Type GranularityGraph.
   #[export] Hint Unfold contains : main.
 
   (*
-    Any sharing between two nodes visible at the same grain is indicated by an
-    edge at that grain.
+    Any sharing between two nodes visible at the same grain is indicated by a
+    path between them at that grain.
   *)
 
-  Axiom reflection :
+  Axiom sharing :
     forall g n1 n2 n3,
     visible g n1 ->
     visible g n2 ->
     contains n1 n3 ->
     contains n2 n3 ->
-    edge g n1 n2.
+    reachable g n1 n2 \/ reachable g n2 n1.
 
-  #[export] Hint Resolve reflection : main.
+  #[export] Hint Resolve sharing : main.
 
   (* Containment is antisymmetric and thus a partial order. *)
 
