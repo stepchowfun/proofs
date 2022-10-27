@@ -63,7 +63,7 @@ Module Type ContextGraph.
     reflected in the context.
   *)
 
-  Axiom abstraction :
+  Axiom reflection :
     forall c n1 n2 n3,
     contains c n1 ->
     contains c n2 ->
@@ -71,7 +71,7 @@ Module Type ContextGraph.
     verticallyReachable n2 n3 ->
     edge c n1 n2.
 
-  #[export] Hint Resolve abstraction : main.
+  #[export] Hint Resolve reflection : main.
 
   (*
     Containment is intended to signify nesting. To codify that intention, we
