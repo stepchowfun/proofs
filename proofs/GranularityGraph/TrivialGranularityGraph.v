@@ -24,34 +24,34 @@ Module TrivialGranularityGraph <: GranularityGraph.
   #[export] Hint Unfold edge : main.
 
   (* Coq requires that we copy this verbatim from `GranularityGraph`. *)
-  Definition horizontallyReachable g := clos_refl_trans (edge g).
+  Definition reachable g := clos_refl_trans (edge g).
 
-  #[export] Hint Unfold horizontallyReachable : main.
+  #[export] Hint Unfold reachable : main.
 
   (* Coq requires that we copy this verbatim from `GranularityGraph`. *)
-  Definition contains g := horizontallyReachable g g.
+  Definition visible g := reachable g g.
 
-  #[export] Hint Unfold contains : main.
+  #[export] Hint Unfold visible : main.
 
-  Theorem containment : forall g n1 n2, edge g n1 n2 -> contains g n1.
+  Theorem visibility : forall g n1 n2, edge g n1 n2 -> visible g n1.
   Proof.
     search.
   Qed.
 
-  #[export] Hint Resolve containment : main.
+  #[export] Hint Resolve visibility : main.
 
   (* Coq requires that we copy this verbatim from `GranularityGraph`. *)
-  Definition verticallyReachable := clos_refl_trans contains.
+  Definition contains := clos_refl_trans visible.
 
-  #[export] Hint Unfold verticallyReachable : main.
+  #[export] Hint Unfold contains : main.
 
   (* Coq requires that we copy this verbatim from `GranularityGraph`. *)
   Theorem reflection :
     forall g n1 n2 n3,
-    contains g n1 ->
-    contains g n2 ->
-    verticallyReachable n1 n3 ->
-    verticallyReachable n2 n3 ->
+    visible g n1 ->
+    visible g n2 ->
+    contains n1 n3 ->
+    contains n2 n3 ->
     edge g n1 n2.
   Proof.
     search.
@@ -59,27 +59,27 @@ Module TrivialGranularityGraph <: GranularityGraph.
 
   #[export] Hint Resolve reflection : main.
 
-  Theorem verticalAntisymmetry :
+  Theorem containment :
     forall n1 n2,
-    verticallyReachable n1 n2 ->
-    verticallyReachable n2 n1 ->
+    contains n1 n2 ->
+    contains n2 n1 ->
     n1 = n2.
   Proof.
     search.
   Qed.
 
-  #[export] Hint Resolve verticalAntisymmetry : main.
+  #[export] Hint Resolve containment : main.
 
   Definition root := tt.
 
   #[export] Hint Unfold root : main.
 
-  Theorem rootReach : forall n, verticallyReachable root n.
+  Theorem rootedness : forall n, contains root n.
   Proof.
     search.
   Qed.
 
-  #[export] Hint Resolve rootReach : main.
+  #[export] Hint Resolve rootedness : main.
 End TrivialGranularityGraph.
 
 Module TrivialGranularityGraphTheorems :=

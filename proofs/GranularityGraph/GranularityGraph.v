@@ -16,8 +16,6 @@ Module Type GranularityGraph.
   Parameter node : Type.
 
   (*
-    Edges are directed in our formulation, but this is inessential.
-
     Each edge in a granularity graph is labeled with a node called its *grain*.
     We indicate edges by ternary relation between the grain, source, and
     target. Specializing the ternary relation on a particular grain yields a
@@ -27,73 +25,64 @@ Module Type GranularityGraph.
   Parameter edge : node -> node -> node -> Prop.
 
   (*
-    *Horizontal reachability* in a grain is the reflexive transitive closure
-    of the edge relation specialized on that grain.
+    *Reachability* in a grain is the reflexive transitive closure of the edge
+    relation specialized on that grain.
   *)
 
-  Definition horizontallyReachable g := clos_refl_trans (edge g).
+  Definition reachable g := clos_refl_trans (edge g).
 
-  #[export] Hint Unfold horizontallyReachable : main.
+  #[export] Hint Unfold reachable : main.
 
   (*
-    A grain *contains* a node when that node is horizontally reachable in and
-    from the grain.
+    A node is *visible* at a grain when it's reachable in and from that grain.
   *)
 
-  Definition contains g := horizontallyReachable g g.
+  Definition visible g := reachable g g.
+
+  #[export] Hint Unfold visible : main.
+
+  (* The subgraph associated with a grain is visible at that grain. *)
+
+  Axiom visibility : forall g n1 n2, edge g n1 n2 -> visible g n1.
+
+  #[export] Hint Resolve visibility : main.
+
+  (* *Containment* is the reflexive transitive closure of visibility. *)
+
+  Definition contains := clos_refl_trans visible.
 
   #[export] Hint Unfold contains : main.
 
-  (* The subgraph associated with a grain is rooted at that grain. *)
-
-  Axiom containment : forall g n1 n2, edge g n1 n2 -> contains g n1.
-
-  #[export] Hint Resolve containment : main.
-
   (*
-    *Vertical reachability* is the reflexive transitive closure of containment.
-  *)
-
-  Definition verticallyReachable := clos_refl_trans contains.
-
-  #[export] Hint Unfold verticallyReachable : main.
-
-  (*
-    If there is any sharing between two nodes in a grain, that sharing is
-    reflected in the grain.
+    Any sharing between two nodes visible at the same grain is reflected in
+    that grain.
   *)
 
   Axiom reflection :
     forall g n1 n2 n3,
-    contains g n1 ->
-    contains g n2 ->
-    verticallyReachable n1 n3 ->
-    verticallyReachable n2 n3 ->
+    visible g n1 ->
+    visible g n2 ->
+    contains n1 n3 ->
+    contains n2 n3 ->
     edge g n1 n2.
 
   #[export] Hint Resolve reflection : main.
 
-  (*
-    Containment is intended to signify nesting in some sense. To codify that
-    intention, we require vertical reachability to be antisymmetric and thus a
-    partial order.
-  *)
+  (* Containment is antisymmetric and thus a partial order. *)
 
-  Axiom verticalAntisymmetry :
+  Axiom containment :
     forall n1 n2,
-    verticallyReachable n1 n2 ->
-    verticallyReachable n2 n1 ->
+    contains n1 n2 ->
+    contains n2 n1 ->
     n1 = n2.
 
-  #[export] Hint Resolve verticalAntisymmetry : main.
+  #[export] Hint Resolve containment : main.
 
-  (*
-    Let there be a *root* grain from which every node is vertically reachable.
-  *)
+  (* There is a *root* grain which contains the entire graph. *)
 
   Parameter root : node.
 
-  Axiom rootReach : forall n, verticallyReachable root n.
+  Axiom rootedness : forall n, contains root n.
 
-  #[export] Hint Resolve rootReach : main.
+  #[export] Hint Resolve rootedness : main.
 End GranularityGraph.

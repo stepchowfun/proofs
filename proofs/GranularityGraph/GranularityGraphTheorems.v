@@ -20,7 +20,7 @@ Module GranularityGraphTheorems (Graph : GranularityGraph).
 
   (* Every node in a grain has a loop in that grain. *)
 
-  Theorem reflexivity : forall g n, contains g n -> edge g n n.
+  Theorem reflexivity : forall g n, visible g n -> edge g n n.
   Proof.
     eSearch.
   Qed.
@@ -39,21 +39,18 @@ Module GranularityGraphTheorems (Graph : GranularityGraph).
   Theorem rootGranularityRight : forall g n, edge g n root -> g = root.
   Proof.
     clean.
-    pose proof (containment g n root H).
-    assert (contains g root); [eSearch | search].
+    pose proof (visibility g n root H).
+    assert (visible g root); [eSearch | search].
   Qed.
 
   #[export] Hint Resolve rootGranularityRight : main.
 
-  (* The only node that can vertically reach the root is itself. *)
+  (* The only node that contains the root is itself. *)
 
-  Theorem rootUniquelyReachable :
-    forall n,
-    verticallyReachable n root ->
-    n = root.
+  Theorem rootUniquelyContained : forall n, contains n root -> n = root.
   Proof.
     search.
   Qed.
 
-  #[export] Hint Resolve rootUniquelyReachable : main.
+  #[export] Hint Resolve rootUniquelyContained : main.
 End GranularityGraphTheorems.
