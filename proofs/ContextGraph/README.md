@@ -2,7 +2,7 @@
 
 This directory presents an original notion we call *context graph*.
 
-Informally speaking, a context graph is a graph in which each node can be
+Informally speaking, a context graph is a graph in which nodes can be
 "unfolded" in a sense to reveal further graph structure, the nodes of which can
 themselves be unfolded, and so on.
 

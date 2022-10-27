@@ -45,7 +45,8 @@ Module TrivialContextGraph <: ContextGraph.
 
   #[export] Hint Unfold verticallyReachable : main.
 
-  Theorem abstraction :
+  (* Coq requires that we copy this verbatim from `ContextGraph`. *)
+  Theorem reflection :
     forall c n1 n2 n3,
     contains c n1 ->
     contains c n2 ->
@@ -56,7 +57,7 @@ Module TrivialContextGraph <: ContextGraph.
     search.
   Qed.
 
-  #[export] Hint Resolve abstraction : main.
+  #[export] Hint Resolve reflection : main.
 
   Theorem verticalAntisymmetry :
     forall n1 n2,
