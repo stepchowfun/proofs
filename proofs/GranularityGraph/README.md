@@ -11,9 +11,8 @@ can be "folded" into single nodes, resulting in a coarser view of the graph
 which can be folded further, until ultimately the entire graph has been folded
 into a single *root* node.
 
-Granularity graphs permit sharing of substructure, but any such sharing must be
-made explicit: if two nodes share any substructure, there must be a path
-between them.
+Granularity graphs permit sharing of substructure as long as such sharing
+interacts coherently with folding/unfolding.
 
 ## Variations
 

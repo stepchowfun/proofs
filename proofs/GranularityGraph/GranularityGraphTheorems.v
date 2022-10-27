@@ -18,18 +18,6 @@ Module GranularityGraphTheorems (Graph : GranularityGraph).
   #[local] Arguments clos_refl_trans {A} _ _ _.
   #[local] Hint Constructors clos_refl_trans : main.
 
-  (*
-    Each grain is reachable from all the objects in its associated subgraph.
-  *)
-
-  Theorem grainReachable : forall g n, visible g n -> reachable g n g.
-  Proof.
-    clean.
-    apply sharing with (n3 := n); search.
-  Qed.
-
-  #[export] Hint Resolve grainReachable : main.
-
   (* The root only appears in the root grain. *)
 
   Theorem rootGranularityLeft : forall g n, edge g root n -> g = root.
@@ -56,4 +44,17 @@ Module GranularityGraphTheorems (Graph : GranularityGraph).
   Qed.
 
   #[export] Hint Resolve rootUniquelyContained : main.
+
+  (* The root has a loop. *)
+
+  Theorem rootLoop : edge root root root.
+  Proof.
+    pose proof (sharing root root root root).
+    repeat destruct H; search.
+    pose proof (rootUniquelyContained x).
+    search.
+  Qed.
+
+  #[export] Hint Resolve rootLoop : main.
+
 End GranularityGraphTheorems.

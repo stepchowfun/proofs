@@ -51,8 +51,14 @@ Module TrivialGranularityGraph <: GranularityGraph.
     visible g n2 ->
     contains n1 n3 ->
     contains n2 n3 ->
-    reachable g n1 n2.
+    exists n4,
+    edge g n1 n4 /\
+    edge g n4 n1 /\
+    edge g n2 n4 /\
+    edge g n4 n2 /\
+    contains n4 n3.
   Proof.
+    exists tt.
     search.
   Qed.
 

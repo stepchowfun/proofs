@@ -57,8 +57,8 @@ Module Type GranularityGraph.
   #[export] Hint Unfold contains : main.
 
   (*
-    Any sharing between two nodes visible at the same grain is indicated by a
-    path between them at that grain.
+    Any sharing between two nodes visible at the same grain is reflected in
+    that grain.
   *)
 
   Axiom sharing :
@@ -67,7 +67,12 @@ Module Type GranularityGraph.
     visible g n2 ->
     contains n1 n3 ->
     contains n2 n3 ->
-    reachable g n1 n2.
+    exists n4,
+    edge g n1 n4 /\
+    edge g n4 n1 /\
+    edge g n2 n4 /\
+    edge g n4 n2 /\
+    contains n4 n3.
 
   #[export] Hint Resolve sharing : main.
 
