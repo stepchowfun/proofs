@@ -12,14 +12,17 @@ which can be folded further, until ultimately the entire graph has been folded
 into a single *root* node.
 
 Granularity graphs permit sharing of substructure, but any such sharing must be
-made explicit: if two nodes share any substructure, there must be an edge
+made explicit: if two nodes share any substructure, there must be a path
 between them.
 
 ## Variations
 
 - Granularity graphs are directed by default, but can be made undirected by
-  postulating a symmetry axiom.
+  postulating the following axiom:
+
+  ```
+  Axiom symmetry : forall g n1 n2, edge g n1 n2 -> edge g n2 n1.
+  ```
 - Granularity graphs by default do not allow for cyclic unfolding in which
   multiple nodes are mutually contained within each other, although such models
   can be admitted by removing the `containment` axiom.
-- Sharing of substructure can be forbidden with an additional axiom.

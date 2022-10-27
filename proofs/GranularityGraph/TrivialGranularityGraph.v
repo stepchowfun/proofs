@@ -45,18 +45,18 @@ Module TrivialGranularityGraph <: GranularityGraph.
 
   #[export] Hint Unfold contains : main.
 
-  Theorem reflection :
+  Theorem sharing :
     forall g n1 n2 n3,
     visible g n1 ->
     visible g n2 ->
     contains n1 n3 ->
     contains n2 n3 ->
-    edge g n1 n2.
+    reachable g n1 n2 \/ reachable g n2 n1.
   Proof.
     search.
   Qed.
 
-  #[export] Hint Resolve reflection : main.
+  #[export] Hint Resolve sharing : main.
 
   Theorem containment :
     forall n1 n2,
