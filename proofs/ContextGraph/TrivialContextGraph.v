@@ -19,7 +19,7 @@ Module TrivialContextGraph <: ContextGraph.
 
   #[export] Hint Unfold node : main.
 
-  Definition edge (c n1 n2 : node) := False.
+  Definition edge (c n1 n2 : node) := True.
 
   #[export] Hint Unfold edge : main.
 
@@ -33,17 +33,30 @@ Module TrivialContextGraph <: ContextGraph.
 
   #[export] Hint Unfold contains : main.
 
-  (* Coq requires that we copy this verbatim from `ContextGraph`. *)
-  Definition verticallyReachable := clos_refl_trans contains.
-
-  #[export] Hint Unfold verticallyReachable : main.
-
   Theorem connectedness : forall c n1 n2, edge c n1 n2 -> contains c n1.
   Proof.
     search.
   Qed.
 
   #[export] Hint Resolve connectedness : main.
+
+  (* Coq requires that we copy this verbatim from `ContextGraph`. *)
+  Definition verticallyReachable := clos_refl_trans contains.
+
+  #[export] Hint Unfold verticallyReachable : main.
+
+  Theorem abstraction :
+    forall c n1 n2 n3,
+    contains c n1 ->
+    contains c n2 ->
+    verticallyReachable n1 n3 ->
+    verticallyReachable n2 n3 ->
+    edge c n1 n2.
+  Proof.
+    search.
+  Qed.
+
+  #[export] Hint Resolve abstraction : main.
 
   Theorem verticalAntisymmetry :
     forall n1 n2,
