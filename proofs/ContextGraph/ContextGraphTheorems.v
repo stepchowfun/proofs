@@ -18,6 +18,15 @@ Module ContextGraphTheorems (Graph : ContextGraph).
   #[local] Arguments clos_refl_trans {A} _ _ _.
   #[local] Hint Constructors clos_refl_trans : main.
 
+  (* Every node in a context has a loop. *)
+
+  Theorem reflexivity : forall c n, contains c n -> edge c n n.
+  Proof.
+    eSearch.
+  Qed.
+
+  #[export] Hint Resolve reflexivity : main.
+
   (* The root only appears in the root context. *)
 
   Theorem rootContextLeft : forall c n, edge c root n -> c = root.
@@ -27,12 +36,11 @@ Module ContextGraphTheorems (Graph : ContextGraph).
 
   #[export] Hint Resolve rootContextLeft : main.
 
-
   Theorem rootContextRight : forall c n, edge c n root -> c = root.
   Proof.
     clean.
     pose proof (connectedness c n root H).
-    assert (contains c root); eSearch.
+    assert (contains c root); [eSearch | search].
   Qed.
 
   #[export] Hint Resolve rootContextRight : main.
@@ -48,41 +56,4 @@ Module ContextGraphTheorems (Graph : ContextGraph).
   Qed.
 
   #[export] Hint Resolve rootUniquelyReachable : main.
-
-  (*
-    *Reachability* is the reflexive transitive closure of the edge relation
-    existentially quantified over the context.
-  *)
-
-  Definition reachable := clos_refl_trans (
-    fun n1 n2 => exists n3, edge n3 n1 n2
-  ).
-
-  #[export] Hint Unfold reachable : main.
-
-  (* Horizontal reachability implies reachability. *)
-
-  Theorem horizontalSoundness :
-    forall n1 n2 n3,
-    horizontallyReachable n1 n2 n3 ->
-    reachable n2 n3.
-  Proof.
-    clean.
-    induction H; eSearch.
-  Qed.
-
-  #[export] Hint Resolve horizontalSoundness : main.
-
-  (* Vertical reachability implies reachability. *)
-
-  Theorem verticalSoundness :
-    forall n1 n2,
-    verticallyReachable n1 n2 ->
-    reachable n1 n2.
-  Proof.
-    clean.
-    induction H; eSearch.
-  Qed.
-
-  #[export] Hint Resolve verticalSoundness : main.
 End ContextGraphTheorems.

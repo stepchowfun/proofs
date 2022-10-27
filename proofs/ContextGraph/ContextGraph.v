@@ -59,6 +59,21 @@ Module Type ContextGraph.
   #[export] Hint Unfold verticallyReachable : main.
 
   (*
+    If there is any sharing between two nodes in a context, that sharing is
+    reflected in the context.
+  *)
+
+  Axiom abstraction :
+    forall c n1 n2 n3,
+    contains c n1 ->
+    contains c n2 ->
+    verticallyReachable n1 n3 ->
+    verticallyReachable n2 n3 ->
+    edge c n1 n2.
+
+  #[export] Hint Resolve abstraction : main.
+
+  (*
     Containment is intended to signify nesting. To codify that intention, we
     require vertical reachability to be antisymmetric and thus a partial order.
   *)
