@@ -20,7 +20,7 @@ between them.
 - Granularity graphs are directed by default, but can be made undirected by
   postulating the following axiom:
 
-  ```
+  ```coq
   Axiom symmetry : forall g n1 n2, edge g n1 n2 -> edge g n2 n1.
   ```
 - Granularity graphs by default do not allow for cyclic unfolding in which
