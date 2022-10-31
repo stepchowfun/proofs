@@ -45,16 +45,4 @@ Module GranularityGraphTheorems (Graph : GranularityGraph).
 
   #[export] Hint Resolve rootUniquelyContained : main.
 
-  (* The root has a loop. *)
-
-  Theorem rootLoop : edge root root root.
-  Proof.
-    pose proof (sharing root root root root).
-    repeat destruct H; search.
-    pose proof (rootUniquelyContained x).
-    search.
-  Qed.
-
-  #[export] Hint Resolve rootLoop : main.
-
 End GranularityGraphTheorems.
