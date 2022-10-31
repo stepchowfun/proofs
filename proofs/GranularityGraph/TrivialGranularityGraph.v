@@ -45,26 +45,7 @@ Module TrivialGranularityGraph <: GranularityGraph.
 
   #[export] Hint Unfold contains : main.
 
-  Theorem sharing :
-    forall g n1 n2 n3,
-    visible g n1 ->
-    visible g n2 ->
-    contains n1 n3 ->
-    contains n2 n3 ->
-    exists n4,
-    edge g n1 n4 /\
-    edge g n4 n1 /\
-    edge g n2 n4 /\
-    edge g n4 n2 /\
-    contains n4 n3.
-  Proof.
-    exists tt.
-    search.
-  Qed.
-
-  #[export] Hint Resolve sharing : main.
-
-  Theorem containment :
+  Theorem containmentAntisymmetry :
     forall n1 n2,
     contains n1 n2 ->
     contains n2 n1 ->
@@ -73,7 +54,7 @@ Module TrivialGranularityGraph <: GranularityGraph.
     search.
   Qed.
 
-  #[export] Hint Resolve containment : main.
+  #[export] Hint Resolve containmentAntisymmetry : main.
 
   Definition root := tt.
 

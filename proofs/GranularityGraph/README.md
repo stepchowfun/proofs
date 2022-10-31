@@ -21,4 +21,4 @@ into a single *root* node.
   ```
 - Granularity graphs by default do not allow for cyclic unfolding in which
   multiple nodes are mutually contained within each other, although such models
-  can be admitted by removing the `containment` axiom.
+  can be admitted by removing the `containmentAntisymmetry` axiom.

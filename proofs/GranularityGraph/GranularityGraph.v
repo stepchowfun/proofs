@@ -58,13 +58,13 @@ Module Type GranularityGraph.
 
   (* Containment is antisymmetric and thus a partial order. *)
 
-  Axiom containment :
+  Axiom containmentAntisymmetry :
     forall n1 n2,
     contains n1 n2 ->
     contains n2 n1 ->
     n1 = n2.
 
-  #[export] Hint Resolve containment : main.
+  #[export] Hint Resolve containmentAntisymmetry : main.
 
   (* There is a *root* grain which contains every node in the graph. *)
 
