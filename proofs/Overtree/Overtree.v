@@ -54,21 +54,25 @@ Module Type Overtree.
 
   #[export] Hint Unfold contains : main.
 
-  (*
-    Let there be a *root* node which has a loop, is its own owner, and contains
-    every node.
-  *)
+  (* Every node should be owned by its owner. *)
+
+  Axiom soundness : forall n, owns (owner n) n.
+
+  (* The egress from a node summarizes the egress from the nodes it owns. *)
+
+  Axiom reflection :
+    forall n1 n2 n3,
+    owns n1 n2 ->
+    edge n2 n3 ->
+    exists n4,
+    edge n1 n4 /\
+    contains n4 n3.
+
+  #[export] Hint Resolve reflection : main.
+
+  (* Let there be a *root* node which contains every node. *)
 
   Parameter root : node.
-
-  Axiom rootLoop : edge root root.
-
-  #[export] Hint Resolve rootLoop : main.
-
-  Axiom rootOwner : owner root = root.
-
-  #[export] Hint Resolve rootOwner : main.
-  #[export] Hint Rewrite rootOwner : main.
 
   Axiom rootedness : forall n, contains root n.
 

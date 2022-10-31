@@ -55,20 +55,12 @@ Module TrivialOvertree <: Overtree.
 
   #[export] Hint Unfold root : main.
 
-  Theorem rootLoop : edge root root.
+  Theorem rootSelfOwned : owns root root.
   Proof.
-    search.
+    eSearch.
   Qed.
 
-  #[export] Hint Resolve rootLoop : main.
-
-  Theorem rootOwner : owner root = root.
-  Proof.
-    search.
-  Qed.
-
-  #[export] Hint Resolve rootOwner : main.
-  #[export] Hint Rewrite rootOwner : main.
+  #[export] Hint Resolve rootSelfOwned : main.
 
   Theorem rootedness : forall n, contains root n.
   Proof.

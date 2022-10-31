@@ -42,7 +42,7 @@ Module OvertreeTheorems (Graph : Overtree).
   Proof.
     clean.
     assert (clos_refl_trans_n1 owns n root); search.
-    pose proof rootOwner.
+    pose proof rootSelfOwned.
     induction H0; search.
     assert (y = z); search.
   Qed.
@@ -81,7 +81,9 @@ Module OvertreeTheorems (Graph : Overtree).
     - apply clos_rt_rtn1.
       apply rootedness.
     - invert H.
-      + split; eSearch.
+      + destruct rootSelfOwned.
+        rewrite H.
+        search.
       + invert H0.
         search.
   Qed.
