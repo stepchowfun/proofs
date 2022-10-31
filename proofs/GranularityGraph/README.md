@@ -11,9 +11,6 @@ can be "folded" into single nodes, resulting in a coarser view of the graph
 which can be folded further, until ultimately the entire graph has been folded
 into a single *root* node.
 
-Granularity graphs permit sharing of substructure as long as such sharing
-interacts coherently with folding/unfolding.
-
 ## Variations
 
 - Granularity graphs are directed by default, but can be made undirected by
