@@ -20,29 +20,58 @@ Module GranularityGraphTheorems (Graph : GranularityGraph).
 
   (* The root only appears in the root grain. *)
 
-  Theorem rootGranularityLeft : forall g n, edge g root n -> g = root.
+  Theorem rootIncidenceLeft : forall g n, edge g root n -> g = root.
   Proof.
     eSearch.
   Qed.
 
-  #[export] Hint Resolve rootGranularityLeft : main.
+  #[export] Hint Resolve rootIncidenceLeft : main.
 
-  Theorem rootGranularityRight : forall g n, edge g n root -> g = root.
+  Theorem rootIncidenceRight : forall g n, edge g n root -> g = root.
   Proof.
     clean.
     pose proof (visibility g n root H).
     assert (visible g root); [eSearch | search].
   Qed.
 
-  #[export] Hint Resolve rootGranularityRight : main.
+  #[export] Hint Resolve rootIncidenceRight : main.
 
-  (* The only node that contains the root is itself. *)
+  (* The root is only reachable in the root grain. *)
 
-  Theorem rootUniquelyContained : forall n, contains n root -> n = root.
+  Theorem rootReachability :
+    forall n1 n2,
+    n2 <> root ->
+    reachable n1 n2 root ->
+    n1 = root.
+  Proof.
+    clean.
+    unfold reachable in H0.
+    remember root in H0.
+    induction H0; search.
+    - rewrite Heqn in H0.
+      apply rootIncidenceRight in H0.
+      search.
+    - destruct (classic (y = root)); search.
+  Qed.
+
+  #[export] Hint Resolve rootReachability : main.
+
+  (* The root is only visible in the root grain. *)
+
+  Theorem rootVisibility : forall n, visible n root -> n = root.
   Proof.
     search.
   Qed.
 
-  #[export] Hint Resolve rootUniquelyContained : main.
+  #[export] Hint Resolve rootVisibility : main.
+
+  (* The only node that contains the root is itself. *)
+
+  Theorem rootContainment : forall n, contains n root -> n = root.
+  Proof.
+    search.
+  Qed.
+
+  #[export] Hint Resolve rootContainment : main.
 
 End GranularityGraphTheorems.
