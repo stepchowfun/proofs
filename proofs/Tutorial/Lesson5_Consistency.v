@@ -10,7 +10,7 @@
 (* All functions must be statically known to terminate. *)
 (********************************************************)
 
-(* Coq rejects all nonterminating functions: *)
+(* Coq rejects all nonterminating functions, such as: *)
 
 Fail Fixpoint f (n : nat) : False := f n.
 
