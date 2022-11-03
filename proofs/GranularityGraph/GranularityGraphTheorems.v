@@ -39,16 +39,16 @@ Module GranularityGraphTheorems (Graph : GranularityGraph).
   (* The root is only reachable in the root grain. *)
 
   Theorem rootReachability :
-    forall n1 n2,
-    n2 <> root ->
-    reachable n1 n2 root ->
-    n1 = root.
+    forall g n,
+    n <> root ->
+    reachable g n root ->
+    g = root.
   Proof.
     clean.
     unfold reachable in H0.
     remember root in H0.
     induction H0; search.
-    - rewrite Heqn in H0.
+    - rewrite Heqn0 in H0.
       apply rootIncidenceRight in H0.
       search.
     - destruct (classic (y = root)); search.
@@ -58,7 +58,7 @@ Module GranularityGraphTheorems (Graph : GranularityGraph).
 
   (* The root is only visible in the root grain. *)
 
-  Theorem rootVisibility : forall n, visible n root -> n = root.
+  Theorem rootVisibility : forall g, visible g root -> g = root.
   Proof.
     search.
   Qed.
@@ -67,7 +67,7 @@ Module GranularityGraphTheorems (Graph : GranularityGraph).
 
   (* The only node that contains the root is itself. *)
 
-  Theorem rootContainment : forall n, contains n root -> n = root.
+  Theorem rootContainment : forall g, contains g root -> g = root.
   Proof.
     search.
   Qed.
