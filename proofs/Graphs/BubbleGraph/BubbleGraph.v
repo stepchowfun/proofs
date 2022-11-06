@@ -39,7 +39,7 @@ Module Type BubbleGraph.
   Axiom connectedness :
     forall b n,
     member b n ->
-    (clos_refl_trans (fun n1 n2 => edge n1 n2 /\ member b n2)) (root b) n.
+    clos_refl_trans (fun n1 n2 => edge n1 n2 /\ member b n2) (root b) n.
 
   #[export] Hint Resolve connectedness : main.
 
@@ -47,7 +47,7 @@ Module Type BubbleGraph.
 
   Parameter universe : bubble.
 
-  Axiom universiality : forall n, member universe n.
+  Axiom universality : forall n, member universe n.
 
-  #[export] Hint Resolve universiality : main.
+  #[export] Hint Resolve universality : main.
 End BubbleGraph.
