@@ -28,7 +28,7 @@ Module TrivialBubbleGraph <: BubbleGraph.
   Theorem connectedness :
     forall b n,
     member b n ->
-    (clos_refl_trans (fun n1 n2 => edge n1 n2 /\ member b n2)) (root b) n.
+    clos_refl_trans (fun n1 n2 => edge n1 n2 /\ member b n2) (root b) n.
   Proof.
     clean.
     destruct n.
@@ -39,13 +39,13 @@ Module TrivialBubbleGraph <: BubbleGraph.
 
   Definition universe := tt.
 
-  Theorem universiality : forall n, member universe n.
+  Theorem universality : forall n, member universe n.
   Proof.
     unfold member.
     search.
   Qed.
 
-  #[export] Hint Resolve universiality : main.
+  #[export] Hint Resolve universality : main.
 End TrivialBubbleGraph.
 
 Module TrivialBubbleGraphTheorems := BubbleGraphTheorems TrivialBubbleGraph.
