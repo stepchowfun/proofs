@@ -140,5 +140,4 @@ Module OvertreeTheorems (Graph : Overtree).
   Qed.
 
   #[export] Hint Resolve containersTotallyOrdered : main.
-
 End OvertreeTheorems.

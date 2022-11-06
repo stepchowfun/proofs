@@ -73,5 +73,4 @@ Module GranularityGraphTheorems (Graph : GranularityGraph).
   Qed.
 
   #[export] Hint Resolve rootContainment : main.
-
 End GranularityGraphTheorems.
