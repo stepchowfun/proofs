@@ -7,8 +7,8 @@
 (*****************************************************)
 
 Require Import Coq.Relations.Relation_Operators.
-Require Import Main.GranularityGraph.GranularityGraph.
-Require Import Main.GranularityGraph.GranularityGraphTheorems.
+Require Import Main.Graphs.GranularityGraph.GranularityGraph.
+Require Import Main.Graphs.GranularityGraph.GranularityGraphTheorems.
 Require Import Main.Tactics.
 
 Module TrivialGranularityGraph <: GranularityGraph.
