@@ -9,7 +9,7 @@
 Require Import Coq.Logic.Classical_Prop.
 Require Import Coq.Relations.Operators_Properties.
 Require Import Coq.Relations.Relation_Operators.
-Require Import Main.GranularityGraph.GranularityGraph.
+Require Import Main.Graphs.GranularityGraph.GranularityGraph.
 Require Import Main.Tactics.
 
 Module GranularityGraphTheorems (Graph : GranularityGraph).
