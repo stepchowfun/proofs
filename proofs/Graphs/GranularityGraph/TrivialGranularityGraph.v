@@ -19,7 +19,7 @@ Module TrivialGranularityGraph <: GranularityGraph.
 
   #[export] Hint Unfold node : main.
 
-  Definition edge (g n1 n2 : node) := True.
+  Definition edge (g n1 n2 : node) := False.
 
   #[export] Hint Unfold edge : main.
 
