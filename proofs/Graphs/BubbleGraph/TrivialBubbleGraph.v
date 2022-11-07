@@ -17,7 +17,7 @@ Module TrivialBubbleGraph <: BubbleGraph.
 
   Definition node := unit.
 
-  Definition edge (n1 n2 : node) := True.
+  Definition edge (n1 n2 : node) := False.
 
   Definition bubble := unit.
 
