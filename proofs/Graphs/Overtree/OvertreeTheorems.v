@@ -9,6 +9,7 @@
 Require Import Coq.Logic.Classical_Prop.
 Require Import Coq.Relations.Operators_Properties.
 Require Import Coq.Relations.Relation_Operators.
+Require Import Coq.Setoids.Setoid.
 Require Import Main.Graphs.Overtree.Overtree.
 Require Import Main.Tactics.
 
@@ -26,118 +27,50 @@ Module OvertreeTheorems (Graph : Overtree).
   #[local] Hint Resolve clos_rtn1_rt : main.
   #[local] Hint Resolve clos_rt_rtn1 : main.
 
-  (* The root is the only node which is its own owner. *)
+  (* The root is its own parent. *)
 
-  Theorem rootUniquelySelfOwned : forall n, owner n = n -> n = root.
+  Theorem rootParent : parent root = root.
+  Proof.
+    search.
+  Qed.
+
+  #[export] Hint Resolve rootParent : main.
+  #[export] Hint Rewrite rootParent : main.
+
+  (* The root is the only node which is its own parent. *)
+
+  Theorem selfParent : forall n, n = parent n -> n = root.
   Proof.
     clean.
     induction (rootedness n); search.
   Qed.
 
-  #[export] Hint Resolve rootUniquelySelfOwned : main.
+  #[export] Hint Resolve selfParent : main.
 
-  (* The root is the only node which contains itself. *)
+  (* The root is the only node which is an ancestor of the root. *)
 
-  Theorem rootUniquelyContained : forall n, contains n root -> n = root.
-  Proof.
-    clean.
-    assert (clos_refl_trans_n1 owns n root); search.
-    pose proof rootOwner.
-    induction H0; search.
-    assert (y = z); search.
-  Qed.
-
-  #[export] Hint Resolve rootUniquelyContained : main.
-
-  (* If a node is reachable from another node, they share an owner. *)
-
-  Theorem covalency : forall n1 n2, reachable n1 n2 -> owner n1 = owner n2.
-  Proof.
-    clean.
-    induction H; search.
-  Qed.
-
-  #[export] Hint Resolve covalency : main.
-
-  (* The owner for a given node is unique. *)
-
-  Theorem ownerUniqueness :
-    forall n1 n2 n3,
-    owns n1 n3 ->
-    owns n2 n3 ->
-    n1 = n2.
+  Theorem ancestorOfRoot : forall n, ancestor n root -> n = root.
   Proof.
     search.
   Qed.
 
-  #[export] Hint Resolve ownerUniqueness : main.
-
-  (* Every node is owned by its owner. *)
-
-  Theorem soundness : forall n, owns (owner n) n.
-  Proof.
-    clean.
-    assert (clos_refl_trans_n1 owns root n).
-    - apply clos_rt_rtn1.
-      apply rootedness.
-    - invert H.
-      + split; eSearch.
-      + invert H0.
-        search.
-  Qed.
-
-  #[export] Hint Resolve soundness : main.
-
-  (* Every node must be contained by its owner. *)
-
-  Theorem containment : forall n, contains (owner n) n.
-  Proof.
-    search.
-  Qed.
-
-  #[export] Hint Resolve containment : main.
-
-  (* Containment is antisymmetric and thus a partial order. *)
-
-  Theorem containmentAntisymmetry :
-    forall n1 n2,
-    contains n1 n2 ->
-    contains n2 n1 ->
-    n1 = n2.
-  Proof.
-    clean.
-    assert (n1 <> n2 -> contains n2 root).
-    - assert (clos_refl_trans_1n owns root n1).
-      + apply clos_rt_rt1n.
-        apply rootedness.
-      + induction H1; search.
-        clean.
-        assert (clos_refl_trans_n1 owns n2 y); search.
-        destruct H4; eSearch.
-        assert (clos_refl_trans_n1 owns z n2); search.
-        destruct H4; eSearch.
-    - destruct (classic (n1 = n2)); search.
-      pose proof (rootUniquelyContained n2).
-      search.
-  Qed.
-
-  #[export] Hint Resolve containmentAntisymmetry : main.
+  #[export] Hint Resolve ancestorOfRoot : main.
 
   (* The nodes which contain a given node are totally ordered. *)
 
-  Theorem containersTotallyOrdered :
+  Theorem ancestorsTotallyOrdered :
     forall n1 n2 n3,
-    contains n1 n3 ->
-    contains n2 n3 ->
-    contains n1 n2 \/
-    contains n2 n1.
+    ancestor n1 n3 ->
+    ancestor n2 n3 ->
+    ancestor n1 n2 \/
+    ancestor n2 n1.
   Proof.
     clean.
-    assert (clos_refl_trans_n1 owns n1 n3); search.
+    assert (clos_refl_trans_n1 (fun n1 n2 => n1 = parent n2) n1 n3); search.
     induction H1; search.
-    assert (clos_refl_trans_n1 owns n2 z); search.
+    assert (clos_refl_trans_n1 (fun n1 n2 => n1 = parent n2) n2 z); search.
     destruct H3; search.
   Qed.
 
-  #[export] Hint Resolve containersTotallyOrdered : main.
+  #[export] Hint Resolve ancestorsTotallyOrdered : main.
 End OvertreeTheorems.

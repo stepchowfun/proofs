@@ -2,8 +2,8 @@
 
 This directory presents an original notion we call the *overtree*.
 
-An overtree is locally structured like an arbitrary graph but globally
-structured like a directed, rooted tree.
+An overtree is locally structured like a graph but globally structured like a
+directed, rooted tree.
 
 ## Variations
 
