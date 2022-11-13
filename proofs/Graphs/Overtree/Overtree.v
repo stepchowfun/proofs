@@ -41,10 +41,10 @@ Module Type Overtree.
 
   (* Ancestorship is antisymmetric. *)
 
-  Axiom ancestorAntisymmetry :
+  Axiom ancestorshipAntisymmetry :
     forall n1 n2, ancestor n1 n2 -> ancestor n2 n1 -> n1 = n2.
 
-  #[export] Hint Resolve ancestorAntisymmetry : main.
+  #[export] Hint Resolve ancestorshipAntisymmetry : main.
 
   (* There is a *root* node which is an ancestor for every node. *)
 

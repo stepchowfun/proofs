@@ -38,14 +38,14 @@ Module TrivialOvertree <: Overtree.
 
   #[export] Hint Unfold ancestor : main.
 
-  Theorem ancestorAntisymmetry :
+  Theorem ancestorshipAntisymmetry :
     forall n1 n2, ancestor n1 n2 -> ancestor n2 n1 -> n1 = n2.
   Proof.
     unfold node.
     search.
   Qed.
 
-  #[export] Hint Resolve ancestorAntisymmetry : main.
+  #[export] Hint Resolve ancestorshipAntisymmetry : main.
 
   (* There is a *root* node which is an ancestor for every node. *)
 
