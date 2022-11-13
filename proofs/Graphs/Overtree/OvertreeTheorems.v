@@ -56,7 +56,7 @@ Module OvertreeTheorems (Graph : Overtree).
 
   #[export] Hint Resolve ancestorOfRoot : main.
 
-  (* The nodes which contain a given node are totally ordered. *)
+  (* The ancestors of a given node are totally ordered. *)
 
   Theorem ancestorsTotallyOrdered :
     forall n1 n2 n3,
