@@ -19,58 +19,38 @@ Module Type Overtree.
 
   Parameter edge : node -> node -> Prop.
 
-  (* Each node is associated with a node called its *owner*. *)
+  (* Each node is associated with a node called its *parent*. *)
 
-  Parameter owner : node -> node.
+  Parameter parent : node -> node.
 
-  (* An edge is called *covalent* if its source and target share an owner. *)
+  (* Each node is reachable from its parent via a path through its siblings. *)
 
-  Definition covalent n1 n2 := edge n1 n2 /\ owner n1 = owner n2.
+  Axiom connectedness :
+    forall n,
+    clos_refl_trans (
+      fun n1 n2 => edge n1 n2 /\ parent n2 = parent n
+    ) (parent n) n.
 
-  #[export] Hint Unfold covalent : main.
+  #[export] Hint Resolve connectedness : main.
 
-  (* *Reachability* is the reflexive transitive closure of covalency. *)
+  (* Ancestorship is the reflexive transitive closure of parenthood. *)
 
-  Definition reachable := clos_refl_trans covalent.
+  Definition ancestor := clos_refl_trans (fun n1 n2 => n1 = parent n2).
 
-  #[export] Hint Unfold reachable : main.
+  #[export] Hint Unfold ancestor : main.
 
-  (*
-    A node *owns* another node if it's the owner for that node and that node
-    is reachable from one of the owners's neighbors.
-  *)
+  (* Ancestorship is antisymmetric. *)
 
-  Definition owns n1 n2 :=
-    owner n2 = n1 /\
-    exists n3,
-    edge n1 n3 /\
-    reachable n3 n2.
+  Axiom ancestorAntisymmetry :
+    forall n1 n2, ancestor n1 n2 -> ancestor n2 n1 -> n1 = n2.
 
-  #[export] Hint Unfold owns : main.
+  #[export] Hint Resolve ancestorAntisymmetry : main.
 
-  (* *Containment* is the reflexive transitive closure of ownership. *)
-
-  Definition contains := clos_refl_trans owns.
-
-  #[export] Hint Unfold contains : main.
-
-  (*
-    Let there be a *root* node which has a loop, is its own owner, and contains
-    every node.
-  *)
+  (* There is a *root* node which is an ancestor for every node. *)
 
   Parameter root : node.
 
-  Axiom rootLoop : edge root root.
-
-  #[export] Hint Resolve rootLoop : main.
-
-  Axiom rootOwner : owner root = root.
-
-  #[export] Hint Resolve rootOwner : main.
-  #[export] Hint Rewrite rootOwner : main.
-
-  Axiom rootedness : forall n, contains root n.
+  Axiom rootedness : forall n, ancestor root n.
 
   #[export] Hint Resolve rootedness : main.
 End Overtree.

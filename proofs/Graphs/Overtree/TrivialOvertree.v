@@ -17,61 +17,43 @@ Module TrivialOvertree <: Overtree.
 
   Definition node := unit.
 
-  #[export] Hint Unfold node : main.
+  Definition edge (n1 n2 : node) := False.
 
-  Definition edge (n1 n2 : node) := True.
+  Definition parent (n : node) := tt.
 
-  #[export] Hint Unfold edge : main.
+  Theorem connectedness :
+    forall n,
+    clos_refl_trans (
+      fun n1 n2 => edge n1 n2 /\ parent n2 = parent n
+    ) (parent n) n.
+  Proof.
+    unfold node.
+    search.
+  Qed.
 
-  Definition owner (n : node) := tt.
-
-  #[export] Hint Unfold owner : main.
-
-  (* Coq requires that we copy this verbatim from `Overtree`. *)
-  Definition covalent n1 n2 := edge n1 n2 /\ owner n1 = owner n2.
-
-  #[export] Hint Unfold covalent : main.
-
-  (* Coq requires that we copy this verbatim from `Overtree`. *)
-  Definition reachable := clos_refl_trans covalent.
-
-  #[export] Hint Unfold reachable : main.
+  #[export] Hint Resolve connectedness : main.
 
   (* Coq requires that we copy this verbatim from `Overtree`. *)
-  Definition owns n1 n2 :=
-    owner n2 = n1 /\
-    exists n3,
-    edge n1 n3 /\
-    reachable n3 n2.
+  Definition ancestor := clos_refl_trans (fun n1 n2 => n1 = parent n2).
 
-  #[export] Hint Unfold owns : main.
+  #[export] Hint Unfold ancestor : main.
 
-  (* Coq requires that we copy this verbatim from `Overtree`. *)
-  Definition contains := clos_refl_trans owns.
+  Theorem ancestorAntisymmetry :
+    forall n1 n2, ancestor n1 n2 -> ancestor n2 n1 -> n1 = n2.
+  Proof.
+    unfold node.
+    search.
+  Qed.
 
-  #[export] Hint Unfold contains : main.
+  #[export] Hint Resolve ancestorAntisymmetry : main.
+
+  (* There is a *root* node which is an ancestor for every node. *)
 
   Definition root := tt.
 
-  #[export] Hint Unfold root : main.
-
-  Theorem rootLoop : edge root root.
+  Theorem rootedness : forall n, ancestor root n.
   Proof.
-    search.
-  Qed.
-
-  #[export] Hint Resolve rootLoop : main.
-
-  Theorem rootOwner : owner root = root.
-  Proof.
-    search.
-  Qed.
-
-  #[export] Hint Resolve rootOwner : main.
-  #[export] Hint Rewrite rootOwner : main.
-
-  Theorem rootedness : forall n, contains root n.
-  Proof.
+    unfold node.
     search.
   Qed.
 
