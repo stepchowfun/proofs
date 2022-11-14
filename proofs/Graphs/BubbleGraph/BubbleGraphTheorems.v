@@ -34,15 +34,13 @@ Module BubbleGraphTheorems (Graph : BubbleGraph).
     forall b n, member b n -> clos_refl_trans edge (root b) n.
   Proof.
     clean.
-    pose proof (connectedness b n H).
     assert (
       clos_refl_trans_n1 (
         fun n1 n2 : node => edge n1 n2 /\ member b n2
       ) (root b) n
     ); search.
     clear H.
-    induction H1; search.
-    apply rt_trans with (y := y); search.
+    induction H0; eSearch.
   Qed.
 
   #[export] Hint Resolve memberReach : main.

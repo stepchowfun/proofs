@@ -27,16 +27,16 @@ Module OverdagTheorems (Graph : Overdag).
   #[local] Hint Resolve clos_rtn1_rt : main.
   #[local] Hint Resolve clos_rt_rtn1 : main.
 
-  (* The only node that can have the root as a member is the root. *)
+  (* The root is the only node that can be a parent of the root. *)
 
-  Theorem rootMember : forall n, member n root -> n = root.
+  Theorem rootParent : forall n, parent n root -> n = root.
   Proof.
     search.
   Qed.
 
-  #[export] Hint Resolve rootMember : main.
+  #[export] Hint Resolve rootParent : main.
 
-  (* The root is the only node which is an ancestor of the root. *)
+  (* The root is the only node that is an ancestor of the root. *)
 
   Theorem ancestorOfRoot : forall n, ancestor n root -> n = root.
   Proof.
@@ -45,24 +45,22 @@ Module OverdagTheorems (Graph : Overdag).
 
   #[export] Hint Resolve ancestorOfRoot : main.
 
-  (* Membership implies reachability. *)
+  (* Parenthood implies reachability. *)
 
-  Theorem memberReach :
-    forall n1 n2, member n1 n2 -> clos_refl_trans edge n1 n2.
+  Theorem parentReach :
+    forall n1 n2, parent n1 n2 -> clos_refl_trans edge n1 n2.
   Proof.
     clean.
-    pose proof (connectedness n1 n2 H).
     assert (
       clos_refl_trans_n1 (
-        fun n2 n3 : node => edge n2 n3 /\ member n1 n3
+        fun n2 n3 : node => edge n2 n3 /\ parent n1 n3
       ) n1 n2
     ); search.
     clear H.
-    induction H1; search.
-    apply rt_trans with (y := y); search.
+    induction H0; eSearch.
   Qed.
 
-  #[export] Hint Resolve memberReach : main.
+  #[export] Hint Resolve parentReach : main.
 
   (* Ancestorship implies reachability. *)
 
@@ -70,9 +68,7 @@ Module OverdagTheorems (Graph : Overdag).
     forall n1 n2, ancestor n1 n2 -> clos_refl_trans edge n1 n2.
   Proof.
     clean.
-    assert (clos_refl_trans_n1 member n1 n2); search.
-    induction H0; search.
-    apply rt_trans with (y := y); search.
+    induction H; eSearch.
   Qed.
 
   #[export] Hint Resolve ancestorReach : main.
