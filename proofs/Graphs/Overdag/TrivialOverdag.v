@@ -19,12 +19,12 @@ Module TrivialOverdag <: Overdag.
 
   Definition edge (n1 n2 : node) := False.
 
-  Definition member (n1 : node) (n2 : node) := False.
+  Definition parent (p : node) (n : node) := False.
 
   Theorem connectedness :
     forall p n,
-    member p n ->
-    clos_refl_trans (fun n1 n2 => edge n1 n2 /\ member p n2) p n.
+    parent p n ->
+    clos_refl_trans (fun n1 n2 => edge n1 n2 /\ parent p n2) p n.
   Proof.
     unfold node.
     search.
@@ -33,7 +33,7 @@ Module TrivialOverdag <: Overdag.
   #[export] Hint Resolve connectedness : main.
 
   (* Coq requires that we copy this verbatim from `Overdag`. *)
-  Definition ancestor := clos_refl_trans member.
+  Definition ancestor := clos_refl_trans parent.
 
   #[export] Hint Unfold ancestor : main.
 

@@ -74,25 +74,30 @@ Module OvertreeTheorems (Graph : Overtree).
 
   #[export] Hint Resolve ancestorsTotallyOrdered : main.
 
+  (* Parenthood implies reachability. *)
+
+  Theorem parentReach :
+    forall n, clos_refl_trans edge (parent n) n.
+  Proof.
+    clean.
+    set (p := parent n).
+    assert (
+      clos_refl_trans (
+        fun n1 n2 : node => edge n1 n2 /\ parent n2 = parent n
+      ) p n
+    ); eSearch.
+    induction H; eSearch.
+  Qed.
+
+  #[export] Hint Resolve parentReach : main.
+
   (* Ancestorship implies reachability. *)
 
   Theorem ancestorReach :
     forall n1 n2, ancestor n1 n2 -> clos_refl_trans edge n1 n2.
   Proof.
     clean.
-    assert (clos_refl_trans_n1 (fun n1 n2 => n1 = parent n2) n1 n2); search.
-    induction H0; search.
-    apply rt_trans with (y := y); search.
-    pose proof (connectedness z).
-    rewrite <- H0 in H2.
-    assert (
-      clos_refl_trans_n1 (
-        fun n1 n2 : node => edge n1 n2 /\ parent n2 = y
-      ) y z
-    ); search.
-    clear H H0 H1 H2 IHclos_refl_trans_n1.
-    induction H3; search.
-    apply rt_trans with (y := y0); search.
+    induction H; eSearch.
   Qed.
 
   #[export] Hint Resolve ancestorReach : main.

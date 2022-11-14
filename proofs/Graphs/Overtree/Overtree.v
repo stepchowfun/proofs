@@ -46,7 +46,7 @@ Module Type Overtree.
 
   #[export] Hint Resolve ancestorshipAntisymmetry : main.
 
-  (* There is a *root* node which is an ancestor for every node. *)
+  (* There is a *root* node which is an ancestor of every node. *)
 
   Parameter root : node.
 

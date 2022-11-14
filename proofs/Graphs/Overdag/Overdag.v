@@ -19,28 +19,22 @@ Module Type Overdag.
 
   Parameter edge : node -> node -> Prop.
 
-  (*
-    Each node is also associated with a set of *member* nodes. That node is
-    called a proxy for its members.
-  *)
+  (* Each node is associated with a set of nodes called its *parents*. *)
 
-  Parameter member : node -> node -> Prop.
+  Parameter parent : node -> node -> Prop.
 
-  (*
-    Every node is reachable from all of its proxies via paths through other
-    members of those proxies.
-  *)
+  (* Each node is reachable from its parents via paths through its siblings. *)
 
   Axiom connectedness :
     forall p n,
-    member p n ->
-    clos_refl_trans (fun n1 n2 => edge n1 n2 /\ member p n2) p n.
+    parent p n ->
+    clos_refl_trans (fun n1 n2 => edge n1 n2 /\ parent p n2) p n.
 
   #[export] Hint Resolve connectedness : main.
 
-  (* Ancestorship is the reflexive transitive closure of membership. *)
+  (* Ancestorship is the reflexive transitive closure of parenthood. *)
 
-  Definition ancestor := clos_refl_trans member.
+  Definition ancestor := clos_refl_trans parent.
 
   #[export] Hint Unfold ancestor : main.
 
@@ -51,7 +45,7 @@ Module Type Overdag.
 
   #[export] Hint Resolve ancestorshipAntisymmetry : main.
 
-  (* There is a *root* node which is an ancestor for every node. *)
+  (* There is a *root* node which is an ancestor of every node. *)
 
   Parameter root : node.
 
