@@ -26,6 +26,13 @@ Module TrivialVisibilityGraph <: VisibilityGraph.
 
   #[export] Hint Unfold reachable : main.
 
+  Theorem reachability : forall n1 n2, parent n1 n2 -> reachable n1 n2.
+  Proof.
+    search.
+  Qed.
+
+  #[export] Hint Resolve reachability : main.
+
   Theorem visibility :
     forall n1 n2 n3, edge n1 n2 -> reachable n2 n3 ->
     exists n4, parent n4 n3 /\ (reachable n4 n1 \/ reachable n2 n4).

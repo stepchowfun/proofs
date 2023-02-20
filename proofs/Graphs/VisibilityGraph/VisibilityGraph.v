@@ -31,7 +31,13 @@ Module Type VisibilityGraph.
 
   #[export] Hint Unfold reachable : main.
 
-  (* Ingress is restricted to siblings. *)
+  (* Every node is reachable from all its parents. *)
+
+  Axiom reachability : forall n1 n2, parent n1 n2 -> reachable n1 n2.
+
+  #[export] Hint Resolve reachability : main.
+
+  (* Ingress to a node must traverse a parent of that node. *)
 
   Axiom visibility :
     forall n1 n2 n3, edge n1 n2 -> reachable n2 n3 ->
