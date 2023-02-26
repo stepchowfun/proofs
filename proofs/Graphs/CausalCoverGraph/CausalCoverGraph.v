@@ -27,7 +27,8 @@ Module Type CausalCoverGraph.
     An event causally *precedes* another if the events are related by the
     reflexive transitive closure of the direct causality relation. In physical
     terms, this occurs when the former event is connected to the latter by a
-    timelike or lightlike curve.
+    timelike or lightlike curve, which itself may be the concatenation of
+    shorter curves.
   *)
 
   Definition precedes := clos_refl_trans causes.
@@ -44,8 +45,8 @@ Module Type CausalCoverGraph.
   Parameter cover : event -> event -> Prop.
 
   (*
-    Members of a causal cover are not causally related. Informally, the
-    spacetime hypersurface represented by the cover is convex.
+    Members of a causal cover must not be causally related. Informally, the
+    spacetime hypersurface represented by the cover must be convex.
   *)
 
   Axiom coverConvexity :
@@ -68,10 +69,11 @@ Module Type CausalCoverGraph.
   #[export] Hint Resolve coverBoundedness : main.
 
   (*
-    Every part of a timelike or lightlike curve ending at some event must be
-    causally related to some member of the cover of that event. Informally, the
-    spacetime hypersurface represented by the cover has no holes through which
-    timelike or lightlike curves may pass without intersecting the surface.
+    Every event along a timelike or lightlike curve must be causally related to
+    some member of the cover of the endpoint of the curve. Informally, the
+    spacetime hypersurface represented by the cover must have no holes through
+    which timelike or lightlike curves may pass without intersecting the
+    surface.
   *)
 
   Axiom coverConnectedness :
