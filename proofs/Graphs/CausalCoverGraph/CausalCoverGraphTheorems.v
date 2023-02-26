@@ -26,4 +26,16 @@ Module CausalCoverGraphTheorems (Graph : CausalCoverGraph).
   #[local] Hint Resolve clos_rt_rt1n : main.
   #[local] Hint Resolve clos_rtn1_rt : main.
   #[local] Hint Resolve clos_rt_rtn1 : main.
+
+  (*
+    If an event is a member of its own causal cover, then the cover contains
+    only that event.
+  *)
+
+  Theorem endocover : forall e1 e2, cover e1 e2 -> cover e2 e2 -> e1 = e2.
+  Proof.
+    eSearch.
+  Qed.
+
+  #[export] Hint Resolve endocover : main.
 End CausalCoverGraphTheorems.
