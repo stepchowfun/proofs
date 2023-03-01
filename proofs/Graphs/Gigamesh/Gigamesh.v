@@ -23,7 +23,7 @@ Module Type Gigamesh.
 
   Parameter parent : node -> node -> Prop.
 
-  (* Ancestorship is the reflexive transitive closure of parenthood. *)
+  (* *Ancestorship* is the reflexive transitive closure of parenthood. *)
 
   Definition ancestor := clos_refl_trans parent.
 
@@ -38,13 +38,6 @@ Module Type Gigamesh.
 
   #[export] Hint Resolve parenthood : main.
 
-  (* Nodes have no superfluous parents. *)
-
-  Axiom convexity :
-    forall p1 p2 n, parent p1 n -> parent p2 n -> ancestor p1 p2 -> p1 = p2.
-
-  #[export] Hint Resolve convexity : main.
-
   (* Ancestorship is antisymmetric. *)
 
   Axiom antisymmetry :
@@ -52,10 +45,7 @@ Module Type Gigamesh.
 
   #[export] Hint Resolve antisymmetry : main.
 
-  (*
-    For every edge, the target must have a parent that is an ancestor of the
-    source.
-  *)
+  (* For every edge, some ancestor of the source is a parent of the target. *)
 
   Axiom encapsulation :
     forall n1 n2, edge n1 n2 -> exists p, ancestor p n1 /\ parent p n2.

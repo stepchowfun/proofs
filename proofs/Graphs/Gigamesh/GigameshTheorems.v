@@ -54,13 +54,4 @@ Module GigameshTheorems (Graph : Gigamesh).
   Qed.
 
   #[export] Hint Resolve ancestorReach : main.
-
-  (* If a node is its own parent, it has no other parents. *)
-
-  Theorem endoparent : forall n1 n2, parent n1 n2 -> parent n2 n2 -> n1 = n2.
-  Proof.
-    eSearch.
-  Qed.
-
-  #[export] Hint Resolve endoparent : main.
 End GigameshTheorems.
