@@ -36,14 +36,6 @@ Module TrivialGigamesh <: Gigamesh.
 
   #[export] Hint Resolve parenthood : main.
 
-  Theorem convexity :
-    forall p1 p2 n, parent p1 n -> parent p2 n -> ancestor p1 p2 -> p1 = p2.
-  Proof.
-    search.
-  Qed.
-
-  #[export] Hint Resolve convexity : main.
-
   Theorem antisymmetry :
     forall n1 n2, ancestor n1 n2 -> ancestor n2 n1 -> n1 = n2.
   Proof.
