@@ -15,7 +15,11 @@ Module Type Gigamesh.
 
   Parameter node : Type.
 
-  (* Edges are directed. *)
+  (* There is a distinguished *root* node. *)
+
+  Parameter root : node.
+
+  (* Pairs of nodes may be related via directed edges. *)
 
   Parameter edge : node -> node -> Prop.
 
@@ -38,13 +42,6 @@ Module Type Gigamesh.
 
   #[export] Hint Resolve connectedness : main.
 
-  (* Ancestorship is antisymmetric. *)
-
-  Axiom antisymmetry :
-    forall n1 n2, ancestor n1 n2 -> ancestor n2 n1 -> n1 = n2.
-
-  #[export] Hint Resolve antisymmetry : main.
-
   (* For every edge, some ancestor of the source is a parent of the target. *)
 
   Axiom encapsulation :
@@ -52,9 +49,14 @@ Module Type Gigamesh.
 
   #[export] Hint Resolve encapsulation : main.
 
-  (* There is a *root* node which is an ancestor of every node. *)
+  (* Ancestorship is antisymmetric and thus a partial order. *)
 
-  Parameter root : node.
+  Axiom antisymmetry :
+    forall n1 n2, ancestor n1 n2 -> ancestor n2 n1 -> n1 = n2.
+
+  #[export] Hint Resolve antisymmetry : main.
+
+  (* The root is an ancestor of every node. *)
 
   Axiom rootedness : forall n, ancestor root n.
 

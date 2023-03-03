@@ -17,6 +17,8 @@ Module TrivialGigamesh <: Gigamesh.
 
   Definition node := unit.
 
+  Definition root := tt.
+
   Definition edge (n1 n2 : node) := False.
 
   Definition parent (p : node) (n : node) := False.
@@ -36,15 +38,6 @@ Module TrivialGigamesh <: Gigamesh.
 
   #[export] Hint Resolve connectedness : main.
 
-  Theorem antisymmetry :
-    forall n1 n2, ancestor n1 n2 -> ancestor n2 n1 -> n1 = n2.
-  Proof.
-    unfold node.
-    search.
-  Qed.
-
-  #[export] Hint Resolve antisymmetry : main.
-
   Theorem encapsulation :
     forall n1 n2, edge n1 n2 -> exists p, ancestor p n1 /\ parent p n2.
   Proof.
@@ -53,7 +46,14 @@ Module TrivialGigamesh <: Gigamesh.
 
   #[export] Hint Resolve encapsulation : main.
 
-  Definition root := tt.
+  Theorem antisymmetry :
+    forall n1 n2, ancestor n1 n2 -> ancestor n2 n1 -> n1 = n2.
+  Proof.
+    unfold node.
+    search.
+  Qed.
+
+  #[export] Hint Resolve antisymmetry : main.
 
   Theorem rootedness : forall n, ancestor root n.
   Proof.
