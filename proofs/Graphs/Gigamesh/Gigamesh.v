@@ -31,12 +31,12 @@ Module Type Gigamesh.
 
   (* Each node is reachable from its parents via paths through its siblings. *)
 
-  Axiom parenthood :
+  Axiom connectedness :
     forall p n,
     parent p n ->
     clos_refl_trans (fun n1 n2 => edge n1 n2 /\ parent p n2) p n.
 
-  #[export] Hint Resolve parenthood : main.
+  #[export] Hint Resolve connectedness : main.
 
   (* Ancestorship is antisymmetric. *)
 
@@ -51,4 +51,12 @@ Module Type Gigamesh.
     forall n1 n2, edge n1 n2 -> exists p, ancestor p n1 /\ parent p n2.
 
   #[export] Hint Resolve encapsulation : main.
+
+  (* There is a *root* node which is an ancestor of every node. *)
+
+  Parameter root : node.
+
+  Axiom rootedness : forall n, ancestor root n.
+
+  #[export] Hint Resolve rootedness : main.
 End Gigamesh.
