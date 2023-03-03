@@ -27,10 +27,18 @@ Module GigameshTheorems (Graph : Gigamesh).
   #[local] Hint Resolve clos_rtn1_rt : main.
   #[local] Hint Resolve clos_rt_rtn1 : main.
 
+  (*
+    *Reachability* is the reflexive transitive closure of the edge relation.
+  *)
+
+  Definition reachable := clos_refl_trans edge.
+
+  #[export] Hint Unfold reachable : main.
+
   (* Parenthood implies reachability. *)
 
   Theorem parentReach :
-    forall n1 n2, parent n1 n2 -> clos_refl_trans edge n1 n2.
+    forall n1 n2, parent n1 n2 -> reachable n1 n2.
   Proof.
     clean.
     assert (
@@ -47,11 +55,29 @@ Module GigameshTheorems (Graph : Gigamesh).
   (* Ancestorship implies reachability. *)
 
   Theorem ancestorReach :
-    forall n1 n2, ancestor n1 n2 -> clos_refl_trans edge n1 n2.
+    forall n1 n2, ancestor n1 n2 -> reachable n1 n2.
   Proof.
     clean.
     induction H; eSearch.
   Qed.
 
   #[export] Hint Resolve ancestorReach : main.
+
+  (* The root is the only node that can be a parent of the root. *)
+
+  Theorem rootParent : forall n, parent n root -> n = root.
+  Proof.
+    search.
+  Qed.
+
+  #[export] Hint Resolve rootParent : main.
+
+  (* The root is the only node that is an ancestor of the root. *)
+
+  Theorem ancestorOfRoot : forall n, ancestor n root -> n = root.
+  Proof.
+    search.
+  Qed.
+
+  #[export] Hint Resolve ancestorOfRoot : main.
 End GigameshTheorems.
