@@ -31,7 +31,7 @@ Module TrivialGigamesh <: Gigamesh.
   Theorem connectedness :
     forall p n,
     parent p n ->
-    clos_refl_trans (fun n1 n2 => edge n1 n2 /\ parent p n2) p n.
+    clos_refl_trans (fun n1 n2 => edge n1 n2 /\ ancestor p n2) p n.
   Proof.
     search.
   Qed.
