@@ -21,18 +21,27 @@ Module TrivialGigamesh <: Gigamesh.
 
   Definition edge (n1 n2 : node) := False.
 
-  Definition parent (p : node) (n : node) := False.
+  Definition parent (p : node) (n : node) := True.
 
   (* Coq requires that we copy this verbatim from `Gigamesh`. *)
   Definition ancestor := clos_refl_trans parent.
 
   #[export] Hint Unfold ancestor : main.
 
+  Theorem reflexivity : forall n, parent n n.
+  Proof.
+    unfold parent.
+    search.
+  Qed.
+
+  #[export] Hint Resolve reflexivity : main.
+
   Theorem connectedness :
     forall p n,
     parent p n ->
     clos_refl_trans (fun n1 n2 => edge n1 n2 /\ ancestor p n2) p n.
   Proof.
+    unfold node.
     search.
   Qed.
 
