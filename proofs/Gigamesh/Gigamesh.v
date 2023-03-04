@@ -33,12 +33,15 @@ Module Type Gigamesh.
 
   #[export] Hint Unfold ancestor : main.
 
-  (* Each node is reachable from its parents via paths through its siblings. *)
+  (*
+    For each parent of a node, the parent can reach that node via a path
+    through the descendants of the parent.
+  *)
 
   Axiom connectedness :
     forall p n,
     parent p n ->
-    clos_refl_trans (fun n1 n2 => edge n1 n2 /\ parent p n2) p n.
+    clos_refl_trans (fun n1 n2 => edge n1 n2 /\ ancestor p n2) p n.
 
   #[export] Hint Resolve connectedness : main.
 
@@ -48,6 +51,18 @@ Module Type Gigamesh.
     forall n1 n2, edge n1 n2 -> exists p, ancestor p n1 /\ parent p n2.
 
   #[export] Hint Resolve encapsulation : main.
+
+  (*
+    Alternatively, we could instead treat parenthood as restricting access to
+    children, rather than granting it.
+
+    ```
+    Axiom encapsulation :
+      forall n1 n2 p, edge n1 n2 -> parent p n2 -> ancestor p n1.
+
+    #[export] Hint Resolve encapsulation : main.
+    ```
+  *)
 
   (* Ancestorship is antisymmetric and thus a partial order. *)
 

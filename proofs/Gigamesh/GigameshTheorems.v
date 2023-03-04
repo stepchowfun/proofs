@@ -43,7 +43,7 @@ Module GigameshTheorems (Graph : Gigamesh).
     clean.
     assert (
       clos_refl_trans_n1 (
-        fun n2 n3 : node => edge n2 n3 /\ parent n1 n3
+        fun n2 n3 : node => edge n2 n3 /\ ancestor n1 n3
       ) n1 n2
     ); search.
     clear H.
