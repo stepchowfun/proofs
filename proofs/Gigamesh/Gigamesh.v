@@ -23,7 +23,7 @@ Module Type Gigamesh.
 
   Parameter edge : node -> node -> Prop.
 
-  (* Each node is associated with a set of nodes called its *parents*. *)
+  (* Pairs of nodes may also be related via parent-child relationships. *)
 
   Parameter parent : node -> node -> Prop.
 
