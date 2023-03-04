@@ -7,8 +7,8 @@
 (********************************************)
 
 Require Import Coq.Relations.Relation_Operators.
-Require Import Main.Graphs.Gigamesh.Gigamesh.
-Require Import Main.Graphs.Gigamesh.GigameshTheorems.
+Require Import Main.Gigamesh.Gigamesh.
+Require Import Main.Gigamesh.GigameshTheorems.
 Require Import Main.Tactics.
 
 Module TrivialGigamesh <: Gigamesh.
