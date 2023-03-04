@@ -33,6 +33,12 @@ Module Type Gigamesh.
 
   #[export] Hint Unfold ancestor : main.
 
+  (* Every node is at least its own parent. *)
+
+  Axiom reflexivity : forall n, parent n n.
+
+  #[export] Hint Resolve reflexivity : main.
+
   (*
     For each parent of a node, the parent can reach that node via a path
     through the descendants of the parent.
