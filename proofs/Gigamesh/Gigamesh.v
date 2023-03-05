@@ -19,11 +19,11 @@ Module Type Gigamesh.
 
   Parameter root : node.
 
-  (* Pairs of nodes may be related via directed edges. *)
+  (* Pairs of nodes may be related via directed *edges*. *)
 
   Parameter edge : node -> node -> Prop.
 
-  (* Pairs of nodes may also be related via parent-child relationships. *)
+  (* Pairs of nodes may also be related via *parent-child* relationships. *)
 
   Parameter parent : node -> node -> Prop.
 
@@ -33,7 +33,11 @@ Module Type Gigamesh.
 
   #[export] Hint Unfold ancestor : main.
 
-  (* Every node is at least its own parent. *)
+  (*
+    Every node is at least its own parent. This guarantees that the
+    `encapsulation` axiom below cannot prevent a node from referencing its own
+    parents.
+  *)
 
   Axiom reflexivity : forall n, parent n n.
 
@@ -56,8 +60,6 @@ Module Type Gigamesh.
   Axiom encapsulation :
     forall n1 n2, edge n1 n2 -> exists p, ancestor p n1 /\ parent p n2.
 
-  #[export] Hint Resolve encapsulation : main.
-
   (*
     Alternatively, we could instead treat parenthood as restricting access to
     children, rather than granting it.
@@ -65,10 +67,12 @@ Module Type Gigamesh.
     ```
     Axiom encapsulation :
       forall n1 n2 p, edge n1 n2 -> parent p n2 -> ancestor p n1.
-
-    #[export] Hint Resolve encapsulation : main.
     ```
+
+    If we use this definition, we should remove the `reflexivity` axiom above.
   *)
+
+  #[export] Hint Resolve encapsulation : main.
 
   (* Ancestorship is antisymmetric and thus a partial order. *)
 
