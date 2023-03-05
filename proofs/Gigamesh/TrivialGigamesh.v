@@ -17,11 +17,19 @@ Module TrivialGigamesh <: Gigamesh.
 
   Definition node := unit.
 
+  #[export] Hint Unfold node : main.
+
   Definition root := tt.
+
+  #[export] Hint Unfold root : main.
 
   Definition edge (n1 n2 : node) := False.
 
+  #[export] Hint Unfold edge : main.
+
   Definition parent (p : node) (n : node) := True.
+
+  #[export] Hint Unfold parent : main.
 
   (* Coq requires that we copy this verbatim from `Gigamesh`. *)
   Definition ancestor := clos_refl_trans parent.
@@ -30,7 +38,6 @@ Module TrivialGigamesh <: Gigamesh.
 
   Theorem reflexivity : forall n, parent n n.
   Proof.
-    unfold parent.
     search.
   Qed.
 
@@ -41,7 +48,6 @@ Module TrivialGigamesh <: Gigamesh.
     parent p n ->
     clos_refl_trans (fun n1 n2 => edge n1 n2 /\ ancestor p n2) p n.
   Proof.
-    unfold node.
     search.
   Qed.
 
@@ -58,7 +64,6 @@ Module TrivialGigamesh <: Gigamesh.
   Theorem antisymmetry :
     forall n1 n2, ancestor n1 n2 -> ancestor n2 n1 -> n1 = n2.
   Proof.
-    unfold node.
     search.
   Qed.
 
@@ -66,7 +71,6 @@ Module TrivialGigamesh <: Gigamesh.
 
   Theorem rootedness : forall n, ancestor root n.
   Proof.
-    unfold node.
     search.
   Qed.
 
