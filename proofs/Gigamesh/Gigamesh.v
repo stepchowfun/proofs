@@ -23,56 +23,21 @@ Module Type Gigamesh.
 
   Parameter edge : node -> node -> Prop.
 
-  (* Pairs of nodes may also be related via *parent-child* relationships. *)
+  (* Each node is associated with a node called its *parent*. *)
 
-  Parameter parent : node -> node -> Prop.
+  Parameter parent : node -> node.
 
   (* *Ancestorship* is the reflexive transitive closure of parenthood. *)
 
-  Definition ancestor := clos_refl_trans parent.
+  Definition ancestor := clos_refl_trans (fun n1 n2 => n1 = parent n2).
 
   #[export] Hint Unfold ancestor : main.
 
-  (*
-    Every node is at least its own parent. This guarantees that the
-    `encapsulation` axiom below cannot prevent a node from referencing its own
-    parents.
-  *)
+  (* The root is an ancestor of every node. *)
 
-  Axiom reflexivity : forall n, parent n n.
+  Axiom rootedness : forall n, ancestor root n.
 
-  #[export] Hint Resolve reflexivity : main.
-
-  (*
-    For each parent of a node, the parent can reach that node via a path
-    through the descendants of the parent.
-  *)
-
-  Axiom connectedness :
-    forall p n,
-    parent p n ->
-    clos_refl_trans (fun n1 n2 => edge n1 n2 /\ ancestor p n2) p n.
-
-  #[export] Hint Resolve connectedness : main.
-
-  (* For every edge, some ancestor of the source is a parent of the target. *)
-
-  Axiom encapsulation :
-    forall n1 n2, edge n1 n2 -> exists p, ancestor p n1 /\ parent p n2.
-
-  (*
-    Alternatively, we could instead treat parenthood as restricting access to
-    children, rather than granting it.
-
-    ```
-    Axiom encapsulation :
-      forall n1 n2 p, edge n1 n2 -> parent p n2 -> ancestor p n1.
-    ```
-
-    If we use this definition, we should remove the `reflexivity` axiom above.
-  *)
-
-  #[export] Hint Resolve encapsulation : main.
+  #[export] Hint Resolve rootedness : main.
 
   (* Ancestorship is antisymmetric and thus a partial order. *)
 
@@ -81,9 +46,21 @@ Module Type Gigamesh.
 
   #[export] Hint Resolve antisymmetry : main.
 
-  (* The root is an ancestor of every node. *)
+  (*
+    Every node is reachable from its parent via a path through the descendants
+    of that parent.
+  *)
 
-  Axiom rootedness : forall n, ancestor root n.
+  Axiom connectedness :
+    forall n,
+    let p := parent n
+    in clos_refl_trans (fun n1 n2 => edge n1 n2 /\ ancestor p n2) p n.
 
-  #[export] Hint Resolve rootedness : main.
+  #[export] Hint Resolve connectedness : main.
+
+  (* For every edge, the parent of the target is an ancestor of the source. *)
+
+  Axiom encapsulation : forall n1 n2, edge n1 n2 -> ancestor (parent n2) n1.
+
+  #[export] Hint Resolve encapsulation : main.
 End Gigamesh.
