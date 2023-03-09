@@ -15,14 +15,9 @@ Module TrivialGigamesh <: Gigamesh.
   #[local] Arguments clos_refl_trans {A} _ _ _.
   #[local] Hint Resolve rt_refl : main.
 
-
   Definition node := unit.
 
   #[export] Hint Unfold node : main.
-
-  Definition root := tt.
-
-  #[export] Hint Unfold root : main.
 
   Definition edge (n1 n2 : node) := False.
 
@@ -36,13 +31,6 @@ Module TrivialGigamesh <: Gigamesh.
   Definition ancestor := clos_refl_trans (fun n1 n2 => n1 = parent n2).
 
   #[export] Hint Unfold ancestor : main.
-
-  Theorem rootedness : forall n, ancestor root n.
-  Proof.
-    search.
-  Qed.
-
-  #[export] Hint Resolve rootedness : main.
 
   Theorem antisymmetry :
     forall n1 n2, ancestor n1 n2 -> ancestor n2 n1 -> n1 = n2.

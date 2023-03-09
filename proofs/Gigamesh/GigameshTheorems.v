@@ -35,35 +35,6 @@ Module GigameshTheorems (Graph : Gigamesh).
 
   #[export] Hint Unfold reachable : main.
 
-  (* The root is its own parent. *)
-
-  Theorem rootParent : parent root = root.
-  Proof.
-    search.
-  Qed.
-
-  #[export] Hint Resolve rootParent : main.
-  #[export] Hint Rewrite rootParent : main.
-
-  (* The root is the only node which is its own parent. *)
-
-  Theorem selfParent : forall n, n = parent n -> n = root.
-  Proof.
-    clean.
-    induction (rootedness n); search.
-  Qed.
-
-  #[export] Hint Resolve selfParent : main.
-
-  (* The root is the only node which is an ancestor of the root. *)
-
-  Theorem ancestorOfRoot : forall n, ancestor n root -> n = root.
-  Proof.
-    search.
-  Qed.
-
-  #[export] Hint Resolve ancestorOfRoot : main.
-
   (* The ancestors of a given node are totally ordered. *)
 
   Theorem ancestorsTotallyOrdered :

@@ -15,10 +15,6 @@ Module Type Gigamesh.
 
   Parameter node : Type.
 
-  (* There is a distinguished *root* node. *)
-
-  Parameter root : node.
-
   (* Pairs of nodes may be related via directed *edges*. *)
 
   Parameter edge : node -> node -> Prop.
@@ -32,12 +28,6 @@ Module Type Gigamesh.
   Definition ancestor := clos_refl_trans (fun n1 n2 => n1 = parent n2).
 
   #[export] Hint Unfold ancestor : main.
-
-  (* The root is an ancestor of every node. *)
-
-  Axiom rootedness : forall n, ancestor root n.
-
-  #[export] Hint Resolve rootedness : main.
 
   (* Ancestorship is antisymmetric and thus a partial order. *)
 
