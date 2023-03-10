@@ -15,29 +15,19 @@ Module Type Gigamesh.
 
   Parameter node : Type.
 
-  (* There is a distinguished *root* node. *)
-
-  Parameter root : node.
-
   (* Pairs of nodes may be related via directed *edges*. *)
 
   Parameter edge : node -> node -> Prop.
 
-  (* Each node is associated with a node called its *parent*. *)
+  (* Pairs of nodes may also be related via *parent-child* relationships. *)
 
-  Parameter parent : node -> node.
+  Parameter parent : node -> node -> Prop.
 
   (* *Ancestorship* is the reflexive transitive closure of parenthood. *)
 
-  Definition ancestor := clos_refl_trans (fun n1 n2 => n1 = parent n2).
+  Definition ancestor := clos_refl_trans parent.
 
   #[export] Hint Unfold ancestor : main.
-
-  (* The root is an ancestor of every node. *)
-
-  Axiom rootedness : forall n, ancestor root n.
-
-  #[export] Hint Resolve rootedness : main.
 
   (* Ancestorship is antisymmetric and thus a partial order. *)
 
@@ -47,20 +37,20 @@ Module Type Gigamesh.
   #[export] Hint Resolve antisymmetry : main.
 
   (*
-    Every node is reachable from its parent via a path through the descendants
-    of that parent.
+    An edge from one node to another is *admitted* if some ancestor of the
+    source is a parent of some descendant of the target. In other words,
+    parenthood grants descendants of the parent access to ancestors of the
+    child.
   *)
 
-  Axiom connectedness :
-    forall n,
-    let p := parent n
-    in clos_refl_trans (fun n1 n2 => edge n1 n2 /\ ancestor p n2) p n.
+  Definition admitted n1 n2 :=
+    exists n3 n4, ancestor n3 n1 /\ parent n3 n4 /\ ancestor n2 n4.
 
-  #[export] Hint Resolve connectedness : main.
+  #[export] Hint Unfold admitted : main.
 
-  (* For every edge, the parent of the target is an ancestor of the source. *)
+  (* Every edge is admitted. *)
 
-  Axiom encapsulation : forall n1 n2, edge n1 n2 -> ancestor (parent n2) n1.
+  Axiom admission : forall n1 n2, edge n1 n2 -> admitted n1 n2.
 
-  #[export] Hint Resolve encapsulation : main.
+  #[export] Hint Resolve admission : main.
 End Gigamesh.
