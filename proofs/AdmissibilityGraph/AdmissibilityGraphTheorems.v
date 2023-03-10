@@ -37,8 +37,7 @@ Module AdmissibilityGraphTheorems (Graph : AdmissibilityGraph).
   Proof.
     unfold admissible.
     clean.
-    exists x.
-    exists x0.
+    exists x, x0.
     repeat split; search.
     apply rt_trans with (y := n2); search.
   Qed.
@@ -55,8 +54,7 @@ Module AdmissibilityGraphTheorems (Graph : AdmissibilityGraph).
   Proof.
     unfold admissible.
     clean.
-    exists x.
-    exists x0.
+    exists x, x0.
     repeat split; search.
     apply rt_trans with (y := n1); search.
   Qed.
