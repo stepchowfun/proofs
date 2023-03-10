@@ -1,17 +1,17 @@
-(************************)
-(************************)
-(****                ****)
-(****   Gigameshes   ****)
-(****                ****)
-(************************)
-(************************)
+(**********************************)
+(**********************************)
+(****                          ****)
+(****   Admissibility graphs   ****)
+(****                          ****)
+(**********************************)
+(**********************************)
 
 Require Import Coq.Relations.Relation_Operators.
 
-Module Type Gigamesh.
+Module Type AdmissibilityGraph.
   #[local] Arguments clos_refl_trans {A} _ _ _.
 
-  (* A *gigamesh* has a set of nodes, just like any graph. *)
+  (* A *admissibility graph* has a set of nodes, just like any graph. *)
 
   Parameter node : Type.
 
@@ -37,20 +37,20 @@ Module Type Gigamesh.
   #[export] Hint Resolve antisymmetry : main.
 
   (*
-    An edge from one node to another is *admitted* if some ancestor of the
+    An edge from one node to another is *admissible* if some ancestor of the
     source is a parent of some descendant of the target. In other words,
     parenthood grants descendants of the parent access to ancestors of the
     child.
   *)
 
-  Definition admitted n1 n2 :=
+  Definition admissible n1 n2 :=
     exists n3 n4, ancestor n3 n1 /\ parent n3 n4 /\ ancestor n2 n4.
 
-  #[export] Hint Unfold admitted : main.
+  #[export] Hint Unfold admissible : main.
 
-  (* Every edge is admitted. *)
+  (* Every edge is admissible. *)
 
-  Axiom admission : forall n1 n2, edge n1 n2 -> admitted n1 n2.
+  Axiom admissibility : forall n1 n2, edge n1 n2 -> admissible n1 n2.
 
-  #[export] Hint Resolve admission : main.
-End Gigamesh.
+  #[export] Hint Resolve admissibility : main.
+End AdmissibilityGraph.
