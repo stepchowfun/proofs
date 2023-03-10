@@ -15,7 +15,7 @@ Module TrivialAdmissibilityGraph <: AdmissibilityGraph.
   #[local] Arguments clos_refl_trans {A} _ _ _.
   #[local] Hint Resolve rt_refl : main.
 
-  Definition node := unit.
+  Definition node := Empty_set.
 
   #[export] Hint Unfold node : main.
 
