@@ -109,7 +109,7 @@ tasks:
         '^\s*Require ' \
         '^\s*Require Import (Coq|Extraction|Main)\.' \
         "coqc \
-          -set 'Default Goal Selector=\!' \
+          -set 'Default Goal Selector=!' \
           -set 'Loose Hint Behavior=Strict' \
           -set 'Primitive Projections' \
           -set 'Printing Projections' \
@@ -127,7 +127,7 @@ tasks:
         '^\s*Import ' \
         '^\s*Import ' \
         "coqc \
-          -set 'Default Goal Selector=\!' \
+          -set 'Default Goal Selector=!' \
           -set 'Loose Hint Behavior=Strict' \
           -set 'Primitive Projections' \
           -set 'Printing Projections' \
