@@ -46,7 +46,8 @@ paths.each do |path|
   puts("Checking file for unused or unsorted imports: #{path}")
 
   # Read the contents of the file.
-  lines = File.read(path).split("\n", -1)
+  original_file_contents = File.read(path)
+  lines = original_file_contents.split("\n", -1)
 
   # Get the imports.
   imports = lines.map.with_index do |line, index|
@@ -74,11 +75,32 @@ paths.each do |path|
   # Delete each import and try to rebuild the file without it.
   imports.each do |import, index|
     unique_id = SecureRandom.hex
+    clone_file_path = path.dup.insert(
+      path.rindex('.') || -1,
+      "clone_#{unique_id}",
+    )
+    mutated_file_path = path.dup.insert(
+      path.rindex('.') || -1,
+      "mutated_#{unique_id}",
+    )
     mutated_lines = lines.clone
     mutated_lines.delete_at(index)
     mutated_file_contents = mutated_lines.join("\n")
-    mutated_file_path = path.dup.insert(path.rindex('.') || -1, unique_id)
     begin
+      File.write(clone_file_path, original_file_contents)
+      stdout, stderr, status = Open3.capture3(
+        build_command.sub('?', clone_file_path)
+      )
+      if !status.success?
+        STDERR.puts("Error: there is a bug in the linter configuration.")
+        STDERR.puts("Unable to compile #{path}.")
+        STDERR.puts("STDOUT:")
+        STDERR.puts(stdout)
+        STDERR.puts("STDERR:")
+        STDERR.puts(stderr)
+        failed = true
+      end
+
       File.write(mutated_file_path, mutated_file_contents)
       _, _, status = Open3.capture3(build_command.sub('?', mutated_file_path))
       if status.success?

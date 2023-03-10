@@ -6,10 +6,8 @@
 (*************************************************)
 (*************************************************)
 
-Require Import Coq.Logic.Classical_Prop.
 Require Import Coq.Relations.Operators_Properties.
 Require Import Coq.Relations.Relation_Operators.
-Require Import Coq.Setoids.Setoid.
 Require Import Main.AdmissibilityGraph.AdmissibilityGraph.
 Require Import Main.Tactics.
 
