@@ -26,8 +26,8 @@ Module AdmissibilityGraphTheorems (Graph : AdmissibilityGraph).
   #[local] Hint Resolve clos_rt_rtn1 : main.
 
   (*
-    If an edge from some source to some target is admissible, an edge from that
-    source to any ancestor of that target is admissible as well.
+    If some source can reference some target, that source can reference any
+    ancestor of that target as well.
   *)
 
   Theorem ancestorAdmissibility :
@@ -43,8 +43,8 @@ Module AdmissibilityGraphTheorems (Graph : AdmissibilityGraph).
   #[export] Hint Resolve ancestorAdmissibility : main.
 
   (*
-    If an edge from some source to some target is admissible, an edge from a
-    descendant of that source to that target is admissible as well.
+    If some source can reference some target, any descendant of that source can
+    reference that target as well.
   *)
 
   Theorem descendantAdmissibility :

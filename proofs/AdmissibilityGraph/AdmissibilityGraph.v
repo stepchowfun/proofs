@@ -15,9 +15,9 @@ Module Type AdmissibilityGraph.
 
   Parameter node : Type.
 
-  (* Pairs of nodes may be related via directed *edges*. *)
+  (* Pairs of nodes may be related via edges called *references*. *)
 
-  Parameter edge : node -> node -> Prop.
+  Parameter reference : node -> node -> Prop.
 
   (* Pairs of nodes may also be related via *parent-child* relationships. *)
 
@@ -37,8 +37,8 @@ Module Type AdmissibilityGraph.
   #[export] Hint Resolve antisymmetry : main.
 
   (*
-    An edge from one node to another is *admissible* if some ancestor of the
-    source is a parent of some descendant of the target. In other words,
+    An reference from one node to another is *admissible* if some ancestor of
+    the source is a parent of some descendant of the target. In other words,
     parenthood grants descendants of the parent access to ancestors of the
     child.
   *)
@@ -48,9 +48,9 @@ Module Type AdmissibilityGraph.
 
   #[export] Hint Unfold admissible : main.
 
-  (* Every edge is admissible. *)
+  (* Every reference is admissible. *)
 
-  Axiom admissibility : forall n1 n2, edge n1 n2 -> admissible n1 n2.
+  Axiom admissibility : forall n1 n2, reference n1 n2 -> admissible n1 n2.
 
   #[export] Hint Resolve admissibility : main.
 End AdmissibilityGraph.
