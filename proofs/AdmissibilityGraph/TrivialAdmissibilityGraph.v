@@ -19,9 +19,9 @@ Module TrivialAdmissibilityGraph <: AdmissibilityGraph.
 
   #[export] Hint Unfold node : main.
 
-  Definition edge (n1 n2 : node) := False.
+  Definition reference (n1 n2 : node) := False.
 
-  #[export] Hint Unfold edge : main.
+  #[export] Hint Unfold reference : main.
 
   Definition parent (n1 : node) (n2 : node) := False.
 
@@ -46,7 +46,7 @@ Module TrivialAdmissibilityGraph <: AdmissibilityGraph.
 
   #[export] Hint Unfold admissible : main.
 
-  Theorem admissibility : forall n1 n2, edge n1 n2 -> admissible n1 n2.
+  Theorem admissibility : forall n1 n2, reference n1 n2 -> admissible n1 n2.
   Proof.
     search.
   Qed.
