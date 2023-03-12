@@ -71,9 +71,9 @@ These two types of edges are understood as binary relations on nodes, since ther
 
 ### The axioms
 
-We impose a couple of requirements on admissibility graphs. Before we get to them, we must define the following:
+We impose a couple of requirements on admissibility graphs. Before we get to them, we must first define the following:
 
-- *Ancestry* is the [reflexive](https://en.wikipedia.org/wiki/Reflexive_closure) [transitive closure](https://en.wikipedia.org/wiki/Transitive_closure) of the parent-child relation. In other words, `A` is an ancestor of `D` (`D` is a descendant of `A`) when there is a (possibly empty) path from `A` to `D` consisting of parent-child relationships. In English, "ancestry" is not typically thought of as being a reflexive relation, but for technical reasons we define it as such.
+- *Ancestry* is the [reflexive](https://en.wikipedia.org/wiki/Reflexive_closure) [transitive closure](https://en.wikipedia.org/wiki/Transitive_closure) of the parent-child relation. In other words, `A` is an *ancestor* of `D` (`D` is a *descendant* of `A`) when there is a (possibly empty) path from `A` to `D` consisting of parent-child relationships. In English, "ancestry" is not typically thought of as being a reflexive relation, but for technical reasons we define it as such.
 - A hypothetical reference from a source `S` to a target `T` is *admissible* when there exists an ancestor `A` of `S` and a descendant `D` of `T` such that `A` is a parent of `D` (`D` is a child of `A`).
 
 Now, the axioms:
@@ -89,7 +89,7 @@ The admissibility axiom enforces encapsulation boundaries in the graph. The defi
 
 ### Trivial admissibility graphs
 
-The simplest possible admissibility graph has no nodes, and thus no references or parent-child relationships. It's not very interesting. We can also consider an admissibility graph with one node and no references or parent-child relationships, but it's not very interesting either.
+The simplest possible admissibility graph has no nodes, and thus no references or parent-child relationships. Furthermore, any admissibility graph with no references and no parent-child relationships trivially satisfies the axioms.
 
 ```mermaid
 ---
@@ -97,6 +97,8 @@ title: Valid
 ---
 flowchart TD
   a([A])
+  b([B])
+  c([C])
 ```
 
 ### Self-references
@@ -113,7 +115,7 @@ flowchart TD
   a --> a
 ```
 
-The problem is that `A` references itself, but the reference is not admissible. In other words, we have not given `A` permission to access itself. We can fix that by making `A` a parent of itself.
+The problem is that `A` references itself, but the reference is not admissible. In other words, we have not given `A` permission to access itself. One way to fix it is by making `A` a parent of itself.
 
 ```mermaid
 ---
@@ -141,7 +143,7 @@ flowchart LR
   a --> b
 ```
 
-The problem is that `A` references `B`, but the reference is not admissible. We can fix that in two ways by making either node a parent of the other.
+The reference from `A` to `B` is not admissible. We can fix that by making `A` a parent of `B`.
 
 ```mermaid
 ---
@@ -155,13 +157,15 @@ flowchart TD
   a --> b
 ```
 
+Perhaps surprisingly, we can alternatively make `B` a parent of `A`.
+
 ```mermaid
 ---
 title: Valid
 ---
 flowchart TD
-  a([A])
   b([B])
+  a([A])
 
   b -.-> a
   a --> b
@@ -219,7 +223,7 @@ flowchart TD
   c --> a
 ```
 
-Grandchildren are allowed to access grantparents. However, the converse is not true in general. Where did this asymmetry come from?
+Grandchildren are allowed to access grantparents. However, the converse is not true in general.
 
 ### Siblings
 

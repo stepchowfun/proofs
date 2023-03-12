@@ -58,4 +58,49 @@ Module AdmissibilityGraphTheorems (Graph : AdmissibilityGraph).
   Qed.
 
   #[export] Hint Resolve descendantAdmissibility : main.
+
+  (* Nodes with at least one parent can reference themselves. *)
+
+  Theorem selfAdmissibility : forall n1 n2, parent n1 n2 -> admissible n2 n2.
+  Proof.
+    unfold admissible.
+    clean.
+    exists n1, n2.
+    search.
+  Qed.
+
+  #[export] Hint Resolve selfAdmissibility : main.
+
+  (* Nodes can reference their children. *)
+
+  Theorem childAdmissibility : forall n1 n2, parent n1 n2 -> admissible n1 n2.
+  Proof.
+    eSearch.
+  Qed.
+
+  #[export] Hint Resolve childAdmissibility : main.
+
+  (* Nodes can reference ancestors of their parents. *)
+
+  Theorem ancestorOfParentAdmissibility :
+    forall n1 n2 n3,
+    ancestor n1 n2 ->
+    parent n2 n3 ->
+    admissible n3 n1.
+  Proof.
+    clean.
+    apply ancestorAdmissibility with (n2 := n2); eSearch.
+  Qed.
+
+  #[export] Hint Resolve ancestorOfParentAdmissibility : main.
+
+  (* Nodes can reference siblings of their ancestors. *)
+
+  Theorem siblingOfAncestorAdmissibility :
+    forall n1 n2 n3, ancestor n1 n2 -> parent n1 n3 -> admissible n2 n3.
+  Proof.
+    eSearch.
+  Qed.
+
+  #[export] Hint Resolve siblingOfAncestorAdmissibility : main.
 End AdmissibilityGraphTheorems.
