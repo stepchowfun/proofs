@@ -83,10 +83,7 @@ Module AdmissibilityGraphTheorems (Graph : AdmissibilityGraph).
   (* Nodes can reference ancestors of their parents. *)
 
   Theorem ancestorOfParentAdmissibility :
-    forall n1 n2 n3,
-    ancestor n1 n2 ->
-    parent n2 n3 ->
-    admissible n3 n1.
+    forall n1 n2 n3, ancestor n1 n2 -> parent n2 n3 -> admissible n3 n1.
   Proof.
     clean.
     apply ancestorAdmissibility with (n2 := n2); eSearch.
@@ -103,4 +100,14 @@ Module AdmissibilityGraphTheorems (Graph : AdmissibilityGraph).
   Qed.
 
   #[export] Hint Resolve siblingOfAncestorAdmissibility : main.
+
+  (* Nodes can access ancestors of their children. *)
+
+  Theorem ancestorOfChildAdmissibility :
+    forall n1 n2 n3, parent n1 n2 -> ancestor n3 n2 -> admissible n1 n3.
+  Proof.
+    eSearch.
+  Qed.
+
+  #[export] Hint Resolve ancestorOfChildAdmissibility : main.
 End AdmissibilityGraphTheorems.
