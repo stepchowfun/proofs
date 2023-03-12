@@ -125,8 +125,10 @@ title: (Invalid)
 ---
 flowchart TD
   a([A])
-  b([A])
+  b([B])
 
+  a -.-> a
+  b -.-> b
   a -.-> b
   b -.-> a
 ```
@@ -140,6 +142,7 @@ flowchart TD
   a([A])
 
   a -.-> a
+
   a --> a
 ```
 
@@ -151,9 +154,12 @@ The following isn't a valid admissibility graph:
 ---
 title: (Invalid)
 ---
-flowchart LR
+flowchart TD
   a([A])
   b([B])
+
+  a -.-> a
+  b -.-> b
 
   a --> b
 ```
@@ -165,7 +171,10 @@ flowchart TD
   a([A])
   b([B])
 
+  a -.-> a
+  b -.-> b
   a -.-> b
+
   a --> b
 ```
 
@@ -176,7 +185,10 @@ flowchart TD
   b([B])
   a([A])
 
+  a -.-> a
+  b -.-> b
   b -.-> a
+
   a --> b
 ```
 
@@ -192,8 +204,12 @@ flowchart TD
   b([B])
   c([C])
 
+  a -.-> a
+  b -.-> b
+  c -.-> c
   a -.-> b
   b -.-> c
+
   c --> a
 ```
 
@@ -208,10 +224,16 @@ flowchart TD
   b([B])
   c([C])
 
+  a -.-> a
+  b -.-> b
+  c -.-> c
   a -.-> b
   b -.-> c
+
   a --> c
 ```
+
+According to the above graph, `C` is an implementation detail of `B`, so the reference from `A` to `C` isn't admissible.
 
 ### Siblings
 
@@ -223,8 +245,12 @@ flowchart TD
   b([B])
   c([C])
 
+  a -.-> a
+  b -.-> b
+  c -.-> c
   a -.-> b
   a -.-> c
+
   b --> c
   c --> b
 ```
@@ -237,8 +263,12 @@ flowchart TD
   b([B])
   c([C])
 
+  a -.-> a
+  b -.-> b
+  c -.-> c
   b -.-> a
   c -.-> a
+
   b --> c
   c --> b
 ```
@@ -257,9 +287,14 @@ flowchart TD
   c([C])
   d([D])
 
+  a -.-> a
+  b -.-> b
+  c -.-> c
+  d -.-> d
   a -.-> b
   a -.-> c
   c -.-> d
+
   b --> d
 ```
 
@@ -276,9 +311,14 @@ flowchart TD
   c([C])
   d([D])
 
+  a -.-> a
+  b -.-> b
+  c -.-> c
+  d -.-> d
   a -.-> b
   a -.-> c
   c -.-> d
+
   d --> b
 ```
 
@@ -292,9 +332,107 @@ flowchart TD
   d([D])
   e([E])
 
+  a -.-> a
+  b -.-> b
+  c -.-> c
+  d -.-> d
+  e -.-> e
   a -.-> b
   b -.-> c
   c -.-> d
   a -.-> e
+
   d --> e
+```
+
+### Reference cycles
+
+Unlike parent-child relationships, references are allowed to form cycles.
+
+```mermaid
+flowchart TD
+  a([A])
+  b([B])
+  c([C])
+
+  a -.-> a
+  b -.-> b
+  c -.-> c
+  a -.-> b
+  a -.-> c
+
+  a --> b
+  b --> c
+  c --> a
+```
+
+## Patterns
+
+Here are some useful patterns that can be encoded in terms of admissibility graphs.
+
+### Give a bunch of nodes access to each other
+
+To give a bunch of nodes access to each other, let them share a parent.
+
+```mermaid
+flowchart TD
+  m([module])
+  a([A])
+  b([B])
+  c([C])
+
+  m -.-> m
+  a -.-> a
+  b -.-> b
+  c -.-> c
+  m -.-> a
+  m -.-> b
+  m -.-> c
+```
+
+### Hide implementation details
+
+To make some node private with respect to another node, make the former a child of the latter.
+
+```mermaid
+flowchart TD
+  m([module])
+  a([A])
+  b([B])
+  c([C])
+  i([implementation details of C])
+
+  m -.-> m
+  a -.-> a
+  b -.-> b
+  c -.-> c
+  i -.-> i
+  m -.-> a
+  m -.-> b
+  m -.-> c
+  c -.-> i
+```
+
+### C++ friend classes
+
+For nodes with shared private implementation details, encode the sharing directly with parent-child relationships.
+
+```mermaid
+flowchart TD
+  m([module])
+  a([A])
+  b([B])
+  c([C])
+  i([implementation details of B and D])
+
+  m -.-> m
+  a -.-> a
+  b -.-> b
+  c -.-> c
+  i -.-> i
+  m -.-> a
+  m -.-> b
+  m -.-> c
+  b -.-> i
+  c -.-> i
 ```
