@@ -25,19 +25,19 @@ For encapsulation purposes, you may wish to decree that `partition` is an implem
 
 Of course, most programming languages already have a mechanism for information hiding—or several! For example, [scoping](https://en.wikipedia.org/wiki/Scope_\(computer_science\)) allows a programmer to write local definitions which are only accessible to part of the program. Object-oriented programmers may also think of [access modifiers](https://docs.oracle.com/javase/tutorial/java/javaOO/accesscontrol.html) like `public`, `private`, and `protected`, or the concept of "[friend classes](https://en.cppreference.com/w/cpp/language/friend)" in C++. Functional programmers may think of [module systems](https://jozefg.bitbucket.io/posts/2015-01-08-modules.html) or [existential quantification](https://groups.seas.harvard.edu/courses/cs152/2014sp/lectures/lec17-existential.pdf). The theory of admissibility graphs suggests a new way of understanding such language features by identifying what information the programmer should provide in order to specify encapsulation boundaries.
 
-One might wonder why any innovation is needed at all. For the call graph example, it's easy to imagine an "access graph" with the same nodes, using edges in the access graph to indicate which edges should be allowed in the call graph. Then an edge in the call graph implies a corresponding edge in the access graph. Stated differently, the lack of an edge in the access graph demands the lack of an edge in the call graph. Unfortunately, this isn't very useful, since an access graph like that would be too large for a programmer to comfortably manage. For example, suppose some component of the program consists of 10 functions which should all be able to call each other. Then the access subgraph for those functions would have 10² = 100 edges, and introducing a new function would require adding 11² - 10² = 21 new access edges! The programmer shouldn't have to specify this much data to encode an intention as mundane as "unrestricted mutual access". An admissibility graph, which I'll define below, represents access policies more economically. My thesis is that admissibility graphs are sufficiently expressive to straightforwardly encode the access restriction patterns that arise in practice.
+It's easy to imagine an "access graph" with the same nodes as the call graph, using edges in the access graph to indicate which edges should be allowed in the call graph. Then an edge in the call graph implies a corresponding edge in the access graph. Stated differently, the lack of an edge in the access graph demands the lack of an edge in the call graph. Unfortunately, this isn't very useful, since an access graph like that would be too large for a programmer to comfortably manage. For example, suppose some component of the program consists of 10 functions which should all be able to call each other. Then the access subgraph for those functions would have 10² = 100 edges, and introducing a new function would require adding 11² - 10² = 21 new access edges! The programmer shouldn't have to specify this much data to encode an intention as mundane as "unrestricted mutual access". An admissibility graph, which I'll define below, represents access policies more economically. My thesis is that admissibility graphs are sufficiently expressive to straightforwardly encode the access restriction patterns that arise in practice.
 
 As abstract mathematical objects, admissibility graphs are not specifically about computer programs. For example, a cloud computing provider might consider using admissibility graphs as a form of [IAM](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html) configuration. However, I'll stick to the theme of encapsulation in computer programs for our examples.
 
 ## Definition
 
-Before we look at any particular admissibility graphs, allow me to first define the abstract concept.
+Before we look at any particular admissibility graphs, allow me to first define the general concept.
 
 ### Data
 
 An admissibility graph, like any [graph](https://en.wikipedia.org/wiki/Graph_\(discrete_mathematics\)), has a set of **nodes**. The nodes might represent entities such as functions or modules in a program.
 
-An admissibility graph has two types of directed edges which are understood as separate [binary relations](https://en.wikipedia.org/wiki/Binary_relation) on nodes:
+Admissibility graphs have two types of directed edges which are understood as [binary relations](https://en.wikipedia.org/wiki/Binary_relation) on nodes:
 
 - **References** are the main edges of the graph. They might represent associations like functions referencing other functions or modules importing other modules in a program. A reference is depicted as a solid arrow from a *source* node to a *target* node.
 
@@ -71,7 +71,7 @@ An admissibility graph has two types of directed edges which are understood as s
 
 ### Axioms
 
-Admissibility graphs are required to satisfy a few important laws. Before we get to them, we must first define the following:
+Admissibility graphs are required to satisfy a few mathematical laws. Before we get to them, we must first define the following:
 
 - *Ancestry* is the [reflexive](https://en.wikipedia.org/wiki/Reflexive_closure) [transitive closure](https://en.wikipedia.org/wiki/Transitive_closure) of the parent-child relation. In other words, `A` is an *ancestor* of `D` (`D` is a *descendant* of `A`) when there is a (possibly empty) path from `A` to `D` consisting of parent-child relationships. In English, ancestry isn't typically thought of as being a reflexive relation, but for technical reasons we define it as such.
 - A hypothetical reference from a source `S` to a target `T` is *admissible* when there exists an ancestor `A` of `S` and a descendant `D` of `T` such that `A` is a parent of `D` (`D` is a child of `A`). In other words, the reference is admissible when `T` is an ancestor of a child of an ancestor of `S`.
@@ -86,11 +86,11 @@ The [reflexivity](https://en.wikipedia.org/wiki/Reflexive_relation) axiom ensure
 
 The [antisymmetry](https://en.wikipedia.org/wiki/Antisymmetric_relation) axiom simplifies reasoning about the graph without any loss of generality. It implies that ancestry is a [partial order](https://en.wikipedia.org/wiki/Partially_ordered_set), or equivalently that the nodes and their parent-child relationships form a [directed acyclic graph](https://en.wikipedia.org/wiki/Directed_acyclic_graph). Note that antisymmetry only applies to ancestry (and thus parent-child relationships), not to references.
 
-Finally, the admissibility axiom enforces encapsulation boundaries in the graph. The definition of admissible might seem mysterious at first, but we'll come to understand it through examples below.
+Finally, the admissibility axiom enforces encapsulation boundaries in the graph. The definition of "admissible" might seem mysterious at first, but we'll come to understand it through examples below.
 
 ## Examples
 
-To build intuition for the axioms, especially the admissibility axiom, let's take a look at several examples.
+To explore the consequences of the axioms and build intuition for them, let's take a look at several examples. You are invited to independently verify whether the graphs below agree with the axioms or violate them in some way.
 
 ### Reflexivity and antisymmetry
 
@@ -192,7 +192,7 @@ flowchart TD
   a --> b
 ```
 
-From this example, we can see that parents can reference their children, and children can reference their parents.
+So parents can reference their children, and children can reference their parents.
 
 ### Grandparents and grandchildren
 
@@ -392,7 +392,7 @@ flowchart TD
 
 ### Hide implementation details
 
-To make some node private with respect to another node, make the former a child of the latter.
+To make some node a private implementation detail of some other node, make the former a child of the latter.
 
 ```mermaid
 flowchart TD
@@ -413,7 +413,7 @@ flowchart TD
   c -.-> i
 ```
 
-### C++ friend classes
+### C++ "friend classes"
 
 For nodes with shared private implementation details, encode the sharing directly with parent-child relationships.
 
