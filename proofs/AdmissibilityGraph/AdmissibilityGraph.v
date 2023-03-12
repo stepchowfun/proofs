@@ -40,15 +40,15 @@ Module Type AdmissibilityGraph.
 
   #[export] Hint Unfold admissible : main.
 
-  (* Parenthood is reflexive. *)
-
-  Axiom reflexivity : forall n, parent n n.
-
-  #[export] Hint Resolve reflexivity : main.
-
   (* Every reference is admissible. *)
 
   Axiom admissibility : forall n1 n2, reference n1 n2 -> admissible n1 n2.
 
   #[export] Hint Resolve admissibility : main.
+
+  (* Parenthood is reflexive. *)
+
+  Axiom reflexivity : forall n, parent n n.
+
+  #[export] Hint Resolve reflexivity : main.
 End AdmissibilityGraph.
