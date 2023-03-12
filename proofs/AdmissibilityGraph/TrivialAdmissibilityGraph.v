@@ -38,19 +38,19 @@ Module TrivialAdmissibilityGraph <: AdmissibilityGraph.
 
   #[export] Hint Unfold admissible : main.
 
-  Theorem reflexivity : forall n, parent n n.
-  Proof.
-    search.
-  Qed.
-
-  #[export] Hint Resolve reflexivity : main.
-
   Theorem admissibility : forall n1 n2, reference n1 n2 -> admissible n1 n2.
   Proof.
     search.
   Qed.
 
   #[export] Hint Resolve admissibility : main.
+
+  Theorem reflexivity : forall n, parent n n.
+  Proof.
+    search.
+  Qed.
+
+  #[export] Hint Resolve reflexivity : main.
 End TrivialAdmissibilityGraph.
 
 Module TrivialAdmissibilityGraphTheorems :=
