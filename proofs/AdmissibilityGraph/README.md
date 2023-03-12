@@ -86,11 +86,13 @@ The [reflexivity](https://en.wikipedia.org/wiki/Reflexive_relation) axiom ensure
 
 The [antisymmetry](https://en.wikipedia.org/wiki/Antisymmetric_relation) axiom simplifies reasoning about the graph without any loss of generality. It implies that ancestry is a [partial order](https://en.wikipedia.org/wiki/Partially_ordered_set), or equivalently that the nodes and their parent-child relationships form a [directed acyclic graph](https://en.wikipedia.org/wiki/Directed_acyclic_graph). Note that antisymmetry only applies to ancestry (and thus parent-child relationships), not to references.
 
-Finally, the admissibility axiom enforces encapsulation boundaries in the graph. The definition of admissible might seem obtuse, but we'll come to understand it through examples below.
+Finally, the admissibility axiom enforces encapsulation boundaries in the graph. The definition of admissible might seem mysterious at first, but we'll come to understand it through examples below.
 
 ## Examples
 
-### Trivial admissibility graphs
+To build intuition for the axioms, especially the admissibility axiom, let's take a look at several examples.
+
+### Reflexivity and antisymmetry
 
 The simplest possible admissibility graph has no nodes, and thus no references or parent-child relationships. Furthermore, any admissibility graph with parent-child loops on every node, no other parent-child relationships, and no references trivially satisfies the axioms.
 
@@ -108,7 +110,7 @@ flowchart TD
   c -.-> c
 ```
 
-The following is not a valid admissibility graph, because it violates the reflexivity axiom.
+The following is not a valid admissibility graph, since it violates the reflexivity axiom. It lacks a parent-child relationship from `A` to itself.
 
 ```mermaid
 ---
@@ -116,11 +118,20 @@ title: Invalid
 ---
 flowchart TD
   a([A])
-  b([B])
-  c([C])
+```
 
-  a -.-> a
-  c -.-> c
+The following is not valid either, since it violates the antisymmetry axiom. `A` and `B` are ancestors of each other, but they are not the same node.
+
+```mermaid
+---
+title: Invalid
+---
+flowchart TD
+  a([A])
+  b([A])
+
+  a -.-> b
+  b -.-> a
 ```
 
 ### Self-references
@@ -133,15 +144,9 @@ title: Valid
 ---
 flowchart TD
   a([A])
-  b([B])
-  c([C])
 
   a -.-> a
-  b -.-> b
-  c -.-> c
   a --> a
-  b --> b
-  c --> c
 ```
 
 ### Parents and children
@@ -159,7 +164,7 @@ flowchart LR
   a --> b
 ```
 
-The reference from `A` to `B` is not admissible. We can fix that by making `A` a parent of `B`.
+The problem is that the reference from `A` to `B` is not admissible. We can fix that by making `A` a parent of `B`.
 
 ```mermaid
 ---
@@ -189,41 +194,9 @@ flowchart TD
 
 From this example, we can see that parents can reference their children, and children can reference their parents.
 
-### Ancestral cycles
-
-In the previous example, we encountered a problem that could be fixed by adding a parent-child relationship between two nodes in either direction. But we better not make `A` and `B` parents of each other, since that would violate antisymmetry.
-
-```mermaid
----
-title: Invalid
----
-flowchart TD
-  a([A])
-  b([B])
-
-  a -.-> b
-  b -.-> a
-```
-
-Any longer cycles in parent-child relationships are also forbidden by antisymmetry:
-
-```mermaid
----
-title: Invalid
----
-flowchart TD
-  a([A])
-  b([B])
-  c([C])
-
-  a -.-> b
-  b -.-> c
-  c -.-> a
-```
-
 ### Grandparents and grandchildren
 
-What about grandparents?
+Grandchildren are allowed to reference their grantparents.
 
 ```mermaid
 ---
@@ -239,7 +212,7 @@ flowchart TD
   c --> a
 ```
 
-Grandchildren are allowed to reference grantparents. However, the converse is not true in general.
+However, the converse is not true in general.
 
 ```mermaid
 ---
@@ -257,7 +230,7 @@ flowchart TD
 
 ### Siblings
 
-Consider this arrangement of a parent with two children:
+Siblings can reference each other.
 
 ```mermaid
 ---
@@ -274,9 +247,7 @@ flowchart TD
   c --> b
 ```
 
-From this example, we can see that siblings can reference each other.
-
-Flipping the arrows around results in another valid admissibility graph.
+Flipping the arrows around in the above graph reveals that the parents of a node can reference each other as well.
 
 ```mermaid
 ---
@@ -293,11 +264,9 @@ flowchart TD
   c --> b
 ```
 
-From this, we can see that the parents of a node can reference each other as well.
-
 ### Niblings
 
-The following is not a valid admissibility graph:
+Nodes don't have automatic access to their [niblings](https://www.merriam-webster.com/words-at-play/words-were-watching-nibling) (children of siblings).
 
 ```mermaid
 ---
@@ -315,13 +284,11 @@ flowchart TD
   b --> d
 ```
 
-The reference from `B` to `D` is not admissible.
-
-From this example, we can see that nodes don't have automatic access to their [niblings](https://www.merriam-webster.com/words-at-play/words-were-watching-nibling) (children of siblings), since they are considered implementation details of their parents.
+In this example, the reference from `B` to `D` is not admissible, as `D` is considered an implementation detail of `C`.
 
 ### Piblings
 
-Consider the following admissibility graph:
+Nodes can reference their [piblings](https://www.dictionary.com/e/aunt-uncle-niece-nephew-words/) (siblings of parents).
 
 ```mermaid
 ---
@@ -339,9 +306,7 @@ flowchart TD
   d --> b
 ```
 
-From this example, we can see that nodes can reference their [piblings](https://www.dictionary.com/e/aunt-uncle-niece-nephew-words/) (siblings of parents).
-
-Furthermore, the following is accepted:
+Furthermore, nodes can reference the children of any of their ancestors, not just those of their grandparents.
 
 ```mermaid
 ---
@@ -360,5 +325,3 @@ flowchart TD
   a -.-> e
   d --> e
 ```
-
-So nodes can reference the siblings of any of their ancestors, not just those of their parents.
