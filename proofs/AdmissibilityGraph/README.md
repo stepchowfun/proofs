@@ -1,6 +1,6 @@
 # Admissibility graphs
 
-The theory of *admissibility graphs* is a general mathematical framework for precisely and concisely specifying encapsulation boundaries in a system. I developed this theory for a particular project, but I think it's versatile enough to be of independent interest. This directory contains a formalization of the concept and [mechanized proofs](https://en.wikipedia.org/wiki/Proof_assistant) of some basic theorems about it. This document is an informal introduction to the idea.
+The theory of *admissibility graphs* is a general mathematical framework for precisely and concisely specifying encapsulation boundaries in a system. I developed this theory for a particular project I've been working on, but I think it's independently interesting. This directory contains a formalization of the concept and [mechanized proofs](https://en.wikipedia.org/wiki/Proof_assistant) of some basic theorems about it. This document is an informal introduction to the idea.
 
 ## Motivation
 
