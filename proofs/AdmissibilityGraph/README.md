@@ -1,17 +1,17 @@
 # Admissibility graphs
 
-The theory of *admissibility graphs* is a general mathematical framework for precisely and concisely specifying encapsulation boundaries in a system. I developed this theory for a particular project I've been working on, but I think it's independently interesting. This directory contains a formalization of the concept and [mechanized proofs](https://en.wikipedia.org/wiki/Proof_assistant) of some basic theorems about it. This document is an informal introduction to the idea.
+The theory of *admissibility graphs* is a general mathematical framework for precisely and concisely specifying encapsulation boundaries in a system. This directory contains a formalization of the concept and [mechanized proofs](https://en.wikipedia.org/wiki/Proof_assistant) of some basic theorems about it. Below is an informal introduction to the idea. I hope you find it interesting!
 
 ## Motivation
 
-Imagine a simple sorting program that reads in some lines of text and prints them out in lexicographical order. A simplified [static call graph](https://en.wikipedia.org/wiki/Call_graph) for that program might look as follows:
+Imagine a simple sorting program that reads in some lines of text and prints them out in lexicographical order. A [static call graph](https://en.wikipedia.org/wiki/Call_graph) for that program might look as follows:
 
 ```mermaid
 flowchart TD
   main([main])
+  read([read_line])
   quicksort([quicksort])
   partition([partition])
-  read([read_line])
   print([print_line])
 
   main --> quicksort
@@ -21,11 +21,11 @@ flowchart TD
   main --> print
 ```
 
-For encapsulation purposes, you may wish to decree that `partition` is an implementation detail of `quicksort` and should not be called from any other function. Equivalently, you'd like to forbid any edges to `partition` in the call graph except the one from `quicksort`. How should a programmer express that?
+For encapsulation purposes, we may wish to decree that `partition` is an implementation detail of `quicksort` and should not be called from any other function. In other words, we want to forbid any edges to `partition` in the call graph except the one from `quicksort`. How should a programmer express a policy like that?
 
-Of course, most programming languages already have a mechanism for information hiding—or several! For example, [scoping](https://en.wikipedia.org/wiki/Scope_\(computer_science\)) allows a programmer to write local definitions which are only accessible to part of the program. Object-oriented programmers may also think of [access modifiers](https://docs.oracle.com/javase/tutorial/java/javaOO/accesscontrol.html) like `public`, `private`, and `protected`, or the concept of "[friend classes](https://en.cppreference.com/w/cpp/language/friend)" in C++. Functional programmers may think of [module systems](https://jozefg.bitbucket.io/posts/2015-01-08-modules.html) or [existential quantification](https://groups.seas.harvard.edu/courses/cs152/2014sp/lectures/lec17-existential.pdf). The theory of admissibility graphs suggests a new way of understanding such language features by identifying what information the programmer should provide in order to specify encapsulation boundaries.
+Of course, most programming languages already have a mechanism for information hiding—or several! For example, [scoping](https://en.wikipedia.org/wiki/Scope_\(computer_science\)) allows a programmer to write local definitions which are only accessible to part of the program. Object-oriented programmers may also think of [access modifiers](https://docs.oracle.com/javase/tutorial/java/javaOO/accesscontrol.html) like `public`, `private`, and `protected`, or the concept of "[friend classes](https://en.cppreference.com/w/cpp/language/friend)" in C++. Functional programmers may think of [module systems](https://jozefg.bitbucket.io/posts/2015-01-08-modules.html) or [existential quantification](https://groups.seas.harvard.edu/courses/cs152/2014sp/lectures/lec17-existential.pdf). This document will introduce a non-syntactic theory which is [modeled by](https://en.wikipedia.org/wiki/Model_theory) such language features.
 
-It's easy to imagine an "access graph" with the same nodes as the call graph, using edges in the access graph to indicate which edges should be allowed in the call graph. Then an edge in the call graph implies a corresponding edge in the access graph. Stated differently, the lack of an edge in the access graph demands the lack of an edge in the call graph. Unfortunately, this isn't very useful, since an access graph like that would be too large for a programmer to comfortably manage. For example, suppose some component of the program consists of 10 functions which should all be able to call each other. Then the access subgraph for those functions would have 10² = 100 edges, and introducing a new function would require adding 11² - 10² = 21 new access edges! The programmer shouldn't have to specify this much data to encode an intention as mundane as "unrestricted mutual access". An admissibility graph, which I'll define below, represents access policies more economically. My thesis is that admissibility graphs are sufficiently expressive to straightforwardly encode the access restriction patterns that arise in practice.
+One can imagine an "access graph" with the same nodes as a call graph, using edges in the access graph to indicate which edges should be allowed in the call graph. Unfortunately, this notion isn't very useful, since an access graph like that would be too large for a programmer to comfortably manage. For example, suppose some component of the program consists of 10 functions which should all be able to call each other. Then the access subgraph for those functions would have 10² = 100 edges, and introducing a new function would require adding 11² - 10² = 21 new access edges! The programmer shouldn't have to specify this much data to encode an intention as mundane as "unrestricted mutual access". An admissibility graph, which I'll define below, represents access policies more economically.
 
 As abstract mathematical objects, admissibility graphs are not specifically about computer programs. For example, a cloud computing provider might consider using admissibility graphs as a form of [IAM](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html) configuration. However, I'll stick to the theme of encapsulation in computer programs for our examples.
 
