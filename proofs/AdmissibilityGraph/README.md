@@ -417,7 +417,7 @@ flowchart TD
   a([A])
   b([B])
   c([C])
-  z([external])
+  down([downstream])
 
   e -.-> e
   i -.-> i
@@ -430,7 +430,7 @@ flowchart TD
   a -.-> i
   b -.-> i
   c -.-> i
-  z -.-> i
+  down -.-> i
 ```
 
 Or, if we want to let all the module nodes access some external node, make the external node a child of the egress node.
@@ -442,7 +442,7 @@ flowchart TD
   a([A])
   b([B])
   c([C])
-  z([external])
+  up([upstream])
 
   e -.-> e
   i -.-> i
@@ -455,7 +455,7 @@ flowchart TD
   a -.-> i
   b -.-> i
   c -.-> i
-  e -.-> z
+  e -.-> up
 ```
 
 We can use the same node for ingress and egress.
@@ -466,6 +466,8 @@ flowchart TD
   a([A])
   b([B])
   c([C])
+  down([downstream])
+  up([upstream])
 
   m -.-> m
   a -.-> a
@@ -477,6 +479,8 @@ flowchart TD
   a -.-> m
   b -.-> m
   c -.-> m
+  down -.-> m
+  m -.-> up
 ```
 
 ### Many nodes accessing many nodes
