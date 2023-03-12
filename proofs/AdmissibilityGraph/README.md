@@ -370,69 +370,161 @@ flowchart TD
 
 Here are some useful patterns that can be encoded in terms of admissibility graphs.
 
-### Give a bunch of nodes access to each other
-
-To give a bunch of nodes access to each other, let them share a parent.
-
-```mermaid
-flowchart TD
-  m([module])
-  a([A])
-  b([B])
-  c([C])
-
-  m -.-> m
-  a -.-> a
-  b -.-> b
-  c -.-> c
-  m -.-> a
-  m -.-> b
-  m -.-> c
-```
-
 ### Hide implementation details
 
 To make some node a private implementation detail of some other node, make the former a child of the latter.
 
 ```mermaid
 flowchart TD
-  m([module])
   a([A])
-  b([B])
-  c([C])
-  i([implementation details of C])
+  i([implementation details of A])
 
-  m -.-> m
   a -.-> a
-  b -.-> b
-  c -.-> c
   i -.-> i
-  m -.-> a
-  m -.-> b
-  m -.-> c
-  c -.-> i
+  a -.-> i
 ```
 
-### C++ "friend classes"
+### Shared implementation details
 
-For nodes with shared private implementation details, encode the sharing directly with parent-child relationships.
+For nodes with shared private implementation details (such as when modeling C++ "friend classes"), encode the sharing directly with parent-child relationships.
 
 ```mermaid
 flowchart TD
-  m([module])
+  a([A])
+  b([B])
+  i([implementation details of A and B])
+
+  a -.-> a
+  b -.-> b
+  i -.-> i
+  a -.-> i
+  b -.-> i
+```
+
+### Give a bunch of nodes access to each other
+
+To give a bunch of nodes access to each other, we can bundle them up into a module by giving them a common parent to manage ingress and a common child to manage egress.
+
+```mermaid
+flowchart TD
+  e([egress])
+  i([ingress])
   a([A])
   b([B])
   c([C])
-  i([implementation details of B and D])
 
-  m -.-> m
+  e -.-> e
+  i -.-> i
   a -.-> a
   b -.-> b
   c -.-> c
-  i -.-> i
-  m -.-> a
-  m -.-> b
-  m -.-> c
+  e -.-> a
+  e -.-> b
+  e -.-> c
+  a -.-> i
   b -.-> i
   c -.-> i
 ```
+
+Then, if we want to let some external node reference the nodes of the module, make it a parent of the ingress node.
+
+```mermaid
+flowchart TD
+  e([egress])
+  i([ingress])
+  a([A])
+  b([B])
+  c([C])
+  z([external])
+
+  e -.-> e
+  i -.-> i
+  a -.-> a
+  b -.-> b
+  c -.-> c
+  e -.-> a
+  e -.-> b
+  e -.-> c
+  a -.-> i
+  b -.-> i
+  c -.-> i
+  z -.-> i
+```
+
+Or, if we want to let all the module nodes access some external node, make the external node a child of the egress node.
+
+```mermaid
+flowchart TD
+  e([egress])
+  i([ingress])
+  a([A])
+  b([B])
+  c([C])
+  z([external])
+
+  e -.-> e
+  i -.-> i
+  a -.-> a
+  b -.-> b
+  c -.-> c
+  e -.-> a
+  e -.-> b
+  e -.-> c
+  a -.-> i
+  b -.-> i
+  c -.-> i
+  e -.-> z
+```
+
+We can omit the ingress node or the egress node if one of them is not needed.
+
+### Many nodes accessing many nodes
+
+Suppose we have two groups of nodes, with 3 nodes each, and we want the nodes in the first group to be able to reference nodes in the second group, but not vice versa. One might attempt the following:
+
+```mermaid
+flowchart TD
+  a([A])
+  b([B])
+  c([C])
+  x([X])
+  y([Y])
+  z([Z])
+
+  a -.-> a
+  b -.-> b
+  c -.-> c
+  x -.-> x
+  y -.-> y
+  z -.-> z
+  a & b & c -.-> x & y & z
+```
+
+This isn't quite what we wanted, since we've unintentionally allowed all six nodes to reference each other. Another problem with this approach is that it doesn't scale. If we want to add a new node to one of the two groups, we'll also have to add many parent-child relationships. A better approach is to introduce an auxiliary node which liaises between the two sets of nodes.
+
+```mermaid
+flowchart TD
+  l([liaison])
+  a([A])
+  b([B])
+  c([C])
+  x([X])
+  y([Y])
+  z([Z])
+
+  l -.-> l
+  a -.-> a
+  b -.-> b
+  c -.-> c
+  x -.-> x
+  y -.-> y
+  z -.-> z
+  l -.-> a
+  l -.-> b
+  l -.-> c
+  x -.-> l
+  y -.-> l
+  z -.-> l
+```
+
+In this example, it is admissible for `A`, `B`, and `C` to reference `X`, `Y`, and `Z`, but not vice versa.
