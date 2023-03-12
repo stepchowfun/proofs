@@ -73,7 +73,7 @@ Admissibility graphs have two types of directed edges which are understood as [b
 
 Admissibility graphs are required to satisfy some mathematical laws. Before we get to them, we must first define the following:
 
-- *Ancestry* is the [reflexive](https://en.wikipedia.org/wiki/Reflexive_closure) [transitive closure](https://en.wikipedia.org/wiki/Transitive_closure) of the parent-child relation. In other words, `A` is an *ancestor* of `D` (`D` is a *descendant* of `A`) when there is a (possibly empty) path from `A` to `D` consisting of parent-child relationships. In English, ancestry isn't typically thought of as being a reflexive relation, but for technical reasons we define it as such.
+- *Ancestry* is the [reflexive](https://en.wikipedia.org/wiki/Reflexive_closure) [transitive closure](https://en.wikipedia.org/wiki/Transitive_closure) of the parent-child relation. In other words, `A` is an *ancestor* of `D` (`D` is a *descendant* of `A`) when there is a (possibly empty) path from `A` to `D` consisting of parent-child relationships. In English, ancestry isn't typically thought of as being a reflexive relation, but for technical reasons we define it as such here.
 - A hypothetical reference from a source `S` to a target `T` is *admissible* when there exists an ancestor `A` of `S` and a descendant `D` of `T` such that `A` is a parent of `D` (`D` is a child of `A`). In other words, the reference is admissible when `T` is an ancestor of a child of an ancestor of `S`.
 
 Now we are ready to postulate the admissibility graph axioms:
@@ -87,7 +87,7 @@ The admissibility axiom enforces encapsulation boundaries in the graph. The defi
 
 ## Examples
 
-To explore the consequences of the axioms and build intuition for them, let's take a look at several examples. You are invited to independently verify whether the graphs below agree with the axioms or violate them in some way.
+To explore the consequences of the axioms and build intuition for them, let's take a look at several examples. You're invited to independently verify whether the graphs below agree with the axioms or violate them in some way.
 
 ### Reflexivity
 
@@ -177,7 +177,7 @@ So parents can reference their children, and children can reference their parent
 
 ### Grandparents and grandchildren
 
-Grandchildren are allowed to reference their grantparents.
+Nodes can reference any of their ancestors, such as their grandparents.
 
 ```mermaid
 flowchart TD
@@ -328,7 +328,7 @@ flowchart TD
 
 ### Cycles
 
-Like parent-child relationships and references are allowed to form cycles.
+Parent-child relationships and references are allowed to form cycles.
 
 ```mermaid
 flowchart TD
