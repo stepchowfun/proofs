@@ -1,6 +1,6 @@
 # Admissibility graphs
 
-The theory of *admissibility graphs* is a general mathematical framework for precisely and concisely specifying encapsulation boundaries in a system. I developed this theory for a particular project, but I think it's interesting and general enough to share. This directory contains a formalization of the concept and [mechanized proofs](https://en.wikipedia.org/wiki/Proof_assistant) of some basic theorems about it. This document is an informal introduction to the idea.
+The theory of *admissibility graphs* is a general mathematical framework for precisely and concisely specifying encapsulation boundaries in a system. I developed this theory for a particular project, but I think it's versatile enough to be of independent interest. This directory contains a formalization of the concept and [mechanized proofs](https://en.wikipedia.org/wiki/Proof_assistant) of some basic theorems about it. This document is an informal introduction to the idea.
 
 ## Motivation
 
@@ -71,7 +71,7 @@ Admissibility graphs have two types of directed edges which are understood as [b
 
 ### Axioms
 
-Admissibility graphs are required to satisfy a few mathematical laws. Before we get to them, we must first define the following:
+Admissibility graphs are required to satisfy some mathematical laws. Before we get to them, we must first define the following:
 
 - *Ancestry* is the [reflexive](https://en.wikipedia.org/wiki/Reflexive_closure) [transitive closure](https://en.wikipedia.org/wiki/Transitive_closure) of the parent-child relation. In other words, `A` is an *ancestor* of `D` (`D` is a *descendant* of `A`) when there is a (possibly empty) path from `A` to `D` consisting of parent-child relationships. In English, ancestry isn't typically thought of as being a reflexive relation, but for technical reasons we define it as such.
 - A hypothetical reference from a source `S` to a target `T` is *admissible* when there exists an ancestor `A` of `S` and a descendant `D` of `T` such that `A` is a parent of `D` (`D` is a child of `A`). In other words, the reference is admissible when `T` is an ancestor of a child of an ancestor of `S`.
@@ -79,20 +79,17 @@ Admissibility graphs are required to satisfy a few mathematical laws. Before we 
 Now we are ready to postulate the admissibility graph axioms:
 
 - **Reflexivity:** Every node is a parent of itself.
-- **Antisymmetry:** If two nodes are ancestors of each other, then they're the same node.
 - **Admissibility:** Every reference is admissible.
 
 The [reflexivity](https://en.wikipedia.org/wiki/Reflexive_relation) axiom ensures every [loop](https://en.wikipedia.org/wiki/Loop_\(graph_theory\)) is admissible, which eliminates some awkward special cases that would complicate the theory.
 
-The [antisymmetry](https://en.wikipedia.org/wiki/Antisymmetric_relation) axiom simplifies reasoning about the graph without any loss of generality. It implies that ancestry is a [partial order](https://en.wikipedia.org/wiki/Partially_ordered_set), or equivalently that the nodes and their parent-child relationships form a [directed acyclic graph](https://en.wikipedia.org/wiki/Directed_acyclic_graph). Note that antisymmetry only applies to ancestry (and thus parent-child relationships), not to references.
-
-Finally, the admissibility axiom enforces encapsulation boundaries in the graph. The definition of "admissible" might seem mysterious at first, but we'll come to understand it through examples below.
+The admissibility axiom enforces encapsulation boundaries in the graph. The definition of "admissible" might seem mysterious at first, but we'll come to understand it through examples below.
 
 ## Examples
 
 To explore the consequences of the axioms and build intuition for them, let's take a look at several examples. You are invited to independently verify whether the graphs below agree with the axioms or violate them in some way.
 
-### Reflexivity and antisymmetry
+### Reflexivity
 
 The simplest possible admissibility graph has no nodes, and thus no references or parent-child relationships. Furthermore, any admissibility graph with parent-child loops on every node, no other parent-child relationships, and no references trivially satisfies the axioms.
 
@@ -115,22 +112,6 @@ title: (Invalid)
 ---
 flowchart TD
   a([A])
-```
-
-The following isn't valid either, since it violates the antisymmetry axiom. `A` and `B` are ancestors of each other, but they are not the same node.
-
-```mermaid
----
-title: (Invalid)
----
-flowchart TD
-  a([A])
-  b([B])
-
-  a -.-> a
-  b -.-> b
-  a -.-> b
-  b -.-> a
 ```
 
 ### Self-references
@@ -345,9 +326,9 @@ flowchart TD
   d --> e
 ```
 
-### Reference cycles
+### Cycles
 
-Unlike parent-child relationships, references are allowed to form cycles.
+Like parent-child relationships and references are allowed to form cycles.
 
 ```mermaid
 flowchart TD
@@ -359,7 +340,8 @@ flowchart TD
   b -.-> b
   c -.-> c
   a -.-> b
-  a -.-> c
+  b -.-> c
+  c -.-> a
 
   a --> b
   b --> c
@@ -476,7 +458,26 @@ flowchart TD
   e -.-> z
 ```
 
-We can omit the ingress node or the egress node if one of them is not needed.
+We can use the same node for ingress and egress.
+
+```mermaid
+flowchart TD
+  m([module])
+  a([A])
+  b([B])
+  c([C])
+
+  m -.-> m
+  a -.-> a
+  b -.-> b
+  c -.-> c
+  m -.-> a
+  m -.-> b
+  m -.-> c
+  a -.-> m
+  b -.-> m
+  c -.-> m
+```
 
 ### Many nodes accessing many nodes
 

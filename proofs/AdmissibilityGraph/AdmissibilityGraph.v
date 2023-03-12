@@ -46,13 +46,6 @@ Module Type AdmissibilityGraph.
 
   #[export] Hint Resolve reflexivity : main.
 
-  (* Ancestorship is antisymmetric and thus a partial order. *)
-
-  Axiom antisymmetry :
-    forall n1 n2, ancestor n1 n2 -> ancestor n2 n1 -> n1 = n2.
-
-  #[export] Hint Resolve antisymmetry : main.
-
   (* Every reference is admissible. *)
 
   Axiom admissibility : forall n1 n2, reference n1 n2 -> admissible n1 n2.
