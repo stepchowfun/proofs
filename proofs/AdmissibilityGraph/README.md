@@ -29,11 +29,11 @@ One might wonder why any innovation is needed at all. For the call graph example
 
 As abstract mathematical objects, admissibility graphs are not specifically about computer programs. For example, a cloud computing provider might consider using admissibility graphs as a form of [IAM](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html) configuration. However, I'll stick to the theme of encapsulation in computer programs for our examples.
 
-## The definition
+## Definition
 
 Before we look at any particular admissibility graphs, allow me to first define the abstract concept.
 
-### The data
+### Data
 
 An admissibility graph, like any [graph](https://en.wikipedia.org/wiki/Graph_\(discrete_mathematics\)), has a set of **nodes**. The nodes might represent entities such as functions or modules in a program.
 
@@ -52,6 +52,8 @@ An admissibility graph has two types of directed edges which are understood as s
     source --> target
   ```
 
+  A node can reference multiple nodes and be referenced by multiple nodes.
+
 - **Parent-child relationships**, as we'll soon see, organize the nodes in a way that specifies which references are allowed to exist. A parent-child relationship is depicted as a dotted arrow from a *parent* node to a *child* node.
 
   ```mermaid
@@ -65,27 +67,32 @@ An admissibility graph has two types of directed edges which are understood as s
     parent -.-> child
   ```
 
-### The axioms
+  A node can have multiple parents and multiple children.
 
-We impose a couple of requirements on admissibility graphs. Before we get to them, we must first define the following:
+### Axioms
 
-- *Ancestry* is the [reflexive](https://en.wikipedia.org/wiki/Reflexive_closure) [transitive closure](https://en.wikipedia.org/wiki/Transitive_closure) of the parent-child relation. In other words, `A` is an *ancestor* of `D` (`D` is a *descendant* of `A`) when there is a (possibly empty) path from `A` to `D` consisting of parent-child relationships. In English, "ancestry" is not typically thought of as being a reflexive relation, but for technical reasons we define it as such.
-- A hypothetical reference from a source `S` to a target `T` is *admissible* when there exists an ancestor `A` of `S` and a descendant `D` of `T` such that `A` is a parent of `D` (`D` is a child of `A`).
+Admissibility graphs are required to satisfy a few important laws. Before we get to them, we must first define the following:
 
-Now, the axioms:
+- *Ancestry* is the [reflexive](https://en.wikipedia.org/wiki/Reflexive_closure) [transitive closure](https://en.wikipedia.org/wiki/Transitive_closure) of the parent-child relation. In other words, `A` is an *ancestor* of `D` (`D` is a *descendant* of `A`) when there is a (possibly empty) path from `A` to `D` consisting of parent-child relationships. In English, ancestry is not typically thought of as being a reflexive relation, but for technical reasons we define it as such.
+- A hypothetical reference from a source `S` to a target `T` is *admissible* when there exists an ancestor `A` of `S` and a descendant `D` of `T` such that `A` is a parent of `D` (`D` is a child of `A`). In other words, the reference is admissible when `T` is an ancestor of a child of an ancestor of `S`.
 
+Now we are ready to postulate the admissibility graph axioms:
+
+- **Reflexivity:** Every node is a parent of itself.
 - **Antisymmetry:** If two nodes are ancestors of each other, then they're the same node.
 - **Admissibility:** Every reference is admissible.
 
-The [antisymmetry](https://en.wikipedia.org/wiki/Antisymmetric_relation) axiom simplifies reasoning about the graph without any loss of generality. It implies that ancestry is a [partial order](https://en.wikipedia.org/wiki/Partially_ordered_set), or equivalently that the parent-child relationships induce a [directed acyclic subgraph](https://en.wikipedia.org/wiki/Directed_acyclic_graph). Note that antisymmetry only applies to ancestry (and thus parent-child relationships), not to references.
+The [reflexivity](https://en.wikipedia.org/wiki/Reflexive_relation) axiom ensures every [loop](https://en.wikipedia.org/wiki/Loop_\(graph_theory\)) is admissible, which eliminates some awkward special cases that would complicate the theory.
 
-The admissibility axiom enforces encapsulation boundaries in the graph. The definition of admissible might seem obtuse, but we'll come to understand it through examples below.
+The [antisymmetry](https://en.wikipedia.org/wiki/Antisymmetric_relation) axiom simplifies reasoning about the graph without any loss of generality. It implies that ancestry is a [partial order](https://en.wikipedia.org/wiki/Partially_ordered_set), or equivalently that the nodes and their parent-child relationships form a [directed acyclic graph](https://en.wikipedia.org/wiki/Directed_acyclic_graph). Note that antisymmetry only applies to ancestry (and thus parent-child relationships), not to references.
+
+Finally, the admissibility axiom enforces encapsulation boundaries in the graph. The definition of admissible might seem obtuse, but we'll come to understand it through examples below.
 
 ## Examples
 
 ### Trivial admissibility graphs
 
-The simplest possible admissibility graph has no nodes, and thus no references or parent-child relationships. Furthermore, any admissibility graph with no references and no parent-child relationships trivially satisfies the axioms.
+The simplest possible admissibility graph has no nodes, and thus no references or parent-child relationships. Furthermore, any admissibility graph with parent-child loops on every node, no other parent-child relationships, and no references trivially satisfies the axioms.
 
 ```mermaid
 ---
@@ -95,11 +102,13 @@ flowchart TD
   a([A])
   b([B])
   c([C])
+
+  a -.-> a
+  b -.-> b
+  c -.-> c
 ```
 
-### Self-references
-
-The following is not a valid admissibility graph:
+The following is not a valid admissibility graph, because it violates the reflexivity axiom.
 
 ```mermaid
 ---
@@ -107,11 +116,16 @@ title: Invalid
 ---
 flowchart TD
   a([A])
+  b([B])
+  c([C])
 
-  a --> a
+  a -.-> a
+  c -.-> c
 ```
 
-The problem is that `A` references itself, but the reference is not admissible. In other words, we have not given `A` permission to reference itself. To fix it, we need to give `A` a parent. Any parent will do, including `A` itself.
+### Self-references
+
+Any node is allowed to reference itself.
 
 ```mermaid
 ---
@@ -119,9 +133,15 @@ title: Valid
 ---
 flowchart TD
   a([A])
+  b([B])
+  c([C])
 
   a -.-> a
+  b -.-> b
+  c -.-> c
   a --> a
+  b --> b
+  c --> c
 ```
 
 ### Parents and children

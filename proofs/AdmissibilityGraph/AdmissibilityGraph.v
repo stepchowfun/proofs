@@ -29,13 +29,6 @@ Module Type AdmissibilityGraph.
 
   #[export] Hint Unfold ancestor : main.
 
-  (* Ancestorship is antisymmetric and thus a partial order. *)
-
-  Axiom antisymmetry :
-    forall n1 n2, ancestor n1 n2 -> ancestor n2 n1 -> n1 = n2.
-
-  #[export] Hint Resolve antisymmetry : main.
-
   (*
     An reference from one node to another is *admissible* if some ancestor of
     the source is a parent of some descendant of the target. In other words,
@@ -46,6 +39,19 @@ Module Type AdmissibilityGraph.
     exists n3 n4, ancestor n3 n1 /\ parent n3 n4 /\ ancestor n2 n4.
 
   #[export] Hint Unfold admissible : main.
+
+  (* Parenthood is reflexive. *)
+
+  Axiom reflexivity : forall n, parent n n.
+
+  #[export] Hint Resolve reflexivity : main.
+
+  (* Ancestorship is antisymmetric and thus a partial order. *)
+
+  Axiom antisymmetry :
+    forall n1 n2, ancestor n1 n2 -> ancestor n2 n1 -> n1 = n2.
+
+  #[export] Hint Resolve antisymmetry : main.
 
   (* Every reference is admissible. *)
 
