@@ -35,9 +35,9 @@ Before we look at any particular admissibility graphs, allow me to first define 
 
 ### The data
 
-An admissibility graph, like any graph, has a set of **nodes**. The nodes might represent entities such as functions or modules in a program.
+An admissibility graph, like any [graph](https://en.wikipedia.org/wiki/Graph_\(discrete_mathematics\)), has a set of **nodes**. The nodes might represent entities such as functions or modules in a program.
 
-An admissibility graph has two types of directed edges which are understood as binary relations on nodes:
+An admissibility graph has two types of directed edges which are understood as separate [binary relations](https://en.wikipedia.org/wiki/Binary_relation) on nodes:
 
 - **References** are the main edges of the graph. They might represent associations like functions referencing other functions or modules importing other modules in a program. A reference is depicted as a solid arrow from a *source* node to a *target* node.
 
@@ -52,7 +52,7 @@ An admissibility graph has two types of directed edges which are understood as b
     source --> target
   ```
 
-- **Parent-child relationships**, as we'll soon see, organize the nodes in a way that restricts which references are allowed to exist. A parent-child relationship is depicted as a dotted arrow from a *parent* node to a *child* node.
+- **Parent-child relationships**, as we'll soon see, organize the nodes in a way that specifies which references are allowed to exist. A parent-child relationship is depicted as a dotted arrow from a *parent* node to a *child* node.
 
   ```mermaid
   ---
@@ -153,7 +153,7 @@ flowchart TD
   a --> b
 ```
 
-Perhaps surprisingly, we can alternatively make `B` a parent of `A`.
+Perhaps surprisingly, we can instead make `B` a parent of `A`.
 
 ```mermaid
 ---
@@ -220,6 +220,20 @@ flowchart TD
 ```
 
 Grandchildren are allowed to access grantparents. However, the converse is not true in general.
+
+```mermaid
+---
+title: Invalid
+---
+flowchart TD
+  a([A])
+  b([B])
+  c([C])
+
+  a -.-> b
+  b -.-> c
+  a --> c
+```
 
 ### Siblings
 
