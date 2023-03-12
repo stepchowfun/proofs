@@ -1,6 +1,6 @@
 # Admissibility graphs
 
-The theory of *admissibility graphs* is a general mathematical framework for precisely and concisely specifying encapsulation boundaries in a system. This directory contains a formalization of the concept and [mechanized proofs](https://en.wikipedia.org/wiki/Proof_assistant) of some basic theorems about it. Below is an informal introduction to the idea. I hope you find it interesting!
+The theory of *admissibility graphs* is a general mathematical framework for specifying encapsulation boundaries in a system. This directory contains a formalization of the concept and [mechanized proofs](https://en.wikipedia.org/wiki/Proof_assistant) of some basic theorems about it. Below is an informal introduction to the idea. I hope you find it interesting!
 
 ## Motivation
 
@@ -67,7 +67,7 @@ Admissibility graphs have two types of directed edges which are understood as [b
     parent -.-> child
   ```
 
-  A node can have multiple parents and multiple children.
+  Informally speaking, the children of a node are considered implementation details of that node. A node can have multiple parents and multiple children.
 
 ### Axioms
 
@@ -83,7 +83,7 @@ Now we are ready to postulate the admissibility graph axioms:
 
 The admissibility axiom enforces encapsulation boundaries in the graph. The definition of "admissible" might seem mysterious at first, but we'll come to understand it through examples below.
 
-The [reflexivity](https://en.wikipedia.org/wiki/Reflexive_relation) axiom ensures every hypothetical [loop](https://en.wikipedia.org/wiki/Loop_\(graph_theory\)) is admissible, which eliminates some awkward special cases that would complicate the theory.
+The reflexivity axiom ensures every hypothetical [loop](https://en.wikipedia.org/wiki/Loop_\(graph_theory\)) is admissible, which eliminates some awkward special cases that would complicate the theory.
 
 ## Examples
 
@@ -91,7 +91,7 @@ To explore the consequences of the axioms and build intuition for them, let's ta
 
 ### Reflexivity
 
-The simplest possible admissibility graph has no nodes, and thus no references or parent-child relationships. Furthermore, any admissibility graph with parent-child loops at every node and no references trivially satisfies the axioms. For example:
+The simplest possible admissibility graph has no nodes, and thus no references or parent-child relationships. More generally, any admissibility graph with parent-child loops at every node and no references trivially satisfies the axioms. For example:
 
 ```mermaid
 flowchart TD
