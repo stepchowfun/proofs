@@ -25,7 +25,7 @@ For encapsulation purposes, you may wish to decree that `partition` is an implem
 
 Of course, most programming languages already have a mechanism for information hiding—or several! For example, [scoping](https://en.wikipedia.org/wiki/Scope_\(computer_science\)) allows a programmer to write local definitions which are only accessible to part of the program. Object-oriented programmers may also think of [access modifiers](https://docs.oracle.com/javase/tutorial/java/javaOO/accesscontrol.html) like `public`, `private`, and `protected`, or the concept of "[friend classes](https://en.cppreference.com/w/cpp/language/friend)" in C++. Functional programmers may think of [module systems](https://jozefg.bitbucket.io/posts/2015-01-08-modules.html) or [existential quantification](https://groups.seas.harvard.edu/courses/cs152/2014sp/lectures/lec17-existential.pdf). The theory of admissibility graphs suggests a new way of understanding such language features by identifying what information the programmer should provide in order to specify encapsulation boundaries.
 
-One might wonder why any innovation is needed at all. For the call graph example, it's easy to imagine an "access graph" with the same nodes, using edges in the access graph to indicate which edges should be allowed in the call graph. Then an edge in the call graph implies a corresponding edge in the access graph. Stated differently, the lack of an edge in the access graph demands the lack of an edge in the call graph. Unfortunately, this isn't very useful, since an access graph like that would be too large for a programmer to comfortably manage. For example, suppose some component of the program consists of 10 functions which should all be able to call each other. Then the access subgraph for those functions would have 10² = 100 edges, and introducing a new function would require adding 11² - 10² = 21 new access edges! The programmer shouldn't have to specify this much data to encode an intention as mundane as "unrestricted mutual access". An admissibility graph, which I'll define below, represents this information more economically. Our thesis is that admissibility graphs are sufficiently expressive to straightforwardly encode the access restriction patterns that arise in practice.
+One might wonder why any innovation is needed at all. For the call graph example, it's easy to imagine an "access graph" with the same nodes, using edges in the access graph to indicate which edges should be allowed in the call graph. Then an edge in the call graph implies a corresponding edge in the access graph. Stated differently, the lack of an edge in the access graph demands the lack of an edge in the call graph. Unfortunately, this isn't very useful, since an access graph like that would be too large for a programmer to comfortably manage. For example, suppose some component of the program consists of 10 functions which should all be able to call each other. Then the access subgraph for those functions would have 10² = 100 edges, and introducing a new function would require adding 11² - 10² = 21 new access edges! The programmer shouldn't have to specify this much data to encode an intention as mundane as "unrestricted mutual access". An admissibility graph, which I'll define below, represents access policies more economically. My thesis is that admissibility graphs are sufficiently expressive to straightforwardly encode the access restriction patterns that arise in practice.
 
 As abstract mathematical objects, admissibility graphs are not specifically about computer programs. For example, a cloud computing provider might consider using admissibility graphs as a form of [IAM](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html) configuration. However, I'll stick to the theme of encapsulation in computer programs for our examples.
 
@@ -73,7 +73,7 @@ An admissibility graph has two types of directed edges which are understood as s
 
 Admissibility graphs are required to satisfy a few important laws. Before we get to them, we must first define the following:
 
-- *Ancestry* is the [reflexive](https://en.wikipedia.org/wiki/Reflexive_closure) [transitive closure](https://en.wikipedia.org/wiki/Transitive_closure) of the parent-child relation. In other words, `A` is an *ancestor* of `D` (`D` is a *descendant* of `A`) when there is a (possibly empty) path from `A` to `D` consisting of parent-child relationships. In English, ancestry is not typically thought of as being a reflexive relation, but for technical reasons we define it as such.
+- *Ancestry* is the [reflexive](https://en.wikipedia.org/wiki/Reflexive_closure) [transitive closure](https://en.wikipedia.org/wiki/Transitive_closure) of the parent-child relation. In other words, `A` is an *ancestor* of `D` (`D` is a *descendant* of `A`) when there is a (possibly empty) path from `A` to `D` consisting of parent-child relationships. In English, ancestry isn't typically thought of as being a reflexive relation, but for technical reasons we define it as such.
 - A hypothetical reference from a source `S` to a target `T` is *admissible* when there exists an ancestor `A` of `S` and a descendant `D` of `T` such that `A` is a parent of `D` (`D` is a child of `A`). In other words, the reference is admissible when `T` is an ancestor of a child of an ancestor of `S`.
 
 Now we are ready to postulate the admissibility graph axioms:
@@ -97,9 +97,6 @@ To build intuition for the axioms, especially the admissibility axiom, let's tak
 The simplest possible admissibility graph has no nodes, and thus no references or parent-child relationships. Furthermore, any admissibility graph with parent-child loops on every node, no other parent-child relationships, and no references trivially satisfies the axioms.
 
 ```mermaid
----
-title: Valid
----
 flowchart TD
   a([A])
   b([B])
@@ -110,21 +107,21 @@ flowchart TD
   c -.-> c
 ```
 
-The following is not a valid admissibility graph, since it violates the reflexivity axiom. It lacks a parent-child relationship from `A` to itself.
+The following isn't a valid admissibility graph, since it violates the reflexivity axiom. It lacks a parent-child relationship from `A` to itself.
 
 ```mermaid
 ---
-title: Invalid
+title: (Invalid)
 ---
 flowchart TD
   a([A])
 ```
 
-The following is not valid either, since it violates the antisymmetry axiom. `A` and `B` are ancestors of each other, but they are not the same node.
+The following isn't valid either, since it violates the antisymmetry axiom. `A` and `B` are ancestors of each other, but they are not the same node.
 
 ```mermaid
 ---
-title: Invalid
+title: (Invalid)
 ---
 flowchart TD
   a([A])
@@ -139,9 +136,6 @@ flowchart TD
 Any node is allowed to reference itself.
 
 ```mermaid
----
-title: Valid
----
 flowchart TD
   a([A])
 
@@ -151,11 +145,11 @@ flowchart TD
 
 ### Parents and children
 
-The following is not a valid admissibility graph:
+The following isn't a valid admissibility graph:
 
 ```mermaid
 ---
-title: Invalid
+title: (Invalid)
 ---
 flowchart LR
   a([A])
@@ -164,12 +158,9 @@ flowchart LR
   a --> b
 ```
 
-The problem is that the reference from `A` to `B` is not admissible. We can fix that by making `A` a parent of `B`.
+The problem is that the reference from `A` to `B` isn't admissible. We can fix that by making `A` a parent of `B`.
 
 ```mermaid
----
-title: Valid
----
 flowchart TD
   a([A])
   b([B])
@@ -181,9 +172,6 @@ flowchart TD
 Perhaps surprisingly, we can instead make `B` a parent of `A`.
 
 ```mermaid
----
-title: Valid
----
 flowchart TD
   b([B])
   a([A])
@@ -199,9 +187,6 @@ From this example, we can see that parents can reference their children, and chi
 Grandchildren are allowed to reference their grantparents.
 
 ```mermaid
----
-title: Valid
----
 flowchart TD
   a([A])
   b([B])
@@ -212,11 +197,11 @@ flowchart TD
   c --> a
 ```
 
-However, the converse is not true in general.
+However, the converse isn't true in general.
 
 ```mermaid
 ---
-title: Invalid
+title: (Invalid)
 ---
 flowchart TD
   a([A])
@@ -233,9 +218,6 @@ flowchart TD
 Siblings can reference each other.
 
 ```mermaid
----
-title: Valid
----
 flowchart TD
   a([A])
   b([B])
@@ -250,9 +232,6 @@ flowchart TD
 Flipping the arrows around in the above graph reveals that the parents of a node can reference each other as well.
 
 ```mermaid
----
-title: Valid
----
 flowchart TD
   a([A])
   b([B])
@@ -270,7 +249,7 @@ Nodes don't have automatic access to their [niblings](https://www.merriam-webste
 
 ```mermaid
 ---
-title: Invalid
+title: (Invalid)
 ---
 flowchart TD
   a([A])
@@ -284,16 +263,13 @@ flowchart TD
   b --> d
 ```
 
-In this example, the reference from `B` to `D` is not admissible, as `D` is considered an implementation detail of `C`.
+In this example, the reference from `B` to `D` isn't admissible, as `D` is considered an implementation detail of `C`.
 
 ### Piblings
 
 Nodes can reference their [piblings](https://www.dictionary.com/e/aunt-uncle-niece-nephew-words/) (siblings of parents).
 
 ```mermaid
----
-title: Valid
----
 flowchart TD
   a([A])
   b([B])
@@ -309,9 +285,6 @@ flowchart TD
 Furthermore, nodes can reference the children of any of their ancestors, not just those of their grandparents.
 
 ```mermaid
----
-title: Valid
----
 flowchart TD
   a([A])
   b([B])
