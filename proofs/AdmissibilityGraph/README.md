@@ -426,6 +426,7 @@ flowchart TD
   a -.-> a
   b -.-> b
   c -.-> c
+  down -.-> down
   e -.-> a
   e -.-> b
   e -.-> c
@@ -451,6 +452,7 @@ flowchart TD
   a -.-> a
   b -.-> b
   c -.-> c
+  up -.-> up
   e -.-> a
   e -.-> b
   e -.-> c
@@ -475,6 +477,8 @@ flowchart TD
   a -.-> a
   b -.-> b
   c -.-> c
+  down -.-> down
+  up -.-> up
   m -.-> a
   m -.-> b
   m -.-> c
