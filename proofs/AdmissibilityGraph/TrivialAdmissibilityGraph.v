@@ -32,6 +32,19 @@ Module TrivialAdmissibilityGraph <: AdmissibilityGraph.
 
   #[export] Hint Unfold ancestor : main.
 
+  (* Coq requires that we copy this verbatim from `AdmissibilityGraph`. *)
+  Definition admissible n1 n2 :=
+    exists n3 n4, ancestor n3 n1 /\ parent n3 n4 /\ ancestor n2 n4.
+
+  #[export] Hint Unfold admissible : main.
+
+  Theorem reflexivity : forall n, parent n n.
+  Proof.
+    search.
+  Qed.
+
+  #[export] Hint Resolve reflexivity : main.
+
   Theorem antisymmetry :
     forall n1 n2, ancestor n1 n2 -> ancestor n2 n1 -> n1 = n2.
   Proof.
@@ -39,12 +52,6 @@ Module TrivialAdmissibilityGraph <: AdmissibilityGraph.
   Qed.
 
   #[export] Hint Resolve antisymmetry : main.
-
-  (* Coq requires that we copy this verbatim from `AdmissibilityGraph`. *)
-  Definition admissible n1 n2 :=
-    exists n3 n4, ancestor n3 n1 /\ parent n3 n4 /\ ancestor n2 n4.
-
-  #[export] Hint Unfold admissible : main.
 
   Theorem admissibility : forall n1 n2, reference n1 n2 -> admissible n1 n2.
   Proof.
