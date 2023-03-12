@@ -39,8 +39,7 @@ Module Type AdmissibilityGraph.
   (*
     An reference from one node to another is *admissible* if some ancestor of
     the source is a parent of some descendant of the target. In other words,
-    parenthood grants descendants of the parent access to ancestors of the
-    child.
+    descendants of a node may reference ancestors of the children of that node.
   *)
 
   Definition admissible n1 n2 :=

@@ -111,7 +111,7 @@ flowchart TD
   a --> a
 ```
 
-The problem is that `A` references itself, but the reference is not admissible. In other words, we have not given `A` permission to access itself. To fix it, we need to give `A` a parent. Any parent will do, including `A` itself.
+The problem is that `A` references itself, but the reference is not admissible. In other words, we have not given `A` permission to reference itself. To fix it, we need to give `A` a parent. Any parent will do, including `A` itself.
 
 ```mermaid
 ---
@@ -167,7 +167,7 @@ flowchart TD
   a --> b
 ```
 
-From this example, we can see that parents can access their children, and children can access their parents.
+From this example, we can see that parents can reference their children, and children can reference their parents.
 
 ### Ancestral cycles
 
@@ -219,7 +219,7 @@ flowchart TD
   c --> a
 ```
 
-Grandchildren are allowed to access grantparents. However, the converse is not true in general.
+Grandchildren are allowed to reference grantparents. However, the converse is not true in general.
 
 ```mermaid
 ---
@@ -254,7 +254,26 @@ flowchart TD
   c --> b
 ```
 
-From this example, we can see that siblings can access each other.
+From this example, we can see that siblings can reference each other.
+
+Flipping the arrows around results in another valid admissibility graph.
+
+```mermaid
+---
+title: Valid
+---
+flowchart TD
+  a([A])
+  b([B])
+  c([C])
+
+  b -.-> a
+  c -.-> a
+  b --> c
+  c --> b
+```
+
+From this, we can see that the parents of a node can reference each other as well.
 
 ### Niblings
 
@@ -300,7 +319,7 @@ flowchart TD
   d --> b
 ```
 
-From this example, we can see that nodes can access their [piblings](https://www.dictionary.com/e/aunt-uncle-niece-nephew-words/) (siblings of parents).
+From this example, we can see that nodes can reference their [piblings](https://www.dictionary.com/e/aunt-uncle-niece-nephew-words/) (siblings of parents).
 
 Furthermore, the following is accepted:
 
@@ -322,4 +341,4 @@ flowchart TD
   d --> e
 ```
 
-So nodes can access the siblings of any of their ancestors, not just those of their parents.
+So nodes can reference the siblings of any of their ancestors, not just those of their parents.
