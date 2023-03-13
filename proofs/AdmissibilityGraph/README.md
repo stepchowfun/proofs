@@ -53,7 +53,6 @@ Admissibility graphs have two types of directed edges which are understood as [b
   ```
 
   A node can link to multiple targets and be linked to from multiple sources.
-
 - **Parent-child relationships**, as we'll soon see, organize the nodes in a way that specifies which links are allowed to exist. A parent-child relationship is depicted as a dotted arrow from a *parent* node to a *child* node.
 
   ```mermaid
@@ -69,21 +68,19 @@ Admissibility graphs have two types of directed edges which are understood as [b
 
   Informally speaking, the children of a node are considered implementation details of that node. A node can have multiple parents and multiple children.
 
+### Ancestry and admissibility
+
+Before we can state the axioms, we must first define *ancestry* and *admissibility*.
+
+- *Ancestry* is the [transitive closure](https://en.wikipedia.org/wiki/Transitive_closure) of the parent-child relation. We'll postulate below that the parent-child relation to be [reflexive](https://en.wikipedia.org/wiki/Reflexive_relation), so ancestry is reflexive as well. All told, `A` is an *ancestor* of `D` (`D` is a *descendant* of `A`) when there is a path from `A` to `D` consisting of parent-child relationships.
+- A hypothetical link from a source `S` to a target `T` is *admissible* when there exists an ancestor `A` of `S` and a descendant `D` of `T` such that `A` is a parent of `D` (`D` is a child of `A`). In other words, the link is admissible when the target is an ancestor of a child of an ancestor of the source. Admissibility might seem mysterious at first, but we'll come to understand it through examples below.
+
 ### Axioms
 
-Admissibility graphs are required to satisfy some mathematical laws. Before we get to them, we must first define the following:
+Admissibility graphs are required to satisfy two mathematical laws:
 
-- *Ancestry* is the [transitive closure](https://en.wikipedia.org/wiki/Transitive_closure) of the parent-child relation. One of the axioms below will require the parent-child relation to be [reflexive](https://en.wikipedia.org/wiki/Reflexive_relation), so ancestry is reflexive as well. In other words, `A` is an *ancestor* of `D` (`D` is a *descendant* of `A`) when there is a path from `A` to `D` consisting of parent-child relationships.
-- A hypothetical link from a source `S` to a target `T` is *admissible* when there exists an ancestor `A` of `S` and a descendant `D` of `T` such that `A` is a parent of `D` (`D` is a child of `A`). In other words, the link is admissible when the target is an ancestor of a child of an ancestor of the source.
-
-Now we are ready to postulate the admissibility graph axioms:
-
-- **(Admissibility)** Every link is admissible.
-- **(Reflexivity)** Every node is a parent of itself.
-
-The admissibility axiom enforces encapsulation boundaries in the graph. The definition of "admissible" might seem mysterious at first, but we'll come to understand it through examples below.
-
-The reflexivity axiom ensures every hypothetical [loop](https://en.wikipedia.org/wiki/Loop_\(graph_theory\)) is admissible, which eliminates some awkward special cases that would complicate the theory.
+- ***Axiom (reflexivity).*** Every node is a parent of itself.
+- ***Axiom (admissibility).*** Every link is admissible.
 
 ## Examples
 
