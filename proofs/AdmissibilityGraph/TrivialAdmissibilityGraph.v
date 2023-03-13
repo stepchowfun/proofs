@@ -12,23 +12,23 @@ Require Import Main.AdmissibilityGraph.AdmissibilityGraphTheorems.
 Require Import Main.Tactics.
 
 Module TrivialAdmissibilityGraph <: AdmissibilityGraph.
-  #[local] Arguments clos_refl_trans {A} _ _ _.
-  #[local] Hint Resolve rt_refl : main.
+  #[local] Arguments clos_trans {A} _ _ _.
+  #[local] Hint Constructors clos_trans : main.
 
   Definition node := Empty_set.
 
   #[export] Hint Unfold node : main.
 
-  Definition reference (n1 n2 : node) := False.
+  Definition link (n1 n2 : node) := False.
 
-  #[export] Hint Unfold reference : main.
+  #[export] Hint Unfold link : main.
 
   Definition parent (n1 : node) (n2 : node) := False.
 
   #[export] Hint Unfold parent : main.
 
   (* Coq requires that we copy this verbatim from `AdmissibilityGraph`. *)
-  Definition ancestor := clos_refl_trans parent.
+  Definition ancestor := clos_trans parent.
 
   #[export] Hint Unfold ancestor : main.
 
@@ -38,7 +38,7 @@ Module TrivialAdmissibilityGraph <: AdmissibilityGraph.
 
   #[export] Hint Unfold admissible : main.
 
-  Theorem admissibility : forall n1 n2, reference n1 n2 -> admissible n1 n2.
+  Theorem admissibility : forall n1 n2, link n1 n2 -> admissible n1 n2.
   Proof.
     search.
   Qed.
