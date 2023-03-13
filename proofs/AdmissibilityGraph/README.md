@@ -23,11 +23,9 @@ flowchart TD
 
 For encapsulation purposes, we may wish to decree that `partition` is an implementation detail of `quicksort` and should not be called from any other function. In other words, we want to forbid any edges to `partition` in the call graph except the one from `quicksort`. How should a programmer express a policy like that?
 
-One can imagine an "access graph" with the same nodes as a call graph, with edges in the access graph indicating which edges should be allowed in the call graph. Unfortunately, this notion isn't very useful as a specification language, since an access graph like that would be too large for a programmer to comfortably manage. For example, suppose some component of the program consists of 10 functions which should all be able to call each other. Then the access subgraph for those functions would have 10² = 100 edges, and introducing a new function would require adding 11² - 10² = 21 new access edges! A programmer shouldn't have to provide this much data to encode an intention as mundane as "unrestricted mutual access", and with such a low-level configuration it would be too easy to make a mistake. We're aiming for a more economical and less error-prone way to draw encapsulation boundaries.
-
 Of course, most programming languages already have a mechanism for information hiding—if not several! For example, [scoping](https://en.wikipedia.org/wiki/Scope_\(computer_science\)) allows a programmer to write local definitions which are only accessible to part of the program. Object-oriented programmers may also think of [access modifiers](https://docs.oracle.com/javase/tutorial/java/javaOO/accesscontrol.html) like `public`, `private`, and `protected`, or the concept of "[friend classes](https://en.cppreference.com/w/cpp/language/friend)" in C++. Functional programmers may think of [module systems](https://jozefg.bitbucket.io/posts/2015-01-08-modules.html) or [existential quantification](https://groups.seas.harvard.edu/courses/cs152/2014sp/lectures/lec17-existential.pdf). Are all these language features particular instances of a more general theory? I will attempt to answer this question in the affirmative.
 
-As abstract mathematical objects, admissibility graphs are not specifically about encapsulation in computer programs. For example, a cloud computing provider might consider using admissibility graphs as a form of [identity and access management](https://en.wikipedia.org/wiki/Identity_management), a network engineer might use an admissibility graph to specify firewall policies, or an online document collaboration application might use admissibility graphs to represent sharing settings.
+As abstract mathematical objects, admissibility graphs are not specifically about encapsulation in computer programs. For example, a cloud computing provider might consider using admissibility graphs as a form of [identity and access management](https://en.wikipedia.org/wiki/Identity_management), a network engineer might use an admissibility graph to specify firewall policies, or a document collaboration application might use admissibility graphs to represent sharing settings.
 
 ## Definition
 
@@ -72,8 +70,8 @@ Admissibility graphs have two types of directed edges which are understood as [b
 
 Before we can state the axioms, we must first define *ancestry* and *admissibility*.
 
-- *Ancestry* is the [transitive closure](https://en.wikipedia.org/wiki/Transitive_closure) of the parent-child relation. We'll postulate below that the parent-child relation to be [reflexive](https://en.wikipedia.org/wiki/Reflexive_relation), so ancestry is reflexive as well. All told, `A` is an *ancestor* of `D` (`D` is a *descendant* of `A`) when there is a path from `A` to `D` consisting of parent-child relationships.
-- A hypothetical link from a source `S` to a target `T` is *admissible* when there exists an ancestor `A` of `S` and a descendant `D` of `T` such that `A` is a parent of `D` (`D` is a child of `A`). In other words, the link is admissible when the target is an ancestor of a child of an ancestor of the source. Admissibility might seem mysterious at first, but we'll come to understand it through examples below.
+- *Ancestry* is the [transitive closure](https://en.wikipedia.org/wiki/Transitive_closure) of the parent-child relation. We'll postulate below that the parent-child relation is [reflexive](https://en.wikipedia.org/wiki/Reflexive_relation), so ancestry is reflexive as well. All told, `A` is an *ancestor* of `D` (`D` is a *descendant* of `A`) when there is a path from `A` to `D` consisting of parent-child relationships.
+- A node `T` *admits* a node `S` (`S` is *admitted by* `T`) when there is an ancestor `A` of `S` and a descendant `D` of `T` such that `A` is a parent of `D` (`D` is a child of `A`). A link is *admissible* when its target admits its source. Admissibility might seem mysterious at first, but we'll come to understand it through examples below.
 
 ### Axioms
 
@@ -86,176 +84,81 @@ Admissibility graphs are required to satisfy two mathematical laws:
 
 To explore the consequences of the axioms and build intuition for them, let's take a look at several examples. You're invited to independently verify whether the graphs below agree with the axioms or violate them in some way.
 
-### Reflexivity
+### Admissibility basics
 
-The simplest possible admissibility graph has no nodes, and thus no links or parent-child relationships. More generally, any admissibility graph with parent-child loops at every node and no links trivially satisfies the axioms. For example:
+Let's take a look at this admissibility graph:
 
 ```mermaid
 flowchart TD
   a([A])
   b([B])
   c([C])
+  d([D])
 
   a -.-> a
   b -.-> b
   c -.-> c
+  d -.-> d
+
   a -.-> b
   a -.-> c
+  c -.-> d
 ```
 
-The following isn't a valid admissibility graph, since it violates the reflexivity axiom. It lacks a parent-child relationship from `A` to itself.
+Every node is a parent of itself, per the reflexivity axiom. This can be interpreted as saying that every node is an implementation detail of itself. This may seem like a philosophical position, but we'll see [later](#special-cases-of-admissibility) that it has important practical consequences.
 
-```mermaid
----
-title: (Invalid)
----
-flowchart TD
-  a([A])
-```
+In this example, `B` and `C` are considered implementation details of `A`, and `D` is an implementation detail of `C`. What links would be admissible in this graph?
 
-### Loops
-
-Any node is allowed to link to itself.
+First, every node is admitted by its own implementation details. So links from `A` to `B` and `C` are admissible, and a link from `C` to `D` would be admissible too. [Loops](https://en.wikipedia.org/wiki/Loop_\(graph_theory\)) are also admissible, thanks to reflexivity.
 
 ```mermaid
 flowchart TD
   a([A])
+  b([B])
+  c([C])
+  d([D])
 
   a -.-> a
+  b -.-> b
+  c -.-> c
+  d -.-> d
+
+  a -.-> b
+  a -.-> c
+  c -.-> d
 
   a --> a
-```
-
-### Parents and children
-
-The following isn't a valid admissibility graph:
-
-```mermaid
----
-title: (Invalid)
----
-flowchart TD
-  a([A])
-  b([B])
-
-  a -.-> a
-  b -.-> b
-
+  b --> b
+  c --> c
+  d --> d
   a --> b
-```
-
-The problem is that the link from `A` to `B` isn't admissible. We can fix that by making `A` a parent of `B`.
-
-```mermaid
-flowchart TD
-  a([A])
-  b([B])
-
-  a -.-> a
-  b -.-> b
-  a -.-> b
-
-  a --> b
-```
-
-Perhaps surprisingly, we can instead make `B` a parent of `A`.
-
-```mermaid
-flowchart TD
-  b([B])
-  a([A])
-
-  a -.-> a
-  b -.-> b
-  b -.-> a
-
-  a --> b
-```
-
-So parents can link to their children, and children can link to their parents.
-
-### Grandparents and grandchildren
-
-Nodes can link to any of their ancestors, such as their grandparents.
-
-```mermaid
-flowchart TD
-  a([A])
-  b([B])
-  c([C])
-
-  a -.-> a
-  b -.-> b
-  c -.-> c
-  a -.-> b
-  b -.-> c
-
-  c --> a
-```
-
-However, the converse isn't true in general.
-
-```mermaid
----
-title: (Invalid)
----
-flowchart TD
-  a([A])
-  b([B])
-  c([C])
-
-  a -.-> a
-  b -.-> b
-  c -.-> c
-  a -.-> b
-  b -.-> c
-
   a --> c
+  c --> d
 ```
 
-According to the above graph, `C` is an implementation detail of `B`, so the link from `A` to `C` isn't admissible.
-
-### Siblings
-
-Siblings can link to each other.
+Furthermore, the nodes corresponding to implementation details of another node mutually admit each other. So `B` and `C` can link to each other, since they are both children of `A`.
 
 ```mermaid
 flowchart TD
   a([A])
   b([B])
   c([C])
+  d([D])
 
   a -.-> a
   b -.-> b
   c -.-> c
+  d -.-> d
+
   a -.-> b
   a -.-> c
+  c -.-> d
 
   b --> c
   c --> b
 ```
 
-Flipping the arrows around in the above graph reveals that the parents of a node can link to each other as well.
-
-```mermaid
-flowchart TD
-  a([A])
-  b([B])
-  c([C])
-
-  a -.-> a
-  b -.-> b
-  c -.-> c
-  b -.-> a
-  c -.-> a
-
-  b --> c
-  c --> b
-```
-
-### Niblings
-
-Nodes don't have automatic access to their [niblings](https://www.merriam-webster.com/words-at-play/words-were-watching-nibling) (children of siblings).
+However, links from `A` or `B` to `D` would *not* be admissible, because `D` is a implementation detail of `C`.
 
 ```mermaid
 ---
@@ -271,102 +174,42 @@ flowchart TD
   b -.-> b
   c -.-> c
   d -.-> d
+
   a -.-> b
   a -.-> c
   c -.-> d
 
-  b --> d
+  a -->|Not admissible| d
+  b -->|Not admissible| d
+
+  linkStyle 7 stroke:red
+  linkStyle 8 stroke:red
 ```
 
-In this example, the link from `B` to `D` isn't admissible, as `D` is considered an implementation detail of `C`.
+### Grouping nodes together
 
-### Piblings
-
-Nodes can link to their [piblings](https://www.dictionary.com/e/aunt-uncle-niece-nephew-words/) (siblings of parents).
+We'd like to be able to form a group of nodes that are treated identically from an admissibility perspective. For example, suppose we have nodes `A`, `B`, and `C`, and we want admissibility to "propagate" between them. One way to do that is to arrange them in an ancestry cycle:
 
 ```mermaid
 flowchart TD
   a([A])
   b([B])
   c([C])
-  d([D])
 
   a -.-> a
   b -.-> b
   c -.-> c
-  d -.-> d
-  a -.-> b
-  a -.-> c
-  c -.-> d
 
-  d --> b
-```
-
-Furthermore, nodes can link to the children of any of their ancestors, not just those of their grandparents.
-
-```mermaid
-flowchart TD
-  a([A])
-  b([B])
-  c([C])
-  d([D])
-  e([E])
-
-  a -.-> a
-  b -.-> b
-  c -.-> c
-  d -.-> d
-  e -.-> e
   a -.-> b
   b -.-> c
-  c -.-> d
-  a -.-> e
-
-  d --> e
+  c -.-> a
 ```
 
-## Patterns
-
-Here are some useful patterns that can be encoded in terms of admissibility graphs.
-
-### Hide implementation details
-
-To designate some node a private implementation detail of some other node, make the former a child of the latter.
+However, it's more natural to introduce an auxiliary node and configure the parent-child relationships in a [star topology](https://en.wikipedia.org/wiki/Star_network):
 
 ```mermaid
 flowchart TD
-  a([A])
-  i([implementation details of A])
-
-  a -.-> a
-  i -.-> i
-  a -.-> i
-```
-
-### Shared implementation details
-
-For nodes with shared private implementation details (such as when modeling C++ "friend classes"), encode the sharing directly with parent-child relationships.
-
-```mermaid
-flowchart TD
-  a([A])
-  b([B])
-  i([implementation details of A and B])
-
-  a -.-> a
-  b -.-> b
-  i -.-> i
-  a -.-> i
-  b -.-> i
-```
-
-### Treat a bunch of nodes as a single node
-
-Nodes in an ancestry cycle are indistinguishable from an admissibility perspective. So if we want to treat a bunch of nodes identically, we just need to put them in a [strongly connected component](https://en.wikipedia.org/wiki/Strongly_connected_component). A simple way to do that is to introduce an auxiliary node as follows:
-
-```mermaid
-flowchart TD
-  m([component])
+  m([M])
   a([A])
   b([B])
   c([C])
@@ -375,133 +218,43 @@ flowchart TD
   a -.-> a
   b -.-> b
   c -.-> c
+
   m -.-> a
-  m -.-> b
-  m -.-> c
   a -.-> m
+  m -.-> b
   b -.-> m
+  m -.-> c
   c -.-> m
 ```
 
-### Manage ingress and egresss for a group of nodes
+The auxiliary node `M` can be thought of as representing a "module" consisting of nodes `A`, `B`, and `C`.
 
-This is the general configuration for a module. Upstream dependencies, i.e., nodes that the module wants to link to, should be added as children of the egress node. Downstream dependencies, i.e., nodes that want to link to the contents of the module, should be added as parents of the ingress node.
+In either configuration, if some node is admitted by one of the nodes in the group, it's admitted by every node in the group. Likewise, a node that admits some node in the group admits every node in the group. This implies that the nodes in the group mutually admit each other.
 
-This configuration guarantees that the contents of the module cannot link to implementation details of upstream dependencies, and downstream dependencies cannot access implementation details of the contents of the module.
+## Special cases of admissibility
 
-```mermaid
-flowchart TD
-  up([upstream])
-  down([downstream])
-  e([egress])
-  i([ingress])
-  a([A])
-  b([B])
-  c([C])
+The admissibility axiom states that the target of a link must be an ancestor of a child of an ancestor of the source. In this section, we consider two common special cases of that criterion.
 
-  e -.-> e
-  i -.-> i
-  a -.-> a
-  b -.-> b
-  c -.-> c
-  up -.-> up
-  down -.-> down
-  e -.-> a
-  e -.-> b
-  e -.-> c
-  a -.-> i
-  b -.-> i
-  c -.-> i
-  e -.-> up
-  down -.-> i
-```
+### Ancestors of children
 
-### Give one module access to another
+A consequence of the admissibility axiom is that *a node is admitted by any ancestors of its children*. From this, we can draw many conclusions:
 
-To grant one module access to another, the egress node of one module should be made a parent of the ingress node of the other.
+- A node is admitted by its own children.
+- A node is admitted by parents of its children, including itself.
+- A node is admitted by grandparents of its children, including its own parents.
+- …
+- A node is admitted by its own ancestors.
 
-```mermaid
-flowchart TD
-  e1([upstream egress])
-  i1([upstream ingress])
-  a([A])
-  b([B])
-  c([C])
+The second conclusion would seem to imply that admissibility is reflexive, which might make one wonder why the reflexivity axiom is needed. The complication is that this conclusion only follows when the node has children. The reflexivity axiom says it doesn't matter—every node has at least one child (itself).
 
-  e2([downstream egress])
-  i2([downstream ingress])
-  x([X])
-  y([Y])
-  z([Z])
+### Children of ancestors
 
-  e2 -.-> i1
+Another consequence of the admissibility axiom is that *a node is admitted by any children of its ancestors*. From this, we can also draw many conclusions, including some we've already seen:
 
-  e1 -.-> e1
-  i1 -.-> i1
-  a -.-> a
-  b -.-> b
-  c -.-> c
-  e1 -.-> a
-  e1 -.-> b
-  e1 -.-> c
-  a -.-> i1
-  b -.-> i1
-  c -.-> i1
+- A node is admitted by its own children.
+- A node is admitted by children of its parents (siblings), including itself.
+- A node is admitted by children of its grandparents ([piblings](https://www.dictionary.com/e/aunt-uncle-niece-nephew-words/)), including its own parents.
+- …
+- A node is admitted by its own ancestors.
 
-  e2 -.-> e2
-  i2 -.-> i2
-  x -.-> x
-  y -.-> y
-  z -.-> z
-  e2 -.-> x
-  e2 -.-> y
-  e2 -.-> z
-  x -.-> i2
-  y -.-> i2
-  z -.-> i2
-```
-
-Mutual access can be granted by also hooking them up the other way.
-
-```mermaid
-flowchart TD
-  e1([left egress])
-  i1([left ingress])
-  a([A])
-  b([B])
-  c([C])
-
-  e2([right egress])
-  i2([right ingress])
-  x([X])
-  y([Y])
-  z([Z])
-
-  e2 -.-> i1
-
-  e1 -.-> e1
-  i1 -.-> i1
-  a -.-> a
-  b -.-> b
-  c -.-> c
-  e1 -.-> a
-  e1 -.-> b
-  e1 -.-> c
-  a -.-> i1
-  b -.-> i1
-  c -.-> i1
-
-  e2 -.-> e2
-  i2 -.-> i2
-  x -.-> x
-  y -.-> y
-  z -.-> z
-  e2 -.-> x
-  e2 -.-> y
-  e2 -.-> z
-  x -.-> i2
-  y -.-> i2
-  z -.-> i2
-
-  e1 -.-> i2
-```
+As before, the second conclusion seems to imply that admissibility is reflexive, but that only follows when the node has parents. The reflexivity axiom says it doesn't matter—every node has at least one parent (itself).
