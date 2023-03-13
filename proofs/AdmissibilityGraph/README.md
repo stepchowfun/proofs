@@ -23,11 +23,11 @@ flowchart TD
 
 For encapsulation purposes, we may wish to decree that `partition` is an implementation detail of `quicksort` and should not be called from any other function. In other words, we want to forbid any edges to `partition` in the call graph except the one from `quicksort`. How should a programmer express a policy like that?
 
-One can imagine an "access graph" with the same nodes as a call graph, with edges in the access graph indicating which edges should be allowed in the call graph. Unfortunately, this notion isn't very useful, since an access graph like that would be too large for a programmer to comfortably manage. For example, suppose some component of the program consists of 10 functions which should all be able to call each other. Then the access subgraph for those functions would have 10² = 100 edges, and introducing a new function would require adding 11² - 10² = 21 new access edges! A programmer shouldn't have to provide this much data to encode an intention as mundane as "unrestricted mutual access". We're aiming for a more economical way to draw encapsulation boundaries.
+One can imagine an "access graph" with the same nodes as a call graph, with edges in the access graph indicating which edges should be allowed in the call graph. Unfortunately, this notion isn't very useful as a specification language, since an access graph like that would be too large for a programmer to comfortably manage. For example, suppose some component of the program consists of 10 functions which should all be able to call each other. Then the access subgraph for those functions would have 10² = 100 edges, and introducing a new function would require adding 11² - 10² = 21 new access edges! A programmer shouldn't have to provide this much data to encode an intention as mundane as "unrestricted mutual access", and with such a low-level configuration it would be too easy to make a mistake. We're aiming for a more economical and less error-prone way to draw encapsulation boundaries.
 
 Of course, most programming languages already have a mechanism for information hiding—if not several! For example, [scoping](https://en.wikipedia.org/wiki/Scope_\(computer_science\)) allows a programmer to write local definitions which are only accessible to part of the program. Object-oriented programmers may also think of [access modifiers](https://docs.oracle.com/javase/tutorial/java/javaOO/accesscontrol.html) like `public`, `private`, and `protected`, or the concept of "[friend classes](https://en.cppreference.com/w/cpp/language/friend)" in C++. Functional programmers may think of [module systems](https://jozefg.bitbucket.io/posts/2015-01-08-modules.html) or [existential quantification](https://groups.seas.harvard.edu/courses/cs152/2014sp/lectures/lec17-existential.pdf). Are all these language features particular instances of a more general theory? I will attempt to answer this question in the affirmative.
 
-As abstract mathematical objects, admissibility graphs are not specifically about computer programs. For example, a cloud computing provider might consider using admissibility graphs as a form of [IAM](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html) configuration. However, I'll stick to the theme of encapsulation in computer programs for our examples.
+As abstract mathematical objects, admissibility graphs are not specifically about encapsulation in computer programs. For example, a cloud computing provider might consider using admissibility graphs as a form of [identity and access management](https://en.wikipedia.org/wiki/Identity_management), a network engineer might use an admissibility graph to specify firewall policies, or an online document collaboration application might use admissibility graphs to represent sharing settings.
 
 ## Definition
 
@@ -39,11 +39,11 @@ An admissibility graph, like any [graph](https://en.wikipedia.org/wiki/Graph_\(d
 
 Admissibility graphs have two types of directed edges which are understood as [binary relations](https://en.wikipedia.org/wiki/Binary_relation) on nodes:
 
-- **References** are the main edges of the graph. They might represent associations like functions referencing other functions or modules importing other modules in a program. A reference is depicted as a solid arrow from a *source* node to a *target* node.
+- **Links** are the main edges of the graph. They might represent associations like functions referencing other functions or modules importing other modules in a program. A link is depicted as a solid arrow from a *source* node to a *target* node.
 
   ```mermaid
   ---
-  title: Reference
+  title: Link
   ---
   flowchart LR
     source([source])
@@ -52,9 +52,9 @@ Admissibility graphs have two types of directed edges which are understood as [b
     source --> target
   ```
 
-  A node can reference multiple targets and be referenced by multiple sources.
+  A node can link to multiple targets and be linked to from multiple sources.
 
-- **Parent-child relationships**, as we'll soon see, organize the nodes in a way that specifies which references are allowed to exist. A parent-child relationship is depicted as a dotted arrow from a *parent* node to a *child* node.
+- **Parent-child relationships**, as we'll soon see, organize the nodes in a way that specifies which links are allowed to exist. A parent-child relationship is depicted as a dotted arrow from a *parent* node to a *child* node.
 
   ```mermaid
   ---
@@ -73,12 +73,12 @@ Admissibility graphs have two types of directed edges which are understood as [b
 
 Admissibility graphs are required to satisfy some mathematical laws. Before we get to them, we must first define the following:
 
-- *Ancestry* is the [reflexive](https://en.wikipedia.org/wiki/Reflexive_closure) [transitive closure](https://en.wikipedia.org/wiki/Transitive_closure) of the parent-child relation. In other words, `A` is an *ancestor* of `D` (`D` is a *descendant* of `A`) when there is a (possibly empty) path from `A` to `D` consisting of parent-child relationships. In English, ancestry isn't typically thought of as being a reflexive relation, but for technical reasons we define it here as such.
-- A hypothetical reference from a source `S` to a target `T` is *admissible* when there exists an ancestor `A` of `S` and a descendant `D` of `T` such that `A` is a parent of `D` (`D` is a child of `A`). In other words, the reference is admissible when the target is an ancestor of a child of an ancestor of the source.
+- *Ancestry* is the [transitive closure](https://en.wikipedia.org/wiki/Transitive_closure) of the parent-child relation. One of the axioms below will require the parent-child relation to be [reflexive](https://en.wikipedia.org/wiki/Reflexive_relation), so ancestry is reflexive as well. In other words, `A` is an *ancestor* of `D` (`D` is a *descendant* of `A`) when there is a path from `A` to `D` consisting of parent-child relationships.
+- A hypothetical link from a source `S` to a target `T` is *admissible* when there exists an ancestor `A` of `S` and a descendant `D` of `T` such that `A` is a parent of `D` (`D` is a child of `A`). In other words, the link is admissible when the target is an ancestor of a child of an ancestor of the source.
 
 Now we are ready to postulate the admissibility graph axioms:
 
-- **(Admissibility)** Every reference is admissible.
+- **(Admissibility)** Every link is admissible.
 - **(Reflexivity)** Every node is a parent of itself.
 
 The admissibility axiom enforces encapsulation boundaries in the graph. The definition of "admissible" might seem mysterious at first, but we'll come to understand it through examples below.
@@ -91,7 +91,7 @@ To explore the consequences of the axioms and build intuition for them, let's ta
 
 ### Reflexivity
 
-The simplest possible admissibility graph has no nodes, and thus no references or parent-child relationships. More generally, any admissibility graph with parent-child loops at every node and no references trivially satisfies the axioms. For example:
+The simplest possible admissibility graph has no nodes, and thus no links or parent-child relationships. More generally, any admissibility graph with parent-child loops at every node and no links trivially satisfies the axioms. For example:
 
 ```mermaid
 flowchart TD
@@ -116,9 +116,9 @@ flowchart TD
   a([A])
 ```
 
-### Self-references
+### Loops
 
-Any node is allowed to reference itself.
+Any node is allowed to link to itself.
 
 ```mermaid
 flowchart TD
@@ -147,7 +147,7 @@ flowchart TD
   a --> b
 ```
 
-The problem is that the reference from `A` to `B` isn't admissible. We can fix that by making `A` a parent of `B`.
+The problem is that the link from `A` to `B` isn't admissible. We can fix that by making `A` a parent of `B`.
 
 ```mermaid
 flowchart TD
@@ -175,11 +175,11 @@ flowchart TD
   a --> b
 ```
 
-So parents can reference their children, and children can reference their parents.
+So parents can link to their children, and children can link to their parents.
 
 ### Grandparents and grandchildren
 
-Nodes can reference any of their ancestors, such as their grandparents.
+Nodes can link to any of their ancestors, such as their grandparents.
 
 ```mermaid
 flowchart TD
@@ -216,11 +216,11 @@ flowchart TD
   a --> c
 ```
 
-According to the above graph, `C` is an implementation detail of `B`, so the reference from `A` to `C` isn't admissible.
+According to the above graph, `C` is an implementation detail of `B`, so the link from `A` to `C` isn't admissible.
 
 ### Siblings
 
-Siblings can reference each other.
+Siblings can link to each other.
 
 ```mermaid
 flowchart TD
@@ -238,7 +238,7 @@ flowchart TD
   c --> b
 ```
 
-Flipping the arrows around in the above graph reveals that the parents of a node can reference each other as well.
+Flipping the arrows around in the above graph reveals that the parents of a node can link to each other as well.
 
 ```mermaid
 flowchart TD
@@ -281,11 +281,11 @@ flowchart TD
   b --> d
 ```
 
-In this example, the reference from `B` to `D` isn't admissible, as `D` is considered an implementation detail of `C`.
+In this example, the link from `B` to `D` isn't admissible, as `D` is considered an implementation detail of `C`.
 
 ### Piblings
 
-Nodes can reference their [piblings](https://www.dictionary.com/e/aunt-uncle-niece-nephew-words/) (siblings of parents).
+Nodes can link to their [piblings](https://www.dictionary.com/e/aunt-uncle-niece-nephew-words/) (siblings of parents).
 
 ```mermaid
 flowchart TD
@@ -305,7 +305,7 @@ flowchart TD
   d --> b
 ```
 
-Furthermore, nodes can reference the children of any of their ancestors, not just those of their grandparents.
+Furthermore, nodes can link to the children of any of their ancestors, not just those of their grandparents.
 
 ```mermaid
 flowchart TD
@@ -365,11 +365,11 @@ flowchart TD
 
 ### Treat a bunch of nodes as a single node
 
-To propagate access within a group of nodes, we can introduce an auxiliary node to bundle them up into a cluster as follows:
+Nodes in an ancestry cycle are indistinguishable from an admissibility perspective. So if we want to treat a bunch of nodes identically, we just need to put them in a [strongly connected component](https://en.wikipedia.org/wiki/Strongly_connected_component). A simple way to do that is to introduce an auxiliary node as follows:
 
 ```mermaid
 flowchart TD
-  m([cluster])
+  m([component])
   a([A])
   b([B])
   c([C])
@@ -386,13 +386,11 @@ flowchart TD
   c -.-> m
 ```
 
-From an admissibility perspective, it's as if all the nodes in the cluster were actually a single node. There is no encapsulation here.
-
 ### Manage ingress and egresss for a group of nodes
 
-This is the general configuration for a module. Upstream dependencies, i.e., nodes that the module wants to reference, should be added as children of the egress node. Downstream dependencies, i.e., nodes that want to reference the contents of the module, should be added as parents of the ingress node.
+This is the general configuration for a module. Upstream dependencies, i.e., nodes that the module wants to link to, should be added as children of the egress node. Downstream dependencies, i.e., nodes that want to link to the contents of the module, should be added as parents of the ingress node.
 
-This configuration guarantees that the contents of the module cannot reference implementation details of upstream dependencies, and downstream dependencies cannot access implementation details of the contents of the module.
+This configuration guarantees that the contents of the module cannot link to implementation details of upstream dependencies, and downstream dependencies cannot access implementation details of the contents of the module.
 
 ```mermaid
 flowchart TD
