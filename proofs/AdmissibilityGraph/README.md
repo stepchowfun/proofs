@@ -23,7 +23,7 @@ flowchart TD
 
 For encapsulation purposes, we may wish to decree that `partition` is an implementation detail of `quicksort` and should not be called from any other function. In other words, we want to forbid any edges to `partition` in the call graph except the one from `quicksort`. How should a programmer express a policy like that?
 
-Of course, most programming languages already have a mechanism for information hiding—if not several! For example, [scoping](https://en.wikipedia.org/wiki/Scope_\(computer_science\)) allows a programmer to write local definitions which are only accessible to part of the program. Object-oriented programmers may also think of [access modifiers](https://docs.oracle.com/javase/tutorial/java/javaOO/accesscontrol.html) like `public`, `private`, and `protected`, or the concept of "[friend classes](https://en.cppreference.com/w/cpp/language/friend)" in C++. Functional programmers may think of [module systems](https://jozefg.bitbucket.io/posts/2015-01-08-modules.html) or [existential quantification](https://groups.seas.harvard.edu/courses/cs152/2014sp/lectures/lec17-existential.pdf). Are all these language features particular instances of a more general theory? I will attempt to answer this question in the affirmative.
+Of course, most programming languages already have a mechanism for information hiding—if not several! For example, [scoping](https://en.wikipedia.org/wiki/Scope_\(computer_science\)) allows a programmer to write local definitions which are only accessible to part of the program. Object-oriented programmers may also think of [access modifiers](https://docs.oracle.com/javase/tutorial/java/javaOO/accesscontrol.html) like `public`, `private`, and `protected`, or the concept of "[friend classes](https://en.cppreference.com/w/cpp/language/friend)" in C++. Functional programmers may think of [module systems](https://jozefg.bitbucket.io/posts/2015-01-08-modules.html) or [existential quantification](https://groups.seas.harvard.edu/courses/cs152/2014sp/lectures/lec17-existential.pdf). Are all these language features particular instances of a more general theory? I will attempt to answer this question in the affirmative by introducing a theory of *admissibility graphs*.
 
 As abstract mathematical objects, admissibility graphs are not specifically about encapsulation in computer programs. For example, a cloud computing provider might consider using admissibility graphs as a form of [identity and access management](https://en.wikipedia.org/wiki/Identity_management), a network engineer might use an admissibility graph to specify firewall policies, or a document collaboration application might use admissibility graphs to represent sharing settings.
 
@@ -75,10 +75,11 @@ Before we can state the axioms, we must first define *ancestry* and *admissibili
 
 ### Axioms
 
-Admissibility graphs are required to satisfy two mathematical laws:
+Admissibility graphs are required to satisfy three mathematical laws:
 
-- ***Axiom (reflexivity).*** Every node is a parent of itself.
-- ***Axiom (admissibility).*** Every link is admissible.
+- **Axiom (reflexivity).** Every node is a parent of itself.
+- **Axiom (antisymmetry).** If two nodes are ancestors of each other, then they're the same node.
+- **Axiom (admissibility).** Every link is admissible.
 
 ## Examples
 
@@ -106,6 +107,8 @@ flowchart TD
 ```
 
 Every node is a parent of itself, per the reflexivity axiom. This can be interpreted as saying that every node is an implementation detail of itself. This may seem like a philosophical position, but we'll see [later](#special-cases-of-admissibility) that it has important practical consequences.
+
+There are no ancestry cycles, per antisymmetry. That axiom may seem limiting, but we'll see that doesn't prevent nodes from mutually linking to each other. The motivation for antisymmetry will become clear [later](#the-module-pattern).
 
 In this example, `B` and `C` are considered implementation details of `A`, and `D` is an implementation detail of `C`. What links would be admissible in this graph?
 
@@ -186,11 +189,16 @@ flowchart TD
   linkStyle 8 stroke:red
 ```
 
-### Grouping nodes together
+### The module pattern
 
-We'd like to be able to form a group of nodes that are treated identically from an admissibility perspective. For example, suppose we have nodes `A`, `B`, and `C`, and we want admissibility to "propagate" between them. One way to do that is to arrange them in an ancestry cycle:
+We'd like to be able to group nodes together and treat them as a single unit from an admissibility perspective.
+
+If we didn't have the antisymmetry axiom, we might try to arrange them in an ancestry cycle:
 
 ```mermaid
+---
+title: (Invalid)
+---
 flowchart TD
   a([A])
   b([B])
@@ -203,33 +211,108 @@ flowchart TD
   a -.-> b
   b -.-> c
   c -.-> a
+
+  linkStyle 3 stroke:red
+  linkStyle 4 stroke:red
+  linkStyle 5 stroke:red
 ```
 
-However, it's more natural to introduce an auxiliary node and configure the parent-child relationships in a [star topology](https://en.wikipedia.org/wiki/Star_network):
+This would accomplish the goal, however it has a crucial limitation. Suppose `A`, `B`, and `C` have implementation details `_A`, `_B`, and `_C`, respectively.
 
 ```mermaid
+---
+title: (Invalid)
+---
 flowchart TD
-  m([M])
   a([A])
   b([B])
   c([C])
+  _a([_A])
+  _b([_B])
+  _c([_C])
 
-  m -.-> m
   a -.-> a
   b -.-> b
   c -.-> c
 
-  m -.-> a
-  a -.-> m
-  m -.-> b
-  b -.-> m
-  m -.-> c
-  c -.-> m
+  a -.-> b
+  b -.-> c
+  c -.-> a
+  a -.-> _a
+  b -.-> _b
+  c -.-> _c
+
+  linkStyle 3 stroke:red
+  linkStyle 4 stroke:red
+  linkStyle 5 stroke:red
 ```
 
-The auxiliary node `M` can be thought of as representing a "module" consisting of nodes `A`, `B`, and `C`.
+The problem is that the internal nodes `_A`, `_B`, and `_C` admit every node in the graph! The antisymmetry axiom says we shouldn't have ancestry cycles, since they're incompatible with encapsulation.
 
-In either configuration, if some node is admitted by one of the nodes in the group, it's admitted by every node in the group. Likewise, a node that admits some node in the group admits every node in the group. This implies that the nodes in the group mutually admit each other.
+So what do we do instead? We can use the *module pattern*. We introduce auxiliary nodes to manage ingress and egress, and we configure them as follows:
+
+```mermaid
+flowchart TD
+  e([egress])
+  a([A])
+  b([B])
+  c([C])
+  i([ingress])
+
+  e -.-> e
+  a -.-> a
+  b -.-> b
+  c -.-> c
+  i -.-> i
+
+  e -.-> a
+  e -.-> b
+  e -.-> c
+  a -.-> i
+  b -.-> i
+  c -.-> i
+```
+
+Then the ingress node can be placed in contexts where we want the contents of the module to admit other nodes, and the egress node can be placed in contexts where we want the contents of the module to be admitted by other nodes.
+
+```mermaid
+flowchart TD
+  m([context M])
+  e([egress])
+  n([context N])
+  x([X])
+  y([Y])
+  a([A])
+  b([B])
+  c([C])
+  i([ingress])
+
+  m -.-> m
+  e -.-> e
+  n -.-> n
+  x -.-> x
+  y -.-> y
+  a -.-> a
+  b -.-> b
+  c -.-> c
+  i -.-> i
+
+  m -.-> i
+  m -.-> x
+  n -.-> e
+  n -.-> y
+  e -.-> a
+  e -.-> b
+  e -.-> c
+  a -.-> i
+  b -.-> i
+  c -.-> i
+
+  x --> a
+  c --> y
+```
+
+It's natural to wonder whether a single node could serve as both the ingress and egress nodes for the same module. Unfortunately, that would violate antisymmetry.
 
 ## Special cases of admissibility
 

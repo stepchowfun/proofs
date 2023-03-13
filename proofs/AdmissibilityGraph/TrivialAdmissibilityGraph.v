@@ -45,6 +45,14 @@ Module TrivialAdmissibilityGraph <: AdmissibilityGraph.
 
   #[export] Hint Resolve reflexivity : main.
 
+  Theorem antisymmetry :
+    forall n1 n2, ancestor n1 n2 -> ancestor n2 n1 -> n1 = n2.
+  Proof.
+    search.
+  Qed.
+
+  #[export] Hint Resolve antisymmetry : main.
+
   Theorem admissibility : forall n1 n2, link n1 n2 -> admissible n1 n2.
   Proof.
     search.
