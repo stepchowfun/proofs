@@ -25,7 +25,7 @@ For encapsulation purposes, we may wish to decree that `partition` is an impleme
 
 Of course, most programming languages already have a mechanism for information hiding—if not several! For example, [scoping](https://en.wikipedia.org/wiki/Scope_\(computer_science\)) allows a programmer to write local definitions which are only accessible to part of the program. Object-oriented programmers may also think of [access modifiers](https://docs.oracle.com/javase/tutorial/java/javaOO/accesscontrol.html) like `public`, `private`, and `protected`, or the concept of "[friend classes](https://en.cppreference.com/w/cpp/language/friend)" in C++. Functional programmers may think of [module systems](https://jozefg.bitbucket.io/posts/2015-01-08-modules.html) or [existential quantification](https://groups.seas.harvard.edu/courses/cs152/2014sp/lectures/lec17-existential.pdf). Are all these language features particular instances of a more general theory? I will attempt to answer this question in the affirmative by introducing a theory of *admissibility graphs*.
 
-As abstract mathematical objects, admissibility graphs are not specifically about encapsulation in computer programs. For example, a cloud computing provider might consider using admissibility graphs as a form of [identity and access management](https://en.wikipedia.org/wiki/Identity_management), a network engineer might use an admissibility graph to specify firewall policies, or a document collaboration application might use admissibility graphs to represent sharing settings.
+As abstract mathematical objects, admissibility graphs are not specifically about encapsulation in computer programs. A cloud computing provider might consider using admissibility graphs as a form of [identity and access management](https://en.wikipedia.org/wiki/Identity_management), a network engineer might use an admissibility graph to specify firewall policies, or a document collaboration application might use admissibility graphs to represent sharing settings.
 
 ## Definition
 
@@ -277,39 +277,38 @@ Then the ingress node can be placed in contexts where we want the contents of th
 
 ```mermaid
 flowchart TD
-  m([context M])
+  up([upstream context])
+  down([downstream context])
   e([egress])
-  n([context N])
-  x([X])
   y([Y])
   a([A])
   b([B])
   c([C])
+  x([X])
   i([ingress])
 
-  m -.-> m
+  up -.-> up
+  down -.-> down
   e -.-> e
-  n -.-> n
-  x -.-> x
   y -.-> y
   a -.-> a
   b -.-> b
   c -.-> c
+  x -.-> x
   i -.-> i
 
-  m -.-> i
-  m -.-> x
-  n -.-> e
-  n -.-> y
+  up -.-> x
+  up -.-> e
+  down -.-> y
+  down -.-> i
   e -.-> a
   e -.-> b
   e -.-> c
   a -.-> i
   b -.-> i
   c -.-> i
-
-  x --> a
-  c --> y
+  a --> x
+  y --> c
 ```
 
 It's natural to wonder whether a single node could serve as both the ingress and egress nodes for the same module. Unfortunately, that would violate antisymmetry.
