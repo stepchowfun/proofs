@@ -23,9 +23,9 @@ flowchart TD
 
 For encapsulation purposes, we may wish to decree that `partition` is an implementation detail of `quicksort` and should not be called from any other function. In other words, we want to forbid any edges to `partition` in the call graph except the one from `quicksort`. How should a programmer express a policy like that?
 
-One can imagine an "access graph" with the same nodes as a call graph, with edges in the access graph indicating which edges should be allowed in the call graph. Unfortunately, this notion isn't very useful, since an access graph like that would be too large for a programmer to comfortably manage. For example, suppose some component of the program consists of 10 functions which should all be able to call each other. Then the access subgraph for those functions would have 10² = 100 edges, and introducing a new function would require adding 11² - 10² = 21 new access edges! The programmer shouldn't have to specify this much data to encode an intention as mundane as "unrestricted mutual access". We're aiming for a more economical way to draw encapsulation boundaries.
+One can imagine an "access graph" with the same nodes as a call graph, with edges in the access graph indicating which edges should be allowed in the call graph. Unfortunately, this notion isn't very useful, since an access graph like that would be too large for a programmer to comfortably manage. For example, suppose some component of the program consists of 10 functions which should all be able to call each other. Then the access subgraph for those functions would have 10² = 100 edges, and introducing a new function would require adding 11² - 10² = 21 new access edges! A programmer shouldn't have to provide this much data to encode an intention as mundane as "unrestricted mutual access". We're aiming for a more economical way to draw encapsulation boundaries.
 
-Of course, most programming languages already have a mechanism for information hiding—or several! For example, [scoping](https://en.wikipedia.org/wiki/Scope_\(computer_science\)) allows a programmer to write local definitions which are only accessible to part of the program. Object-oriented programmers may also think of [access modifiers](https://docs.oracle.com/javase/tutorial/java/javaOO/accesscontrol.html) like `public`, `private`, and `protected`, or the concept of "[friend classes](https://en.cppreference.com/w/cpp/language/friend)" in C++. Functional programmers may think of [module systems](https://jozefg.bitbucket.io/posts/2015-01-08-modules.html) or [existential quantification](https://groups.seas.harvard.edu/courses/cs152/2014sp/lectures/lec17-existential.pdf). Are all these language features particular instances of a more general theory? I will attempt to answer this question in the affirmative.
+Of course, most programming languages already have a mechanism for information hiding—if not several! For example, [scoping](https://en.wikipedia.org/wiki/Scope_\(computer_science\)) allows a programmer to write local definitions which are only accessible to part of the program. Object-oriented programmers may also think of [access modifiers](https://docs.oracle.com/javase/tutorial/java/javaOO/accesscontrol.html) like `public`, `private`, and `protected`, or the concept of "[friend classes](https://en.cppreference.com/w/cpp/language/friend)" in C++. Functional programmers may think of [module systems](https://jozefg.bitbucket.io/posts/2015-01-08-modules.html) or [existential quantification](https://groups.seas.harvard.edu/courses/cs152/2014sp/lectures/lec17-existential.pdf). Are all these language features particular instances of a more general theory? I will attempt to answer this question in the affirmative.
 
 As abstract mathematical objects, admissibility graphs are not specifically about computer programs. For example, a cloud computing provider might consider using admissibility graphs as a form of [IAM](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html) configuration. However, I'll stick to the theme of encapsulation in computer programs for our examples.
 
@@ -363,7 +363,7 @@ flowchart TD
   b -.-> i
 ```
 
-### Clustering: treat a bunch of nodes as a single node
+### Treat a bunch of nodes as a single node
 
 To propagate access within a group of nodes, we can introduce an auxiliary node to bundle them up into a cluster as follows:
 
@@ -388,7 +388,7 @@ flowchart TD
 
 From an admissibility perspective, it's as if all the nodes in the cluster were actually a single node. There is no encapsulation here.
 
-### Modularity: manage ingress and egresss for a group of nodes
+### Manage ingress and egresss for a group of nodes
 
 This is the general configuration for a module. Upstream dependencies, i.e., nodes that the module wants to reference, should be added as children of the egress node. Downstream dependencies, i.e., nodes that want to reference the contents of the module, should be added as parents of the ingress node.
 
