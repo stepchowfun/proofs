@@ -77,17 +77,17 @@ Before we can state the axioms, we must first define *ancestry* and *admissibili
 
 Admissibility graphs are required to satisfy three mathematical laws:
 
-- **Axiom (reflexivity).** Every node is a parent of itself.
-- **Axiom (antisymmetry).** If two nodes are ancestors of each other, then they're the same node.
-- **Axiom (admissibility).** Every link is admissible.
+- **Axiom (parent-child reflexivity).** Every node is a parent of itself.
+- **Axiom (ancestor antisymmetry).** If two nodes are ancestors of each other, then they're the same node.
+- **Axiom (link admissibility).** Every link is admissible.
 
 ## Examples
 
-To explore the consequences of the axioms and build intuition for them, let's take a look at several examples. You're invited to independently verify whether the graphs below agree with the axioms or violate them in some way.
+To explore the consequences of the axioms and build intuition for them, let's look at some examples. You're invited to independently verify whether the graphs below agree with the axioms or violate them in some way.
 
 ### Admissibility basics
 
-Let's take a look at this admissibility graph:
+Let's analyze this admissibility graph:
 
 ```mermaid
 flowchart TD
@@ -106,9 +106,9 @@ flowchart TD
   c -.-> d
 ```
 
-Every node is a parent of itself, per the reflexivity axiom. This can be interpreted as saying that every node is an implementation detail of itself. This may seem like a philosophical position, but we'll see [later](#special-cases-of-admissibility) that it has important practical consequences.
+Every node is a parent of itself, per the reflexivity axiom. This can be interpreted as saying that every node is an implementation detail of itself. That may seem like a philosophical position, but we'll see [later](#special-cases-of-admissibility) that it has important practical consequences.
 
-There are no ancestry cycles, per antisymmetry. That axiom may seem limiting, but we'll see that doesn't prevent nodes from mutually linking to each other. The motivation for antisymmetry will become clear [later](#the-module-pattern).
+There are no ancestry cycles, per antisymmetry. The motivation for antisymmetry will become clear [later](#the-module-pattern).
 
 In this example, `B` and `C` are considered implementation details of `A`, and `D` is an implementation detail of `C`. What links would be admissible in this graph?
 
