@@ -1,6 +1,6 @@
 # Admissibility graphs
 
-The theory of *admissibility graphs* is a mathematical framework for specifying encapsulation boundaries in a system. This directory contains a formalization of the concept and [mechanized proofs](https://en.wikipedia.org/wiki/Proof_assistant) of some basic theorems about it. Below is an informal introduction to the idea. I hope you find it interesting!
+The theory of *admissibility graphs* is a mathematical framework for specifying [encapsulation](https://en.wikipedia.org/wiki/Encapsulation_\(computer_programming\)) boundaries in a system. This directory contains a formalization of the concept and [mechanized proofs](https://en.wikipedia.org/wiki/Proof_assistant) of some basic theorems about it. Below is an informal introduction to the idea. I hope you find it interesting!
 
 ## Motivation
 
@@ -23,9 +23,15 @@ flowchart TD
 
 For encapsulation purposes, we may wish to decree that `partition` is an implementation detail of `quicksort` and should not be called from any other function. In other words, we want to forbid any edges to `partition` in the call graph except the one from `quicksort`. How should a programmer express a policy like that?
 
-Of course, most programming languages already have a mechanism for encapsulation—if not several! For example, [scoping](https://en.wikipedia.org/wiki/Scope_\(computer_science\)) allows a programmer to write local definitions which are only accessible to part of the program. Object-oriented programmers may also think of [access modifiers](https://docs.oracle.com/javase/tutorial/java/javaOO/accesscontrol.html) like `public`, `private`, and `protected`, or the concept of "[friend classes](https://en.cppreference.com/w/cpp/language/friend)" in C++. Functional programmers may think of [module systems](https://jozefg.bitbucket.io/posts/2015-01-08-modules.html) or [existential quantification](https://groups.seas.harvard.edu/courses/cs152/2014sp/lectures/lec17-existential.pdf).
+Of course, most programming languages already have mechanisms for encapsulation. Object-oriented programmers may also think of [access modifiers](https://docs.oracle.com/javase/tutorial/java/javaOO/accesscontrol.html) like `public`, `private`, and `protected`, and concepts like "[friend classes](https://en.cppreference.com/w/cpp/language/friend)" in C++. Functional programmers may think of [module systems](https://jozefg.bitbucket.io/posts/2015-01-08-modules.html), [existential quantification](https://groups.seas.harvard.edu/courses/cs152/2014sp/lectures/lec17-existential.pdf), or [closures](https://en.wikipedia.org/wiki/Closure_\(computer_programming\)).
 
-Those language features are specific types of encapsulation. In this tutorial, I'll introduce a general framework called *admissibility graphs* which can be used to model encapsulation in many different contexts. For example, a cloud computing provider might consider using admissibility graphs as a form of [identity and access management](https://en.wikipedia.org/wiki/Identity_management). A network engineer might use an admissibility graph to specify firewall policies. Or, a document collaboration application might use admissibility graphs to represent sharing and editing permissions.
+Those language features are specific types of encapsulation. In this tutorial, I'll introduce a general framework called *admissibility graphs* which can be used to model encapsulation in many different contexts. For example:
+
+- A cloud computing provider might use admissibility graphs as a form of [identity and access management](https://en.wikipedia.org/wiki/Identity_management).
+- A network engineer might specify firewall policies for a computing cluster with an admissibility graph.
+- A productivity application might encode sharing and editing permissions in an admissibility graph.
+- A programming language might have a module system inspired by admissibility graphs.
+- A [visual programming language](https://en.wikipedia.org/wiki/Visual_programming_language) might present its syntax as an admissibility graph.
 
 ## Definition
 
@@ -37,7 +43,7 @@ An admissibility graph, like any [graph](https://en.wikipedia.org/wiki/Graph_\(d
 
 Admissibility graphs have two types of directed edges which are understood as [binary relations](https://en.wikipedia.org/wiki/Binary_relation) on nodes:
 
-- **Dependencies** are the main edges of the graph. For example, dependencies might indicate functions calling other functions or microservices making RPCs to other microservices. A node can depend on multiple *target* nodes and be depended on by multiple *source* nodes. A dependency is depicted as a solid arrow from the source to the target.
+- **Dependencies** are arbitrary connections between nodes. For example, dependencies might indicate functions calling other functions or microservices making RPCs to other microservices. A node can depend on multiple *target* nodes and can be depended on by multiple *source* nodes. A dependency is depicted as a solid arrow from a source to a target.
 
   ```mermaid
   ---
@@ -49,7 +55,7 @@ Admissibility graphs have two types of directed edges which are understood as [b
 
     source --> target
   ```
-- **Parent-child relationships** indicate when nodes are considered implementation details of other nodes. A node can have multiple *parent* nodes and multiple *child* nodes. A parent-child relationship is depicted as a dotted arrow from the parent to the child.
+- **Parent-child relationships** specify when nodes are considered to be encapsulated within other nodes. These relationships indirectly determine which dependencies are allowed between nodes. A node can have multiple *parent* nodes and multiple *child* nodes. A parent-child relationship is depicted as a dotted arrow from a parent to a child.
 
   ```mermaid
   ---
@@ -104,7 +110,7 @@ flowchart TD
 
 First, we can check that the reflexivity and antisymmetry axioms are satisfied.
 
-- Reflexivity says every node is a parent (and child) of itself. This can be interpreted as saying that every node is an implementation detail of itself. That may seem like a philosophical position, but we'll see [later](#special-cases-of-admissibility) that it has important practical consequences.
+- Reflexivity says every node is a parent (and child) of itself. This can be interpreted as saying that every node is part of its own implementation. That may seem like a philosophical position, but we'll see [later](#special-cases-of-admissibility) that it has important practical consequences.
 - Antisymmetry says there are no ancestry cycles. In this example, `A` is an ancestor of `D`, so `D` can't be an ancestor of `A`. The motivation for antisymmetry will become clear [below](#the-module-pattern).
 
 Now let's consider admissibility. In this example, `B` and `C` are considered implementation details of `A`, and `D` is an implementation detail of `C`. What dependencies could we add to this graph?
