@@ -19,9 +19,9 @@ Module TrivialAdmissibilityGraph <: AdmissibilityGraph.
 
   #[export] Hint Unfold node : main.
 
-  Definition link (n1 n2 : node) := False.
+  Definition dependency (n1 n2 : node) := False.
 
-  #[export] Hint Unfold link : main.
+  #[export] Hint Unfold dependency : main.
 
   Definition parent (n1 : node) (n2 : node) := False.
 
@@ -53,7 +53,7 @@ Module TrivialAdmissibilityGraph <: AdmissibilityGraph.
 
   #[export] Hint Resolve antisymmetry : main.
 
-  Theorem admissibility : forall n1 n2, link n1 n2 -> admissible n1 n2.
+  Theorem admissibility : forall n1 n2, dependency n1 n2 -> admissible n1 n2.
   Proof.
     search.
   Qed.
