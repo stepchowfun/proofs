@@ -111,7 +111,7 @@ flowchart TD
 First, we can check that the reflexivity and antisymmetry axioms are satisfied.
 
 - Reflexivity says every node is a parent (and child) of itself. This can be interpreted as saying that every node is part of its own implementation. That may seem like a philosophical position, but we'll see [later](#special-cases-of-admissibility) that it has important practical consequences.
-- Antisymmetry says there are no ancestry cycles. For example, `A` is an ancestor of `D`, so `D` can't be an ancestor of `A`. The motivation for antisymmetry will become clear [below](#the-module-pattern).
+- Antisymmetry says there are no ancestry cycles. For example, `A` is an ancestor of `D`, so `D` can't be an ancestor of `A`. The motivation for antisymmetry will become clear [below](#modularity).
 
 Now let's consider admissibility. In this example, `B` and `C` are considered implementation details of `A`, and `D` is an implementation detail of `C`. What dependencies could we add to this graph?
 
@@ -213,7 +213,7 @@ flowchart TD
   linkStyle 8 stroke:red
 ```
 
-### The module pattern
+### Modularity
 
 We'd like to be able to group nodes together and treat them as a single unit from an admissibility perspective.
 
@@ -273,7 +273,7 @@ flowchart TD
 
 The problem with this architecture is that the internal nodes `_A`, `_B`, and `_C` admit every node in the graph! Ancestry cycles are incompatible with encapsulation, so the antisymmetry axiom rules them out.
 
-But what should we do instead? We can use the *module pattern*. We introduce auxiliary gateway nodes to manage ingress and egress, and we configure them as follows:
+But what should we do instead? We can arrange the nodes into a *module* by introducing gateway nodes to manage ingress and egress.
 
 ```mermaid
 flowchart TD
@@ -297,7 +297,7 @@ flowchart TD
   c -.-> i
 ```
 
-Then the ingress gateway can be placed in contexts where we want to allow external nodes to depend on the contents of the module, and the egress gateway can be placed in contexts where we want the contents of the module to depend on external nodes.
+Then the ingress gateway can be used to allow external nodes to depend on the contents of the module, and the egress gateway can be used to allow the contents of the module to depend on external nodes.
 
 ```mermaid
 flowchart TD
@@ -339,7 +339,7 @@ In this example, the external node `X` is a sibling of the egress gateway of the
 
 It's natural to wonder whether a single node could serve as both the ingress and egress gateways for the same module. However, that would violate antisymmetry.
 
-If we want to allow the contents of one module to depend on the contents of another, we can *bridge* the egress gateway of the former and the ingress gateway of the latter by giving them a common parent.
+To allow the contents of one module to depend on the contents of another, we can *bridge* the egress gateway of the former and the ingress gateway of the latter by giving them a common parent.
 
 ```mermaid
 flowchart TD
