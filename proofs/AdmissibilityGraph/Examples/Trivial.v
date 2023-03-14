@@ -11,7 +11,7 @@ Require Import Main.AdmissibilityGraph.AdmissibilityGraph.
 Require Import Main.AdmissibilityGraph.AdmissibilityGraphTheorems.
 Require Import Main.Tactics.
 
-Module TrivialAdmissibilityGraph <: AdmissibilityGraph.
+Module Trivial <: AdmissibilityGraph.
   #[local] Arguments clos_trans {A} _ _ _.
   #[local] Hint Constructors clos_trans : main.
 
@@ -59,7 +59,6 @@ Module TrivialAdmissibilityGraph <: AdmissibilityGraph.
   Qed.
 
   #[export] Hint Resolve admissibility : main.
-End TrivialAdmissibilityGraph.
+End Trivial.
 
-Module TrivialAdmissibilityGraphTheorems :=
-  AdmissibilityGraphTheorems TrivialAdmissibilityGraph.
+Module TrivialTheorems := AdmissibilityGraphTheorems Trivial.
