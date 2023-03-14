@@ -15,11 +15,11 @@ Module Type AdmissibilityGraph.
 
   Parameter node : Type.
 
-  (* Pairs of nodes may be related via edges called *links*. *)
+  (* Nodes may *depend on* each other. *)
 
-  Parameter link : node -> node -> Prop.
+  Parameter dependency : node -> node -> Prop.
 
-  (* Pairs of nodes may also be related via *parent-child* relationships. *)
+  (* Nodes may also be related via *parent-child* relationships. *)
 
   Parameter parent : node -> node -> Prop.
 
@@ -30,9 +30,9 @@ Module Type AdmissibilityGraph.
   #[export] Hint Unfold ancestor : main.
 
   (*
-    A link from one node to another is *admissible* if some ancestor of the
-    source is a parent of some descendant of the target. In other words,
-    descendants of a node may link to ancestors of the children of that node.
+    A dependency on a target by a source is *admissible* if some ancestor of
+    the source is a parent of some descendant of the target. In other words,
+    descendants of a node may depend on ancestors of the children of that node.
   *)
 
   Definition admissible n1 n2 :=
@@ -53,9 +53,9 @@ Module Type AdmissibilityGraph.
 
   #[export] Hint Resolve antisymmetry : main.
 
-  (* Every link is admissible. *)
+  (* Every dependency is admissible. *)
 
-  Axiom admissibility : forall n1 n2, link n1 n2 -> admissible n1 n2.
+  Axiom admissibility : forall n1 n2, dependency n1 n2 -> admissible n1 n2.
 
   #[export] Hint Resolve admissibility : main.
 End AdmissibilityGraph.
