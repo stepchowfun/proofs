@@ -4,7 +4,7 @@ The theory of *admissibility graphs* is a mathematical framework for specifying 
 
 ## Motivation
 
-Imagine a simple sorting program that reads in some lines of text and prints them out in lexicographical order. A [static call graph](https://en.wikipedia.org/wiki/Call_graph) for that program might look as follows:
+Imagine a sorting program that reads in some lines of text and prints them out in lexicographical order. A [static call graph](https://en.wikipedia.org/wiki/Call_graph) for that program would show how the functions in the program depend on each other:
 
 ```mermaid
 flowchart TD
@@ -23,9 +23,9 @@ flowchart TD
 
 For encapsulation purposes, we may wish to decree that `partition` is an implementation detail of `quicksort` and should not be called from any other function. In other words, we want to forbid any edges to `partition` in the call graph except the one from `quicksort`. How should a programmer express a policy like that?
 
-Of course, most programming languages already have a mechanism for information hiding—if not several! For example, [scoping](https://en.wikipedia.org/wiki/Scope_\(computer_science\)) allows a programmer to write local definitions which are only accessible to part of the program. Object-oriented programmers may also think of [access modifiers](https://docs.oracle.com/javase/tutorial/java/javaOO/accesscontrol.html) like `public`, `private`, and `protected`, or the concept of "[friend classes](https://en.cppreference.com/w/cpp/language/friend)" in C++. Functional programmers may think of [module systems](https://jozefg.bitbucket.io/posts/2015-01-08-modules.html) or [existential quantification](https://groups.seas.harvard.edu/courses/cs152/2014sp/lectures/lec17-existential.pdf). Are all these language features particular instances of a more general theory? I will attempt to answer this question in the affirmative by introducing a theory of *admissibility graphs*.
+Of course, most programming languages already have a mechanism for encapsulation—if not several! For example, [scoping](https://en.wikipedia.org/wiki/Scope_\(computer_science\)) allows a programmer to write local definitions which are only accessible to part of the program. Object-oriented programmers may also think of [access modifiers](https://docs.oracle.com/javase/tutorial/java/javaOO/accesscontrol.html) like `public`, `private`, and `protected`, or the concept of "[friend classes](https://en.cppreference.com/w/cpp/language/friend)" in C++. Functional programmers may think of [module systems](https://jozefg.bitbucket.io/posts/2015-01-08-modules.html) or [existential quantification](https://groups.seas.harvard.edu/courses/cs152/2014sp/lectures/lec17-existential.pdf).
 
-As abstract mathematical objects, admissibility graphs are not specifically about encapsulation in computer programs. A cloud computing provider might consider using admissibility graphs as a form of [identity and access management](https://en.wikipedia.org/wiki/Identity_management), a network engineer might use an admissibility graph to specify firewall policies, or a document collaboration application might use admissibility graphs to represent sharing settings.
+Those language features are specific types of encapsulation. In this tutorial, I'll introduce a general framework called *admissibility graphs* which can be used to model encapsulation in many different contexts. For example, a cloud computing provider might consider using admissibility graphs as a form of [identity and access management](https://en.wikipedia.org/wiki/Identity_management). A network engineer might use an admissibility graph to specify firewall policies. Or, a document collaboration application might use admissibility graphs to represent sharing and editing permissions.
 
 ## Definition
 
@@ -267,7 +267,7 @@ flowchart TD
 
 The problem with this architecture is that the internal nodes `_A`, `_B`, and `_C` admit every node in the graph! Ancestry cycles are incompatible with encapsulation, so the antisymmetry axiom rules them out.
 
-But what should we do instead? We can use the *module pattern*. We introduce auxiliary nodes to manage ingress and egress, and we configure them as follows:
+But what should we do instead? We can use the *module pattern*. We introduce auxiliary gateway nodes to manage ingress and egress, and we configure them as follows:
 
 ```mermaid
 flowchart TD
@@ -331,6 +331,8 @@ flowchart TD
 
 In this example, the external node `X` is a sibling of the egress node of the module, so module member `A` can depend on it. The external node `Y` is a sibling of the ingress node of the module, so it can depend on module member `C`.
 
+It's natural to wonder whether a single node could serve as both the ingress and egress gateways for the same module. However, that would violate antisymmetry.
+
 If we want to allow the contents of one module to depend on the contents of another, we can put the egress node of the former and the ingress node of the latter in a shared context.
 
 ```mermaid
@@ -376,9 +378,75 @@ flowchart TD
   c --> x
 ```
 
-In this example, the contents of module `M` can depend on the contents of module `N` (as demonstrated by the dependency on `X` by `C`), but not vice versa. Mutual admissibility can be arranged by also bridging the ingress of `M` and the egress of `N`.
+In this example, the contents of module `M` can depend on the contents of module `N` (as demonstrated by the dependency on `X` by `C`), but not vice versa. Mutual admissibility can be arranged by also bridging the ingress of `M` and the egress of `N`. In general, arbitrary admissibility relationships between modules can be configured by bridging the relevant gateways.
 
-It's natural to wonder whether a single node could serve as both the ingress and egress nodes for the same module. Unfortunately, that would violate antisymmetry.
+Since we aren't using the ingress of `M` or the egress of `N`, we can simply delete them.
+
+```mermaid
+flowchart TD
+  bridge([bridge])
+  me(["egress (M)"])
+  a([A])
+  b([B])
+  c([C])
+  x([X])
+  y([Y])
+  z([Z])
+  ni(["ingress (N)"])
+
+  bridge -.-> bridge
+  me -.-> me
+  a -.-> a
+  b -.-> b
+  c -.-> c
+  x -.-> x
+  y -.-> y
+  z -.-> z
+  ni -.-> ni
+
+  bridge -.-> me
+  me -.-> a
+  me -.-> b
+  me -.-> c
+  bridge -.-> ni
+  x -.-> ni
+  y -.-> ni
+  z -.-> ni
+  c --> x
+```
+
+However, if you might need them in the future, you will have to add many parent-child relationships when you reintroduce them. So it may be better to leave the gateways in, even if you don't need them right away.
+
+We might try to simplify the graph as follows:
+
+```mermaid
+flowchart TD
+  x([X])
+  y([Y])
+  z([Z])
+  bridge([bridge])
+  a([A])
+  b([B])
+  c([C])
+
+  bridge -.-> bridge
+  a -.-> a
+  b -.-> b
+  c -.-> c
+  x -.-> x
+  y -.-> y
+  z -.-> z
+
+  x -.-> bridge
+  y -.-> bridge
+  z -.-> bridge
+  bridge -.-> a
+  bridge -.-> b
+  bridge -.-> c
+  c --> x
+```
+
+Although this is a valid admissibility graph, it's probably not what you want. This graph would allow `A`, `B`, and `C` to depend on the implementation details of `X`, `Y`, and `Z` (if there were any).
 
 ## Special cases of admissibility
 
