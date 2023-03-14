@@ -1,10 +1,10 @@
-(******************************************)
-(******************************************)
-(****                                  ****)
-(****   A simple admissibility graph   ****)
-(****                                  ****)
-(******************************************)
-(******************************************)
+(**************************************************************)
+(**************************************************************)
+(****                                                      ****)
+(****   An admissibility graph which implements a module   ****)
+(****                                                      ****)
+(**************************************************************)
+(**************************************************************)
 
 Require Import Coq.Relations.Operators_Properties.
 Require Import Coq.Relations.Relation_Operators.
@@ -12,7 +12,7 @@ Require Import Main.AdmissibilityGraph.AdmissibilityGraph.
 Require Import Main.AdmissibilityGraph.AdmissibilityGraphTheorems.
 Require Import Main.Tactics.
 
-Module SimpleAdmissibilityGraph <: AdmissibilityGraph.
+Module SingleModule <: AdmissibilityGraph.
   #[local] Arguments clos_trans {A} _ _ _.
   #[local] Arguments clos_trans_1n {A} _ _ _.
   #[local] Arguments clos_trans_n1 {A} _ _ _.
@@ -24,7 +24,7 @@ Module SimpleAdmissibilityGraph <: AdmissibilityGraph.
   #[local] Hint Resolve clos_tn1_trans : main.
   #[local] Hint Resolve clos_trans_tn1 : main.
 
-  Inductive nodeLabels := A | B | C | D.
+  Inductive nodeLabels := Ingress | Egress | A | B | C.
 
   #[export] Hint Constructors nodeLabels : main.
 
@@ -34,44 +34,62 @@ Module SimpleAdmissibilityGraph <: AdmissibilityGraph.
 
   Definition dependency (n1 n2 : node) :=
     match n1, n2 with
+    | Ingress, Ingress => True
+    | Ingress, Egress => True
+    | Ingress, A => True
+    | Ingress, B => True
+    | Ingress, C => True
+    | Egress, Ingress => False
+    | Egress, Egress => True
+    | Egress, A => True
+    | Egress, B => True
+    | Egress, C => True
+    | A, Ingress => True
+    | A, Egress => True
     | A, A => True
     | A, B => True
     | A, C => True
-    | A, D => False
+    | B, Ingress => True
+    | B, Egress => True
     | B, A => True
     | B, B => True
     | B, C => True
-    | B, D => False
+    | C, Ingress => True
+    | C, Egress => True
     | C, A => True
     | C, B => True
     | C, C => True
-    | C, D => True
-    | D, A => True
-    | D, B => True
-    | D, C => True
-    | D, D => True
     end.
 
   #[export] Hint Unfold dependency : main.
 
   Definition parent (n1 : node) (n2 : node) :=
     match n1, n2 with
+    | Ingress, Ingress => True
+    | Ingress, Egress => False
+    | Ingress, A => False
+    | Ingress, B => False
+    | Ingress, C => False
+    | Egress, Ingress => False
+    | Egress, Egress => True
+    | Egress, A => True
+    | Egress, B => True
+    | Egress, C => True
+    | A, Ingress => True
+    | A, Egress => False
     | A, A => True
-    | A, B => True
-    | A, C => True
-    | A, D => False
+    | A, B => False
+    | A, C => False
+    | B, Ingress => True
+    | B, Egress => False
     | B, A => False
     | B, B => True
     | B, C => False
-    | B, D => False
+    | C, Ingress => True
+    | C, Egress => False
     | C, A => False
     | C, B => False
     | C, C => True
-    | C, D => True
-    | D, A => False
-    | D, B => False
-    | D, C => False
-    | D, D => True
     end.
 
   #[export] Hint Unfold parent : main.
@@ -121,17 +139,13 @@ Module SimpleAdmissibilityGraph <: AdmissibilityGraph.
     clean.
     unfold admissible.
     destruct n1, n2; search; try (
-      exists A + exists B + exists C + exists D;
-      exists A + exists B + exists C + exists D;
+      exists Ingress + exists Egress + exists A + exists B + exists C;
+      exists Ingress + exists Egress + exists A + exists B + exists C;
       solve [search]
     ).
-    exists A, B.
-    split; search.
-    apply t_trans with (y := C); search.
   Qed.
 
   #[export] Hint Resolve admissibility : main.
-End SimpleAdmissibilityGraph.
+End SingleModule.
 
-Module SimpleAdmissibilityGraphTheorems :=
-  AdmissibilityGraphTheorems SimpleAdmissibilityGraph.
+Module ModuleTheorems := AdmissibilityGraphTheorems SingleModule.

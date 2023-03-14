@@ -102,9 +102,9 @@ flowchart TD
   c -.-> d
 ```
 
-We should check that the reflexivity and antisymmetry axioms are satisfied.
+First, we can check that the reflexivity and antisymmetry axioms are satisfied.
 
-- Every node is a parent (and child) of itself, per reflexivity. This can be interpreted as saying that every node is an implementation detail of itself. That may seem like a philosophical position, but we'll see [later](#special-cases-of-admissibility) that it has important practical consequences.
+- Reflexivity says every node is a parent (and child) of itself. This can be interpreted as saying that every node is an implementation detail of itself. That may seem like a philosophical position, but we'll see [later](#special-cases-of-admissibility) that it has important practical consequences.
 - Antisymmetry says there are no ancestry cycles. In this example, `A` is an ancestor of `D`, so `D` can't be an ancestor of `A`. The motivation for antisymmetry will become clear [below](#the-module-pattern).
 
 Now let's consider admissibility. In this example, `B` and `C` are considered implementation details of `A`, and `D` is an implementation detail of `C`. What dependencies could we add to this graph?
@@ -235,7 +235,7 @@ flowchart TD
   linkStyle 5 stroke:red
 ```
 
-This would accomplish the goal, however it has a crucial limitation. Suppose `A`, `B`, and `C` have implementation details `_A`, `_B`, and `_C`, respectively.
+This would accomplish the goal, but it has a major flaw. Suppose `A`, `B`, and `C` have implementation details `_A`, `_B`, and `_C`, respectively.
 
 ```mermaid
 ---
@@ -291,7 +291,7 @@ flowchart TD
   c -.-> i
 ```
 
-Then the ingress node can be placed in contexts where we want to allow external ndoes to depend on the contents of the module, and the egress node can be placed in contexts where we want the contents of the module to depend on external nodes.
+Then the ingress gateway can be placed in contexts where we want to allow external nodes to depend on the contents of the module, and the egress gateway can be placed in contexts where we want the contents of the module to depend on external nodes.
 
 ```mermaid
 flowchart TD
@@ -329,11 +329,11 @@ flowchart TD
   y --> c
 ```
 
-In this example, the external node `X` is a sibling of the egress node of the module, so module member `A` can depend on it. The external node `Y` is a sibling of the ingress node of the module, so it can depend on module member `C`.
+In this example, the external node `X` is a sibling of the egress gateway of the module, so module member `A` can depend on it. The external node `Y` is a sibling of the ingress gateway of the module, so it can depend on module member `C`.
 
 It's natural to wonder whether a single node could serve as both the ingress and egress gateways for the same module. However, that would violate antisymmetry.
 
-If we want to allow the contents of one module to depend on the contents of another, we can put the egress node of the former and the ingress node of the latter in a shared context.
+If we want to allow the contents of one module to depend on the contents of another, we can *bridge* the egress gateway of the former and the ingress gateway of the latter by giving them a common parent.
 
 ```mermaid
 flowchart TD
@@ -380,7 +380,7 @@ flowchart TD
 
 In this example, the contents of module `M` can depend on the contents of module `N` (as demonstrated by the dependency on `X` by `C`), but not vice versa. Mutual admissibility can be arranged by also bridging the ingress of `M` and the egress of `N`. In general, arbitrary admissibility relationships between modules can be configured by bridging the relevant gateways.
 
-Since we aren't using the ingress of `M` or the egress of `N`, we can simply delete them.
+Since we aren't using the ingress gateway of `M` or the egress gateway of `N`, we can simply delete them.
 
 ```mermaid
 flowchart TD
@@ -469,8 +469,8 @@ The second conclusion would seem to imply that admissibility is reflexive, which
 Another consequence of the admissibility axiom is that *a node is admitted by any children of its ancestors*. From this, we can also draw many conclusions, including some we've already seen:
 
 - A node is admitted by its own children.
-- A node is admitted by children of its parents (siblings), including itself.
-- A node is admitted by children of its grandparents ([piblings](https://www.dictionary.com/e/aunt-uncle-niece-nephew-words/)), including its own parents.
+- A node is admitted by children of its parents, including itself.
+- A node is admitted by children of its grandparents, including its own parents.
 - …
 - A node is admitted by its own ancestors.
 
