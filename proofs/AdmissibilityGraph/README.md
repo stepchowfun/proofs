@@ -43,7 +43,7 @@ An admissibility graph, like any [graph](https://en.wikipedia.org/wiki/Graph_\(d
 
 Admissibility graphs have two types of directed edges which are understood as [binary relations](https://en.wikipedia.org/wiki/Binary_relation) on nodes:
 
-- **Dependencies** are arbitrary connections between nodes. For example, dependencies might indicate functions calling other functions or microservices making RPCs to other microservices. A node can depend on multiple *target* nodes and can be depended on by multiple *source* nodes. A dependency is depicted as a solid arrow from a source to a target.
+- **Dependencies** are arbitrary connections between nodes. For example, dependencies might indicate functions calling other functions or microservices making [RPCs](https://en.wikipedia.org/wiki/Remote_procedure_call) to other microservices. A node can depend on multiple *target* nodes and can be depended on by multiple *source* nodes. A dependency is depicted as a solid arrow from a source to a target.
 
   ```mermaid
   ---
@@ -80,7 +80,7 @@ Before we can state the axioms, we must first define *ancestry* and *admissibili
 Admissibility graphs are required to satisfy three mathematical laws:
 
 - **Axiom (parent-child reflexivity).** Every node is a parent of itself.
-- **Axiom (ancestor antisymmetry).** If two nodes are ancestors of each other, then they're the same node.
+- **Axiom (ancestor antisymmetry).** No pair of distinct nodes are ancestors of each other.
 - **Axiom (dependency admissibility).** Every dependency is admissible.
 
 ## Examples
@@ -111,7 +111,7 @@ flowchart TD
 First, we can check that the reflexivity and antisymmetry axioms are satisfied.
 
 - Reflexivity says every node is a parent (and child) of itself. This can be interpreted as saying that every node is part of its own implementation. That may seem like a philosophical position, but we'll see [later](#special-cases-of-admissibility) that it has important practical consequences.
-- Antisymmetry says there are no ancestry cycles. In this example, `A` is an ancestor of `D`, so `D` can't be an ancestor of `A`. The motivation for antisymmetry will become clear [below](#the-module-pattern).
+- Antisymmetry says there are no ancestry cycles. For example, `A` is an ancestor of `D`, so `D` can't be an ancestor of `A`. The motivation for antisymmetry will become clear [below](#the-module-pattern).
 
 Now let's consider admissibility. In this example, `B` and `C` are considered implementation details of `A`, and `D` is an implementation detail of `C`. What dependencies could we add to this graph?
 
@@ -421,7 +421,7 @@ flowchart TD
   c --> x
 ```
 
-However, if you might need them in the future, you will have to add many parent-child relationships when you reintroduce them. So it may be better to leave the gateways in, even if you don't need them right away.
+However, if you might need them in the future, you'll have to add many parent-child relationships when you reintroduce them. So it may be better to leave the gateways in, even if you don't need them right away.
 
 We might try to simplify the graph as follows:
 
