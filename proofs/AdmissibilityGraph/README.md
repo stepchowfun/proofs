@@ -311,12 +311,12 @@ flowchart TD
   c -.-> i
 ```
 
-Then the egress gateway can be used to allow the contents of the module to depend on external nodes, and the ingress gateway can be used to allow external nodes to depend on the contents of the module.
+Then the egress gateway can be *bridged* with upstream dependencies by giving them a common parent, and likewise the ingress gateway can be bridged with downstream dependencies.
 
 ```mermaid
 flowchart TD
-  up([upstream])
-  down([downstream])
+  up(["bridge (upstream)"])
+  down(["bridge (downstream)"])
   e([egress])
   y([Y])
   a([A])
@@ -349,13 +349,13 @@ flowchart TD
   y --> c
 ```
 
-In this example, the external node `X` is a sibling of the egress gateway of the module, so module member `A` can depend on it. The external node `Y` is a sibling of the ingress gateway of the module, so it can depend on module member `C`.
+In this example, the upstream dependency `X` is a sibling of the egress gateway, so members of the module (e.g., `A`) can depend on it. The downstream dependency `Y` is a sibling of the ingress gateway, so it can depend on members of the module (e.g., `C`).
 
-It's natural to wonder whether a single node could serve as both the ingress and egress gateways for the same module. However, that would violate antisymmetry.
+It's natural to wonder whether a single node could serve as both the ingress and egress gateways for the same module. That would violate antisymmetry. However, it's legal to bridge an external node with both the ingress and egress gateways of a module when both directions are needed.
 
-#### Bridging modules together
+#### Bridging modules
 
-To allow the contents of one module to depend on the contents of another, we can *bridge* the egress gateway of the former and the ingress gateway of the latter by giving them a common parent.
+To allow the contents of one module to depend on the contents of another, we can bridge the egress gateway of the former and the ingress gateway of the latter:
 
 ```mermaid
 flowchart TD
@@ -400,9 +400,9 @@ flowchart TD
   c --> x
 ```
 
-In this example, the contents of module `M` can depend on the contents of module `N` (as demonstrated by the dependency on `X` by `C`), but not vice versa. Mutual admissibility can be arranged by also bridging the ingress of `M` and the egress of `N`. In general, arbitrary admissibility relationships between modules can be configured by bridging the relevant gateways.
+In this example, the contents of module `M` can depend on the contents of module `N` (as demonstrated by the dependency on `X` by `C`), but not vice versa. Mutual admissibility can be arranged by also bridging the ingress of `M` and the egress of `N`, possibly using the same bridge as before. In general, arbitrary admissibility relationships between modules can be configured by bridging gateways.
 
-#### Encapsulation within a module
+#### Modular encapsulation
 
 Suppose we want to make node `Y` a private implementation detail of module `N`, such that members of the other module `M` can't depend on it. We can simply disconnect `Y` from the ingress gateway of `N`.
 
