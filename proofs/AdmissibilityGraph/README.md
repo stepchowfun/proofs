@@ -111,9 +111,11 @@ flowchart TD
 First, we can check that the reflexivity and antisymmetry axioms are satisfied.
 
 - Reflexivity says every node is a parent (and child) of itself. This can be interpreted as saying that every node is part of its own implementation. That may seem like a philosophical position, but we'll see [later](#special-cases-of-admissibility) that it has important practical consequences.
-- Antisymmetry says there are no ancestry cycles. For example, `A` is an ancestor of `D`, so `D` can't be an ancestor of `A`. The motivation for antisymmetry will become clear [below](#modularity).
+- Antisymmetry says there are no ancestry cycles. For example, `A` is an ancestor of `D`, so `D` can't be an ancestor of `A`. The motivation for antisymmetry will become clear [below](#a-first-attempt).
 
 Now let's consider admissibility. In this example, `B` and `C` are considered implementation details of `A`, and `D` is an implementation detail of `C`. What dependencies could we add to this graph?
+
+#### Nodes can depend on their children
 
 A node should be able to depend on its implementation details. So, for every parent-child relationship, we can add a dependency on the child by the parent.
 
@@ -142,7 +144,9 @@ flowchart TD
   c --> d
 ```
 
-Furthermore, since `B` and `C` are both part of the implementation of `A`, they can depend on each other.
+#### Siblings can depend on each other
+
+Since `B` and `C` are both part of the implementation of `A`, they can depend on each other.
 
 ```mermaid
 flowchart TD
@@ -164,7 +168,9 @@ flowchart TD
   c --> b
 ```
 
-Since `C` is allowed to depend on `B`, the implementation of `C` should be allowed to depend on `B` as well. So `D` is allowed to depend on `B`.
+#### Nodes can depend on any nodes their parents can depend on
+
+Since `C` is allowed to depend on `B`, the implementation of `C` should be allowed to depend on `B` as well. So `D` can depend on `B`.
 
 ```mermaid
 flowchart TD
@@ -185,7 +191,9 @@ flowchart TD
   d --> b
 ```
 
-However, neither `A` nor `B` can depend on `D`, since `D` is an implementation detail of `C`.
+#### Nodes can't depend on their [niblings](https://www.merriam-webster.com/words-at-play/words-were-watching-nibling) in general
+
+Neither `A` nor `B` can depend on `D`, since `D` is an implementation detail of `C`.
 
 ```mermaid
 ---
@@ -215,9 +223,11 @@ flowchart TD
 
 ### Modularity
 
-We'd like to be able to group nodes together and manage them as a single unit from an admissibility perspective.
+We'd like to be able to group nodes together and manage them as a single unit from an admissibility perspective. For example, we might wish to allow a group of nodes to depend on another group of nodes, but not vice versa, and without quadratically many parent-child relationships. Is that possible?
 
-If we didn't have the antisymmetry axiom, we might try to arrange them in an ancestry cycle:
+#### A first attempt
+
+If we didn't have the antisymmetry axiom, we could try to group nodes together by arranging them in an ancestry cycle:
 
 ```mermaid
 ---
@@ -241,7 +251,7 @@ flowchart TD
   linkStyle 5 stroke:red
 ```
 
-This would accomplish the goal, but it has a major flaw. Suppose `A`, `B`, and `C` have implementation details `_A`, `_B`, and `_C`, respectively.
+This approach has a major flaw. Suppose `A`, `B`, and `C` have implementation details `_A`, `_B`, and `_C`, respectively.
 
 ```mermaid
 ---
@@ -271,9 +281,13 @@ flowchart TD
   linkStyle 5 stroke:red
 ```
 
-The problem is that any node in this graph can depend on any other node! For example, `A` can depend on internal node `_B`, which doesn't match our expectation that `_B` is encapsulated within `B`. Ancestry cycles are incompatible with encapsulation, so the antisymmetry axiom rules them out.
+The problem is that any node in this graph can depend on any other node! For example, `B` can depend on internal node `_A` since they are siblings, which doesn't match our expectation that `_A` is encapsulated within `A`. Ancestry cycles are incompatible with encapsulation, so the antisymmetry axiom rules them out.
 
-But what should we do instead? We can arrange the nodes into a *module* by introducing gateway nodes to manage ingress and egress.
+But what should we do instead?
+
+#### A proper module
+
+We can arrange the nodes into a *module* by introducing gateway nodes to manage ingress and egress.
 
 ```mermaid
 flowchart TD
@@ -297,7 +311,7 @@ flowchart TD
   c -.-> i
 ```
 
-Then the ingress gateway can be used to allow external nodes to depend on the contents of the module, and the egress gateway can be used to allow the contents of the module to depend on external nodes.
+Then the egress gateway can be used to allow the contents of the module to depend on external nodes, and the ingress gateway can be used to allow external nodes to depend on the contents of the module.
 
 ```mermaid
 flowchart TD
@@ -338,6 +352,8 @@ flowchart TD
 In this example, the external node `X` is a sibling of the egress gateway of the module, so module member `A` can depend on it. The external node `Y` is a sibling of the ingress gateway of the module, so it can depend on module member `C`.
 
 It's natural to wonder whether a single node could serve as both the ingress and egress gateways for the same module. However, that would violate antisymmetry.
+
+#### Bridging modules together
 
 To allow the contents of one module to depend on the contents of another, we can *bridge* the egress gateway of the former and the ingress gateway of the latter by giving them a common parent.
 
@@ -386,6 +402,8 @@ flowchart TD
 
 In this example, the contents of module `M` can depend on the contents of module `N` (as demonstrated by the dependency on `X` by `C`), but not vice versa. Mutual admissibility can be arranged by also bridging the ingress of `M` and the egress of `N`. In general, arbitrary admissibility relationships between modules can be configured by bridging the relevant gateways.
 
+#### Encapsulation within a module
+
 Suppose we want to make node `Y` a private implementation detail of module `N`, such that members of the other module `M` can't depend on it. We can simply disconnect `Y` from the ingress gateway of `N`.
 
 ```mermaid
@@ -432,7 +450,7 @@ flowchart TD
 
 ## Special cases of admissibility
 
-The admissibility axiom states that the target of a dependency must be an ancestor of a child of an ancestor of the source. In this section, we consider two common special cases of that criterion.
+A dependency is admissible when the target is an ancestor of a child of an ancestor of the source. In this section, we consider two common special cases of that criterion.
 
 ### Ancestors of children
 
@@ -444,7 +462,7 @@ A consequence of the admissibility axiom is that *a node is admitted by any ance
 - …
 - A node is admitted by its own ancestors.
 
-The second conclusion would seem to imply that admissibility is reflexive, which might make one wonder why the reflexivity axiom is needed. The complication is that this conclusion only follows when the node has children. The reflexivity axiom says it doesn't matter—every node has at least one child (itself).
+The second conclusion would seem to imply that admissibility is reflexive, which might make one wonder why the reflexivity axiom is needed. The complication is that this conclusion only applies when the node has children. The reflexivity axiom says it doesn't matter—every node has at least one child (itself).
 
 ### Children of ancestors
 
