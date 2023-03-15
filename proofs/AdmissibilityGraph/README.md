@@ -311,7 +311,7 @@ flowchart TD
   c -.-> i
 ```
 
-Then the egress gateway can be *bridged* with upstream dependencies by giving them a common parent, and likewise the ingress gateway can be bridged with downstream dependencies.
+Then the egress gateway can be *bridged* with upstream nodes by giving them a common parent, and likewise the ingress gateway can be bridged with downstream nodes.
 
 ```mermaid
 flowchart TD
@@ -349,7 +349,7 @@ flowchart TD
   y --> c
 ```
 
-In this example, the upstream dependency `X` is a sibling of the egress gateway, so members of the module (e.g., `A`) can depend on it. The downstream dependency `Y` is a sibling of the ingress gateway, so it can depend on members of the module (e.g., `C`).
+In this example, the upstream node `X` is a sibling of the egress gateway, so members of the module (e.g., `A`) can depend on it. The downstream node `Y` is a sibling of the ingress gateway, so it can depend on members of the module (e.g., `C`).
 
 It's natural to wonder whether a single node could serve as both the ingress and egress gateways for the same module. That would violate antisymmetry. However, it's legal to bridge an external node with both the ingress and egress gateways of a module when both directions are needed.
 
