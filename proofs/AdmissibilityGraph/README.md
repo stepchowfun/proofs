@@ -73,7 +73,7 @@ Admissibility graphs have two types of directed edges which are understood as [b
 Before we can state the axioms, we must first define *ancestry* and *admissibility*.
 
 - *Ancestry* is the [transitive closure](https://en.wikipedia.org/wiki/Transitive_closure) of the parent-child relation. We'll postulate below that the parent-child relation is [reflexive](https://en.wikipedia.org/wiki/Reflexive_relation), so ancestry is reflexive as well. All told, `A` is an *ancestor* of `D` (`D` is a *descendant* of `A`) when there is a path from `A` to `D` consisting of parent-child relationships oriented parent-to-child.
-- A node `T` *admits* a node `S` (`S` is *admitted by* `T`) when there is an ancestor `A` of `S` and a descendant `D` of `T` such that `A` is a parent of `D` (`D` is a child of `A`). A dependency is *admissible* when its target admits its source. Admissibility might seem mysterious at first, but we'll come to understand it through examples below.
+- A node `T` *admits* a node `S` (`S` is *admitted by* `T`) when there is an ancestor `A` of `S` and a descendant `D` of `T` such that `A` is a parent of `D`. A dependency is *admissible* when its target admits its source. Admissibility might seem mysterious at first, but we'll come to understand it through examples below.
 
 ### Axioms
 
