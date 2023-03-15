@@ -79,9 +79,9 @@ Before we can state the axioms, we must first define *ancestry* and *admissibili
 
 Admissibility graphs are required to satisfy three mathematical laws:
 
-- **Axiom (parent-child reflexivity).** Every node is a parent of itself.
-- **Axiom (ancestor antisymmetry).** No pair of distinct nodes are ancestors of each other.
-- **Axiom (dependency admissibility).** Every dependency is admissible.
+- **(Parent-child reflexivity)** Every node is a parent of itself.
+- **(Ancestor antisymmetry)** No pair of distinct nodes are ancestors of each other.
+- **(Dependency admissibility)** Every dependency is admissible.
 
 ## Examples
 
