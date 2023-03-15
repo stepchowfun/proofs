@@ -1,6 +1,6 @@
 # Admissibility graphs
 
-The theory of *admissibility graphs* is a mathematical framework for specifying [encapsulation](https://en.wikipedia.org/wiki/Encapsulation_\(computer_programming\)) boundaries in a system. This directory contains a formalization of the concept and [mechanized proofs](https://en.wikipedia.org/wiki/Proof_assistant) of some basic theorems about it. Below is an informal introduction to the idea. I hope you find it interesting!
+*Admissibility graphs* are a mathematical framework for specifying and enforcing [encapsulation](https://en.wikipedia.org/wiki/Encapsulation_\(computer_programming\)) boundaries in a system. This directory contains a formalization of the concept and [mechanized proofs](https://en.wikipedia.org/wiki/Proof_assistant) of some basic theorems about it. Below is an informal introduction to the idea. I hope you find it interesting!
 
 ## Motivation
 
@@ -21,11 +21,11 @@ flowchart TD
   main --> print
 ```
 
-For encapsulation purposes, we may wish to decree that `partition` is an implementation detail of `quicksort` and should not be called from any other function. In other words, we want to forbid any edges to `partition` in the call graph except the one from `quicksort`. How should a programmer express a policy like that?
+We can consider `partition` an implementation detail of `quicksort`, so it shouldn't be called by any other function. In other words, we want to refuse any new edges to `partition` in the call graph. How should a programmer express a policy like that?
 
-Of course, most programming languages already have mechanisms for encapsulation. Object-oriented programmers may think of [access modifiers](https://docs.oracle.com/javase/tutorial/java/javaOO/accesscontrol.html) like `public`, `private`, and `protected`, and concepts like "[friend classes](https://en.cppreference.com/w/cpp/language/friend)" in C++. Functional programmers may think of [module systems](https://jozefg.bitbucket.io/posts/2015-01-08-modules.html), [existential quantification](https://groups.seas.harvard.edu/courses/cs152/2014sp/lectures/lec17-existential.pdf), or [closures](https://en.wikipedia.org/wiki/Closure_\(computer_programming\)).
+Of course, most programming languages already have mechanisms for encapsulation. Object-oriented programmers may think of [access modifiers](https://docs.oracle.com/javase/tutorial/java/javaOO/accesscontrol.html) like `public`, `private`, and `protected`, and concepts like [friend classes](https://en.cppreference.com/w/cpp/language/friend) in C++. Functional programmers may think of [module systems](https://jozefg.bitbucket.io/posts/2015-01-08-modules.html), [existential quantification](https://groups.seas.harvard.edu/courses/cs152/2014sp/lectures/lec17-existential.pdf), or [closures](https://en.wikipedia.org/wiki/Closure_\(computer_programming\)).
 
-Those language features are specific types of encapsulation. In this tutorial, I'll introduce a general framework called *admissibility graphs* which can be used to model encapsulation in many different contexts. For example:
+Those language features are specific forms of encapsulation. In this tutorial, I'll introduce a general theory called *admissibility graphs* which can be used to model encapsulation in many different contexts. For example:
 
 - A cloud computing provider might use admissibility graphs as a form of [identity and access management](https://en.wikipedia.org/wiki/Identity_management).
 - A network engineer might specify firewall policies for a computing cluster with an admissibility graph.
@@ -35,7 +35,7 @@ Those language features are specific types of encapsulation. In this tutorial, I
 
 ## Definition
 
-Before we look at any particular admissibility graphs, allow me to first define the general concept.
+Before we look at any particular examples, allow me to first define the general concept.
 
 ### Data
 
@@ -215,7 +215,7 @@ flowchart TD
 
 ### Modularity
 
-We'd like to be able to group nodes together and treat them as a single unit from an admissibility perspective.
+We'd like to be able to group nodes together and manage them as a single unit from an admissibility perspective.
 
 If we didn't have the antisymmetry axiom, we might try to arrange them in an ancestry cycle:
 
@@ -271,7 +271,7 @@ flowchart TD
   linkStyle 5 stroke:red
 ```
 
-The problem with this architecture is that the internal nodes `_A`, `_B`, and `_C` admit every node in the graph! Ancestry cycles are incompatible with encapsulation, so the antisymmetry axiom rules them out.
+The problem is that any node in this graph can depend on any other node! For example, `A` can depend on internal node `_B`, which doesn't match our expectation that `_B` is encapsulated within `B`. Ancestry cycles are incompatible with encapsulation, so the antisymmetry axiom rules them out.
 
 But what should we do instead? We can arrange the nodes into a *module* by introducing gateway nodes to manage ingress and egress.
 
@@ -386,7 +386,7 @@ flowchart TD
 
 In this example, the contents of module `M` can depend on the contents of module `N` (as demonstrated by the dependency on `X` by `C`), but not vice versa. Mutual admissibility can be arranged by also bridging the ingress of `M` and the egress of `N`. In general, arbitrary admissibility relationships between modules can be configured by bridging the relevant gateways.
 
-Since we aren't using the ingress gateway of `M` or the egress gateway of `N`, we can simply delete them.
+Suppose we want to make node `Y` a private implementation detail of module `N`, such that members of the other module `M` can't depend on it. We can simply disconnect `Y` from the ingress gateway of `N`.
 
 ```mermaid
 flowchart TD
@@ -395,6 +395,8 @@ flowchart TD
   a([A])
   b([B])
   c([C])
+  mi(["ingress (M)"])
+  ne(["egress (N)"])
   x([X])
   y([Y])
   z([Z])
@@ -405,6 +407,8 @@ flowchart TD
   a -.-> a
   b -.-> b
   c -.-> c
+  mi -.-> mi
+  ne -.-> ne
   x -.-> x
   y -.-> y
   z -.-> z
@@ -414,45 +418,17 @@ flowchart TD
   me -.-> a
   me -.-> b
   me -.-> c
+  a -.-> mi
+  b -.-> mi
+  c -.-> mi
   bridge -.-> ni
+  ne -.-> x
+  ne -.-> y
+  ne -.-> z
   x -.-> ni
-  y -.-> ni
   z -.-> ni
   c --> x
 ```
-
-However, if you might need them in the future, you'll have to add many parent-child relationships when you reintroduce them. So it may be better to leave the gateways in, even if you don't need them right away.
-
-We might try to simplify the graph as follows:
-
-```mermaid
-flowchart TD
-  x([X])
-  y([Y])
-  z([Z])
-  bridge([bridge])
-  a([A])
-  b([B])
-  c([C])
-
-  bridge -.-> bridge
-  a -.-> a
-  b -.-> b
-  c -.-> c
-  x -.-> x
-  y -.-> y
-  z -.-> z
-
-  x -.-> bridge
-  y -.-> bridge
-  z -.-> bridge
-  bridge -.-> a
-  bridge -.-> b
-  bridge -.-> c
-  c --> x
-```
-
-Although this is a valid admissibility graph, it's probably not what you want. This graph would allow `A`, `B`, and `C` to depend on the implementation details of `X`, `Y`, and `Z` (if there were any).
 
 ## Special cases of admissibility
 

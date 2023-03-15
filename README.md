@@ -2,7 +2,7 @@
 
 [![Build status](https://github.com/stepchowfun/proofs/workflows/Continuous%20integration/badge.svg?branch=main)](https://github.com/stepchowfun/proofs/actions?query=branch%3Amain)
 
-This is my personal repository of formally verified mathematics, including results from category theory, type theory, domain theory, etc. Some of the developments constitute original research, such as [the first certified correctness proof of a surprising sorting algorithm](https://github.com/stepchowfun/proofs/tree/main/proofs/ICBICS) and [a general theory of encapsulation](https://github.com/stepchowfun/proofs/tree/main/proofs/AdmissibilityGraph). All the proofs are verified using the [Coq proof assistant](https://coq.inria.fr/).
+This is my personal repository of formally verified mathematics, including results from category theory, type theory, domain theory, etc., including some original research. All the proofs are verified using the [Coq proof assistant](https://coq.inria.fr/).
 
 If you want to set up your own repository of formally verified mathematics, you can simply fork this repository and replace the contents of the [`proofs`](https://github.com/stepchowfun/proofs/tree/main/proofs) directory with your own proofs. Setting up a Coq project from scratch is not particularly straightforward, so this scaffolding can save you time.
 
