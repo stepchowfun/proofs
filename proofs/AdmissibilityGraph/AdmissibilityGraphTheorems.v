@@ -26,8 +26,8 @@ Module AdmissibilityGraphTheorems (Graph : AdmissibilityGraph).
   #[local] Hint Resolve clos_trans_tn1 : main.
 
   (*
-    If some source can depend on some target, that source can depend on any
-    ancestor of that target as well.
+    If some target admits some source, any ancestor of that target admits that
+    source.
   *)
 
   Theorem ancestorAdmissibility :
@@ -43,8 +43,8 @@ Module AdmissibilityGraphTheorems (Graph : AdmissibilityGraph).
   #[export] Hint Resolve ancestorAdmissibility : main.
 
   (*
-    If some source can depend on some target, any descendant of that source can
-    depend on that target as well.
+    If some target admits some source, that target admits any descendant of
+    that source.
   *)
 
   Theorem descendantAdmissibility :
@@ -59,7 +59,7 @@ Module AdmissibilityGraphTheorems (Graph : AdmissibilityGraph).
 
   #[export] Hint Resolve descendantAdmissibility : main.
 
-  (* Nodes can depend on ancestors of their children. *)
+  (* Nodes are admitted by ancestors of their children. *)
 
   Theorem ancestorOfChildAdmissibility :
     forall n1 n2 n3, parent n1 n2 -> ancestor n3 n2 -> admissible n1 n3.
@@ -72,7 +72,7 @@ Module AdmissibilityGraphTheorems (Graph : AdmissibilityGraph).
 
   #[export] Hint Resolve ancestorOfChildAdmissibility : main.
 
-  (* Nodes can depend on children of their ancestors. *)
+  (* Nodes are admitted by children of their ancestors. *)
 
   Theorem childOfAncestorAdmissibility :
     forall n1 n2 n3, ancestor n1 n2 -> parent n1 n3 -> admissible n2 n3.
