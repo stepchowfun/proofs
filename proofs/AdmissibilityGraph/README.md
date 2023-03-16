@@ -389,48 +389,27 @@ In this example, the contents of module `M` can depend on the contents of module
 
 #### Modular encapsulation
 
-Suppose we want to make node `Y` a private implementation detail of module `N`, such that members of the other module `M` can't depend on it. We can simply disconnect `Y` from the ingress gateway of `N`.
+Suppose we want to make node `Y` a private implementation detail of module `N`, such that members of the other modules like `M` can't depend on it. We can simply disconnect `Y` from the ingress gateway of `N`.
 
 ```mermaid
 flowchart TD
-  bridge([bridge])
-  me(["egress (M)"])
-  a([A])
-  b([B])
-  c([C])
-  mi(["ingress (M)"])
   ne(["egress (N)"])
   x([X])
   y([Y])
   z([Z])
   ni(["ingress (N)"])
 
-  bridge -.-> bridge
-  me -.-> me
-  a -.-> a
-  b -.-> b
-  c -.-> c
-  mi -.-> mi
   ne -.-> ne
   x -.-> x
   y -.-> y
   z -.-> z
   ni -.-> ni
 
-  bridge -.-> me
-  me -.-> a
-  me -.-> b
-  me -.-> c
-  a -.-> mi
-  b -.-> mi
-  c -.-> mi
-  bridge -.-> ni
   ne -.-> x
   ne -.-> y
   ne -.-> z
   x -.-> ni
   z -.-> ni
-  c --> x
 ```
 
 ## Special cases of admissibility
