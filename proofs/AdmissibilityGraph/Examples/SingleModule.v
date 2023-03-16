@@ -125,11 +125,10 @@ Module SingleModule <: AdmissibilityGraph.
       end.
 
     clean.
-    apply clos_trans_tn1 in H.
-    apply clos_trans_tn1 in H0.
-    destruct n1, n2; search;
-      try solve [eliminate H; eliminate H1];
-      try solve [eliminate H0; eliminate H1].
+    apply clos_trans_tn1 in H, H0.
+    destruct n1, n2; solve [
+      reflexivity + eliminate H + eliminate H0; solve [eliminate H1]
+    ].
   Qed.
 
   #[export] Hint Resolve antisymmetry : main.
@@ -141,7 +140,14 @@ Module SingleModule <: AdmissibilityGraph.
     destruct n1, n2; search; try (
       exists Ingress + exists Egress + exists A + exists B + exists C;
       exists Ingress + exists Egress + exists A + exists B + exists C;
-      solve [search]
+      split; search; solve [
+        apply t_trans with (y := Ingress) +
+        apply t_trans with (y := Egress) +
+        apply t_trans with (y := A) +
+        apply t_trans with (y := B) +
+        apply t_trans with (y := C);
+        solve [search]
+      ]
     ).
   Qed.
 
