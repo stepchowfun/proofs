@@ -31,8 +31,7 @@ Module Type AdmissibilityGraph.
 
   (*
     A dependency on a target by a source is *admissible* if some ancestor of
-    the source is a parent of some descendant of the target. In other words,
-    descendants of a node may depend on ancestors of the children of that node.
+    the source is a parent of some descendant of the target.
   *)
 
   Definition admissible n1 n2 :=
