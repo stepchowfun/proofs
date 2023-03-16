@@ -4,34 +4,9 @@
 
 ## Motivation
 
-Imagine a sorting program that reads in some lines of text and prints them out in lexicographical order. A [static call graph](https://en.wikipedia.org/wiki/Call_graph) for that program would show how the functions in the program depend on each other:
+Most programming languages have some support for [encapsulation](https://en.wikipedia.org/wiki/Encapsulation_\(computer_programming\)), such as [access modifiers](https://en.wikipedia.org/wiki/Access_modifiers) (`public`, `private`, etc.), [module systems](https://jozefg.bitbucket.io/posts/2015-01-08-modules.html), [existential types](https://groups.seas.harvard.edu/courses/cs152/2014sp/lectures/lec17-existential.pdf), and [closures](https://en.wikipedia.org/wiki/Closure_\(computer_programming\)). Encapsulation is a versatile concept in system design and isn't limited to just programming language features. For example, in a microservices architecture, it's common for a service to have its own database, with all access to that data being mediated by the service for the purposes of maintaining invariants and presenting a clear interface to downstream dependencies. In this tutorial, I'll introduce a general mathematical theory called *admissibility graphs* which can be used to model encapsulation in many different situations.
 
-```mermaid
-flowchart TD
-  main([main])
-  read([read_line])
-  quicksort([quicksort])
-  partition([partition])
-  print([print_line])
-
-  main --> quicksort
-  quicksort --> partition
-  quicksort --> quicksort
-  main --> read
-  main --> print
-```
-
-We can consider `partition` an implementation detail of `quicksort`, so it shouldn't be called by any other function. In other words, we want to refuse any new edges to `partition` in the call graph. How should a programmer express a policy like that?
-
-Of course, most programming languages already have mechanisms for encapsulation. Object-oriented programmers may think of [access modifiers](https://docs.oracle.com/javase/tutorial/java/javaOO/accesscontrol.html) like `public`, `private`, and `protected`, and concepts like [friend classes](https://en.cppreference.com/w/cpp/language/friend) in C++. Functional programmers may think of [module systems](https://jozefg.bitbucket.io/posts/2015-01-08-modules.html), [existential quantification](https://groups.seas.harvard.edu/courses/cs152/2014sp/lectures/lec17-existential.pdf), or [closures](https://en.wikipedia.org/wiki/Closure_\(computer_programming\)).
-
-Those language features are specific forms of encapsulation. In this tutorial, I'll introduce a general theory called *admissibility graphs* which can be used to model encapsulation in many different contexts. For example:
-
-- A cloud computing provider might use admissibility graphs as a form of [identity and access management](https://en.wikipedia.org/wiki/Identity_management).
-- A network engineer might specify firewall policies for a computing cluster with an admissibility graph.
-- A productivity application might encode sharing and editing permissions in an admissibility graph.
-- A programming language might have a module system inspired by admissibility graphs.
-- A [visual programming language](https://en.wikipedia.org/wiki/Visual_programming_language) might present its syntax as an admissibility graph.
+Time will tell how useful this concept ends up being, but I believe it sheds new light on the relationship between *dependencies* and *implementation details* and enables us to reason about these notions in a rigorous way.
 
 ## Definition
 
@@ -73,7 +48,7 @@ Admissibility graphs have two types of directed edges which are understood as [b
 Before we can state the axioms, we must first define *ancestry* and *admissibility*.
 
 - *Ancestry* is the [transitive closure](https://en.wikipedia.org/wiki/Transitive_closure) of the parent-child relation. We'll postulate below that the parent-child relation is [reflexive](https://en.wikipedia.org/wiki/Reflexive_relation), so ancestry is reflexive as well. All told, `A` is an *ancestor* of `D` (`D` is a *descendant* of `A`) when there is a path from `A` to `D` consisting of parent-child relationships oriented parent-to-child.
-- A node `T` *admits* a node `S` (`S` is *admitted by* `T`) when there is an ancestor `A` of `S` and a descendant `D` of `T` such that `A` is a parent of `D`. A dependency is *admissible* when its target admits its source. Admissibility might seem mysterious at first, but we'll come to understand it through examples below.
+- A node `T` *admits* a node `S` (`S` is *admitted by* `T`) when there is an ancestor `A` of `S` and a descendant `D` of `T` such that `A` is a parent of `D`. A dependency is *admissible* when the target admits the source. Admissibility might seem mysterious at first, but we'll come to understand it through examples below.
 
 ### Axioms
 
@@ -82,6 +57,8 @@ Admissibility graphs are required to satisfy three mathematical laws:
 - **(Parent-child reflexivity)** Every node is a parent of itself.
 - **(Ancestor antisymmetry)** No pair of distinct nodes are ancestors of each other.
 - **(Dependency admissibility)** Every dependency is admissible.
+
+The reasoning behind these axioms will be explained below.
 
 ## Examples
 
@@ -111,13 +88,13 @@ flowchart TD
 First, we can check that the reflexivity and antisymmetry axioms are satisfied.
 
 - Reflexivity says every node is a parent (and child) of itself. This can be interpreted as saying that every node is part of its own implementation. That may seem like a philosophical position, but we'll see [later](#special-cases-of-admissibility) that it has important practical consequences.
-- Antisymmetry says there are no ancestry cycles. For example, `A` is an ancestor of `D`, so `D` can't be an ancestor of `A`. The motivation for antisymmetry will become clear [below](#a-first-attempt).
+- Antisymmetry says there are no ancestry cycles other than the reflexivity loops. For example, `A` is an ancestor of `D`, so `D` can't be an ancestor of `A`. The motivation for antisymmetry will become clear [below](#a-first-attempt).
 
 Now let's consider admissibility. In this example, `B` and `C` are considered implementation details of `A`, and `D` is an implementation detail of `C`. What dependencies could we add to this graph?
 
 #### Nodes can depend on their children
 
-A node should be able to depend on its implementation details. So, for every parent-child relationship, we can add a dependency on the child by the parent.
+Intuitively, a node should be able to depend on its implementation details. So, for every parent-child relationship, we can add a dependency on the child by the parent.
 
 ```mermaid
 flowchart TD
@@ -143,6 +120,14 @@ flowchart TD
   a --> c
   c --> d
 ```
+
+We should check that these dependencies are admissible. Recall:
+
+> A node `T` *admits* a node `S` (`S` is *admitted by* `T`) when there is an ancestor `A` of `S` and a descendant `D` of `T` such that `A` is a parent of `D`. A dependency is *admissible* when the target admits the source.
+
+In this case, let `A` = `S` and `D` = `T`, which is justified by reflexivity. Then the definition simply asks that the source is a parent of the target.
+
+Going forward, I'll skip over the justification of each example, and trust that the reader can verify that the axioms are satisfied.
 
 #### Siblings can depend on each other
 
@@ -281,7 +266,7 @@ flowchart TD
   linkStyle 5 stroke:red
 ```
 
-The problem is that any node in this graph can depend on any other node! For example, `B` can depend on internal node `_A` since they are siblings, which doesn't match our expectation that `_A` is encapsulated within `A`. Ancestry cycles are incompatible with encapsulation, so the antisymmetry axiom rules them out.
+The problem is that any node in this graph can depend on the implementation details of the other nodes! For example, `B` can depend on internal node `_A` since they are siblings, which doesn't match our expectation that `_A` is encapsulated within `A`. Ancestry cycles are incompatible with encapsulation, so the antisymmetry axiom rules them out.
 
 But what should we do instead?
 
