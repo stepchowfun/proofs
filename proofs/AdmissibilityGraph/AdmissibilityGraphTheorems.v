@@ -59,6 +59,18 @@ Module AdmissibilityGraphTheorems (Graph : AdmissibilityGraph).
 
   #[export] Hint Resolve descendantAdmissibility : main.
 
+  (* Nodes are admitted by themselves. *)
+
+  Theorem selfAdmissibility : forall n, admissible n n.
+  Proof.
+    clean.
+    unfold admissible.
+    exists n, n.
+    search.
+  Qed.
+
+  #[export] Hint Resolve selfAdmissibility : main.
+
   (* Nodes are admitted by ancestors of their children. *)
 
   Theorem ancestorOfChildAdmissibility :
