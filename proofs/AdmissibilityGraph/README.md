@@ -446,11 +446,11 @@ In this section, I'll describe an algorithm for deciding whether an admissibilit
 
 1. The *parent-child reflexivity* axiom is easy to verify by checking each node individually. This takes O(N) time and O(1) space.
 2. Verifying the *ancestor antisymmetry* axiom amounts to detecting non-loop cycles in the graph induced by the parent-child relationships. This can be done by checking for back edges via depth-first search (DFS) in O(N + E) time and O(N) space. The search may need to be restarted at different starting nodes to cover the entire graph; this doesn't affect the asymptotic analysis.
-3. The third axiom, *dependency admissibility*, is the trickiest to verify. Define a new graph as follows:
+3. The third axiom, *dependency admissibility*, is the trickiest to verify. Define an auxiliary graph as follows:
 
-   - For every node N in the admissibility graph, the new graph will have two nodes N₁ and N₂.
-   - For every parent-child relationship P → C, the new graph will have edges C₁ → P₁, C₂ → P₂, and P₁ → C₂.
+   - For every node N in the admissibility graph, the auxiliary graph will have two nodes N₁ and N₂.
+   - For every parent-child relationship P → C, the auxiliary graph will have edges C₁ → P₁, C₂ → P₂, and P₁ → C₂.
 
-   Then, to check that a dependency S → T is admissible, it suffices to check that T₂ is reachable from S₁ in the new graph. This can be done with DFS in O(N + E) time and O(N) space. If we traverse all the nodes T₂ reachable from some source S₁ (e.g., with a depth-first strategy), we discover all the nodes which admit that source, again in O(N + E) time and O(N) space. By doing this for every source S₁, we can discover all the admissible dependencies in the admissibility graph. Any dependencies which weren't discovered aren't admissible. The total time complexity is O(N² + NE), and the space complexity is O(N + D).
+   Then, to check that a dependency S → T is admissible, it suffices to check that T₂ is reachable from S₁ in the auxiliary graph. This can be done with DFS in O(N + E) time and O(N) space. If we traverse all the nodes T₂ reachable from some source S₁ (e.g., with a depth-first strategy), we discover all the nodes which admit that source, again in O(N + E) time and O(N) space. By doing this for every source S₁, we can discover all the admissible dependencies in the admissibility graph. Any dependencies which weren't discovered aren't admissible. The total time complexity is O(N² + NE), and the space complexity is O(N + D).
 
 So, determining whether an admissibility graph is valid can be done in O(N² + NE) time and O(N + D) space.
