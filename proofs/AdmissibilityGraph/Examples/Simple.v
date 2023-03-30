@@ -57,20 +57,20 @@ Module Simple <: AdmissibilityGraph.
   Definition parent (n1 : node) (n2 : node) :=
     match n1, n2 with
     | A, A => True
-    | A, B => True
-    | A, C => True
-    | A, D => False
-    | B, A => False
-    | B, B => True
-    | B, C => False
-    | B, D => False
-    | C, A => False
-    | C, B => False
-    | C, C => True
-    | C, D => True
+    | B, A => True
+    | C, A => True
     | D, A => False
+    | A, B => False
+    | B, B => True
+    | C, B => False
     | D, B => False
-    | D, C => False
+    | A, C => False
+    | B, C => False
+    | C, C => True
+    | D, C => True
+    | A, D => False
+    | B, D => False
+    | C, D => False
     | D, D => True
     end.
 
@@ -83,7 +83,7 @@ Module Simple <: AdmissibilityGraph.
 
   (* Coq requires that we copy this verbatim from `AdmissibilityGraph`. *)
   Definition admissible n1 n2 :=
-    exists n3 n4, ancestor n3 n1 /\ parent n3 n4 /\ ancestor n2 n4.
+    exists n3 n4, ancestor n1 n3 /\ parent n4 n3 /\ ancestor n4 n2.
 
   #[export] Hint Unfold admissible : main.
 

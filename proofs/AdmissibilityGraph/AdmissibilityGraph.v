@@ -19,7 +19,7 @@ Module Type AdmissibilityGraph.
 
   Parameter dependency : node -> node -> Prop.
 
-  (* Nodes may also be related via *parent-child* relationships. *)
+  (* Nodes may also be related via *child-parent* relationships. *)
 
   Parameter parent : node -> node -> Prop.
 
@@ -35,7 +35,7 @@ Module Type AdmissibilityGraph.
   *)
 
   Definition admissible n1 n2 :=
-    exists n3 n4, ancestor n3 n1 /\ parent n3 n4 /\ ancestor n2 n4.
+    exists n3 n4, ancestor n1 n3 /\ parent n4 n3 /\ ancestor n4 n2.
 
   #[export] Hint Unfold admissible : main.
 
