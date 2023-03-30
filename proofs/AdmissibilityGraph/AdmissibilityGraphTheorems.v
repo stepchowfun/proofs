@@ -31,7 +31,7 @@ Module AdmissibilityGraphTheorems (Graph : AdmissibilityGraph).
   *)
 
   Theorem ancestorAdmissibility :
-    forall n1 n2 n3, admissible n1 n2 -> ancestor n3 n2 -> admissible n1 n3.
+    forall n1 n2 n3, admissible n1 n2 -> ancestor n2 n3 -> admissible n1 n3.
   Proof.
     unfold admissible.
     clean.
@@ -48,7 +48,7 @@ Module AdmissibilityGraphTheorems (Graph : AdmissibilityGraph).
   *)
 
   Theorem descendantAdmissibility :
-    forall n1 n2 n3, admissible n1 n2 -> ancestor n1 n3 -> admissible n3 n2.
+    forall n1 n2 n3, admissible n1 n2 -> ancestor n3 n1 -> admissible n3 n2.
   Proof.
     unfold admissible.
     clean.
@@ -74,11 +74,11 @@ Module AdmissibilityGraphTheorems (Graph : AdmissibilityGraph).
   (* Nodes are admitted by ancestors of their children. *)
 
   Theorem ancestorOfChildAdmissibility :
-    forall n1 n2 n3, parent n1 n2 -> ancestor n3 n2 -> admissible n1 n3.
+    forall n1 n2 n3, parent n1 n2 -> ancestor n1 n3 -> admissible n2 n3.
   Proof.
     clean.
     unfold admissible.
-    exists n1, n2.
+    exists n2, n1.
     search.
   Qed.
 
@@ -87,7 +87,7 @@ Module AdmissibilityGraphTheorems (Graph : AdmissibilityGraph).
   (* Nodes are admitted by children of their ancestors. *)
 
   Theorem childOfAncestorAdmissibility :
-    forall n1 n2 n3, ancestor n1 n2 -> parent n1 n3 -> admissible n2 n3.
+    forall n1 n2 n3, parent n1 n2 -> ancestor n3 n2 -> admissible n3 n1.
   Proof.
     eSearch.
   Qed.

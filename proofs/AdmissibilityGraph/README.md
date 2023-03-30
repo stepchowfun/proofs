@@ -30,31 +30,31 @@ Admissibility graphs have two types of directed edges which are understood as [b
 
     source --> target
   ```
-- **Parent-child relationships** specify when nodes are considered to be encapsulated within other nodes. These relationships indirectly determine which dependencies are allowed between nodes. A node can have multiple *parent* nodes and multiple *child* nodes. A parent-child relationship is depicted as a dotted arrow from a parent to a child.
+- **Child-parent relationships** specify when nodes are considered to be encapsulated within other nodes. These relationships indirectly determine which dependencies are allowed between nodes. A node can have multiple *parent* nodes and multiple *child* nodes. A child-parent relationship is depicted as a dotted arrow from a child to a parent.
 
   ```mermaid
   ---
-  title: Parent-child relationship
+  title: Child-parent relationship
   ---
   flowchart LR
-    parent([parent])
     child([child])
+    parent([parent])
 
-    parent -.-> child
+    child -.-> parent
   ```
 
 ### Ancestry and admissibility
 
 Before we can state the axioms, we must first define *ancestry* and *admissibility*.
 
-- *Ancestry* is the [transitive closure](https://en.wikipedia.org/wiki/Transitive_closure) of the parent-child relation. We'll postulate below that the parent-child relation is [reflexive](https://en.wikipedia.org/wiki/Reflexive_relation), so ancestry is reflexive as well. All told, `A` is an *ancestor* of `D` (`D` is a *descendant* of `A`) when there is a path from `A` to `D` consisting of parent-child relationships oriented parent-to-child.
-- A node `T` *admits* a node `S` (`S` is *admitted by* `T`) when there is an ancestor `A` of `S` and a descendant `D` of `T` such that `A` is a parent of `D`. A dependency is *admissible* when the target admits the source. Admissibility might seem mysterious at first, but we'll come to understand it through examples below.
+- *Ancestry* is the [transitive closure](https://en.wikipedia.org/wiki/Transitive_closure) of the child-parent relation. We'll postulate below that the child-parent relation is [reflexive](https://en.wikipedia.org/wiki/Reflexive_relation), so ancestry is reflexive as well. All told, `A` is an *ancestor* of `D` (`D` is a *descendant* of `A`) when there is a path from `D` to `A` via child-parent relationships.
+- A node `T` *admits* a node `S` (`S` is *admitted by* `T`) when there is an ancestor `A` of `S` and a descendant `D` of `T` such that `A` is a parent of `D`. All told, `T` *admits* `S` when there is a path from `S` to `T` via parent-child relationships in which one of the relationships is flipped. A dependency is *admissible* when the target admits the source. Admissibility might seem mysterious at first, but we'll come to understand it through examples below.
 
 ### Axioms
 
 Admissibility graphs are required to satisfy three mathematical laws:
 
-- **(Parent-child reflexivity)** Every node is a parent of itself.
+- **(Child-parent reflexivity)** Every node is a parent of itself.
 - **(Ancestor antisymmetry)** No pair of distinct nodes are ancestors of each other.
 - **(Dependency admissibility)** Every dependency is admissible.
 
@@ -66,10 +66,10 @@ To explore the consequences of the axioms and build intuition for them, let's lo
 
 ### Admissibility basics
 
-Let's start with the following admissibility graph, which has some parent-child relationships but no dependencies.
+Let's start with the following admissibility graph, which has some child-parent relationships but no dependencies.
 
 ```mermaid
-flowchart TD
+flowchart BT
   a([A])
   b([B])
   c([C])
@@ -80,9 +80,9 @@ flowchart TD
   c -.-> c
   d -.-> d
 
-  a -.-> b
-  a -.-> c
-  c -.-> d
+  b -.-> a
+  c -.-> a
+  d -.-> c
 ```
 
 First, we can check that the reflexivity and antisymmetry axioms are satisfied.
@@ -94,10 +94,10 @@ Now let's consider admissibility. In this example, `B` and `C` are considered im
 
 #### Nodes can depend on their children
 
-Intuitively, a node should be able to depend on its implementation details. So, for every parent-child relationship, we can add a dependency on the child by the parent.
+Intuitively, a node should be able to depend on its implementation details. So, for every child-parent relationship, we can add a dependency on the child by the parent.
 
 ```mermaid
-flowchart TD
+flowchart TB
   a([A])
   b([B])
   c([C])
@@ -108,9 +108,9 @@ flowchart TD
   c -.-> c
   d -.-> d
 
-  a -.-> b
-  a -.-> c
-  c -.-> d
+  b -.-> a
+  c -.-> a
+  d -.-> c
 
   a --> a
   b --> b
@@ -134,7 +134,7 @@ Going forward, I'll skip over the justification of each example, and trust that 
 Since `B` and `C` are both part of the implementation of `A`, they can depend on each other.
 
 ```mermaid
-flowchart TD
+flowchart BT
   a([A])
   b([B])
   c([C])
@@ -143,14 +143,15 @@ flowchart TD
   a -.-> a
   b -.-> b
   c -.-> c
-  d -.-> d
-
-  a -.-> b
-  a -.-> c
-  c -.-> d
+  
+  b -.-> a
+  c -.-> a
 
   b --> c
   c --> b
+
+  d -.-> d
+  d -.-> c
 ```
 
 #### Nodes can depend on any nodes their parents can depend on
@@ -158,7 +159,7 @@ flowchart TD
 Since `C` is allowed to depend on `B`, the implementation of `C` should be allowed to depend on `B` as well. So `D` can depend on `B`.
 
 ```mermaid
-flowchart TD
+flowchart BT
   a([A])
   b([B])
   c([C])
@@ -169,22 +170,22 @@ flowchart TD
   c -.-> c
   d -.-> d
 
-  a -.-> b
-  a -.-> c
-  c -.-> d
+  b -.-> a
+  c -.-> a
+  d -.-> c
 
   d --> b
 ```
 
-#### Nodes can't depend on their [niblings](https://www.merriam-webster.com/words-at-play/words-were-watching-nibling) in general
+#### Nodes can't depend on their [niblings](https://www.merriam-webster.com/words-at-play/words-were-watching-nibling) or grandchildren in general
 
-Neither `A` nor `B` can depend on `D`, since `D` is an implementation detail of `C`.
+`A` can't depend on `D`, since `D` is an implementation detail of `C`.
 
 ```mermaid
 ---
 title: (Invalid)
 ---
-flowchart TD
+flowchart TB
   a([A])
   b([B])
   c([C])
@@ -195,20 +196,44 @@ flowchart TD
   c -.-> c
   d -.-> d
 
-  a -.-> b
-  a -.-> c
-  c -.-> d
+  b -.-> a
+  c -.-> a
+  d -.-> c
 
   a -->|Not admissible| d
+
+  linkStyle 7 stroke:red
+```
+
+`B` can't depend on `D` for the same reason.
+
+```mermaid
+---
+title: (Invalid)
+---
+flowchart BT
+  a([A])
+  b([B])
+  c([C])
+  d([D])
+
+  a -.-> a
+  b -.-> b
+  c -.-> c
+  d -.-> d
+
+  b -.-> a
+  c -.-> a
+  d -.-> c
+
   b -->|Not admissible| d
 
   linkStyle 7 stroke:red
-  linkStyle 8 stroke:red
 ```
 
 ### Modularity
 
-We'd like to be able to group nodes together and manage them as a single unit from an admissibility perspective. For example, we might wish to allow a group of nodes to depend on another group of nodes, but not vice versa, and without quadratically many parent-child relationships. Is that possible?
+We'd like to be able to group nodes together and manage them as a single unit from an admissibility perspective. For example, we might wish to allow a group of nodes to depend on another group of nodes, but not vice versa, and without quadratically many child-parent relationships. Is that possible?
 
 #### A first attempt
 
@@ -218,10 +243,10 @@ If we didn't have the antisymmetry axiom, we could try to group nodes together b
 ---
 title: (Invalid)
 ---
-flowchart TD
+flowchart LR
+  c([C])
   a([A])
   b([B])
-  c([C])
 
   a -.-> a
   b -.-> b
@@ -242,7 +267,7 @@ This approach has a major flaw. Suppose `A`, `B`, and `C` have implementation de
 ---
 title: (Invalid)
 ---
-flowchart TD
+flowchart TB
   a([A])
   b([B])
   c([C])
@@ -275,7 +300,7 @@ But what should we do instead?
 We can arrange the nodes into a *module* by introducing gateway nodes to manage ingress and egress.
 
 ```mermaid
-flowchart TD
+flowchart BT
   e([egress])
   a([A])
   b([B])
@@ -288,27 +313,27 @@ flowchart TD
   c -.-> c
   i -.-> i
 
-  e -.-> a
-  e -.-> b
-  e -.-> c
-  a -.-> i
-  b -.-> i
-  c -.-> i
+  a -.-> e
+  b -.-> e
+  c -.-> e
+  i -.-> a
+  i -.-> b
+  i -.-> c
 ```
 
 Then the egress gateway can be *bridged* with upstream nodes by giving them a common parent, and likewise the ingress gateway can be bridged with downstream nodes.
 
 ```mermaid
-flowchart TD
+flowchart BT
   up(["bridge (upstream)"])
-  down(["bridge (downstream)"])
   e([egress])
-  y([Y])
+  x([X])
   a([A])
   b([B])
   c([C])
-  x([X])
+  y([Y])
   i([ingress])
+  down(["bridge (downstream)"])
 
   up -.-> up
   down -.-> down
@@ -320,16 +345,16 @@ flowchart TD
   x -.-> x
   i -.-> i
 
-  up -.-> x
-  up -.-> e
-  down -.-> y
-  down -.-> i
-  e -.-> a
-  e -.-> b
-  e -.-> c
-  a -.-> i
-  b -.-> i
-  c -.-> i
+  x -.-> up
+  e -.-> up
+  i -.-> down
+  y -.-> down
+  a -.-> e
+  b -.-> e
+  c -.-> e
+  i -.-> a
+  i -.-> b
+  i -.-> c
   a --> x
   y --> c
 ```
@@ -343,7 +368,7 @@ It's natural to wonder whether a single node could serve as both the ingress and
 To allow the contents of one module to depend on the contents of another, we can bridge the egress gateway of the former and the ingress gateway of the latter:
 
 ```mermaid
-flowchart TD
+flowchart BT
   bridge([bridge])
   me(["egress (M)"])
   a([A])
@@ -368,21 +393,21 @@ flowchart TD
   z -.-> z
   ni -.-> ni
 
-  bridge -.-> me
-  me -.-> a
-  me -.-> b
-  me -.-> c
-  a -.-> mi
-  b -.-> mi
-  c -.-> mi
-  bridge -.-> ni
-  ne -.-> x
-  ne -.-> y
-  ne -.-> z
-  x -.-> ni
-  y -.-> ni
-  z -.-> ni
   c --> x
+  me -.-> bridge
+  a -.-> me
+  b -.-> me
+  c -.-> me
+  mi -.-> a
+  mi -.-> b
+  mi -.-> c
+  ni -.-> bridge
+  x -.-> ne
+  y -.-> ne
+  z -.-> ne
+  ni -.-> x
+  ni -.-> y
+  ni -.-> z
 ```
 
 In this example, the contents of module `M` can depend on the contents of module `N` (as demonstrated by the dependency on `X` by `C`), but not vice versa. Mutual admissibility can be arranged by also bridging the ingress of `M` and the egress of `N`, possibly using the same bridge as before. In general, arbitrary admissibility relationships between modules can be configured by bridging gateways.
@@ -392,7 +417,7 @@ In this example, the contents of module `M` can depend on the contents of module
 Suppose we want to make node `Y` a private implementation detail of module `N`, such that members of the other modules like `M` can't depend on it. We can simply disconnect `Y` from the ingress gateway of `N`.
 
 ```mermaid
-flowchart TD
+flowchart BT
   ne(["egress (N)"])
   x([X])
   y([Y])
@@ -405,11 +430,11 @@ flowchart TD
   z -.-> z
   ni -.-> ni
 
-  ne -.-> x
-  ne -.-> y
-  ne -.-> z
-  x -.-> ni
-  z -.-> ni
+  x -.-> ne
+  y -.-> ne
+  z -.-> ne
+  ni -.-> x 
+  ni -.-> z 
 ```
 
 ## Special cases of admissibility
@@ -442,14 +467,14 @@ As before, the second conclusion seems to imply that admissibility is reflexive,
 
 ## Deciding admissibility
 
-In this section, I'll describe an algorithm for deciding whether an admissibility graph is valid according to the three axioms. Let N be the number of nodes, let E be the number of parent-child relationships, and let D be the number of dependencies.
+In this section, I'll describe an algorithm for deciding whether an admissibility graph is valid according to the three axioms. Let N be the number of nodes, let E be the number of child-parent relationships, and let D be the number of dependencies.
 
-1. The *parent-child reflexivity* axiom is easy to verify by checking each node individually. This takes 𝒪(N) time and 𝒪(1) space.
-2. Verifying the *ancestor antisymmetry* axiom amounts to detecting non-loop cycles in the graph induced by the parent-child relationships. This can be done by checking for back edges via depth-first search (DFS) in 𝒪(N + E) time and 𝒪(N) space. The search may need to be restarted at different starting nodes to cover the entire graph; this doesn't affect the asymptotic analysis.
+1. The *child-parent reflexivity* axiom is easy to verify by checking each node individually. This takes 𝒪(N) time and 𝒪(1) space.
+2. Verifying the *ancestor antisymmetry* axiom amounts to detecting non-loop cycles in the graph induced by the child-parent relationships. This can be done by checking for back edges via depth-first search (DFS) in 𝒪(N + E) time and 𝒪(N) space. The search may need to be restarted at different starting nodes to cover the entire graph; this doesn't affect the asymptotic analysis.
 3. To verify the *dependency admissibility* axiom, define an auxiliary graph as follows:
 
    - For every node N in the admissibility graph, the auxiliary graph will have two nodes N₁ and N₂.
-   - For every parent-child relationship P → C, the auxiliary graph will have edges C₁ → P₁, C₂ → P₂, and P₁ → C₂.
+   - For every child-parent relationship C → P, the auxiliary graph will have edges C₁ → P₁, C₂ → P₂, and P₁ → C₂.
 
    Then, to check that a dependency S → T is admissible, it suffices to check that T₂ is reachable from S₁ in the auxiliary graph. This can be done with DFS in 𝒪(N + E) time and 𝒪(N) space. If we traverse all the nodes T₂ reachable from some source S₁ (e.g., with a depth-first strategy), we discover all the nodes which admit that source, again in 𝒪(N + E) time and 𝒪(N) space. By doing this for every source S₁, we can discover all the admissible dependencies in the admissibility graph. Any dependencies which weren't discovered (which can be recorded by a hash table) aren't admissible. The total expected time complexity is 𝒪(N² + NE), and the worst-case space complexity is 𝒪(N + D).
 

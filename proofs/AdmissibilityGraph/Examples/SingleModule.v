@@ -66,29 +66,29 @@ Module SingleModule <: AdmissibilityGraph.
   Definition parent (n1 : node) (n2 : node) :=
     match n1, n2 with
     | Ingress, Ingress => True
+    | Egress , Ingress => False
+    | A, Ingress => False
+    | B, Ingress => False
+    | C, Ingress => False
     | Ingress, Egress => False
-    | Ingress, A => False
-    | Ingress, B => False
-    | Ingress, C => False
-    | Egress, Ingress => False
-    | Egress, Egress => True
-    | Egress, A => True
-    | Egress, B => True
-    | Egress, C => True
-    | A, Ingress => True
-    | A, Egress => False
+    | Egress , Egress => True
+    | A, Egress => True
+    | B, Egress => True
+    | C, Egress => True
+    | Ingress, A => True
+    | Egress , A => False
     | A, A => True
-    | A, B => False
-    | A, C => False
-    | B, Ingress => True
-    | B, Egress => False
     | B, A => False
-    | B, B => True
-    | B, C => False
-    | C, Ingress => True
-    | C, Egress => False
     | C, A => False
+    | Ingress, B => True
+    | Egress , B => False
+    | A, B => False
+    | B, B => True
     | C, B => False
+    | Ingress, C => True
+    | Egress , C => False
+    | A, C => False
+    | B, C => False
     | C, C => True
     end.
 
@@ -101,7 +101,7 @@ Module SingleModule <: AdmissibilityGraph.
 
   (* Coq requires that we copy this verbatim from `AdmissibilityGraph`. *)
   Definition admissible n1 n2 :=
-    exists n3 n4, ancestor n3 n1 /\ parent n3 n4 /\ ancestor n2 n4.
+    exists n3 n4, ancestor n1 n3 /\ parent n4 n3 /\ ancestor n4 n2.
 
   #[export] Hint Unfold admissible : main.
 
