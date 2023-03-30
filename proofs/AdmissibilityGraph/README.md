@@ -177,7 +177,7 @@ flowchart BT
   d --> b
 ```
 
-#### Nodes can't depend on their [niblings](https://www.merriam-webster.com/words-at-play/words-were-watching-nibling) or grandchildren in general
+#### Nodes can't depend on their grandchildren or [niblings](https://www.merriam-webster.com/words-at-play/words-were-watching-nibling) in general
 
 `A` can't depend on `D`, since `D` is an implementation detail of `C`.
 
@@ -205,7 +205,7 @@ flowchart TB
   linkStyle 7 stroke:red
 ```
 
-`B` can't depend on `D` for the same reason.
+For the same reason, `B` can't depend on `D`.
 
 ```mermaid
 ---
