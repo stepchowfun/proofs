@@ -2,14 +2,17 @@
 
 *Admissibility graphs* are a mathematical framework for specifying and enforcing [encapsulation](https://en.wikipedia.org/wiki/Encapsulation_\(computer_programming\)) boundaries in a system. The parent directory contains a formalization of the concept and [mechanized proofs](https://en.wikipedia.org/wiki/Proof_assistant) of some basic theorems about it. This tutorial is an informal introduction to the idea. I hope you find it interesting!
 
-Time will tell how useful this concept ends up being, but I believe it sheds new light on the relationship between *dependencies* and *implementation details* and enables us to reason about these notions in a rigorous way. It proposes principled answers to questions such as:
+<p align="center"><img width="734" src="Images/graph-10.svg"></p>
+<p align="center"><em>An example admissibility graph.</em></p>
+
+Time will tell how useful this concept ends up being, but I believe it sheds new light on the relationship between *dependencies* and *implementation details* and enables us to reason about these notions in a rigorous way. It proposes principled answers to abstract questions such as:
 
 1. How are the notions of dependencies and implementation details related?
 2. When should a dependency be allowed?
 3. Are things implementation details of themselves?
-4. Can two things be implementation details of each other?
+4. Can two things be implementation details of each other? Is that the same as circular dependencies?
 
-Who should care about admissibility graphs? I believe they can be useful to anyone who is designing a system which allows users to define abstractions. Examples of such systems include programming languages, cloud infrastructure, databases, build systems, etc.
+Who should care about admissibility graphs? I think they can be useful to anyone who is designing a system which allows its users to define abstractions. Such systems may include programming languages, network infrastructure, build systems, etc.
 
 ## Introduction
 
@@ -28,9 +31,11 @@ Admissibility graphs have two types of directed edges which are understood as [b
 - **Dependencies** are arbitrary connections between nodes. For example, dependencies might indicate functions calling other functions or microservices making [RPCs](https://en.wikipedia.org/wiki/Remote_procedure_call) to other microservices. A node can depend on multiple *target* nodes and can be depended on by multiple *source* nodes. A dependency is depicted as a dotted arrow from a source to a target.
 
   <p align="center"><img width="292" src="Images/dependency.svg"></p>
+  <p align="center"><em>A dependency.</em></p>
 - **Child-parent relationships** specify when nodes are considered to be encapsulated within other nodes. These relationships indirectly determine which dependencies are allowed between nodes. A node can have multiple *parent* nodes and multiple *child* nodes. A child-parent relationship is depicted as a solid arrow from a child to a parent.
 
   <p align="center"><img width="292" src="Images/child-parent-relationship.svg"></p>
+  <p align="center"><em>A child-parent relationship.</em></p>
 
 ### Ancestry and admissibility
 
