@@ -2,7 +2,7 @@
 
 *Admissibility graphs* are a mathematical framework for specifying and enforcing [encapsulation](https://en.wikipedia.org/wiki/Encapsulation_\(computer_programming\)) boundaries in a system. The parent directory contains a formalization of the concept and [mechanized proofs](https://en.wikipedia.org/wiki/Proof_assistant) of some basic theorems about it. This tutorial is an informal introduction to the idea. I hope you find it interesting!
 
-<p align="center"><img width="734" src="Images/graph-10.svg"></p>
+<p align="center"><img width="608" src="Images/graph-10.svg"></p>
 <p align="center"><em>An example admissibility graph.</em></p>
 
 Time will tell how useful this concept ends up being, but I believe it sheds new light on the relationship between *dependencies* and *implementation details* and enables us to reason about these notions in a rigorous way. It proposes principled answers to abstract questions such as:
@@ -30,11 +30,11 @@ Admissibility graphs have two types of directed edges which are understood as [b
 
 - **Dependencies** are arbitrary connections between nodes. For example, dependencies might indicate functions calling other functions or microservices making [RPCs](https://en.wikipedia.org/wiki/Remote_procedure_call) to other microservices. A node can depend on multiple *target* nodes and can be depended on by multiple *source* nodes. A dependency is depicted as a dotted arrow from a source to a target.
 
-  <p align="center"><img width="292" src="Images/dependency.svg"></p>
+  <p align="center"><img width="234" src="Images/dependency.svg"></p>
   <p align="center"><em>A dependency.</em></p>
 - **Child-parent relationships** specify when nodes are considered to be encapsulated within other nodes. These relationships indirectly determine which dependencies are allowed between nodes. A node can have multiple *parent* nodes and multiple *child* nodes. A child-parent relationship is depicted as a solid arrow from a child to a parent.
 
-  <p align="center"><img width="292" src="Images/child-parent-relationship.svg"></p>
+  <p align="center"><img width="234" src="Images/child-parent-relationship.svg"></p>
   <p align="center"><em>A child-parent relationship.</em></p>
 
 ### Ancestry and admissibility
@@ -62,7 +62,7 @@ To explore the consequences of the axioms and build intuition for them, let's lo
 
 Let's start with the following admissibility graph, which has some child-parent relationships but no dependencies.
 
-<p align="center"><img width="191" src="Images/graph-00.svg"></p>
+<p align="center"><img width="153" src="Images/graph-00.svg"></p>
 
 First, we can check that the reflexivity and antisymmetry axioms are satisfied.
 
@@ -75,7 +75,7 @@ Now let's consider admissibility. In this example, `B` and `C` are considered im
 
 Intuitively, a node should be able to depend on its implementation details. So, for every child-parent relationship, we can add a dependency on the child by the parent.
 
-<p align="center"><img width="191" src="Images/graph-01.svg"></p>
+<p align="center"><img width="153" src="Images/graph-01.svg"></p>
 
 We should check that these dependencies are admissible. Recall:
 
@@ -89,23 +89,23 @@ Going forward, I'll skip over the justification of each example, and trust that 
 
 Since `B` and `C` are both part of the implementation of `A`, they can depend on each other.
 
-<p align="center"><img width="191" src="Images/graph-02.svg"></p>
+<p align="center"><img width="153" src="Images/graph-02.svg"></p>
 
 #### Nodes can depend on any nodes their parents can depend on
 
 Since `C` is allowed to depend on `B`, the implementation of `C` should be allowed to depend on `B` as well. So `D` can depend on `B`.
 
-<p align="center"><img width="191" src="Images/graph-03.svg"></p>
+<p align="center"><img width="153" src="Images/graph-03.svg"></p>
 
 #### Nodes can't depend on their grandchildren or [niblings](https://www.merriam-webster.com/words-at-play/words-were-watching-nibling) in general
 
 `A` can't depend on `D`, since `D` is an implementation detail of `C`.
 
-<p align="center"><img width="191" src="Images/graph-04.svg"></p>
+<p align="center"><img width="153" src="Images/graph-04.svg"></p>
 
 For the same reason, `B` can't depend on `D`.
 
-<p align="center"><img width="191" src="Images/graph-05.svg"></p>
+<p align="center"><img width="153" src="Images/graph-05.svg"></p>
 
 ### Modularity
 
@@ -115,11 +115,11 @@ We'd like to be able to group nodes together and manage them as a single unit fr
 
 If we didn't have the antisymmetry axiom, we could try to group nodes together by arranging them in an ancestry cycle:
 
-<p align="center"><img width="191" src="Images/graph-06.svg"></p>
+<p align="center"><img width="153" src="Images/graph-06.svg"></p>
 
 This approach has a major flaw. Suppose `C` has implementation detail `D`. The problem is that other nodes in the cycle such as `B` can depend on `D`, which doesn't match our expectation that `D` is encapsulated within `C`.
 
-<p align="center"><img width="191" src="Images/graph-07.svg"></p>
+<p align="center"><img width="153" src="Images/graph-07.svg"></p>
 
 We conclude that ancestry cycles other than loops are incompatible with encapsulation. Fortunately, such cycles are ruled out by the antisymmetry axiom. But then what should we do instead?
 
@@ -127,11 +127,11 @@ We conclude that ancestry cycles other than loops are incompatible with encapsul
 
 We can arrange the nodes into a *module* by introducing gateway nodes to manage ingress and egress.
 
-<p align="center"><img width="320" src="Images/graph-08.svg"></p>
+<p align="center"><img width="256" src="Images/graph-08.svg"></p>
 
 Then the egress gateway can be *bridged* with upstream nodes by giving them a common parent, and likewise the ingress gateway can be bridged with downstream nodes.
 
-<p align="center"><img width="585" src="Images/graph-09.svg"></p>
+<p align="center"><img width="468" src="Images/graph-09.svg"></p>
 
 In this example, the upstream node `X` is a sibling of the egress gateway, so members of the module (e.g., `A`) can depend on it. The downstream node `Y` is a sibling of the ingress gateway, so it can depend on members of the module (e.g., `C`).
 
@@ -141,7 +141,7 @@ It's natural to wonder whether a single node could serve as both the ingress and
 
 To allow the contents of one module to depend on the contents of another, we can bridge the egress gateway of the former and the ingress gateway of the latter:
 
-<p align="center"><img width="734" src="Images/graph-10.svg"></p>
+<p align="center"><img width="608" src="Images/graph-10.svg"></p>
 
 In this example, the contents of module `M` can depend on the contents of module `N` (as demonstrated by the dependency on `X` by `C`), but not vice versa. Mutual admissibility can be arranged by also bridging the ingress of `M` and the egress of `N`, possibly using the same bridge as before. In general, arbitrary admissibility relationships between modules can be configured by bridging gateways.
 
@@ -149,7 +149,7 @@ In this example, the contents of module `M` can depend on the contents of module
 
 Suppose we want to make node `Y` a private implementation detail of module `N`, such that members of the other modules like `M` can't depend on it. We can simply disconnect `Y` from the ingress gateway of `N`.
 
-<p align="center"><img width="320" src="Images/graph-11.svg"></p>
+<p align="center"><img width="256" src="Images/graph-11.svg"></p>
 
 ## Special cases of admissibility
 
