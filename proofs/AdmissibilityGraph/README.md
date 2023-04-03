@@ -1,6 +1,6 @@
 # Admissibility graphs
 
-Most programming languages have some support for [encapsulation](https://en.wikipedia.org/wiki/Encapsulation_\(computer_programming\)), such as [access modifiers](https://en.wikipedia.org/wiki/Access_modifiers) (`public`, `private`, etc.), [module systems](https://jozefg.bitbucket.io/posts/2015-01-08-modules.html), [existential types](https://groups.seas.harvard.edu/courses/cs152/2014sp/lectures/lec17-existential.pdf), and [closures](https://en.wikipedia.org/wiki/Closure_\(computer_programming\)). Encapsulation is a versatile concept in system design and isn't limited to just programming language features. For example, in a microservices architecture, it's common for a service to have its own database, with all access to that data being mediated by the service for the purposes of maintaining invariants and presenting a clear interface to downstream dependencies. In this tutorial, I'll introduce a general mathematical theory called *admissibility graphs* which can be used to model encapsulation in many different situations.
+Most programming languages have some support for [encapsulation](https://en.wikipedia.org/wiki/Encapsulation_\(computer_programming\)), such as [access modifiers](https://en.wikipedia.org/wiki/Access_modifiers) (`public`, `private`, etc.), [module systems](https://jozefg.bitbucket.io/posts/2015-01-08-modules.html), [existential types](https://groups.seas.harvard.edu/courses/cs152/2014sp/lectures/lec17-existential.pdf), and [closures](https://en.wikipedia.org/wiki/Closure_\(computer_programming\)). Encapsulation is a versatile concept in system design and isn't limited to just programming language features. For example, in a microservices architecture, it's common for a service to have its own database, with all access to that data being mediated by the service for the purposes of maintaining invariants and presenting a clear interface to downstream dependencies. In this tutorial, I'll introduce a general mathematical theory called *admissibility graphs* which can be used to model encapsulation in many different situations. I hope you find it interesting!
 
 <p align="center"><img width="608" src="Images/graph-10.svg"></p>
 <p align="center"><em>An example admissibility graph.</em></p>
@@ -12,7 +12,7 @@ Time will tell how useful this concept ends up being, but I believe it sheds new
 - Are things implementation details of themselves?
 - Can two things be implementation details of each other? Is that the same as circular dependencies?
 
-These questions may seem philosophical, but their answers have practical consequences for any system which allows its users to define abstractions. Such systems include programming languages, network infrastructure, build systems, etc.
+These questions may seem philosophical, but the answers have practical consequences for any system which allows its users to define abstractions. Such systems include programming languages, network infrastructure, build systems, etc.
 
 ## Definition
 
@@ -72,13 +72,7 @@ Intuitively, a node should be able to depend on its implementation details. So, 
 
 <p align="center"><img width="153" src="Images/graph-01.svg"></p>
 
-We should check that these dependencies are admissible. Recall:
-
-> A target node `T` *admits* a source node `S` (`S` is *admitted by* `T`) when there is an ancestor `A` of `S` and a descendant `D` of `T` such that `A` is a parent of `D`.
-
-In this case, let `A` = `S` and `D` = `T`, which is justified by reflexivity. Then the definition simply asks that the source is a parent of the target.
-
-Going forward, I'll skip over the justification of each example, and trust that the reader can verify that the dependencies are admissible.
+You're encouraged to check that these dependencies are admissible according to the definition.
 
 #### Siblings can depend on each other
 
