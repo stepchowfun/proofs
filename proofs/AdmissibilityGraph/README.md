@@ -45,9 +45,9 @@ For our purposes, *dependencies* are arbitrary connections between nodes. For ex
   <p align="center"><img width="234" src="Images/dependency.svg"></p>
   <p align="center"><em>A dependency.</em></p>
 
-A technical note: we don't consider dependencies to part of an admissibility graph. Rather, they are the edges of a related graph with the same nodes called a *dependency graph*. We don't require that the dependency relation is transitive—as we will see, it would be nonsensical to do so.
+A technical note: we don't consider dependencies to part of an admissibility graph. Rather, they are the edges of a related graph with the same nodes called a *dependency graph*. The admissibility graph is a specification for which dependencies are allowed in the dependency graph.
 
-A node `T` *admits* a node `S` (`S` is *admitted by* `T`) when there is an ancestor `A` of `S` and a descendant `D` of `T` such that `A` is a parent of `D`. All told, `T` *admits* `S` when there is a path from `S` to `T` via child-parent relationships in which one of the relationships is flipped. A dependency is *admissible* when the target admits the source. Admissibility might seem mysterious at first, but we'll come to understand it through examples.
+A target node `T` *admits* a source node `S` (`S` is *admitted by* `T`) when there is an ancestor `A` of `S` and a descendant `D` of `T` such that `A` is a parent of `D`. In other words, `T` *admits* `S` when there is a path from `S` to `T` via child-parent relationships in which one of the relationships is flipped. A dependency is *admissible* when the target admits the source. Admissibility might seem mysterious at first, but we'll come to understand it through examples.
 
 ## Examples
 
@@ -74,7 +74,7 @@ Intuitively, a node should be able to depend on its implementation details. So, 
 
 We should check that these dependencies are admissible. Recall:
 
-> A node `T` *admits* a node `S` (`S` is *admitted by* `T`) when there is an ancestor `A` of `S` and a descendant `D` of `T` such that `A` is a parent of `D`. A dependency is *admissible* when the target admits the source.
+> A target node `T` *admits* a source node `S` (`S` is *admitted by* `T`) when there is an ancestor `A` of `S` and a descendant `D` of `T` such that `A` is a parent of `D`.
 
 In this case, let `A` = `S` and `D` = `T`, which is justified by reflexivity. Then the definition simply asks that the source is a parent of the target.
 
