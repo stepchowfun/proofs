@@ -7,12 +7,12 @@ Most programming languages have some support for [encapsulation](https://en.wiki
 
 Time will tell how useful this concept ends up being, but I believe it sheds new light on the relationship between *dependencies* and *implementation details* and enables us to reason about these notions in a rigorous way. It proposes principled answers to abstract questions such as:
 
-1. How are the notions of dependencies and implementation details related?
-2. When should a dependency be allowed?
-3. Are things implementation details of themselves?
-4. Can two things be implementation details of each other? Is that the same as circular dependencies?
+- How are the notions of dependencies and implementation details related?
+- When should a dependency be allowed?
+- Are things implementation details of themselves?
+- Can two things be implementation details of each other? Is that the same as circular dependencies?
 
-Who should care about admissibility graphs? I think they can be useful to anyone who is designing a system which allows its users to define abstractions. Such systems include programming languages, network infrastructure, build systems, etc.
+These questions may seem philosophical, but their answers have practical consequences for any system which allows its users to define abstractions. Such systems include programming languages, network infrastructure, build systems, etc.
 
 ## Definition
 
@@ -22,7 +22,7 @@ Before we look at any particular examples, allow me to first define the general 
 
 An admissibility graph, like any [graph](https://en.wikipedia.org/wiki/Graph_\(discrete_mathematics\)), has a set of **nodes**. The nodes might represent entities such as functions in a program or microservices in a distributed system.
 
-The edges of an admissibility graph are called **child-parent relationships**. These relationships specify which nodes are considered to be encapsulated within other nodes. A node can have multiple *parent* nodes and multiple *child* nodes. A child-parent relationship is depicted as a solid arrow from a child to a parent.
+The edges of an admissibility graph are called **child-parent relationships**. These relationships specify which nodes are considered to be encapsulated within other nodes; *children* are implementation details of their *parents*. A node can have multiple children and multiple parents. A child-parent relationship is depicted as a solid arrow from a child to a parent.
 
 <p align="center"><img width="234" src="Images/child-parent-relationship.svg"></p>
 <p align="center"><em>A child-parent relationship.</em></p>
@@ -85,6 +85,8 @@ Going forward, I'll skip over the justification of each example, and trust that 
 Since `B` and `C` are both part of the implementation of `A`, they can depend on each other.
 
 <p align="center"><img width="153" src="Images/graph-02.svg"></p>
+
+So, in the absence of additional stipulations, admissibility graphs allow for circular dependencies, even though ancestry cycles are forbidden.
 
 #### Nodes can depend on any nodes their parents can depend on
 
