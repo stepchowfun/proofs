@@ -24,6 +24,12 @@ Module Simple <: AdmissibilityGraph.
   #[local] Hint Resolve clos_tn1_trans : main.
   #[local] Hint Resolve clos_trans_tn1 : main.
 
+  (*
+    This admissibility graph corresponds to the picture located at:
+
+      ../Images/graph-00.svg
+  *)
+
   Inductive nodeLabels := A | B | C | D.
 
   #[export] Hint Constructors nodeLabels : main.

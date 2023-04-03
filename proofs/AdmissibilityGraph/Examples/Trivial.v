@@ -15,6 +15,8 @@ Module Trivial <: AdmissibilityGraph.
   #[local] Arguments clos_trans {A} _ _ _.
   #[local] Hint Constructors clos_trans : main.
 
+  (* This admissibility graph has zero nodes or parent-child relationships. *)
+
   Definition node := Empty_set.
 
   #[export] Hint Unfold node : main.
