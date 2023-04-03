@@ -1,6 +1,6 @@
 # Admissibility graphs
 
-*Admissibility graphs* are a mathematical framework for specifying and enforcing [encapsulation](https://en.wikipedia.org/wiki/Encapsulation_\(computer_programming\)) boundaries in a system. The parent directory contains a formalization of the concept and [mechanized proofs](https://en.wikipedia.org/wiki/Proof_assistant) of some basic theorems about it. This tutorial is an informal introduction to the idea. I hope you find it interesting!
+Most programming languages have some support for [encapsulation](https://en.wikipedia.org/wiki/Encapsulation_\(computer_programming\)), such as [access modifiers](https://en.wikipedia.org/wiki/Access_modifiers) (`public`, `private`, etc.), [module systems](https://jozefg.bitbucket.io/posts/2015-01-08-modules.html), [existential types](https://groups.seas.harvard.edu/courses/cs152/2014sp/lectures/lec17-existential.pdf), and [closures](https://en.wikipedia.org/wiki/Closure_\(computer_programming\)). Encapsulation is a versatile concept in system design and isn't limited to just programming language features. For example, in a microservices architecture, it's common for a service to have its own database, with all access to that data being mediated by the service for the purposes of maintaining invariants and presenting a clear interface to downstream dependencies. In this tutorial, I'll introduce a general mathematical theory called *admissibility graphs* which can be used to model encapsulation in many different situations.
 
 <p align="center"><img width="608" src="Images/graph-10.svg"></p>
 <p align="center"><em>An example admissibility graph.</em></p>
@@ -12,68 +12,63 @@ Time will tell how useful this concept ends up being, but I believe it sheds new
 3. Are things implementation details of themselves?
 4. Can two things be implementation details of each other? Is that the same as circular dependencies?
 
-Who should care about admissibility graphs? I think they can be useful to anyone who is designing a system which allows its users to define abstractions. Such systems may include programming languages, network infrastructure, build systems, etc.
-
-## Introduction
-
-Most programming languages have some support for [encapsulation](https://en.wikipedia.org/wiki/Encapsulation_\(computer_programming\)), such as [access modifiers](https://en.wikipedia.org/wiki/Access_modifiers) (`public`, `private`, etc.), [module systems](https://jozefg.bitbucket.io/posts/2015-01-08-modules.html), [existential types](https://groups.seas.harvard.edu/courses/cs152/2014sp/lectures/lec17-existential.pdf), and [closures](https://en.wikipedia.org/wiki/Closure_\(computer_programming\)). Encapsulation is a versatile concept in system design and isn't limited to just programming language features. For example, in a microservices architecture, it's common for a service to have its own database, with all access to that data being mediated by the service for the purposes of maintaining invariants and presenting a clear interface to downstream dependencies. In this tutorial, I'll introduce a general mathematical theory called *admissibility graphs* which can be used to model encapsulation in many different situations.
+Who should care about admissibility graphs? I think they can be useful to anyone who is designing a system which allows its users to define abstractions. Such systems include programming languages, network infrastructure, build systems, etc.
 
 ## Definition
 
 Before we look at any particular examples, allow me to first define the general concept.
 
-### Data
+### Nodes and child-parent relationships
 
 An admissibility graph, like any [graph](https://en.wikipedia.org/wiki/Graph_\(discrete_mathematics\)), has a set of **nodes**. The nodes might represent entities such as functions in a program or microservices in a distributed system.
 
-Admissibility graphs have two types of directed edges which are understood as [binary relations](https://en.wikipedia.org/wiki/Binary_relation) on nodes:
+The edges of an admissibility graph are called **child-parent relationships**. These relationships specify which nodes are considered to be encapsulated within other nodes. A node can have multiple *parent* nodes and multiple *child* nodes. A child-parent relationship is depicted as a solid arrow from a child to a parent.
 
-- **Dependencies** are arbitrary connections between nodes. For example, dependencies might indicate functions calling other functions or microservices making [RPCs](https://en.wikipedia.org/wiki/Remote_procedure_call) to other microservices. A node can depend on multiple *target* nodes and can be depended on by multiple *source* nodes. A dependency is depicted as a dotted arrow from a source to a target.
-
-  <p align="center"><img width="234" src="Images/dependency.svg"></p>
-  <p align="center"><em>A dependency.</em></p>
-- **Child-parent relationships** specify when nodes are considered to be encapsulated within other nodes. These relationships indirectly determine which dependencies are allowed between nodes. A node can have multiple *parent* nodes and multiple *child* nodes. A child-parent relationship is depicted as a solid arrow from a child to a parent.
-
-  <p align="center"><img width="234" src="Images/child-parent-relationship.svg"></p>
-  <p align="center"><em>A child-parent relationship.</em></p>
-
-### Ancestry and admissibility
-
-Before we can state the axioms, we must first define *ancestry* and *admissibility*.
-
-- *Ancestry* is the [transitive closure](https://en.wikipedia.org/wiki/Transitive_closure) of the child-parent relation. We'll postulate below that the child-parent relation is [reflexive](https://en.wikipedia.org/wiki/Reflexive_relation), so ancestry is reflexive as well. All told, `A` is an *ancestor* of `D` (`D` is a *descendant* of `A`) when there is a path from `D` to `A` via child-parent relationships.
-- A node `T` *admits* a node `S` (`S` is *admitted by* `T`) when there is an ancestor `A` of `S` and a descendant `D` of `T` such that `A` is a parent of `D`. All told, `T` *admits* `S` when there is a path from `S` to `T` via child-parent relationships in which one of the relationships is flipped. A dependency is *admissible* when the target admits the source. Admissibility might seem mysterious at first, but we'll come to understand it through examples below.
+<p align="center"><img width="234" src="Images/child-parent-relationship.svg"></p>
+<p align="center"><em>A child-parent relationship.</em></p>
 
 ### Axioms
 
-Admissibility graphs are required to satisfy three mathematical laws:
+Define *ancestry* as the [transitive closure](https://en.wikipedia.org/wiki/Transitive_closure) of the child-parent relation. That means `A` is an *ancestor* of `D` (`D` is a *descendant* of `A`) when there is a path from `D` to `A` via child-parent relationships.
+
+Admissibility graphs are required to satisfy two mathematical laws:
 
 - **(Child-parent reflexivity)** Every node is a parent of itself.
 - **(Ancestor antisymmetry)** No pair of distinct nodes are ancestors of each other.
-- **(Dependency admissibility)** Every dependency is admissible.
 
-The reasoning behind these axioms will be explained below.
+The motivation for these axioms will be explained below.
+
+### Dependencies and admissibility
+
+For our purposes, *dependencies* are arbitrary connections between nodes. For example, dependencies might indicate functions calling other functions or microservices making [RPCs](https://en.wikipedia.org/wiki/Remote_procedure_call) to other microservices. A node can depend on multiple *target* nodes and can be depended on by multiple *source* nodes. A dependency is depicted as a dotted arrow from a source to a target.
+
+  <p align="center"><img width="234" src="Images/dependency.svg"></p>
+  <p align="center"><em>A dependency.</em></p>
+
+A technical note: we don't consider dependencies to part of an admissibility graph. Rather, they are the edges of a related graph with the same nodes called a *dependency graph*. We don't require that the dependency relation is transitive—as we will see, it would be nonsensical to do so.
+
+A node `T` *admits* a node `S` (`S` is *admitted by* `T`) when there is an ancestor `A` of `S` and a descendant `D` of `T` such that `A` is a parent of `D`. All told, `T` *admits* `S` when there is a path from `S` to `T` via child-parent relationships in which one of the relationships is flipped. A dependency is *admissible* when the target admits the source. Admissibility might seem mysterious at first, but we'll come to understand it through examples.
 
 ## Examples
 
-To explore the consequences of the axioms and build intuition for them, let's look at some examples. You're invited to independently verify whether the graphs below agree with the axioms or violate them in some way.
+To explore the consequences of the definitions and build intuition for them, let's look at some examples.
 
 ### Admissibility basics
 
-Let's start with the following admissibility graph, which has some child-parent relationships but no dependencies.
+Let's start with the following admissibility graph.
 
 <p align="center"><img width="153" src="Images/graph-00.svg"></p>
 
-First, we can check that the reflexivity and antisymmetry axioms are satisfied.
+First, we can check that the two axioms are satisfied:
 
 - Reflexivity says every node is a parent (and child) of itself. This can be interpreted as saying that every node is part of its own implementation. That may seem like a philosophical position, but we'll see [later](#special-cases-of-admissibility) that it has important practical consequences.
 - Antisymmetry says there are no ancestry cycles other than the reflexivity loops. For example, `A` is an ancestor of `D`, so `D` can't be an ancestor of `A`. The motivation for antisymmetry will become clear [below](#a-first-attempt).
 
-Now let's consider admissibility. In this example, `B` and `C` are considered implementation details of `A`, and `D` is an implementation detail of `C`. What dependencies could we add to this graph?
+Now let's consider admissibility. In this example, `B` and `C` are considered implementation details of `A`, and `D` is an implementation detail of `C`. What dependencies does this admissibility graph allow?
 
 #### Nodes can depend on their children
 
-Intuitively, a node should be able to depend on its implementation details. So, for every child-parent relationship, we can add a dependency on the child by the parent.
+Intuitively, a node should be able to depend on its implementation details. So, for every child-parent relationship, we can have a dependency on the child by the parent.
 
 <p align="center"><img width="153" src="Images/graph-01.svg"></p>
 
@@ -83,7 +78,7 @@ We should check that these dependencies are admissible. Recall:
 
 In this case, let `A` = `S` and `D` = `T`, which is justified by reflexivity. Then the definition simply asks that the source is a parent of the target.
 
-Going forward, I'll skip over the justification of each example, and trust that the reader can verify that the axioms are satisfied.
+Going forward, I'll skip over the justification of each example, and trust that the reader can verify that the dependencies are admissible.
 
 #### Siblings can depend on each other
 
@@ -157,7 +152,7 @@ A dependency is admissible when the target is an ancestor of a child of an ances
 
 ### Ancestors of children
 
-A consequence of the admissibility axiom is that *a node is admitted by any ancestors of its children*. From this, we can draw many conclusions:
+A consequence of the definition of admissibility is that *a node is admitted by any ancestors of its children*. From this, we can draw many conclusions:
 
 - A node is admitted by its own children.
 - A node is admitted by parents of its children, including itself.
@@ -169,7 +164,7 @@ The second conclusion would seem to imply that admissibility is reflexive, which
 
 ### Children of ancestors
 
-Another consequence of the admissibility axiom is that *a node is admitted by any children of its ancestors*. From this, we can also draw many conclusions, including some we've already seen:
+Another consequence of the definition of admissibility is that *a node is admitted by any children of its ancestors*. From this, we can also draw many conclusions, including some we've already seen:
 
 - A node is admitted by its own children.
 - A node is admitted by children of its parents, including itself.
@@ -181,15 +176,14 @@ As before, the second conclusion seems to imply that admissibility is reflexive,
 
 ## Deciding admissibility
 
-In this section, I'll describe an algorithm for deciding whether an admissibility graph is valid according to the three axioms. Let *N* be the number of nodes, let *E* be the number of child-parent relationships, and let *D* be the number of dependencies. I'll assume the graph is represented as a pair of adjacency lists, one for the child-parent relationships, and the other for the dependencies.
+Given an admissibility graph, let *N* be the number of nodes, and let *E* be the number of child-parent relationships. Then the graph can be checked for validity against the two axioms in 𝒪(*N* + *E*) time and 𝒪(*N*) space as follows.
 
 1. The *child-parent reflexivity* axiom is easy to verify by checking each node individually. This takes 𝒪(*N*) time and 𝒪(1) space.
 2. Verifying the *ancestor antisymmetry* axiom amounts to detecting non-loop cycles in the graph induced by the child-parent relationships. This can be done by checking for back edges via depth-first search (DFS) in 𝒪(*N* + *E*) time and 𝒪(*N*) space. The search may need to be restarted at different starting nodes to cover the entire graph; this doesn't affect the asymptotic analysis.
-3. To verify the *dependency admissibility* axiom, define an auxiliary graph as follows:
 
-   - For every node `X` in the admissibility graph, the auxiliary graph will have two nodes `X₁` and `X₂`.
-   - For every child-parent relationship `C` → `P`, the auxiliary graph will have edges `C₁` → `P₁`, `C₂` → `P₂`, and `P₁` → `C₂`.
+More interestingly, we may wish to check whether a dependency graph is compatible with a given admissibility graph containing the same nodes. Let *D* be the number of dependencies. Then we can validate the dependency graph in 𝒪(*N*² + *NE*) expected time and 𝒪(*N* + *D*) space in the worst case by defining an auxiliary graph as follows:
 
-   Then, to check that a dependency `S` → `T` is admissible, it suffices to check that `T₂` is reachable from `S₁` in the auxiliary graph. This can be done with DFS in 𝒪(*N* + *E*) time and 𝒪(*N*) space. If we traverse all the nodes `T₂` reachable from some source `S₁` (e.g., with a depth-first strategy), we discover all the nodes which admit that source, again in 𝒪(*N* + *E*) time and 𝒪(*N*) space. By doing this for every source `S₁`, we can discover all the admissible dependencies in the admissibility graph. Any dependencies which weren't discovered (which can be recorded by a hash table) aren't admissible. The total expected time complexity is 𝒪(*N*² + *NE*), and the worst-case space complexity is 𝒪(*N* + *D*).
+- For every node `X` in the admissibility graph, the auxiliary graph will have two nodes `X₁` and `X₂`.
+- For every child-parent relationship `C` → `P`, the auxiliary graph will have edges `C₁` → `P₁`, `C₂` → `P₂`, and `P₁` → `C₂`.
 
-So, determining whether an admissibility graph is valid can be done in 𝒪(*N*² + *NE*) expected time and 𝒪(*N* + *D*) space in the worst case.
+Then, to check that a dependency `S` → `T` is admissible, it suffices to check that `T₂` is reachable from `S₁` in the auxiliary graph. This can be done with DFS in 𝒪(*N* + *E*) time and 𝒪(*N*) space. If we traverse all the nodes `T₂` reachable from some source `S₁` (e.g., with a depth-first strategy), we discover all the nodes which admit that source, again in 𝒪(*N* + *E*) time and 𝒪(*N*) space. By doing this for every source `S₁`, we can discover all the admissible dependencies in the admissibility graph. Any dependencies which weren't discovered (which can be recorded by a hash table) aren't admissible.
