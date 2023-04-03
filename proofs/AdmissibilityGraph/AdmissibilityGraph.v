@@ -15,11 +15,7 @@ Module Type AdmissibilityGraph.
 
   Parameter node : Type.
 
-  (* Nodes may *depend on* each other. *)
-
-  Parameter dependency : node -> node -> Prop.
-
-  (* Nodes may also be related via *child-parent* relationships. *)
+  (* Nodes are related via *child-parent* relationships. *)
 
   Parameter parent : node -> node -> Prop.
 
@@ -28,16 +24,6 @@ Module Type AdmissibilityGraph.
   Definition ancestor := clos_trans parent.
 
   #[export] Hint Unfold ancestor : main.
-
-  (*
-    A dependency on a target by a source is *admissible* if some ancestor of
-    the source is a parent of some descendant of the target.
-  *)
-
-  Definition admissible n1 n2 :=
-    exists n3 n4, ancestor n1 n3 /\ parent n4 n3 /\ ancestor n4 n2.
-
-  #[export] Hint Unfold admissible : main.
 
   (* Parenthood is reflexive. *)
 
@@ -52,9 +38,13 @@ Module Type AdmissibilityGraph.
 
   #[export] Hint Resolve antisymmetry : main.
 
-  (* Every dependency is admissible. *)
+  (*
+    A dependency on a target by a source is *admissible* if some ancestor of
+    the source is a parent of some descendant of the target.
+  *)
 
-  Axiom admissibility : forall n1 n2, dependency n1 n2 -> admissible n1 n2.
+  Definition admissible n1 n2 :=
+    exists n3 n4, ancestor n1 n3 /\ parent n4 n3 /\ ancestor n4 n2.
 
-  #[export] Hint Resolve admissibility : main.
+  #[export] Hint Unfold admissible : main.
 End AdmissibilityGraph.

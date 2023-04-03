@@ -32,28 +32,6 @@ Module Simple <: AdmissibilityGraph.
 
   #[export] Hint Unfold node : main.
 
-  Definition dependency (n1 n2 : node) :=
-    match n1, n2 with
-    | A, A => True
-    | A, B => True
-    | A, C => True
-    | A, D => False
-    | B, A => True
-    | B, B => True
-    | B, C => True
-    | B, D => False
-    | C, A => True
-    | C, B => True
-    | C, C => True
-    | C, D => True
-    | D, A => True
-    | D, B => True
-    | D, C => True
-    | D, D => True
-    end.
-
-  #[export] Hint Unfold dependency : main.
-
   Definition parent (n1 : node) (n2 : node) :=
     match n1, n2 with
     | A, A => True
@@ -80,12 +58,6 @@ Module Simple <: AdmissibilityGraph.
   Definition ancestor := clos_trans parent.
 
   #[export] Hint Unfold ancestor : main.
-
-  (* Coq requires that we copy this verbatim from `AdmissibilityGraph`. *)
-  Definition admissible n1 n2 :=
-    exists n3 n4, ancestor n1 n3 /\ parent n4 n3 /\ ancestor n4 n2.
-
-  #[export] Hint Unfold admissible : main.
 
   Theorem reflexivity : forall n, parent n n.
   Proof.
@@ -114,6 +86,34 @@ Module Simple <: AdmissibilityGraph.
   Qed.
 
   #[export] Hint Resolve antisymmetry : main.
+
+  (* Coq requires that we copy this verbatim from `AdmissibilityGraph`. *)
+  Definition admissible n1 n2 :=
+    exists n3 n4, ancestor n1 n3 /\ parent n4 n3 /\ ancestor n4 n2.
+
+  #[export] Hint Unfold admissible : main.
+
+  Definition dependency (n1 n2 : node) :=
+    match n1, n2 with
+    | A, A => True
+    | A, B => True
+    | A, C => True
+    | A, D => False
+    | B, A => True
+    | B, B => True
+    | B, C => True
+    | B, D => False
+    | C, A => True
+    | C, B => True
+    | C, C => True
+    | C, D => True
+    | D, A => True
+    | D, B => True
+    | D, C => True
+    | D, D => True
+    end.
+
+  #[export] Hint Unfold dependency : main.
 
   Theorem admissibility : forall n1 n2, dependency n1 n2 -> admissible n1 n2.
   Proof.

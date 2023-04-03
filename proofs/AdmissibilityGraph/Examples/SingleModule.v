@@ -32,37 +32,6 @@ Module SingleModule <: AdmissibilityGraph.
 
   #[export] Hint Unfold node : main.
 
-  Definition dependency (n1 n2 : node) :=
-    match n1, n2 with
-    | Ingress, Ingress => True
-    | Ingress, Egress => True
-    | Ingress, A => True
-    | Ingress, B => True
-    | Ingress, C => True
-    | Egress, Ingress => False
-    | Egress, Egress => True
-    | Egress, A => True
-    | Egress, B => True
-    | Egress, C => True
-    | A, Ingress => True
-    | A, Egress => True
-    | A, A => True
-    | A, B => True
-    | A, C => True
-    | B, Ingress => True
-    | B, Egress => True
-    | B, A => True
-    | B, B => True
-    | B, C => True
-    | C, Ingress => True
-    | C, Egress => True
-    | C, A => True
-    | C, B => True
-    | C, C => True
-    end.
-
-  #[export] Hint Unfold dependency : main.
-
   Definition parent (n1 : node) (n2 : node) :=
     match n1, n2 with
     | Ingress, Ingress => True
@@ -99,12 +68,6 @@ Module SingleModule <: AdmissibilityGraph.
 
   #[export] Hint Unfold ancestor : main.
 
-  (* Coq requires that we copy this verbatim from `AdmissibilityGraph`. *)
-  Definition admissible n1 n2 :=
-    exists n3 n4, ancestor n1 n3 /\ parent n4 n3 /\ ancestor n4 n2.
-
-  #[export] Hint Unfold admissible : main.
-
   Theorem reflexivity : forall n, parent n n.
   Proof.
     clean.
@@ -132,6 +95,43 @@ Module SingleModule <: AdmissibilityGraph.
   Qed.
 
   #[export] Hint Resolve antisymmetry : main.
+
+  (* Coq requires that we copy this verbatim from `AdmissibilityGraph`. *)
+  Definition admissible n1 n2 :=
+    exists n3 n4, ancestor n1 n3 /\ parent n4 n3 /\ ancestor n4 n2.
+
+  #[export] Hint Unfold admissible : main.
+
+  Definition dependency (n1 n2 : node) :=
+    match n1, n2 with
+    | Ingress, Ingress => True
+    | Ingress, Egress => True
+    | Ingress, A => True
+    | Ingress, B => True
+    | Ingress, C => True
+    | Egress, Ingress => False
+    | Egress, Egress => True
+    | Egress, A => True
+    | Egress, B => True
+    | Egress, C => True
+    | A, Ingress => True
+    | A, Egress => True
+    | A, A => True
+    | A, B => True
+    | A, C => True
+    | B, Ingress => True
+    | B, Egress => True
+    | B, A => True
+    | B, B => True
+    | B, C => True
+    | C, Ingress => True
+    | C, Egress => True
+    | C, A => True
+    | C, B => True
+    | C, C => True
+    end.
+
+  #[export] Hint Unfold dependency : main.
 
   Theorem admissibility : forall n1 n2, dependency n1 n2 -> admissible n1 n2.
   Proof.
