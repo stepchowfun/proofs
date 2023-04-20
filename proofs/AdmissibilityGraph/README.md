@@ -96,7 +96,7 @@ For the same reason, `B` can't depend on `D`.
 
 ### Modularity
 
-We'd like to be able to group nodes together and manage them as a single unit from an admissibility perspective. For example, we might wish to allow a group of nodes to depend on another group of nodes, but not vice versa, and without quadratically many child-parent relationships. Is that possible?
+We'd like to be able to group nodes together and manage them as a single unit from an admissibility perspective. For example, we might wish to allow a group of nodes to depend on another group of nodes, but not vice versa. Is that possible?
 
 #### A first attempt
 
@@ -108,11 +108,11 @@ This approach has a major flaw. Suppose `C` has implementation detail `D`. The p
 
 <p align="center"><img width="153" src="Images/graph-07.svg"></p>
 
-But then what should we do instead?
+To avoid this outcome, one may wish to forbid ancestry cycles entirely by postulating that ancestorship should be antisymmetric.
 
 #### A proper module
 
-We can arrange the nodes into a *module* by introducing gateway nodes to manage ingress and egress.
+Instead of grouping nodes together with a cycle, we can arrange them into a *module* by introducing gateway nodes to manage ingress and egress.
 
 <p align="center"><img width="256" src="Images/graph-08.svg"></p>
 
@@ -168,7 +168,7 @@ As before, the second conclusion seems to imply that admissibility is reflexive,
 
 ## Deciding admissibility
 
-Given an admissibility graph, let *N* be the number of nodes. Then the graph can be checked for validity against the reflexivity axiom in 𝒪(*N*) time and 𝒪(1) space by verifying each node individually.
+Given an admissibility graph, let *N* be the number of nodes. Then the graph can be checked for validity against the reflexivity axiom in 𝒪(*N*) time and 𝒪(1) space by verifying each node individually. In practice, it makes more sense not to materialize the reflexivity loops at all, leaving their existence implied.
 
 More interestingly, we may wish to check whether a dependency graph is compatible with a given admissibility graph containing the same nodes. Let *E* be the number of child-parent relationships, and let *D* be the number of dependencies. Then we can validate the dependency graph in 𝒪(*N*² + *NE*) expected time and 𝒪(*N* + *D*) space in the worst case by defining an auxiliary graph as follows:
 
