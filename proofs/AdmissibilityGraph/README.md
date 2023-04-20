@@ -75,7 +75,7 @@ Since `B` and `C` are both part of the implementation of `A`, they can depend on
 
 <p align="center"><img width="153" src="Images/graph-02.svg"></p>
 
-So, in the absence of additional stipulations, admissibility graphs allow for circular dependencies, even though ancestry cycles are forbidden.
+So, in the absence of additional stipulations, admissibility graphs allow for circular dependencies, even without ancestry cycles other than the reflexivity loops.
 
 #### Nodes can depend on any nodes their parents can depend on
 
@@ -107,7 +107,7 @@ This approach has a major flaw. Suppose `C` has implementation detail `D`. The p
 
 <p align="center"><img width="153" src="Images/graph-07.svg"></p>
 
-To avoid this outcome, one may wish to forbid ancestry cycles entirely by postulating that ancestorship should be antisymmetric.
+To avoid this outcome, one may wish to forbid cycles other than the reflexivity loops by postulating that ancestorship should be antisymmetric.
 
 #### A proper module
 
