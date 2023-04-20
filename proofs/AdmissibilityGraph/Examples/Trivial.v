@@ -25,11 +25,6 @@ Module Trivial <: AdmissibilityGraph.
 
   #[export] Hint Unfold parent : main.
 
-  (* Coq requires that we copy this verbatim from `AdmissibilityGraph`. *)
-  Definition ancestor := clos_trans parent.
-
-  #[export] Hint Unfold ancestor : main.
-
   Theorem reflexivity : forall n, parent n n.
   Proof.
     search.
@@ -37,13 +32,10 @@ Module Trivial <: AdmissibilityGraph.
 
   #[export] Hint Resolve reflexivity : main.
 
-  Theorem antisymmetry :
-    forall n1 n2, ancestor n1 n2 -> ancestor n2 n1 -> n1 = n2.
-  Proof.
-    search.
-  Qed.
+  (* Coq requires that we copy this verbatim from `AdmissibilityGraph`. *)
+  Definition ancestor := clos_trans parent.
 
-  #[export] Hint Resolve antisymmetry : main.
+  #[export] Hint Unfold ancestor : main.
 
   (* Coq requires that we copy this verbatim from `AdmissibilityGraph`. *)
   Definition admissible n1 n2 :=

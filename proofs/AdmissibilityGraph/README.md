@@ -10,7 +10,7 @@ Time will tell how useful this concept ends up being, but I believe it sheds new
 - How are the notions of dependencies and implementation details related?
 - When should a dependency be allowed?
 - Are things implementation details of themselves?
-- Can two things be implementation details of each other? Is that the same as circular dependencies?
+- Does the existence of circular dependencies imply that two distinct things are implementation details of each other?
 
 These questions may seem philosophical, but the answers have practical consequences for any system which allows its users to define abstractions. Such systems include programming languages, network infrastructure, build systems, etc.
 
@@ -27,16 +27,13 @@ The edges of an admissibility graph are called **child-parent relationships**. T
 <p align="center"><img width="234" src="Images/child-parent-relationship.svg"></p>
 <p align="center"><em>A child-parent relationship.</em></p>
 
-### Axioms
+### The reflexivity axiom
 
-Define *ancestry* as the [transitive closure](https://en.wikipedia.org/wiki/Transitive_closure) of the child-parent relation. That means `A` is an *ancestor* of `D` (`D` is a *descendant* of `A`) when there is a path from `D` to `A` via child-parent relationships.
+Admissibility graphs are required to satisfy the following mathematical law:
 
-Admissibility graphs are required to satisfy two mathematical laws:
+> **(Reflexivity)** Every node is a parent of itself.
 
-- **(Child-parent reflexivity)** Every node is a parent of itself.
-- **(Ancestor antisymmetry)** No pair of distinct nodes are ancestors of each other.
-
-The motivation for these axioms will be explained below.
+The motivation for this axiom will be explained below.
 
 ### Dependencies and admissibility
 
@@ -45,7 +42,9 @@ For our purposes, *dependencies* are arbitrary connections between nodes. For ex
   <p align="center"><img width="234" src="Images/dependency.svg"></p>
   <p align="center"><em>A dependency.</em></p>
 
-A technical note: we don't consider dependencies to part of an admissibility graph. Rather, they are the edges of a related graph with the same nodes called a *dependency graph*. The admissibility graph is a specification for which dependencies are allowed in the dependency graph.
+A technical note: we don't consider dependencies to part of the admissibility graph. Rather, they are the edges of a related graph with the same nodes called a *dependency graph*. The admissibility graph is a specification for which dependencies are allowed in the dependency graph.
+
+Define *ancestry* as the [transitive closure](https://en.wikipedia.org/wiki/Transitive_closure) of the child-parent relation. That means `A` is an *ancestor* of `D` (`D` is a *descendant* of `A`) when there is a path from `D` to `A` via child-parent relationships.
 
 A target node `T` *admits* a source node `S` (`S` is *admitted by* `T`) when there is an ancestor `A` of `S` and a descendant `D` of `T` such that `A` is a parent of `D`. In other words, `T` *admits* `S` when there is a path from `S` to `T` via child-parent relationships in which one of the relationships is flipped. A dependency is *admissible* when the target admits the source. Admissibility might seem mysterious at first, but we'll come to understand it through examples.
 
@@ -59,10 +58,7 @@ Let's start with the following admissibility graph.
 
 <p align="center"><img width="153" src="Images/graph-00.svg"></p>
 
-First, we can check that the two axioms are satisfied:
-
-- Reflexivity says every node is a parent (and child) of itself. This can be interpreted as saying that every node is part of its own implementation. That may seem like a philosophical position, but we'll see [later](#special-cases-of-admissibility) that it has important practical consequences.
-- Antisymmetry says there are no ancestry cycles other than the reflexivity loops. For example, `A` is an ancestor of `D`, so `D` can't be an ancestor of `A`. The motivation for antisymmetry will become clear [below](#a-first-attempt).
+First, we can check that the reflexivity axiom is satisfied. Reflexivity says every node is a parent (and child) of itself. This can be interpreted as saying that every node is part of its own implementation. That may seem like a philosophical position, but we'll see [later](#special-cases-of-admissibility) that it has important practical consequences.
 
 Now let's consider admissibility. In this example, `B` and `C` are considered implementation details of `A`, and `D` is an implementation detail of `C`. What dependencies does this admissibility graph allow?
 
@@ -104,7 +100,7 @@ We'd like to be able to group nodes together and manage them as a single unit fr
 
 #### A first attempt
 
-If we didn't have the antisymmetry axiom, we could try to group nodes together by arranging them in an ancestry cycle:
+We could try to group nodes together by arranging them in an ancestry cycle:
 
 <p align="center"><img width="153" src="Images/graph-06.svg"></p>
 
@@ -112,7 +108,7 @@ This approach has a major flaw. Suppose `C` has implementation detail `D`. The p
 
 <p align="center"><img width="153" src="Images/graph-07.svg"></p>
 
-We conclude that ancestry cycles other than loops are incompatible with encapsulation. Fortunately, such cycles are ruled out by the antisymmetry axiom. But then what should we do instead?
+But then what should we do instead?
 
 #### A proper module
 
@@ -126,7 +122,7 @@ Then the egress gateway can be *bridged* with upstream nodes by giving them a co
 
 In this example, the upstream node `X` is a sibling of the egress gateway, so members of the module (e.g., `A`) can depend on it. The downstream node `Y` is a sibling of the ingress gateway, so it can depend on members of the module (e.g., `C`).
 
-It's natural to wonder whether a single node could serve as both the ingress and egress gateways for the same module. That would violate antisymmetry. However, it's legal to bridge an external node with both the ingress and egress gateways of a module when both directions are needed.
+It's natural to wonder whether a single node could serve as both the ingress and egress gateways for the same module. That would create an ancestry cycle containing all the nodes of the module, which would enable each node of the module to access the implementation details of every other node of the module. A better strategy is to bridge an external node with both the ingress and egress gateways of a module when both directions are needed for that external node.
 
 #### Bridging modules
 
@@ -172,12 +168,9 @@ As before, the second conclusion seems to imply that admissibility is reflexive,
 
 ## Deciding admissibility
 
-Given an admissibility graph, let *N* be the number of nodes, and let *E* be the number of child-parent relationships. Then the graph can be checked for validity against the two axioms in 𝒪(*N* + *E*) time and 𝒪(*N*) space as follows.
+Given an admissibility graph, let *N* be the number of nodes. Then the graph can be checked for validity against the reflexivity axiom in 𝒪(*N*) time and 𝒪(1) space by verifying each node individually.
 
-1. The *child-parent reflexivity* axiom is easy to verify by checking each node individually. This takes 𝒪(*N*) time and 𝒪(1) space.
-2. Verifying the *ancestor antisymmetry* axiom amounts to detecting non-loop cycles in the graph induced by the child-parent relationships. This can be done by checking for back edges via depth-first search (DFS) in 𝒪(*N* + *E*) time and 𝒪(*N*) space. The search may need to be restarted at different starting nodes to cover the entire graph; this doesn't affect the asymptotic analysis.
-
-More interestingly, we may wish to check whether a dependency graph is compatible with a given admissibility graph containing the same nodes. Let *D* be the number of dependencies. Then we can validate the dependency graph in 𝒪(*N*² + *NE*) expected time and 𝒪(*N* + *D*) space in the worst case by defining an auxiliary graph as follows:
+More interestingly, we may wish to check whether a dependency graph is compatible with a given admissibility graph containing the same nodes. Let *E* be the number of child-parent relationships, and let *D* be the number of dependencies. Then we can validate the dependency graph in 𝒪(*N*² + *NE*) expected time and 𝒪(*N* + *D*) space in the worst case by defining an auxiliary graph as follows:
 
 - For every node `X` in the admissibility graph, the auxiliary graph will have two nodes `X₁` and `X₂`.
 - For every child-parent relationship `C` → `P`, the auxiliary graph will have edges `C₁` → `P₁`, `C₂` → `P₂`, and `P₁` → `C₂`.

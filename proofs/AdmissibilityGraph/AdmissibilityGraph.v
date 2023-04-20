@@ -19,24 +19,17 @@ Module Type AdmissibilityGraph.
 
   Parameter parent : node -> node -> Prop.
 
-  (* *Ancestorship* is the reflexive transitive closure of parenthood. *)
-
-  Definition ancestor := clos_trans parent.
-
-  #[export] Hint Unfold ancestor : main.
-
   (* Parenthood is reflexive. *)
 
   Axiom reflexivity : forall n, parent n n.
 
   #[export] Hint Resolve reflexivity : main.
 
-  (* Ancestorship is antisymmetric and thus a partial order. *)
+  (* *Ancestorship* is the reflexive transitive closure of parenthood. *)
 
-  Axiom antisymmetry :
-    forall n1 n2, ancestor n1 n2 -> ancestor n2 n1 -> n1 = n2.
+  Definition ancestor := clos_trans parent.
 
-  #[export] Hint Resolve antisymmetry : main.
+  #[export] Hint Unfold ancestor : main.
 
   (*
     A dependency on a target by a source is *admissible* if some ancestor of

@@ -60,11 +60,6 @@ Module Simple <: AdmissibilityGraph.
 
   #[export] Hint Unfold parent : main.
 
-  (* Coq requires that we copy this verbatim from `AdmissibilityGraph`. *)
-  Definition ancestor := clos_trans parent.
-
-  #[export] Hint Unfold ancestor : main.
-
   Theorem reflexivity : forall n, parent n n.
   Proof.
     clean.
@@ -73,25 +68,10 @@ Module Simple <: AdmissibilityGraph.
 
   #[export] Hint Resolve reflexivity : main.
 
-  Theorem antisymmetry :
-    forall n1 n2, ancestor n1 n2 -> ancestor n2 n1 -> n1 = n2.
-  Proof.
-    #[local] Ltac eliminate H :=
-      match type of H with
-      | clos_trans_n1 parent ?n1 ?n2 =>
-        remember n2; induction H; repeat match goal with
-        | [n : node |- _] => destruct n; search
-        end
-      end.
+  (* Coq requires that we copy this verbatim from `AdmissibilityGraph`. *)
+  Definition ancestor := clos_trans parent.
 
-    clean.
-    apply clos_trans_tn1 in H, H0.
-    destruct n1, n2; solve [
-      reflexivity + eliminate H + eliminate H0; solve [eliminate H1]
-    ].
-  Qed.
-
-  #[export] Hint Resolve antisymmetry : main.
+  #[export] Hint Unfold ancestor : main.
 
   (* Coq requires that we copy this verbatim from `AdmissibilityGraph`. *)
   Definition admissible n1 n2 :=
