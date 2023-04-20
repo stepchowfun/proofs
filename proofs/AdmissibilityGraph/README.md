@@ -10,7 +10,6 @@ Time will tell how useful this concept ends up being, but I believe it sheds new
 - How are the notions of dependencies and implementation details related?
 - When should a dependency be allowed?
 - Are things implementation details of themselves?
-- Does the existence of circular dependencies imply that two distinct things are implementation details of each other?
 
 These questions may seem philosophical, but the answers have practical consequences for any system which allows its users to define abstractions. Such systems include programming languages, network infrastructure, build systems, etc.
 
