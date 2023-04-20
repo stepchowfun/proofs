@@ -122,7 +122,7 @@ Then the egress gateway can be *bridged* with upstream nodes by giving them a co
 
 In this example, the upstream node `X` is a sibling of the egress gateway, so members of the module (e.g., `A`) can depend on it. The downstream node `Y` is a sibling of the ingress gateway, so it can depend on members of the module (e.g., `C`).
 
-It's natural to wonder whether a single node could serve as both the ingress and egress gateways for the same module. That would create an ancestry cycle containing all the nodes of the module, which would enable each node of the module to access the implementation details of every other node of the module. A better strategy is to bridge an external node with both the ingress and egress gateways of a module when both directions are needed for that external node.
+It's natural to wonder whether a single node could serve as both the ingress and egress gateways for the same module. That would create an ancestry cycle containing all the nodes of the module, which would enable each node of the module to depend on the implementation details of any other node of the module. A better strategy is to bridge an external node with both the ingress and egress gateways of a module when both directions are needed for that external node.
 
 #### Bridging modules
 
