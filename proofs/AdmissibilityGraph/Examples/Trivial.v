@@ -38,8 +38,7 @@ Module Trivial <: AdmissibilityGraph.
   #[export] Hint Unfold ancestor : main.
 
   (* Coq requires that we copy this verbatim from `AdmissibilityGraph`. *)
-  Definition admissible n1 n2 :=
-    exists n3 n4, ancestor n1 n3 /\ parent n4 n3 /\ ancestor n4 n2.
+  Definition admissible n1 n2 := exists n3, ancestor n1 n3 /\ parent n2 n3.
 
   #[export] Hint Unfold admissible : main.
 
