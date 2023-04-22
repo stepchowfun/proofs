@@ -95,7 +95,7 @@ For the same reason, `B` can't depend on `D`.
 
 ### Grouping
 
-To allow arbitrary dependencies among a set of nodes, arrange the nodes in a group by giving them a common parent.
+To allow arbitrary dependencies among a set of nodes, arrange the nodes into a group by giving them a common parent.
 
 <p align="center"><img width="256" src="Images/graph-06.svg"></p>
 
@@ -107,7 +107,7 @@ To allow a group of nodes to depend on another group of nodes but not vice versa
 
 <p align="center"><img width="371" src="Images/graph-08.svg"></p>
 
-To allow two groups of nodes to depend on each other, arrange them in a cycle:
+To allow two groups of nodes to depend on each other, arrange them in a cycle.
 
 <p align="center"><img width="521" src="Images/graph-09.svg"></p>
 
