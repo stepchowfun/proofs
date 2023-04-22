@@ -74,8 +74,7 @@ Module Simple <: AdmissibilityGraph.
   #[export] Hint Unfold ancestor : main.
 
   (* Coq requires that we copy this verbatim from `AdmissibilityGraph`. *)
-  Definition admissible n1 n2 :=
-    exists n3 n4, ancestor n1 n3 /\ parent n4 n3 /\ ancestor n4 n2.
+  Definition admissible n1 n2 := exists n3, ancestor n1 n3 /\ parent n2 n3.
 
   #[export] Hint Unfold admissible : main.
 
@@ -104,9 +103,7 @@ Module Simple <: AdmissibilityGraph.
   Theorem admissibility : forall n1 n2, dependency n1 n2 -> admissible n1 n2.
   Proof.
     clean.
-    unfold admissible.
     destruct n1, n2; search; try (
-      exists A + exists B + exists C + exists D;
       exists A + exists B + exists C + exists D;
       split; search; solve [
         apply t_trans with (y := A) +

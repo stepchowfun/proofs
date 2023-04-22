@@ -32,12 +32,11 @@ Module Type AdmissibilityGraph.
   #[export] Hint Unfold ancestor : main.
 
   (*
-    A dependency on a target by a source is *admissible* if some ancestor of
-    the source is a parent of some descendant of the target.
+    A target *admits* a source if some ancestor of the source is a parent of
+    the target.
   *)
 
-  Definition admissible n1 n2 :=
-    exists n3 n4, ancestor n1 n3 /\ parent n4 n3 /\ ancestor n4 n2.
+  Definition admissible n1 n2 := exists n3, ancestor n1 n3 /\ parent n2 n3.
 
   #[export] Hint Unfold admissible : main.
 End AdmissibilityGraph.

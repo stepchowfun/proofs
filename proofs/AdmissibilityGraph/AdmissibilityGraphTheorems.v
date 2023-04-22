@@ -26,23 +26,6 @@ Module AdmissibilityGraphTheorems (Graph : AdmissibilityGraph).
   #[local] Hint Resolve clos_trans_tn1 : main.
 
   (*
-    If some target admits some source, any ancestor of that target admits that
-    source.
-  *)
-
-  Theorem ancestorAdmissibility :
-    forall n1 n2 n3, admissible n1 n2 -> ancestor n2 n3 -> admissible n1 n3.
-  Proof.
-    unfold admissible.
-    clean.
-    exists x, x0.
-    repeat split; search.
-    apply t_trans with (y := n2); search.
-  Qed.
-
-  #[export] Hint Resolve ancestorAdmissibility : main.
-
-  (*
     If some target admits some source, that target admits any descendant of
     that source.
   *)
@@ -50,11 +33,7 @@ Module AdmissibilityGraphTheorems (Graph : AdmissibilityGraph).
   Theorem descendantAdmissibility :
     forall n1 n2 n3, admissible n1 n2 -> ancestor n3 n1 -> admissible n3 n2.
   Proof.
-    unfold admissible.
-    clean.
-    exists x, x0.
-    repeat split; search.
-    apply t_trans with (y := n1); search.
+    eSearch.
   Qed.
 
   #[export] Hint Resolve descendantAdmissibility : main.
@@ -63,26 +42,10 @@ Module AdmissibilityGraphTheorems (Graph : AdmissibilityGraph).
 
   Theorem selfAdmissibility : forall n, admissible n n.
   Proof.
-    clean.
-    unfold admissible.
-    exists n, n.
-    search.
+    eSearch.
   Qed.
 
   #[export] Hint Resolve selfAdmissibility : main.
-
-  (* Nodes are admitted by ancestors of their children. *)
-
-  Theorem ancestorOfChildAdmissibility :
-    forall n1 n2 n3, parent n1 n2 -> ancestor n1 n3 -> admissible n2 n3.
-  Proof.
-    clean.
-    unfold admissible.
-    exists n2, n1.
-    search.
-  Qed.
-
-  #[export] Hint Resolve ancestorOfChildAdmissibility : main.
 
   (* Nodes are admitted by children of their ancestors. *)
 
