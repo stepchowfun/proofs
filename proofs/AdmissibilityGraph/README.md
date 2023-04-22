@@ -2,7 +2,7 @@
 
 Most programming languages have some support for [encapsulation](https://en.wikipedia.org/wiki/Encapsulation_\(computer_programming\)), such as [access modifiers](https://en.wikipedia.org/wiki/Access_modifiers) (`public`, `private`, etc.), [module systems](https://courses.cs.washington.edu/courses/cse341/04wi/lectures/09-ml-modules.html), [existential types](https://groups.seas.harvard.edu/courses/cs152/2014sp/lectures/lec17-existential.pdf), or [closures](https://en.wikipedia.org/wiki/Closure_\(computer_programming\)). Encapsulation is a versatile concept in system design and isn't limited to just programming language features. For example, in a microservices architecture, it's common for a service to have its own database, with all access to that data being mediated by the service for the purposes of maintaining invariants and presenting a clear interface to downstream dependencies. In this tutorial, I'll introduce a general mathematical theory called *admissibility graphs* which can be used to model encapsulation in many different situations. I hope you find it interesting!
 
-<p align="center"><img width="480" src="Images/graph-10.svg"></p>
+<p align="center"><img width="371" src="Images/graph-08.svg"></p>
 <p align="center"><em>An example admissibility graph.</em></p>
 
 Time will tell how useful this concept ends up being, but I believe it sheds new light on the relationship between *dependencies* and *implementation details* and enables us to reason about these notions in a rigorous way. It proposes principled answers to abstract questions such as:
@@ -103,7 +103,7 @@ A node can belong to multiple groups.
 
 <p align="center"><img width="433" src="Images/graph-07.svg"></p>
 
-To allow a group of nodes to depend on another group of nodes but not vice versa, embed the former group in the latter.
+To allow a group of nodes to depend on another group of nodes but not vice versa, make the former group a descendant of the latter.
 
 <p align="center"><img width="371" src="Images/graph-08.svg"></p>
 
@@ -111,9 +111,23 @@ To allow two groups of nodes to depend on each other, arrange them in a cycle.
 
 <p align="center"><img width="521" src="Images/graph-09.svg"></p>
 
-Suppose we have a group `G` of nodes `A`, `B`, `C`, and `D`, and we want to create a "public" interface for `G` consisting only of `C` and `D`. We can do so by adding `C` and `D` to a *proxy* group which mediates the ingress and egress for `G`, with `G` being a child of the proxy.
+Suppose we have a group `G` of nodes `A`, `B`, `C`, and `D`, and we want to create a "public" interface for `G` consisting only of `C` and `D`. We can do so by adding `C` and `D` to a (reverse) *proxy* group which mediates the ingress for `G`.
 
-<p align="center"><img width="480" src="Images/graph-10.svg"></p>
+<p align="center"><img width="344" src="Images/graph-10.svg"></p>
+
+Then members of an external group `H` can depend on the public members of `G` if `H` is made a descendant of the proxy.
+
+<p align="center"><img width="480" src="Images/graph-11.svg"></p>
+
+Alternatively, if the proxy is made a descendant of `H`, then any nodes which can depend on the public members of `G` (including all the members of `G` itself) can also depend on the members of `H`. In other words, the contents of `H` become part of the public interface of `G`.
+
+<p align="center"><img width="480" src="Images/graph-12.svg"></p>
+
+If instead we make `G` itself a descendant of `H`, then the members of `G` can depend on the members of `H`. In this situation, the contents of `H` aren't included in the public interface of `G`.
+
+<p align="center"><img width="520" src="Images/graph-13.svg"></p>
+
+In these examples, `H` may be a proxy for another group with its own private members.
 
 ## Motivation for the reflexivity axiom
 
