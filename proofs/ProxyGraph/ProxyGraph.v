@@ -77,8 +77,7 @@ Theorem duality :
   forall (node : Type) (g1 g2 : proxyGraph node),
   (forall n1 n2, egress g1 n1 n2 -> ingress g2 n2 n1) ->
   (forall n1 n2, ingress g1 n1 n2 -> egress g2 n2 n1) ->
-  forall n1 n2,
-  admits g1 n1 n2 -> admits g2 n2 n1.
+  forall n1 n2, admits g1 n1 n2 -> admits g2 n2 n1.
 Proof.
   clean.
   destruct (admission node g1 n1 n2).
