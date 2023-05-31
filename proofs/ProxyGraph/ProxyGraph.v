@@ -35,8 +35,8 @@ Arguments egress {_} _ _.
 Arguments ingress {_} _ _.
 
 (*
-  The purpose of a proxy graph is to specify which dependencies are *admitted*
-  between the nodes.
+  Via the following relation, a proxy graph specifies which dependencies
+  between the nodes should be allowed.
 *)
 
 Inductive admits {node} (g : proxyGraph node) (n : node) : node -> Prop :=
@@ -49,7 +49,8 @@ Inductive admits {node} (g : proxyGraph node) (n : node) : node -> Prop :=
 #[export] Hint Constructors admits : main.
 
 (*
-  The following theorem gives an alternative way to characterize admissibility.
+  The following theorem gives an equivalent way to characterize which
+  dependencies should be allowed.
 *)
 
 Theorem admission :
@@ -69,8 +70,10 @@ Qed.
 #[export] Hint Resolve admission : main.
 
 (*
-  If you swap the edge types and flip the directions of the edges,
-  the `admits` relation is transposed.
+  Given two proxy graphs with the same set of nodes such that edge in the first
+  graph imply corresponding edges of the opposite type and in the opposite
+  direction in the second graph, then the second graph allows flipped versions
+  of any dependencies allowed by the first graph.
 *)
 
 Theorem duality :
