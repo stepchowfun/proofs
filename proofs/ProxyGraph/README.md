@@ -16,6 +16,8 @@ The following axioms determine which dependencies are allowed.
 2. If X is allowed to depend on Y and there is an edge Y ⭢ᵢ Z, then X is allowed to depend on Z.
 4. No other dependencies are allowed.
 
+Given an edge X ⭢ₑ Y, Y can be understood as a forward proxy in front of X. Likewise, given an edge X ⭢ᵢ Y, X can be understood as a reverse proxy in front of Y. These analogies are where the name "proxy graph" comes from.
+
 ## Theorems
 
 This development contains verified proofs of the following two theorems:
