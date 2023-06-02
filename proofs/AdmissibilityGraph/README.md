@@ -143,9 +143,9 @@ The second conclusion would seem to imply that admissibility is reflexive, which
 
 ## Deciding admissibility
 
-We may wish to check whether a dependency graph is compatible with a given admissibility graph containing the same nodes. Let *N* be the number of nodes, let *E* be the number of child-parent relationships, and let *D* be the number of dependencies. Then we can validate the dependency graph in 𝒪(*N*² + *NE*) expected time and 𝒪(*N* + *D*) space in the worst case by defining an auxiliary graph as follows:
+We may wish to check whether a dependency graph is compatible with a given admissibility graph containing the same nodes. Let *N* be the number of nodes, let *E* be the number of child-parent relationships, and let *D* be the number of dependencies. Then we can validate the dependency graph in 𝒪(*N*² + *NE*) expected time and 𝒪(*N* + *D*) space in the worst case by defining an auxiliary graph as the smallest graph satisfying:
 
-- For every node `X` in the admissibility graph, the auxiliary graph will have two nodes `X₁` and `X₂`.
-- For every child-parent relationship `C` → `P`, the auxiliary graph will have two edges `C₁` → `P₁` and `P₁` → `C₂`.
+- For every node `X` in the admissibility graph, the auxiliary graph has two nodes `X₁` and `X₂`.
+- For every child-parent relationship `C` ⭢ `P` in the admissibility graph, the auxiliary graph has two edges `C₁` ⭢ `P₁` and `P₁` ⭢ `C₂`.
 
-Then, to check that a dependency `S` → `T` is admissible, it suffices to check that `T₂` is reachable from `S₁` in the auxiliary graph. This can be done with DFS in 𝒪(*N* + *E*) time and 𝒪(*N*) space. If we traverse all the nodes `T₂` reachable from some source `S₁` (e.g., with a depth-first strategy), we discover all the nodes which admit that source, again in 𝒪(*N* + *E*) time and 𝒪(*N*) space. By doing this for every source `S₁`, we can discover all the admissible dependencies in the admissibility graph. Any dependencies which weren't discovered (which can be recorded by a hash table) aren't admissible.
+Then, to check that a dependency `S` ⭢ `T` is admissible, it suffices to check that `T₂` is reachable from `S₁` in the auxiliary graph. This can be done with DFS in 𝒪(*N* + *E*) time and 𝒪(*N*) space. If we traverse all the nodes `T₂` reachable from some source `S₁` (e.g., with a depth-first strategy), we discover all the nodes which admit that source, again in 𝒪(*N* + *E*) time and 𝒪(*N*) space. By doing this for every source `S₁`, we can discover all the dependencies admitted by the admissibility graph. Any dependencies which weren't discovered (which can be recorded by a hash table) aren't admissible.
