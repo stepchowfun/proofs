@@ -39,14 +39,14 @@ Arguments ingress {_} _ _.
   between the nodes should be allowed.
 *)
 
-Inductive admits {node} (g : proxyGraph node) (n : node) : node -> Prop :=
-| reflexivity : admits g n n
+Inductive allowed {node} (g : proxyGraph node) (n : node) : node -> Prop :=
+| reflexivity : allowed g n n
 | egressExtension :
-    forall n1 n2, egress g n n1 -> admits g n1 n2 -> admits g n n2
+    forall n1 n2, egress g n n1 -> allowed g n1 n2 -> allowed g n n2
 | ingressExtension :
-    forall n1 n2, admits g n n1 -> ingress g n1 n2 -> admits g n n2.
+    forall n1 n2, allowed g n n1 -> ingress g n1 n2 -> allowed g n n2.
 
-#[export] Hint Constructors admits : main.
+#[export] Hint Constructors allowed : main.
 
 (*
   The following theorem gives an equivalent way to characterize which
@@ -55,7 +55,7 @@ Inductive admits {node} (g : proxyGraph node) (n : node) : node -> Prop :=
 
 Theorem admission :
   forall (node : Type) (g : proxyGraph node) n1 n2,
-  admits g n1 n2 <->
+  allowed g n1 n2 <->
   exists n3,
     clos_refl_trans (egress g) n1 n3 /\ clos_refl_trans (ingress g) n3 n2.
 Proof.
@@ -80,7 +80,7 @@ Theorem duality :
   forall (node : Type) (g1 g2 : proxyGraph node),
   (forall n1 n2, egress g1 n1 n2 -> ingress g2 n2 n1) ->
   (forall n1 n2, ingress g1 n1 n2 -> egress g2 n2 n1) ->
-  forall n1 n2, admits g1 n1 n2 -> admits g2 n2 n1.
+  forall n1 n2, allowed g1 n1 n2 -> allowed g2 n2 n1.
 Proof.
   clean.
   destruct (admission node g1 n1 n2).
