@@ -99,3 +99,27 @@ Proof.
 Qed.
 
 #[export] Hint Resolve duality : main.
+
+(*
+  Flipping the direction and type of the edges in a proxy graph results in
+  flipping the direction of the allowed dependencies.
+*)
+
+Theorem transposition :
+  forall (node : Type) (g1 g2 : proxyGraph node),
+  (forall n1 n2, egress g1 n1 n2 <-> ingress g2 n2 n1) ->
+  (forall n1 n2, ingress g1 n1 n2 <-> egress g2 n2 n1) ->
+  forall n1 n2, allowed g1 n1 n2 <-> allowed g2 n2 n1.
+Proof.
+  split; apply duality.
+  - apply H.
+  - apply H0.
+  - clean.
+    apply <- H0.
+    search.
+  - clean.
+    apply <- H.
+    search.
+Qed.
+
+#[export] Hint Resolve transposition : main.
