@@ -13,6 +13,8 @@ Time will tell how useful this concept ends up being, but I believe it sheds new
 
 These questions may seem philosophical, but the answers have practical consequences for any system which allows its users to define abstractions. Such systems include programming languages, network infrastructure, build systems, etc.
 
+Admissibility graphs can be understood as a specialization of [proxy graphs](https://github.com/stepchowfun/proofs/tree/main/proofs/ProxyGraph).
+
 ## Definition
 
 Before we look at any particular examples, allow me to first define the general concept.
