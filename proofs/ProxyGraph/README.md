@@ -14,8 +14,8 @@ In addition to the usual graph structure, a proxy graph is equipped with two pre
 The following axioms determine which dependencies are allowed.
 
 1. Every node is allowed to depend on itself.
-3. If `egress(X)` holds and there is an edge `X` ⭢ `Y` and `Y` is allowed to depend on `Z`, then `X` is allowed to depend on `Z`.
-2. If `ingress(Z)` holds and `X` is allowed to depend on `Y` and there is an edge `Z` ⭢ `Y`, then `X` is allowed to depend on `Z`.
+2. If `egress(X)` holds and there is an edge `X` ⭢ `Y` and `Y` is allowed to depend on `Z`, then `X` is allowed to depend on `Z`.
+3. If `ingress(Z)` holds and `X` is allowed to depend on `Y` and there is an edge `Z` ⭢ `Y`, then `X` is allowed to depend on `Z`.
 4. No other dependencies are allowed.
 
 Given an edge `X` ⭢ `Y`, `egress(X)` means that `Y` can be understood as a forward proxy in front of `X`, and `ingress(X)` means that `Y` can be understood as reverse proxy in front of `X`. These analogies are where the name "proxy graph" comes from.
