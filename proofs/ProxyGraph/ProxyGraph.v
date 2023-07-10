@@ -23,7 +23,7 @@ Require Import Main.Tactics.
 
 (*
   Nodes are related by member-group edges. Nodes may optionally allow egress
-  and/or ingress through their groups.
+  to and/or ingress from the groups containing them.
 *)
 
 Record proxyGraph (node : Type) := {
@@ -85,12 +85,12 @@ Qed.
 #[export] Hint Resolve admission : main.
 
 (*
-  Given two proxy graphs with the same set of nodes and edges such that nodes
-  that allow ingress through their groups in the first graph allow egress
-  through their groups in the second graph and nodes that allow egress through
-  their groups in the first graph allow ingress through their groups in the
-  second graph, the second graph allows flipped versions of any dependencies
-  allowed by the first graph.
+  Given two proxy graphs with the same nodes and edges such that nodes that
+  allow ingress from the groups containing them in the first graph allow egress
+  to the groups containing them in the second graph and nodes that allow egress
+  to the groups containing them in the first graph allow ingress from the
+  groups containing them in the second graph, the second graph allows flipped
+  versions of any dependencies allowed by the first graph.
 *)
 
 Theorem duality :
