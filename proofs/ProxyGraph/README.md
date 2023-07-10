@@ -4,12 +4,12 @@ A *proxy graph* is a specification for which dependencies should be allowed betw
 
 ## Definition
 
-The nodes are the components of the system. The edges are directed and indicate child ⭢ parent relationships between nodes.
+The nodes are the components of the system. The edges are directed and indicate member ⭢ group relationships between nodes.
 
 In addition to the usual graph structure, a proxy graph is equipped with two predicates on nodes:
 
-1. `egress(X)` indicate whether node `X` allows egress through its parents.
-2. `ingress(X)` indicates whether node `X` allows ingress through its parents.
+1. `egress(X)` indicate whether node `X` allows egress through its groups.
+2. `ingress(X)` indicates whether node `X` allows ingress through its groups.
 
 The following axioms determine which dependencies are allowed.
 
