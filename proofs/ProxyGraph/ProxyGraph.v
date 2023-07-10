@@ -22,8 +22,8 @@ Require Import Main.Tactics.
 #[local] Hint Resolve clos_rt_rtn1 : main.
 
 (*
-  Nodes are related by child-parent edges. Nodes may optionally allow egress
-  and/or ingress through their parents.
+  Nodes are related by member-group edges. Nodes may optionally allow egress
+  and/or ingress through their groups.
 *)
 
 Record proxyGraph (node : Type) := {
@@ -43,13 +43,13 @@ Arguments ingress {_} _.
 
 Inductive allowed {node} (g : proxyGraph node) (n : node) : node -> Prop :=
 | reflexivity : allowed g n n
-| egressExtension :
+| forward :
     forall n1 n2,
     egress g n ->
     edge g n n1 ->
     allowed g n1 n2 ->
     allowed g n n2
-| ingressExtension :
+| reverse :
     forall n1 n2,
     ingress g n2 ->
     edge g n2 n1 ->
@@ -86,9 +86,9 @@ Qed.
 
 (*
   Given two proxy graphs with the same set of nodes and edges such that nodes
-  that allow ingress through their parents in the first graph allow egress
-  through their parents in the second graph and nodes that allow egress through
-  their parents in the first graph allow ingress through their parents in the
+  that allow ingress through their groups in the first graph allow egress
+  through their groups in the second graph and nodes that allow egress through
+  their groups in the first graph allow ingress through their groups in the
   second graph, the second graph allows flipped versions of any dependencies
   allowed by the first graph.
 *)
