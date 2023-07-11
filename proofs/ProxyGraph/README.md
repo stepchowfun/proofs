@@ -8,8 +8,8 @@ The nodes are the components of the system. The edges are directed and indicate 
 
 In addition to the usual graph structure, a proxy graph is equipped with two predicates on nodes:
 
-1. `egress(X)`: informally, indicates whether node `X` allows egress from its member nodes through this node
-2. `ingress(X)`: informally, indicates whether node `X` allows ingress to its member nodes through this node
+1. `egress(X)`: informally, indicates whether node `X` allows egress from its member nodes through itself
+2. `ingress(X)`: informally, indicates whether node `X` allows ingress to its member nodes through itself
 
 The following axioms determine which dependencies are allowed.
 
