@@ -45,14 +45,14 @@ Inductive allowed {node} (g : proxyGraph node) (n : node) : node -> Prop :=
 | reflexivity : allowed g n n
 | forward :
     forall n1 n2,
-    egress g n ->
     edge g n n1 ->
+    egress g n1 ->
     allowed g n1 n2 ->
     allowed g n n2
 | reverse :
     forall n1 n2,
-    ingress g n2 ->
     edge g n2 n1 ->
+    ingress g n1 ->
     allowed g n n1 ->
     allowed g n n2.
 
@@ -67,16 +67,16 @@ Theorem admission :
   forall (node : Type) (g : proxyGraph node) n1 n2,
   allowed g n1 n2 <->
   exists n3,
-    clos_refl_trans (fun n4 n5 => edge g n4 n5 /\ egress g n4) n1 n3 /\
-    clos_refl_trans (fun n4 n5 => edge g n5 n4 /\ ingress g n5) n3 n2.
+    clos_refl_trans (fun n4 n5 => edge g n4 n5 /\ egress g n5) n1 n3 /\
+    clos_refl_trans (fun n4 n5 => edge g n5 n4 /\ ingress g n4) n3 n2.
 Proof.
   split; clean.
   - induction H; eSearch; destruct IHallowed; exists x; split; eSearch.
   - pose proof (
-      clos_rt_rt1n node (fun n4 n5 => edge g n4 n5 /\ egress g n4) n1 x H
+      clos_rt_rt1n node (fun n4 n5 => edge g n4 n5 /\ egress g n5) n1 x H
     ).
     pose proof (
-      clos_rt_rtn1 node (fun n4 n5 => edge g n5 n4 /\ ingress g n5) x n2 H0
+      clos_rt_rtn1 node (fun n4 n5 => edge g n5 n4 /\ ingress g n4) x n2 H0
     ).
     clear H H0.
     induction H1; induction H2; eSearch.
