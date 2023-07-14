@@ -35,6 +35,8 @@ This development contains verified proofs of the following theorems:
 We may wish to check whether a dependency graph is compatible with a given admissibility graph containing the same nodes. Let *N* be the number of nodes, let *E* be the number of edges, and let *D* be the number of dependencies. Then we can validate the dependency graph in 𝒪(*N*² + *NE*) expected time and 𝒪(*N* + *D*) space in the worst case by defining an auxiliary graph as the smallest graph satisfying:
 
 - For every node `X` in the admissibility graph, the auxiliary graph has two nodes `Xₑ` and `Xᵢ` and an edge `Xₑ` ⭢ `Xᵢ`.
-- For every edge `X` ⭢ `Y` in the admissibility graph, the auxiliary graph has edges `Xₑ` ⭢ `Yᵢ` and `Yₑ` ⭢ `Xᵢ`. If `trusted(X)` holds, the auxiliary graph also has an edge `Xₑ` ⭢ `Yₑ`. If `exported(X)` holds, the auxiliary graph also has an edge `Yᵢ` ⭢ `Xᵢ`.
+- For every edge `X` ⭢ `Y` in the admissibility graph, the auxiliary graph has edges `Xₑ` ⭢ `Yᵢ` and `Yₑ` ⭢ `Xᵢ`.
+  - If `trusted(X)` holds, the auxiliary graph also has an edge `Xₑ` ⭢ `Yₑ`.
+  - If `exported(X)` holds, the auxiliary graph also has an edge `Yᵢ` ⭢ `Xᵢ`.
 
 Then, to check that a dependency `X` ⭢ `Y` is allowed, it suffices to check that `Yᵢ` is reachable from `Xₑ` in the auxiliary graph. This can be done with DFS in 𝒪(*N* + *E*) time and 𝒪(*N*) space. If we traverse all the nodes `Yᵢ` reachable from some source `Xₑ` (e.g., with a depth-first strategy), we discover all the nodes which that source is allowed to depend on, again in 𝒪(*N* + *E*) time and 𝒪(*N*) space. By doing this for every source `Xₑ`, we can discover all the dependencies allowed by the admissibility graph. Any dependencies which weren't discovered (which can be recorded by a hash table) aren't allowed.
