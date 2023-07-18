@@ -26,7 +26,7 @@ This development contains verified proofs of the following theorems:
 
 **Theorem (duality).** Given two admissibility graphs `G₁` and `G₂` with the same set of nodes and edges such `trusts(X, Y)` in `G₁` implies `exports(X, Y)` in `G₂` and `exports(X, Y)` in `G₁` implies `trusts(X, Y)` in `G₂`, then if `G₁` allows some `X` to depend on some `Y`, `G₂` allows `Y` to depend on `X`.
 
-**Theorem (transposition).** Given two admissibility graphs `G₁` and `G₂` with the same set of nodes and edges such that `trusted(X, Y)` in `G₁` is equivalent to `exports(X, Y)` in `G₂` and `exports(X, Y)` in `G₁` is equivalent to `trusts(X, Y)` in `G₂`, then `G₁` allows some `X` to depend on some `Y` iff `G₂` allows `Y` to depend on `X`.
+**Theorem (transposition).** Given two admissibility graphs `G₁` and `G₂` with the same set of nodes and edges such that `trusts(X, Y)` in `G₁` is equivalent to `exports(X, Y)` in `G₂` and `exports(X, Y)` in `G₁` is equivalent to `trusts(X, Y)` in `G₂`, then `G₁` allows some `X` to depend on some `Y` iff `G₂` allows `Y` to depend on `X`.
 
 ## An algorithm to validate dependencies
 
