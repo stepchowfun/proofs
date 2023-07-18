@@ -13,9 +13,9 @@ To make those informal descriptions more precise, the following axioms determine
 
 1. Every node is allowed to depend on itself.
 2. If there is an edge `trusts(X, Y)`, `X` is allowed to depend on `Y`.
-   - Also, if `X` is allowed to depend on some `Z`, then `Y` is also allowed to depend on `Z`.
+   - Also, if `X` is allowed to depend on some `Z`, then `Y` is allowed to depend on `Z`.
 3. If there is an edge `exports(X, Y)`, `Y` is allowed to depend on `X`.
-   - Also, if some `Z` is allowed to depend on `X`, then `Z` is also allowed to depend on `Y`.
+   - Also, if some `Z` is allowed to depend on `X`, then `Z` is allowed to depend on `Y`.
 4. No other dependencies are allowed.
 
 ## Theorems
