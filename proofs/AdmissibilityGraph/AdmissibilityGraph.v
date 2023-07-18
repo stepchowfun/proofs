@@ -22,44 +22,31 @@ Require Import Main.Tactics.
 #[local] Hint Resolve clos_rt_rtn1 : main.
 
 (*
-  The *nodes* of an *admissibility graph* are related by a *membership*
-  relation. Nodes may be *trusted*, *exported*, both, or neither.
+  The *nodes* of an *admissibility graph* are related by two types of directed
+  edges: *trusts* and *exports*.
 *)
 
 Record admissibilityGraph (node : Type) := {
-  member : node -> node -> Prop;
-  trusted : node -> Prop;
-  exported : node -> Prop;
+  trusts : node -> node -> Prop;
+  exports : node -> node -> Prop;
 }.
 
-Arguments member {_} _ _.
-Arguments trusted {_} _.
-Arguments exported {_} _.
+Arguments trusts {_} _ _.
+Arguments exports {_} _ _.
 
 (*
-  Every node may depend on itself, its members, and the groups containing it.
-  A trusted node may also depend on any node that any of the groups containing
-  it may depend on. A node may also depend on any exported members of any nodes
-  that it may depend on.
+  Every node may depend on itself, the nodes it trusts, the nodes that export
+  it, any node that a node that trusts it can depend on, and any node that is
+  exported by a node that it can depend on.
 *)
 
 Inductive allowed {node} (g : admissibilityGraph node) (n : node) : node
   -> Prop :=
 | loop : allowed g n n
-| leave : forall n1, member g n n1 -> allowed g n n1
-| enter : forall n1, member g n1 n -> allowed g n n1
-| egress :
-  forall n1 n2,
-  trusted g n ->
-  member g n n1 ->
-  allowed g n1 n2 ->
-  allowed g n n2
-| ingress :
-  forall n1 n2,
-  exported g n2 ->
-  member g n2 n1 ->
-  allowed g n n1 ->
-  allowed g n n2.
+| trust : forall n1, trusts g n n1 -> allowed g n n1
+| export : forall n1, exports g n1 n -> allowed g n n1
+| egress : forall n1 n2, trusts g n1 n -> allowed g n1 n2 -> allowed g n n2
+| ingress : forall n1 n2, exports g n1 n2 -> allowed g n n1 -> allowed g n n2.
 
 #[export] Hint Constructors allowed : main.
 
@@ -72,9 +59,9 @@ Theorem admission :
   forall (node : Type) (g : admissibilityGraph node) n1 n2,
   allowed g n1 n2 <->
   exists n3 n4,
-    clos_refl_trans (fun n5 n6 => member g n5 n6 /\ trusted g n5) n1 n3 /\
-    (n3 = n4 \/ member g n3 n4 \/ member g n4 n3) /\
-    clos_refl_trans (fun n5 n6 => member g n6 n5 /\ exported g n6) n4 n2.
+    clos_refl_trans (fun n5 n6 => trusts g n6 n5) n1 n3 /\
+    (n3 = n4 \/ trusts g n3 n4 \/ exports g n4 n3) /\
+    clos_refl_trans (fun n5 n6 => exports g n5 n6) n4 n2.
 Proof.
   split; clean.
   - induction H.
@@ -85,80 +72,71 @@ Proof.
     + exists n, n1.
       search.
     + destruct IHallowed.
-      destruct H2.
+      destruct H1.
       exists x, x0.
       eSearch.
     + destruct IHallowed.
-      destruct H2.
+      destruct H1.
       exists x, x0.
       eSearch.
-  - induction (
-      clos_rt_rt1n node (fun n5 n6 => member g n5 n6 /\ trusted g n5) n1 x H
-    );
-    induction (
-      clos_rt_rtn1 node (fun n5 n6 => member g n6 n5 /\ exported g n6) x0 n2 H1
-    );
+  - induction (clos_rt_rt1n node (fun n5 n6 => trusts g n6 n5) n1 x H);
+    induction (clos_rt_rtn1 node (fun n5 n6 => exports g n5 n6) x0 n2 H1);
     eSearch.
 Qed.
 
 #[export] Hint Resolve admission : main.
 
 (*
-  Given two admissibility graphs with the same nodes and edges such that
-  trusted nodes in the first graph are exported in the second graph and
-  exported nodes in the second graph are trusted in the second graph, the
-  second graph allows flipped versions of any dependencies allowed by the first
-  graph.
+  Given two admissibility graphs with the same set of nodes such that edges in
+  the first graph imply corresponding edges of the opposite type in the second
+  graph, then the second graph allows flipped versions of any dependencies
+  allowed by the first graph.
 *)
 
 Theorem duality :
   forall (node : Type) (g1 g2 : admissibilityGraph node),
-  (forall n, trusted g1 n -> exported g2 n) ->
-  (forall n, exported g1 n -> trusted g2 n) ->
-  (forall n1 n2, member g1 n1 n2 -> member g2 n1 n2) ->
+  (forall n1 n2, trusts g1 n1 n2 -> exports g2 n1 n2) ->
+  (forall n1 n2, exports g1 n1 n2 -> trusts g2 n1 n2) ->
   forall n1 n2, allowed g1 n1 n2 -> allowed g2 n2 n1.
 Proof.
   clean.
-  apply admission.
   destruct (admission node g1 n1 n2).
-  specialize (H3 H2).
-  clear H2 H4.
-  destruct H3.
-  do 2 destruct H2.
-  destruct H3.
+  specialize (H2 H1).
+  clear H1 H3.
+  destruct H2.
+  do 2 destruct H1.
+  destruct H2.
+  apply admission.
   exists x0, x.
-  repeat split; eSearch.
-  - clear H H2 H3.
-    induction H4; eSearch.
-  - clear H0 H3 H4.
-    induction H2; eSearch.
+  repeat split; search.
+  - clear H H1 H2.
+    apply clos_rt_rt1n in H3.
+    induction H3; eSearch.
+  - clear H0 H2 H3.
+    apply clos_rt_rtn1 in H1.
+    induction H1; eSearch.
 Qed.
 
 #[export] Hint Resolve duality : main.
 
 (*
-  Swapping the trusted and exported predicates in an admissibility graph
-  results in flipping the direction of the allowed dependencies.
+  Swapping the edge types in an admissibility graph results in flipping the
+  direction of the allowed dependencies.
 *)
 
 Theorem transposition :
   forall (node : Type) (g1 g2 : admissibilityGraph node),
-  (forall n, trusted g1 n <-> exported g2 n) ->
-  (forall n, exported g1 n <-> trusted g2 n) ->
-  (forall n1 n2, member g1 n1 n2 <-> member g2 n1 n2) ->
+  (forall n1 n2, trusts g1 n1 n2 <-> exports g2 n1 n2) ->
+  (forall n1 n2, exports g1 n1 n2 <-> trusts g2 n1 n2) ->
   forall n1 n2, allowed g1 n1 n2 <-> allowed g2 n2 n1.
 Proof.
   split; apply duality.
   - apply H.
   - apply H0.
-  - apply H1.
-  - clean.
-    apply <- H0.
-    search.
+  - apply H0.
   - clean.
     apply <- H.
     search.
-  - apply H1.
 Qed.
 
 #[export] Hint Resolve transposition : main.
