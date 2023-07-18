@@ -52,7 +52,7 @@ Inductive allowed {node} (g : admissibilityGraph node) (n : node) : node
 
 (* It doesn't matter if a node trusts or exports itself. *)
 
-Theorem self :
+Theorem reflection :
   forall (node : Type) (g1 g2 : admissibilityGraph node),
   (forall n1 n2, n1 = n2 /\ (trusts g1 n1 n2 <-> trusts g2 n1 n2)) ->
   (forall n1 n2, n1 = n2 /\ (exports g1 n1 n2 <-> exports g2 n1 n2)) ->
@@ -79,7 +79,7 @@ Proof.
       eSearch.
 Qed.
 
-#[export] Hint Resolve self : main.
+#[export] Hint Resolve reflection : main.
 
 (*
   The following theorem gives an equivalent way to characterize which

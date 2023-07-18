@@ -22,6 +22,8 @@ To make those informal descriptions more precise, the following axioms determine
 
 This development contains verified proofs of the following theorems:
 
+**Theorem (reflection).** It doesn't matter if a node trusts or exports itself.
+
 **Theorem (admission).** `X` is allowed to depend on `Y` [iff](https://en.wikipedia.org/wiki/If_and_only_if) there is a path of `trusts` edges from `X` to some `U` and a path of `exports` edges from `Y` to some `V` and `U` = `V` or there is an edge `U trusts V` or `V exports U`.
 
 **Theorem (duality).** Given two admissibility graphs `G₁` and `G₂` with the same set of nodes and edges such `X trusts Y` in `G₁` implies `X exports Y` in `G₂` and `X exports Y` in `G₁` implies `X trusts Y` in `G₂`, then if `G₁` allows some `X` to depend on some `Y`, `G₂` allows `Y` to depend on `X`.
