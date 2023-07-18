@@ -50,6 +50,37 @@ Inductive allowed {node} (g : admissibilityGraph node) (n : node) : node
 
 #[export] Hint Constructors allowed : main.
 
+(* It doesn't matter if a node trusts or exports itself. *)
+
+Theorem self :
+  forall (node : Type) (g1 g2 : admissibilityGraph node),
+  (forall n1 n2, n1 = n2 /\ (trusts g1 n1 n2 <-> trusts g2 n1 n2)) ->
+  (forall n1 n2, n1 = n2 /\ (exports g1 n1 n2 <-> exports g2 n1 n2)) ->
+  forall n1 n2, allowed g1 n1 n2 <-> allowed g2 n1 n2.
+Proof.
+  split; clean.
+  - induction H1; search.
+    + destruct (H n n1).
+      eSearch.
+    + destruct (H0 n1 n).
+      eSearch.
+    + destruct (H n1 n).
+      eSearch.
+    + destruct (H0 n1 n2).
+      eSearch.
+  - induction H1; search.
+    + destruct (H n n1).
+      eSearch.
+    + destruct (H0 n1 n).
+      eSearch.
+    + destruct (H n1 n).
+      eSearch.
+    + destruct (H0 n1 n2).
+      eSearch.
+Qed.
+
+#[export] Hint Resolve self : main.
+
 (*
   The following theorem gives an equivalent way to characterize which
   dependencies should be allowed.
