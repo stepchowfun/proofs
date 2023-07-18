@@ -50,7 +50,11 @@ Inductive allowed {node} (g : admissibilityGraph node) (n : node) : node
 
 #[export] Hint Constructors allowed : main.
 
-(* It doesn't matter if a node trusts or exports itself. *)
+(*
+  Given two admissibility graphs with the same nodes that have matching edges
+  between all pairs of *distinct* nodes, then they allow the same dependencies.
+  On other words, it doesn't matter if a node trusts or exports itself.
+*)
 
 Theorem reflection :
   forall (node : Type) (g1 g2 : admissibilityGraph node),
