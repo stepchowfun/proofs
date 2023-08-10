@@ -266,7 +266,7 @@ Qed.
 (*
   In Lesson 2, we learned that Coq has a built-in notion of equality which is
   used for type checking: two expressions are considered equal if they compute
-  to syntatically identical expressions. This is definitional equality.
+  to syntactically identical expressions. This is definitional equality.
 
   Thus, `0 + n` is definitionally equal to `n`, because `+` pattern matches on
   the `0` and returns `n` in that case. However, `n + 0` is not definitionally

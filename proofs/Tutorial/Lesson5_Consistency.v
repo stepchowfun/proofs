@@ -52,7 +52,7 @@ Fail Fixpoint f (n : nat) : False := f n.
 
     https://github.com/stepchowfun/proofs/blob/main/proofs/TypeTheory/Girard.v
 
-  So, instead of having `Type : Type`, we have an infinite heirarchy of
+  So, instead of having `Type : Type`, we have an infinite hierarchy of
   universes `Type_i` for all `i` >= 0. For convenience, universes are
   cumulative, so `x : Type_i` implies `x : Type_{i+1}`. `Type_0` is called
   `Set`. All of these `Type_i` universes, including `Set`, are "predicative",
