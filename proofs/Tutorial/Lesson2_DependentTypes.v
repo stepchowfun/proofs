@@ -52,7 +52,7 @@ Compute boolToSet false. (* `string` *)
 (*
   Coq considers types *definitionally equal* if they compute to syntactically
   identical types. This notion of equality between types is the one used for
-  type checking. For example, we can now give the value `42` the following two
+  type checking. For example, we can give the value `42` the following two
   types which are definitionally equal:
 *)
 
