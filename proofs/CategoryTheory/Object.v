@@ -19,7 +19,7 @@ Definition isomorphic {C} (x y : object C) :=
 Definition uniqueUpToIsomorphism {C} (P : object C -> Prop) :=
   forall x y, P x -> P y -> isomorphic x y.
 
-Theorem isomorphicRefl C (x : object C) : isomorphic x x.
+Theorem isomorphicRefl {C} (x : object C) : isomorphic x x.
 Proof.
   unfold isomorphic.
   unfold isomorphism.
@@ -29,23 +29,23 @@ Qed.
 
 #[export] Hint Resolve isomorphicRefl : main.
 
-Theorem isomorphicTrans C (x y z : object C) :
+Theorem isomorphicTrans {C} (x y z : object C) :
   isomorphic x y -> isomorphic y z -> isomorphic x z.
 Proof.
   unfold isomorphic.
   unfold isomorphism.
   unfold inverse.
   clean.
-  exists (compose x0 x2).
-  exists (compose x3 x1).
+  exists (compose x2 x0).
+  exists (compose x1 x3).
   split.
   - rewrite cAssoc.
-    rewrite <- (cAssoc x3).
-    rewrite H.
+    rewrite <- (cAssoc x0).
+    rewrite H0.
     search.
   - rewrite cAssoc.
-    rewrite <- (cAssoc x0).
-    rewrite H1.
+    rewrite <- (cAssoc x3).
+    rewrite H2.
     search.
 Qed.
 
@@ -54,7 +54,8 @@ Qed.
   doing so could lead to nonterminating searches.
 *)
 
-Theorem isomorphicSymm C (x y : object C) : isomorphic x y <-> isomorphic y x.
+Theorem isomorphicSymm {C} (x y : object C) :
+  isomorphic x y <-> isomorphic y x.
 Proof.
   unfold isomorphic.
   unfold isomorphism.
@@ -67,7 +68,7 @@ Qed.
   doing so could lead to nonterminating searches.
 *)
 
-Theorem opIsomorphic C x y :
+Theorem opIsomorphic {C} x y :
   @isomorphic C x y <-> @isomorphic (oppositeCategory C) y x.
 Proof.
   unfold isomorphic.

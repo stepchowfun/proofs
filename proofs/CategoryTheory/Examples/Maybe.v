@@ -7,12 +7,13 @@
 (*******************************************)
 
 Require Import Coq.Logic.FunctionalExtensionality.
-Require Import Main.CategoryTheory.Category.
 Require Import Main.CategoryTheory.Examples.Set.
 Require Import Main.CategoryTheory.Functor.
 Require Import Main.CategoryTheory.Monad.
 Require Import Main.CategoryTheory.NaturalTransformation.
 Require Import Main.Tactics.
+
+#[local] Obligation Tactic := search.
 
 (* A `maybe` is a wrapper for value that might be missing. *)
 
@@ -23,169 +24,71 @@ Inductive maybe x : Type :=
 Arguments nothing {_}.
 Arguments just {_}.
 
-(* Here's a proof that `maybe` is a functor. *)
+(* `maybe` is a functor. *)
 
-#[local] Theorem maybeFIdent (x : object setCategory) :
-  (
-    fun e : maybe x =>
-      match e with
-      | nothing => nothing
-      | just e0 => just (@id setCategory x e0)
-      end
-  ) = @id setCategory (maybe x).
-Proof.
-  clean.
-  apply functional_extensionality.
-  destruct x0; search.
-Qed.
-
-#[local] Theorem maybeFComp
-  (x y z : object setCategory)
-  (f : arrow x y)
-  (g : arrow y z)
-: @compose setCategory _ _ _
-    (
-      fun e : maybe y =>
-        match e with
-        | nothing => nothing
-        | just e0 => just (g e0)
-        end
-    )
-    (
-      fun e : maybe x =>
-        match e with
-        | nothing => nothing
-        | just e0 => just (f e0)
-        end
-    ) =
-  (
-    fun e : maybe x =>
-      match e with
-      | nothing => nothing
-      | just e0 => just (compose g f e0)
-      end
-  ).
-Proof.
-  clean.
-  apply functional_extensionality.
-  destruct x0; search.
-Qed.
-
-Definition maybeFunctor : functor setCategory setCategory := newFunctor
-  setCategory
-  setCategory
-  maybe
-  (fun _ _ f e =>
+Program Definition maybeFunctor : functor setCategory setCategory := {|
+  oMap o := maybe o;
+  fMap _ _ f := fun e =>
     match e with
     | nothing => nothing
     | just e => just (f e)
-    end
-  )
-  maybeFIdent
-  maybeFComp.
-
-(* This is the "return" natural transformation for `maybe`. *)
-
-#[local] Theorem maybeEtaNaturality
-  (x y : object setCategory)
-  (f : arrow x y)
-:
-  @compose setCategory _ _ _ just (fMap idFunctor f) =
-  @compose setCategory _ _ _ (fMap maybeFunctor f) just.
-Proof.
-  search.
+    end;
+|}.
+Next Obligation.
+  clean.
+  apply functional_extensionality.
+  destruct x0; search.
 Qed.
-
-Definition maybeEta : naturalTransformation idFunctor maybeFunctor :=
-  newNaturalTransformation
-    idFunctor
-    maybeFunctor
-    (@just)
-    maybeEtaNaturality.
-
-(* This is the "join" natural transformation for `maybe`. *)
-
-#[local] Theorem maybeMuNaturality (x y : object setCategory) (f : arrow x y) :
-  @compose
-    setCategory _ _ _
-    (
-      fun e1 : oMap (compFunctor maybeFunctor maybeFunctor) y =>
-        match e1 with
-        | nothing => nothing
-        | just e2 => e2
-        end
-    )
-    (fMap (compFunctor maybeFunctor maybeFunctor) f) =
-  compose
-    (fMap maybeFunctor f)
-    (
-      fun e1 : oMap (compFunctor maybeFunctor maybeFunctor) x =>
-        match e1 with
-        | nothing => nothing
-        | just e2 => e2
-        end
-    ).
-Proof.
+Next Obligation.
   clean.
   apply functional_extensionality.
   destruct x0; search.
 Qed.
 
-Definition maybeMu :
+(* This is the "return" natural transformation for `maybe`. *)
+
+Program Definition maybeEta :
+  naturalTransformation (idFunctor setCategory) maybeFunctor
+:= {|
+  eta x := @just x;
+|}.
+
+(* This is the "join" natural transformation for `maybe`. *)
+
+Program Definition maybeMu :
   naturalTransformation (compFunctor maybeFunctor maybeFunctor) maybeFunctor
-:= newNaturalTransformation
-  (compFunctor maybeFunctor maybeFunctor)
-  maybeFunctor
-  (
-    fun x e1 =>
+:= {|
+  eta x :=
+    fun e1 =>
       match e1 with
       | nothing => nothing
       | just e2 => e2
       end
-  )
-  maybeMuNaturality.
+|}.
+Next Obligation.
+  clean.
+  apply functional_extensionality.
+  destruct x0; search.
+Qed.
 
-(* Now we can prove that `maybe` is a monad. *)
+(* Now we can show that `maybe` is a monad. *)
 
-#[local] Theorem maybeMAssoc :
-  eta (
-    vertCompNaturalTransformation maybeMu (leftWhisker maybeMu maybeFunctor)
-  ) = eta (
-    vertCompNaturalTransformation maybeMu (rightWhisker maybeFunctor maybeMu)
-  ).
-Proof.
+Program Definition maybeMonad : monad maybeEta maybeMu := {|
+  mAssoc := _;
+  mIdent1 := _;
+  mIdent2 := _;
+|}.
+Next Obligation.
   clean.
   apply functional_extensionality_dep.
   clean.
   apply functional_extensionality.
   destruct x0; search.
 Qed.
-
-#[local] Theorem maybeMIdent1 :
-  eta (
-    vertCompNaturalTransformation maybeMu (leftWhisker maybeEta maybeFunctor)
-  ) = eta idNaturalTransformation.
-Proof.
-  search.
-Qed.
-
-#[local] Theorem maybeMIdent2 :
-  eta (
-    vertCompNaturalTransformation maybeMu (rightWhisker maybeFunctor maybeEta)
-  ) = eta idNaturalTransformation.
-Proof.
+Next Obligation.
   clean.
   apply functional_extensionality_dep.
   clean.
   apply functional_extensionality.
   destruct x0; search.
 Qed.
-
-Definition maybeMonad : monad maybeEta maybeMu := newMonad
-  setCategory
-  maybeFunctor
-  maybeEta
-  maybeMu
-  maybeMAssoc
-  maybeMIdent1
-  maybeMIdent2.

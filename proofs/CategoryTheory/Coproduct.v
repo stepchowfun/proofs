@@ -27,7 +27,7 @@ Definition coproduct
   (iy : arrow y xy)
 :=
   forall z (qx : arrow x z) (qy : arrow y z),
-  universal (fun f => qx = compose f ix /\ qy = compose f iy).
+  universal (fun f => qx = compose ix f /\ qy = compose iy f).
 
 Theorem opCoproductProduct C x y xy px py :
   @coproduct C x y xy px py <-> @product (oppositeCategory C) x y xy px py.
