@@ -13,21 +13,20 @@ Require Import Main.CategoryTheory.Category.
 Require Import Main.CategoryTheory.Functor.
 Require Import Main.Tactics.
 
+#[local] Obligation Tactic := search.
 #[local] Set Universe Polymorphism.
 
 (* Metavariables for natural transformations: `Eta`, `Mu` *)
 
-Record naturalTransformation {C D} (F G : functor C D) :=
-newNaturalTransformation {
+Record naturalTransformation {C D} (F G : functor C D) := {
   eta x : arrow (oMap F x) (oMap G x);
 
   naturality {x y} (f : arrow x y) :
-    compose (eta y) (fMap F f) = compose (fMap G f) (eta x);
+    compose (fMap F f) (eta y) = compose (eta x) (fMap G f);
 }.
 
-Arguments newNaturalTransformation {_} {_}.
-Arguments eta {_} {_} {_} {_} _.
-Arguments naturality {_} {_} {_} {_} _ {_} {_}.
+Arguments eta {_ _ _ _} _ _.
+Arguments naturality {_ _ _ _} _ {_ _} _.
 
 #[export] Hint Resolve naturality : main.
 #[export] Hint Rewrite @naturality : main.
@@ -44,7 +43,7 @@ Proof.
     in (_ = rhs)
     return
       forall (x y : object C) (f : arrow x y),
-      compose (rhs y) (fMap F f) = compose (fMap G f) (rhs x)
+      compose (fMap F f) (rhs y) = compose (rhs x) (fMap G f)
     with
     | eq_refl => @naturality C D F G Eta
     end =
@@ -58,111 +57,70 @@ Qed.
 
 #[export] Hint Resolve eqNaturalTransformation : main.
 
-#[local] Theorem rightWhiskerNaturality
+Program Definition leftWhisker
+  {C D E}
+  (F : functor C D)
+  {G H : functor D E}
+  (Eta : naturalTransformation G H) :
+  naturalTransformation (compFunctor F G) (compFunctor F H)
+:= {|
+  eta x := eta Eta (oMap F x);
+|}.
+
+Program Definition rightWhisker
   {C D E}
   {F G : functor C D}
-  {H : functor D E}
-  {Eta : naturalTransformation F G}
-  (x y : object C) (f : arrow x y)
-: compose (fMap H (eta Eta y)) (fMap (compFunctor H F) f) =
-  compose (fMap (compFunctor H G) f)  (fMap H (eta Eta x)).
-Proof.
-  search.
-Qed.
-
-Definition rightWhisker
-  {C D E}
-  {F G : functor C D}
-  (H : functor D E)
-  (Eta : naturalTransformation F G) :
-  naturalTransformation (compFunctor H F) (compFunctor H G)
-:= newNaturalTransformation (compFunctor H F) (compFunctor H G)
-  (fun x => fMap H (eta Eta x))
-  rightWhiskerNaturality.
-
-#[local] Theorem leftWhiskerNaturality
-  {C D E}
-  {F G : functor D E}
-  {Eta : naturalTransformation F G}
-  {H : functor C D}
-  (x y : object C)
-  (f : arrow x y)
-: compose (eta Eta (oMap H y)) (fMap (compFunctor F H) f) =
-  compose (fMap (compFunctor G H) f) (eta Eta (oMap H x)).
-Proof.
-  search.
-Qed.
-
-Definition leftWhisker
-  {C D E}
-  {F G : functor D E}
   (Eta : naturalTransformation F G)
-  (H : functor C D) :
+  (H : functor D E) :
   naturalTransformation (compFunctor F H) (compFunctor G H)
-:= newNaturalTransformation (compFunctor F H) (compFunctor G H)
-  (fun x => eta Eta (oMap H x))
-  leftWhiskerNaturality.
+:= {|
+  eta x := fMap H (eta Eta x);
+|}.
 
-#[local] Theorem idNaturality
+Program Definition idNaturalTransformation
   {C D}
-  {F : functor C D}
-  (x y : object C)
-  (f : arrow x y)
-: compose id (fMap F f) = compose (fMap F f) id.
-Proof.
-  search.
-Qed.
-
-Definition idNaturalTransformation
-  {C D}
-  {F : functor C D} :
+  (F : functor C D) :
   naturalTransformation F F
-:= newNaturalTransformation F F (fun x => id) idNaturality.
+:= {|
+  eta x := id (oMap F x);
+|}.
 
-#[local] Theorem vertCompNaturality
+Program Definition vertCompNaturalTransformation
   {C D}
   {F G H : functor C D}
-  {Eta : naturalTransformation G H}
-  {Mu : naturalTransformation F G}
-  (x y : object C) (f : arrow x y)
-: compose (compose (eta Eta y) (eta Mu y)) (fMap F f) =
-  compose (fMap H f) (compose (eta Eta x) (eta Mu x)).
-Proof.
+  (Eta : naturalTransformation F G)
+  (Mu : naturalTransformation G H) :
+  naturalTransformation F H
+:= {|
+  eta x := compose (eta Eta x) (eta Mu x);
+|}.
+Next Obligation.
+  clean.
   rewrite cAssoc.
   rewrite <- cAssoc.
-  replace (compose (eta Mu y) (fMap F f)) with
-    (compose (fMap G f) (eta Mu x)); search.
-  replace (compose (fMap H f) (eta Eta x)) with
-    (compose (eta Eta y) (fMap G f)); search.
+  replace (compose (fMap F f) (eta Eta y)) with
+    (compose (eta Eta x) (fMap G f)); search.
+  replace (compose (eta Mu x) (fMap H f)) with
+    (compose (fMap G f) (eta Mu y)); search.
 Qed.
-
-Definition vertCompNaturalTransformation
-  {C D}
-  {F G H : functor C D}
-  (Eta : naturalTransformation G H)
-  (Mu : naturalTransformation F G) :
-  naturalTransformation F H
-:= newNaturalTransformation F H
-  (fun x => compose (eta Eta x) (eta Mu x))
-  vertCompNaturality.
 
 Definition horCompNaturalTransformation
   {C D E}
   {F G : functor C D}
-  {K H : functor D E}
-  (Beta : naturalTransformation H K)
-  (Alpha : naturalTransformation F G) :
-  naturalTransformation (compFunctor H F) (compFunctor K G)
-:= vertCompNaturalTransformation (leftWhisker Beta G) (rightWhisker H Alpha).
+  {H K : functor D E}
+  (Alpha : naturalTransformation F G)
+  (Beta : naturalTransformation H K) :
+  naturalTransformation (compFunctor F H) (compFunctor G K)
+:= vertCompNaturalTransformation (rightWhisker Alpha H) (leftWhisker G Beta).
 
 Theorem horCompNaturalTransformationAlt
   {C D E}
   {F G : functor C D}
-  {K H : functor D E}
-  (Beta : naturalTransformation H K)
+  {H K : functor D E}
   (Alpha : naturalTransformation F G)
-: horCompNaturalTransformation Beta Alpha =
-  vertCompNaturalTransformation (rightWhisker K Alpha) (leftWhisker Beta F).
+  (Beta : naturalTransformation H K)
+: horCompNaturalTransformation Alpha Beta =
+  vertCompNaturalTransformation (leftWhisker F Beta) (rightWhisker Alpha K).
 Proof.
   unfold horCompNaturalTransformation.
   unfold vertCompNaturalTransformation.
@@ -176,5 +134,5 @@ Qed.
 
 Definition naturalIsomorphism
   {C D} {F G : functor C D}
-  (Eta : naturalTransformation F G) :=
-  forall x, isomorphism (eta Eta x).
+  (Eta : naturalTransformation F G)
+:= forall x, isomorphism (eta Eta x).

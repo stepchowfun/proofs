@@ -17,7 +17,7 @@ Require Import Main.Tactics.
 Definition terminal {C} (x : object C) :=
   forall y, exists f, forall (g : arrow y x), f = g.
 
-Theorem opInitialTerminal C x :
+Theorem opInitialTerminal {C} x :
   @initial C x <-> @terminal (oppositeCategory C) x.
 Proof.
   search.
@@ -25,7 +25,7 @@ Qed.
 
 #[export] Hint Resolve opInitialTerminal : main.
 
-Theorem opTerminalInitial C x :
+Theorem opTerminalInitial {C} x :
   @terminal C x <-> @initial (oppositeCategory C) x.
 Proof.
   search.

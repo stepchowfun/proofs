@@ -12,27 +12,17 @@ Require Import Main.CategoryTheory.Category.
 Require Import Main.CategoryTheory.Product.
 Require Import Main.Tactics.
 
+#[local] Obligation Tactic := search.
 #[local] Open Scope type. (* Parse `*` as `prod` rather than `mul`. *)
 
 (* Sets and functions form a category. *)
 
-#[local] Theorem setCAssoc w x y z (f : w -> x) (g : x -> y) (h : y -> z) :
-  (fun e : w => h (g (f e))) = (fun e : w => h (g (f e))).
-Proof.
-  search.
-Qed.
-
-#[local] Theorem setCIdent x y (f : x -> y) : (fun e : x => f e) = f.
-Proof.
-  search.
-Qed.
-
-Definition setCategory : category := newCategory
-  Type
-  (fun x y => x -> y)
-  (fun _ _ _ f g e => f (g e))
-  (fun x e => e)
-  setCAssoc setCIdent setCIdent.
+Program Definition setCategory : category := {|
+  object := Type;
+  arrow x y := x -> y;
+  id _ := fun x => x;
+  compose _ _ _ f g := fun x => g (f x);
+|}.
 
 (* Cartesian products are categorical products in this category. *)
 

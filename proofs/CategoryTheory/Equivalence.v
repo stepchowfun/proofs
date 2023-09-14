@@ -17,41 +17,41 @@ Require Import Main.Tactics.
 Definition equivalence C D
   (F : functor C D)
   (G : functor D C)
-  (Eta : naturalTransformation (compFunctor F G) idFunctor)
-  (Mu : naturalTransformation idFunctor (compFunctor G F)) :=
+  (Eta : naturalTransformation (compFunctor F G) (idFunctor C))
+  (Mu : naturalTransformation (idFunctor D) (compFunctor G F)) :=
   naturalIsomorphism Eta /\ naturalIsomorphism Mu.
 
 Definition equivalent C D :=
   exists
     (F : functor C D)
     (G : functor D C)
-    (Eta : naturalTransformation (compFunctor F G) idFunctor)
-    (Mu : naturalTransformation idFunctor (compFunctor G F)),
+    (Eta : naturalTransformation (compFunctor F G) (idFunctor C))
+    (Mu : naturalTransformation (idFunctor D) (compFunctor G F)),
   equivalence C D F G Eta Mu.
 
 Theorem equivalentRefl C : equivalent C C.
 Proof.
   unfold equivalent.
-  exists idFunctor.
-  exists idFunctor.
-  assert (idFunctor = @compFunctor C C C idFunctor idFunctor); [
+  exists (idFunctor C).
+  exists (idFunctor C).
+  assert (idFunctor C = @compFunctor C C C (idFunctor C) (idFunctor C)); [
     rewrite compFunctorIdentLeft; search |
     idtac
   ].
   exists (
     match H
     in (_ = rhs)
-    return naturalTransformation rhs idFunctor
+    return naturalTransformation rhs (idFunctor C)
     with
-    | eq_refl => idNaturalTransformation
+    | eq_refl => (idNaturalTransformation (idFunctor C))
     end
   ).
   exists (
     match H
     in (_ = rhs)
-    return naturalTransformation idFunctor rhs
+    return naturalTransformation (idFunctor C) rhs
     with
-    | eq_refl => idNaturalTransformation
+    | eq_refl => idNaturalTransformation (idFunctor C)
     end
   ).
   unfold equivalence.
@@ -60,7 +60,7 @@ Proof.
     unfold naturalIsomorphism;
     clean;
     unfold isomorphism;
-    exists id;
+    exists (id x);
     unfold inverse;
     search.
 Qed.

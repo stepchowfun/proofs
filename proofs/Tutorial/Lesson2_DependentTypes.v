@@ -189,7 +189,7 @@ Inductive vector (T : Set) : nat -> Set :=
   determined automatically from the tail.
 *)
 
-Arguments nonempty {_} {_} _ _.
+Arguments nonempty {_ _} _ _.
 
 (* Let's construct some `vector`s. *)
 

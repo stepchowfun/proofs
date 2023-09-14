@@ -81,6 +81,13 @@ Tactic Notation "eSearch" integer(n) :=
 Tactic Notation "eSearch" := eSearch 5.
 
 (*
+  Uncomment the line below once everyone can upgrade to Coq 8.17.0. At the time
+  of this writing, the latest Coq Platform release only supports Coq 8.16.1.
+
+  #[export] Obligation Tactic := search.
+*)
+
+(*
   This tactic reorders the context such that definitions come before
   assumptions.
 *)

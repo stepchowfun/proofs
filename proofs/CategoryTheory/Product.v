@@ -24,7 +24,7 @@ Definition product
   (py : arrow xy y)
 :=
   forall z (qx : arrow z x) (qy : arrow z y),
-  universal (fun f => qx = compose px f /\ qy = compose py f).
+  universal (fun f => qx = compose f px /\ qy = compose f py).
 
 Theorem productUnique C (x y : object C) :
   uniqueUpToIsomorphism (fun xy => exists px py, product x y xy px py).
@@ -41,9 +41,9 @@ Proof.
   unfold isomorphic. unfold isomorphism. unfold inverse. exists x6. exists x5.
   unfold arrowUnique in *.
   split.
-  - apply H0; search.
-    split; rewrite cAssoc; search.
   - apply H4; search.
+    split; rewrite cAssoc; search.
+  - apply H0; search.
     split; rewrite cAssoc; search.
 Qed.
 
@@ -114,31 +114,31 @@ Proof.
     do 3 destruct H;
     sort.
 
-  pose proof (H x_yz x_yz_to_x (compose yz_to_y x_yz_to_yz)).
+  pose proof (H x_yz x_yz_to_x (compose x_yz_to_yz yz_to_y)).
   instantiateUniversal H3.
   rename x0 into x_yz_to_xy.
   clear H4.
 
-  pose proof (H0 xy_z (compose xy_to_y xy_z_to_xy) xy_z_to_z).
+  pose proof (H0 xy_z (compose xy_z_to_xy xy_to_y) xy_z_to_z).
   instantiateUniversal H4.
   rename x0 into xy_z_to_yz.
   clear H6.
 
-  pose proof (H2 xy_z (compose xy_to_x xy_z_to_xy) xy_z_to_yz).
+  pose proof (H2 xy_z (compose xy_z_to_xy xy_to_x) xy_z_to_yz).
   instantiateUniversal H6.
   rename x0 into xy_z_to_x_yz.
   clear H8.
 
-  pose proof (H1 x_yz x_yz_to_xy (compose yz_to_z x_yz_to_yz)).
+  pose proof (H1 x_yz x_yz_to_xy (compose x_yz_to_yz yz_to_z)).
   instantiateUniversal H8.
   rename x0 into x_yz_to_xy_z.
   clear H10.
 
-  assert (id = compose x_yz_to_xy_z xy_z_to_x_yz).
+  assert (id xy_z = compose xy_z_to_x_yz x_yz_to_xy_z).
   - assert (
-      compose xy_to_y (
-        compose xy_z_to_xy (compose x_yz_to_xy_z xy_z_to_x_yz)
-      ) = compose xy_to_y xy_z_to_xy
+      compose (
+        compose (compose xy_z_to_x_yz x_yz_to_xy_z) xy_z_to_xy
+      ) xy_to_y = compose xy_z_to_xy xy_to_y
     ).
     + rewrite (@cAssoc C xy_z x_yz xy_z xy).
       rewrite <- H8.
@@ -147,9 +147,9 @@ Proof.
       rewrite <- cAssoc.
       search.
     + assert (
-        compose xy_to_x (
-          compose xy_z_to_xy (compose x_yz_to_xy_z xy_z_to_x_yz)
-        ) = compose xy_to_x xy_z_to_xy
+        compose (
+          compose (compose xy_z_to_x_yz x_yz_to_xy_z) xy_z_to_xy
+        ) xy_to_x = compose xy_z_to_xy xy_to_x
       ).
       * rewrite (@cAssoc C xy_z x_yz xy_z xy).
         rewrite <- H8.
@@ -159,14 +159,14 @@ Proof.
           H
           xy_z
           (
-            compose xy_to_x (
-              compose xy_z_to_xy (compose x_yz_to_xy_z xy_z_to_x_yz)
-            )
+            compose (
+              compose (compose xy_z_to_x_yz x_yz_to_xy_z) xy_z_to_xy
+            ) xy_to_x
           )
           (
-            compose xy_to_y (
-              compose xy_z_to_xy (compose x_yz_to_xy_z xy_z_to_x_yz)
-            )
+            compose (
+              compose (compose xy_z_to_x_yz x_yz_to_xy_z) xy_z_to_xy
+            ) xy_to_y
           )
         ).
         unfold universal in H13.
@@ -175,23 +175,23 @@ Proof.
         unfold arrowUnique in H14.
         specialize (
           H14 xy_z_to_xy (
-            compose xy_z_to_xy (compose x_yz_to_xy_z xy_z_to_x_yz)
+            compose (compose xy_z_to_x_yz x_yz_to_xy_z) xy_z_to_xy
           )
         ).
         do 2 feed H14.
 
         assert (
-          compose xy_z_to_z (compose x_yz_to_xy_z xy_z_to_x_yz) = xy_z_to_z
+          compose (compose xy_z_to_x_yz x_yz_to_xy_z) xy_z_to_z = xy_z_to_z
         ); [rewrite cAssoc; rewrite <- H11; search | idtac].
 
         pose proof (H1 xy_z xy_z_to_xy xy_z_to_z).
         unfold universal in H15.
         search.
-  - assert (id = compose xy_z_to_x_yz x_yz_to_xy_z).
+  - assert (id x_yz = compose x_yz_to_xy_z xy_z_to_x_yz).
     + assert (
-        compose yz_to_y (
-          compose x_yz_to_yz (compose xy_z_to_x_yz x_yz_to_xy_z)
-        ) = compose yz_to_y x_yz_to_yz
+        compose (
+          compose (compose x_yz_to_xy_z xy_z_to_x_yz) x_yz_to_yz
+        ) yz_to_y = compose x_yz_to_yz yz_to_y
       ).
       * rewrite (cAssoc x_yz_to_xy_z).
         rewrite <- H9.
@@ -200,9 +200,9 @@ Proof.
         rewrite <- cAssoc.
         search.
       * assert (
-          compose yz_to_z (
-            compose x_yz_to_yz (compose xy_z_to_x_yz x_yz_to_xy_z)
-          ) = compose yz_to_z x_yz_to_yz
+          compose (
+            compose (compose x_yz_to_xy_z xy_z_to_x_yz) x_yz_to_yz
+          ) yz_to_z = compose x_yz_to_yz yz_to_z
         ).
         -- rewrite (cAssoc x_yz_to_xy_z).
            rewrite <- H9.
@@ -212,14 +212,14 @@ Proof.
              H0
              x_yz
              (
-               compose yz_to_y (
-                 compose x_yz_to_yz (compose xy_z_to_x_yz x_yz_to_xy_z)
-               )
+               compose (
+                 compose (compose x_yz_to_xy_z xy_z_to_x_yz) x_yz_to_yz
+               ) yz_to_y
              )
              (
-               compose yz_to_z (
-                 compose x_yz_to_yz (compose xy_z_to_x_yz x_yz_to_xy_z)
-               )
+               compose (
+                 compose (compose x_yz_to_xy_z xy_z_to_x_yz) x_yz_to_yz
+               ) yz_to_z
              )
            ).
            unfold universal in H14.
@@ -228,13 +228,13 @@ Proof.
            unfold arrowUnique in H15.
            specialize (
              H15 x_yz_to_yz (
-               compose x_yz_to_yz (compose xy_z_to_x_yz x_yz_to_xy_z)
+               compose (compose x_yz_to_xy_z xy_z_to_x_yz) x_yz_to_yz
              )
            ).
            do 2 feed H15.
 
            assert (
-             compose x_yz_to_x (compose xy_z_to_x_yz x_yz_to_xy_z) =
+             compose (compose x_yz_to_xy_z xy_z_to_x_yz) x_yz_to_x =
                x_yz_to_x
            ); [rewrite cAssoc; rewrite <- H6; search | idtac].
 
@@ -262,7 +262,7 @@ Proof.
   clean.
   pose proof (H0 y).
   clean.
-  assert (product x y y x0 id).
+  assert (product x y y x0 (id y)).
   - clear H1.
     unfold product.
     clean.
