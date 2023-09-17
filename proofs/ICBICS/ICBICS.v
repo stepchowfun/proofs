@@ -543,7 +543,6 @@ Proof.
                          rewrite nthSkipn.
                          rewrite nthFirstn; search.
                      +++ destruct H6; search.
-                         apply HdRel_cons; search.
               ** apply nth_ext with (d := 0) (d' := 0).
                  --- change (
                        S (length (skipn (S j) (firstn i l))) =
