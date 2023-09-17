@@ -53,6 +53,7 @@ Create HintDb main.
     try autorewrite with main in *;
     try autounfold with main in *;
     try solve [congruence];
+    try solve [constructor; searchWith tactic];
     try solve [dintuition (simplify tactic; tactic)];
     try solve [lia];
     try solve [progress f_equal; searchWith tactic];

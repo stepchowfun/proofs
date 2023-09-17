@@ -14,24 +14,49 @@ Require Import Main.Tactics.
 
 (* Metavariables for categories: `C`, `D`, `E` *)
 
-Record category := {
-  object : Type; (* Objects: `w`, `x`, `y`, `z` *)
-  arrow : object -> object -> Type; (* Arrows: `f`, `g`, `h` *)
-  id x : arrow x x;
-  compose {x y z} : arrow x y -> arrow y z -> arrow x z;
-
-  cIdentLeft {x y} (f : arrow x y) : compose (id x) f = f;
-  cIdentRight {x y} (f : arrow x y) : compose f (id y) = f;
-  cAssoc {w x y z} (f : arrow w x) (g : arrow x y) (h : arrow y z) :
+Record isCategory
+  (object : Type) (* Objects: `w`, `x`, `y`, `z` *)
+  (arrow : object -> object -> Type) (* Arrows: `f`, `g`, `h` *)
+  (id : forall x, arrow x x)
+  (compose : forall {x y z}, arrow x y -> arrow y z -> arrow x z)
+:= {
+  isCIdentLeft x y (f : arrow x y) : compose (id x) f = f;
+  isCIdentRight x y (f : arrow x y) : compose f (id y) = f;
+  isCAssoc w x y z (f : arrow w x) (g : arrow x y) (h : arrow y z) :
     compose (compose f g) h = compose f (compose g h);
 }.
 
-Arguments arrow {_}.
+Arguments isCIdentLeft {_ _ _ _ _ _ _} _.
+Arguments isCIdentRight {_ _ _ _ _ _ _} _.
+Arguments isCAssoc {_ _ _ _ _ _ _ _ _} _ _ _.
+
+#[export] Hint Constructors isCategory : main.
+
+Record category := {
+  object; arrow; id; compose;
+  categoryLaws : isCategory object arrow id compose;
+}.
+
+Arguments arrow {_} _ _.
 Arguments id {_} _.
 Arguments compose {_ _ _ _} _ _.
-Arguments cIdentLeft {_ _ _} _.
-Arguments cIdentRight {_ _ _} _.
-Arguments cAssoc {_ _ _ _ _} _ _ _.
+
+Definition cIdentLeft {C : category} {x y : object C} (f : arrow x y) :
+  compose (id x) f = f
+:= C.(categoryLaws).(isCIdentLeft) f.
+
+Definition cIdentRight {C : category} {x y : object C} (f : arrow x y) :
+  compose f (id y) = f
+:= C.(categoryLaws).(isCIdentRight) f.
+
+Definition cAssoc
+  {C : category}
+  {w x y z : object C}
+  (f : arrow w x)
+  (g : arrow x y)
+  (h : arrow y z) :
+  compose (compose f g) h = compose f (compose g h)
+:= C.(categoryLaws).(isCAssoc) f g h.
 
 #[export] Hint Resolve cAssoc : main.
 #[export] Hint Resolve cIdentLeft : main.

@@ -9,7 +9,6 @@
 Require Import Coq.Arith.Le.
 Require Import Coq.Arith.Peano_dec.
 Require Import Coq.Lists.List.
-Require Import Coq.micromega.Lia.
 Require Import Main.SystemF.FreeVar.
 Require Import Main.SystemF.LocalClosure.
 Require Import Main.SystemF.Syntax.
@@ -229,11 +228,9 @@ Proof.
   clean. invert H.
   remember (S i). assert (n <= S i); search. clear Heqn. outro t2 i.
   induction H2; search; clean.
-  - destruct (eq_dec i n1); search. apply tlcBoundVar. lia.
-  - constructor; search.
-    specialize (IHtLocallyClosed t2 (S i)).
-    feed IHtLocallyClosed.
-    apply tLocalClosureMonotonic with (i1 := i); search.
+  specialize (IHtLocallyClosed t2 (S i)).
+  feed IHtLocallyClosed.
+  apply tLocalClosureMonotonic with (i1 := i); search.
 Qed.
 
 #[export] Hint Resolve locallyClosedOpenForAll : main.
@@ -247,7 +244,6 @@ Proof.
   clean. invert H. clear t0 H3.
   remember (S ie). assert (n <= S ie); search. clear Heqn. outro e2 ie.
   induction H6; search; clean.
-  - destruct (eq_dec ie ne1); search. apply elcBoundVar. lia.
   - constructor; search.
     specialize (IHeLocallyClosed e2 (S ie)).
     apply IHeLocallyClosed; search.

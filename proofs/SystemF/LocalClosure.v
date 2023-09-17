@@ -7,7 +7,6 @@
 (**************************************)
 
 Require Import Coq.Arith.Gt.
-Require Import Coq.micromega.Lia.
 Require Import Main.SystemF.Syntax.
 Require Import Main.Tactics.
 
@@ -72,7 +71,6 @@ Theorem tLocalClosureMonotonic :
   tLocallyClosed t i2.
 Proof.
   clean. outro i2 H. induction H0; search.
-  clean. apply tlcBoundVar. lia.
 Qed.
 
 (* Don't add a resolve hint because `eapply` has a hard time guessing `i1`. *)
