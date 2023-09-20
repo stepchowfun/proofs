@@ -26,14 +26,14 @@ Program Definition setCategory : category := {|
 
 (* Cartesian products are categorical products in this category. *)
 
-Theorem cartesianProduct x y :
-  @product setCategory x y (x * y) fst snd.
+Theorem cartesianProduct x y : @product setCategory x y (x * y) fst snd.
 Proof.
   unfold product.
   clean.
   unfold universal.
   split.
-  - exists (fun w => (qx w, qy w)). search.
+  - exists (fun w => (qx w, qy w)).
+    search.
   - unfold arrowUnique.
     intros.
     destruct H.
