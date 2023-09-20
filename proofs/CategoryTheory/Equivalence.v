@@ -21,13 +21,7 @@ Definition equivalence C D
   (Mu : naturalTransformation (idFunctor D) (compFunctor G F)) :=
   naturalIsomorphism Eta /\ naturalIsomorphism Mu.
 
-Definition equivalent C D :=
-  exists
-    (F : functor C D)
-    (G : functor D C)
-    (Eta : naturalTransformation (compFunctor F G) (idFunctor C))
-    (Mu : naturalTransformation (idFunctor D) (compFunctor G F)),
-  equivalence C D F G Eta Mu.
+Definition equivalent C D := exists F G Eta Mu, equivalence C D F G Eta Mu.
 
 Theorem equivalentRefl C : equivalent C C.
 Proof.
