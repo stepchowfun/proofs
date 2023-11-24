@@ -72,7 +72,7 @@ Inductive False : Prop := .
 Inductive and (A B : Prop) : Prop :=
 | conj : A -> B -> and A B.
 
-Arguments conj {_ _} _ _.
+Arguments conj [_ _] _ _.
 
 (*
   The following specifies that the notation `A /\ B` will be used as shorthand
@@ -226,8 +226,8 @@ Inductive or (A B : Prop) : Prop :=
 | orIntroL : A -> or A B
 | orIntroR : B -> or A B.
 
-Arguments orIntroL {_ _} _.
-Arguments orIntroR {_ _} _.
+Arguments orIntroL [_ _] _.
+Arguments orIntroR [_ _] _.
 
 Notation "A \/ B" := (or A B) : type_scope.
 
@@ -280,7 +280,7 @@ Qed.
   proof is called *propositional equality*:
 *)
 
-Inductive eq {A} (x : A) : A -> Prop :=
+Inductive eq [A] (x : A) : A -> Prop :=
 | eq_refl : eq x x.
 
 Notation "x = y" := (eq x y) : type_scope.
@@ -407,10 +407,10 @@ Qed.
 
 (* *Existential quantification* can be defined as follows: *)
 
-Inductive ex {A : Type} (P : A -> Prop) : Prop :=
+Inductive ex [A : Type] (P : A -> Prop) : Prop :=
   ex_intro : forall x : A, P x -> ex P.
 
-Arguments ex_intro {_ _} _ _.
+Arguments ex_intro [_ _] _ _.
 
 (*
   The notation for existentials is somewhat tricky to specify. If you're

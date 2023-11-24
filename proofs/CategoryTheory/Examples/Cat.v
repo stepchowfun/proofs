@@ -16,5 +16,5 @@ Program Definition catCategory : category := {|
   object := category;
   arrow := functor;
   id := idFunctor;
-  compose _ _ _ := compFunctor;
+  compose := compFunctor;
 |}.

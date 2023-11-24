@@ -15,8 +15,8 @@ Require Import Main.CategoryTheory.NaturalTransformation.
 (* Metavariable for monads: `M` *)
 
 Record monad
-  {C}
-  {F : endofunctor C}
+  [C]
+  [F : endofunctor C]
   (Eta : naturalTransformation (idFunctor C) F)
   (Mu : naturalTransformation (compFunctor F F) F)
 := {
@@ -31,9 +31,9 @@ Record monad
     eta (idNaturalTransformation F);
 }.
 
-Arguments mAssoc {_ _ _ _} _.
-Arguments mIdent1 {_ _ _ _} _.
-Arguments mIdent2 {_ _ _ _} _.
+Arguments mAssoc [_ _ _ _] _.
+Arguments mIdent1 [_ _ _ _] _.
+Arguments mIdent2 [_ _ _ _] _.
 
 #[export] Hint Resolve mAssoc : main.
 #[export] Hint Resolve mIdent1 : main.
@@ -42,8 +42,8 @@ Arguments mIdent2 {_ _ _ _} _.
 #[export] Hint Rewrite @mIdent2 : main.
 
 Theorem eqMonad
-  {C}
-  {F : endofunctor C}
+  [C]
+  [F : endofunctor C]
   (Eta : naturalTransformation (idFunctor C) F)
   (Mu : naturalTransformation (compFunctor F F) F)
   (M1 M2 : monad Eta Mu)

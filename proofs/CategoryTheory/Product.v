@@ -18,7 +18,7 @@ Require Import Main.Tactics.
 (* Metavariables for projections: `px`, `py` *)
 
 Definition product
-  {C}
+  [C]
   (x y xy : object C)
   (px : arrow xy x)
   (py : arrow xy y)
@@ -50,7 +50,7 @@ Qed.
 #[export] Hint Resolve productUnique : main.
 
 Theorem productCommutator
-  {C}
+  [C]
   (x y xy : object C)
   (px : arrow xy x)
   (py : arrow xy y)
@@ -71,7 +71,7 @@ Qed.
 *)
 
 Theorem productCommutative
-  {C}
+  [C]
   (x y xy yx : object C)
   (px1 : arrow xy x)
   (py1 : arrow xy y)
@@ -89,7 +89,7 @@ Qed.
 #[export] Hint Resolve productCommutative : main.
 
 Theorem productAssociative
-  {C}
+  [C]
   (x y z xy yz xy_z x_yz : object C)
   (xy_to_x : arrow xy x)
   (xy_to_y : arrow xy y)
@@ -252,7 +252,7 @@ Qed.
 #[export] Hint Resolve productAssociative : main.
 
 Theorem productTerminal
-  {C}
+  [C]
   (x y xy : object C)
   (xy_to_x : arrow xy x)
   (xy_to_y : arrow xy y)

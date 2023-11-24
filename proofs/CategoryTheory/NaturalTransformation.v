@@ -18,21 +18,21 @@ Require Import Main.Tactics.
 
 (* Metavariables for natural transformations: `Eta`, `Mu` *)
 
-Record naturalTransformation {C D} (F G : functor C D) := {
+Record naturalTransformation [C D] (F G : functor C D) := {
   eta x : arrow (oMap F x) (oMap G x);
 
-  naturality {x y} (f : arrow x y) :
+  naturality [x y] (f : arrow x y) :
     compose (fMap F f) (eta y) = compose (eta x) (fMap G f);
 }.
 
-Arguments eta {_ _ _ _} _ _.
-Arguments naturality {_ _ _ _} _ {_ _} _.
+Arguments eta [_ _ _ _] _ _.
+Arguments naturality [_ _ _ _] _ [_ _] _.
 
 #[export] Hint Resolve naturality : main.
 #[export] Hint Rewrite @naturality : main.
 
 Theorem eqNaturalTransformation
-  {C D}
+  [C D]
   (F G : functor C D)
   (Eta Mu : naturalTransformation F G)
 : eta Eta = eta Mu -> Eta = Mu.
@@ -58,9 +58,9 @@ Qed.
 #[export] Hint Resolve eqNaturalTransformation : main.
 
 Program Definition leftWhisker
-  {C D E}
+  [C D E]
   (F : functor C D)
-  {G H : functor D E}
+  [G H : functor D E]
   (Eta : naturalTransformation G H) :
   naturalTransformation (compFunctor F G) (compFunctor F H)
 := {|
@@ -68,8 +68,8 @@ Program Definition leftWhisker
 |}.
 
 Program Definition rightWhisker
-  {C D E}
-  {F G : functor C D}
+  [C D E]
+  [F G : functor C D]
   (Eta : naturalTransformation F G)
   (H : functor D E) :
   naturalTransformation (compFunctor F H) (compFunctor G H)
@@ -78,7 +78,7 @@ Program Definition rightWhisker
 |}.
 
 Program Definition idNaturalTransformation
-  {C D}
+  [C D]
   (F : functor C D) :
   naturalTransformation F F
 := {|
@@ -86,8 +86,8 @@ Program Definition idNaturalTransformation
 |}.
 
 Program Definition vertCompNaturalTransformation
-  {C D}
-  {F G H : functor C D}
+  [C D]
+  [F G H : functor C D]
   (Eta : naturalTransformation F G)
   (Mu : naturalTransformation G H) :
   naturalTransformation F H
@@ -105,18 +105,18 @@ Next Obligation.
 Qed.
 
 Definition horCompNaturalTransformation
-  {C D E}
-  {F G : functor C D}
-  {H K : functor D E}
+  [C D E]
+  [F G : functor C D]
+  [H K : functor D E]
   (Alpha : naturalTransformation F G)
   (Beta : naturalTransformation H K) :
   naturalTransformation (compFunctor F H) (compFunctor G K)
 := vertCompNaturalTransformation (rightWhisker Alpha H) (leftWhisker G Beta).
 
 Theorem horCompNaturalTransformationAlt
-  {C D E}
-  {F G : functor C D}
-  {H K : functor D E}
+  [C D E]
+  [F G : functor C D]
+  [H K : functor D E]
   (Alpha : naturalTransformation F G)
   (Beta : naturalTransformation H K)
 : horCompNaturalTransformation Alpha Beta =
@@ -133,6 +133,6 @@ Qed.
 #[export] Hint Resolve horCompNaturalTransformationAlt : main.
 
 Definition naturalIsomorphism
-  {C D} {F G : functor C D}
+  [C D] [F G : functor C D]
   (Eta : naturalTransformation F G)
 := forall x, isomorphism (eta Eta x).

@@ -10,9 +10,9 @@ Require Import Coq.Relations.Operators_Properties.
 Require Import Coq.Relations.Relation_Operators.
 Require Import Main.Tactics.
 
-#[local] Arguments clos_refl_trans {A} _ _ _.
-#[local] Arguments clos_refl_trans_1n {A} _ _ _.
-#[local] Arguments clos_refl_trans_n1 {A} _ _ _.
+#[local] Arguments clos_refl_trans [A] _ _ _.
+#[local] Arguments clos_refl_trans_1n [A] _ _ _.
+#[local] Arguments clos_refl_trans_n1 [A] _ _ _.
 #[local] Hint Constructors clos_refl_trans : main.
 #[local] Hint Constructors clos_refl_trans_1n : main.
 #[local] Hint Constructors clos_refl_trans_n1 : main.
@@ -31,8 +31,8 @@ Record admissibilityGraph (node : Type) := {
   exports : node -> node -> Prop;
 }.
 
-Arguments trusts {_} _ _.
-Arguments exports {_} _ _.
+Arguments trusts [_] _ _.
+Arguments exports [_] _ _.
 
 (*
   Every node may depend on itself, the nodes it trusts, the nodes that export
@@ -40,7 +40,7 @@ Arguments exports {_} _ _.
   exported by a node that it can depend on.
 *)
 
-Inductive allowed {node} (g : admissibilityGraph node) (n : node) : node
+Inductive allowed [node] (g : admissibilityGraph node) (n : node) : node
   -> Prop :=
 | loop : allowed g n n
 | trust : forall n1, trusts g n n1 -> allowed g n n1
