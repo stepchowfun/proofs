@@ -21,8 +21,7 @@ Inductive maybe x : Type :=
 | nothing : maybe x
 | just : x -> maybe x.
 
-Arguments nothing {_}.
-Arguments just {_}.
+Arguments just [_].
 
 (* `maybe` is a functor. *)
 
@@ -30,7 +29,7 @@ Program Definition maybeFunctor : functor setCategory setCategory := {|
   oMap o := maybe o;
   fMap _ _ f := fun e =>
     match e with
-    | nothing => nothing
+    | nothing _ => nothing _
     | just e => just (f e)
     end;
 |}.
@@ -61,7 +60,7 @@ Program Definition maybeMu :
   eta x :=
     fun e1 =>
       match e1 with
-      | nothing => nothing
+      | nothing _ => nothing _
       | just e2 => e2
       end
 |}.

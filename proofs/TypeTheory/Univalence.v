@@ -6,7 +6,7 @@
 (*****************************************************)
 (*****************************************************)
 
-Definition equivalence {X Y : Set} (f : X -> Y) :=
+Definition equivalence [X Y : Set] (f : X -> Y) :=
   forall y,
   let fiber := { x | f x = y }
   in { x : fiber | forall z : fiber, x = z }.

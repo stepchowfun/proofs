@@ -18,7 +18,7 @@ Record isCategory
   (object : Type) (* Objects: `w`, `x`, `y`, `z` *)
   (arrow : object -> object -> Type) (* Arrows: `f`, `g`, `h` *)
   (id : forall x, arrow x x)
-  (compose : forall {x y z}, arrow x y -> arrow y z -> arrow x z)
+  (compose : forall [x y z], arrow x y -> arrow y z -> arrow x z)
 := {
   isCIdentLeft x y (f : arrow x y) : compose (id x) f = f;
   isCIdentRight x y (f : arrow x y) : compose f (id y) = f;
@@ -26,9 +26,9 @@ Record isCategory
     compose (compose f g) h = compose f (compose g h);
 }.
 
-Arguments isCIdentLeft {_ _ _ _ _ _ _} _.
-Arguments isCIdentRight {_ _ _ _ _ _ _} _.
-Arguments isCAssoc {_ _ _ _ _ _ _ _ _} _ _ _.
+Arguments isCIdentLeft [_ _ _ _ _ _ _] _.
+Arguments isCIdentRight [_ _ _ _ _ _ _] _.
+Arguments isCAssoc [_ _ _ _ _ _ _ _ _] _ _ _.
 
 #[export] Hint Constructors isCategory : main.
 
@@ -37,21 +37,21 @@ Record category := {
   categoryLaws : isCategory object arrow id compose;
 }.
 
-Arguments arrow {_} _ _.
-Arguments id {_} _.
-Arguments compose {_ _ _ _} _ _.
+Arguments arrow [_] _ _.
+Arguments id [_] _.
+Arguments compose [_ _ _ _] _ _.
 
-Definition cIdentLeft {C : category} {x y : object C} (f : arrow x y) :
+Definition cIdentLeft [C : category] [x y : object C] (f : arrow x y) :
   compose (id x) f = f
 := C.(categoryLaws).(isCIdentLeft) f.
 
-Definition cIdentRight {C : category} {x y : object C} (f : arrow x y) :
+Definition cIdentRight [C : category] [x y : object C] (f : arrow x y) :
   compose f (id y) = f
 := C.(categoryLaws).(isCIdentRight) f.
 
 Definition cAssoc
-  {C : category}
-  {w x y z : object C}
+  [C : category]
+  [w x y z : object C]
   (f : arrow w x)
   (g : arrow x y)
   (h : arrow y z) :

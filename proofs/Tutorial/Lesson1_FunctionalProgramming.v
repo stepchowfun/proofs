@@ -168,7 +168,7 @@ Check id. (* `forall T : Set, T -> T` *)
   automatically whenever we use the function.
 *)
 
-Definition betterId {T : Set} (x : T) := x.
+Definition betterId [T : Set] (x : T) := x.
 
 Check betterId. (* `?T -> ?T where ?T : [|- Set]` *)
 
@@ -287,7 +287,7 @@ Check option. (* `Set -> Set` *)
   for the parameter argument.
 *)
 
-Definition mapOption {T U} f (o : option T) :=
+Definition mapOption [T U] f (o : option T) :=
   match o with
   | none _ => none U
   | some _ x => some U (f x)
@@ -311,9 +311,9 @@ Compute mapOption (fun n => true) (some nat 3). (* `some bool true` *)
   parameter implicit, but that would have affected `none` and `option` too.
 *)
 
-Arguments some {_} _.
+Arguments some [_] _.
 
-Check some. (* `?T -> option ?T where ?T : [|- Set]` *)
+Check some. (* `?T -> option ?T where ?T : {|- Set]` *)
 
 Compute mapOption (fun n => n + 1) (some 3). (* `some 4` *)
 

@@ -17,17 +17,17 @@ Require Import Main.Tactics.
 
 Record functor C D := {
   oMap : object C -> object D;
-  fMap {x y} : arrow x y -> arrow (oMap x) (oMap y);
+  fMap [x y] : arrow x y -> arrow (oMap x) (oMap y);
 
   fIdent x : fMap (id x) = id (oMap x);
-  fComp {x y z} (f : arrow x y) (g : arrow y z) :
+  fComp [x y z] (f : arrow x y) (g : arrow y z) :
     compose (fMap f) (fMap g) = fMap (compose f g);
 }.
 
-Arguments oMap {_ _} _.
-Arguments fMap {_ _} _ {_ _} _.
-Arguments fIdent {_ _} _ _.
-Arguments fComp {_ _} _ {_ _ _} _ _.
+Arguments oMap [_ _] _.
+Arguments fMap [_ _] _ [_ _] _.
+Arguments fIdent [_ _] _ _.
+Arguments fComp [_ _] _ [_ _ _] _ _.
 
 #[export] Hint Resolve fIdent : main.
 #[export] Hint Rewrite @fIdent : main.
@@ -41,14 +41,14 @@ Program Definition idFunctor C : endofunctor C := {|
   fMap _ _ f := f;
 |}.
 
-Program Definition compFunctor {C D E} (F : functor C D) (G : functor D E) :
+Program Definition compFunctor [C D E] (F : functor C D) (G : functor D E) :
   functor C E
 := {|
   oMap o := oMap G (oMap F o);
   fMap _ _ f := fMap G (fMap F f);
 |}.
 
-Theorem compFunctorIdentLeft {C D} (F : functor C D) :
+Theorem compFunctorIdentLeft [C D] (F : functor C D) :
   compFunctor (idFunctor C) F = F.
 Proof.
   unfold compFunctor.
@@ -58,7 +58,7 @@ Qed.
 
 #[export] Hint Resolve compFunctorIdentLeft : main.
 
-Theorem compFunctorIdentRight {C D} (F : functor C D) :
+Theorem compFunctorIdentRight [C D] (F : functor C D) :
   compFunctor F (idFunctor D) = F.
 Proof.
   unfold compFunctor.
@@ -69,7 +69,7 @@ Qed.
 #[export] Hint Resolve compFunctorIdentRight : main.
 
 Theorem compFunctorAssoc
-  {B C D E}
+  [B C D E]
   (F : functor B C)
   (G : functor C D)
   (H : functor D E)

@@ -21,7 +21,7 @@ Require Import Main.Tactics.
 (* Metavariables for injections: `ix`, `iy` *)
 
 Definition coproduct
-  {C}
+  [C]
   (x y xy : object C)
   (ix : arrow x xy)
   (iy : arrow y xy)
@@ -59,7 +59,7 @@ Qed.
 #[export] Hint Resolve coproductUnique : main.
 
 Theorem coproductCommutator
-  {C}
+  [C]
   (x y xy : object C)
   (ix : arrow x xy)
   (iy : arrow y xy)
@@ -75,7 +75,7 @@ Qed.
 *)
 
 Theorem coproductCommutative
-  {C}
+  [C]
   (x y xy yx : object C)
   (ix1 : arrow x xy)
   (iy1 : arrow y xy)
@@ -91,7 +91,7 @@ Qed.
 #[export] Hint Resolve coproductCommutative : main.
 
 Theorem coproductAssociative
-  {C}
+  [C]
   (x y z xy yz xy_z x_yz : object C)
   (x_to_xy : arrow x xy)
   (y_to_xy : arrow y xy)
@@ -115,7 +115,7 @@ Qed.
 #[export] Hint Resolve coproductAssociative : main.
 
 Theorem coproductInitial
-  {C}
+  [C]
   (x y xy : object C)
   (x_to_xy : arrow x xy)
   (y_to_xy : arrow y xy)

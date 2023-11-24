@@ -152,7 +152,7 @@ Check someNat. (* `nat -> boolOrNat nat` *)
   could be an arbitrary expression.
 *)
 
-Definition pluck {T : Set} (x : boolOrNat T) :=
+Definition pluck [T : Set] (x : boolOrNat T) :=
   match x in boolOrNat U return U with
   | someBool b => b
   | someNat n => n
@@ -189,7 +189,7 @@ Inductive vector (T : Set) : nat -> Set :=
   determined automatically from the tail.
 *)
 
-Arguments nonempty {_ _} _ _.
+Arguments nonempty [_ _] _ _.
 
 (* Let's construct some `vector`s. *)
 
@@ -212,7 +212,7 @@ Compute zeroes 3. (* `nonempty 0 (nonempty 0 (nonempty 0 (empty nat)))` *)
 (* Here's a function which concatenates two `vector`s. *)
 
 Fixpoint concatenate
-           {T n1 n2}
+           [T n1 n2]
            (v1 : vector T n1)
            (v2 : vector T n2) :
            vector T (n1 + n2) :=
@@ -226,7 +226,7 @@ Fixpoint concatenate
   error to call this function on an empty `vector`.
 *)
 
-Definition head {T n} (v : vector T (S n)) : T :=
+Definition head [T n] (v : vector T (S n)) : T :=
   match v with
   | nonempty x _ => x
   end.

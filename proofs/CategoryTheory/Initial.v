@@ -13,7 +13,7 @@ Require Import Main.Tactics.
 
 #[local] Set Universe Polymorphism.
 
-Definition initial {C} (x : object C) :=
+Definition initial [C] (x : object C) :=
   forall y, exists f, forall (g : arrow x y), f = g.
 
 Theorem initialUnique C : uniqueUpToIsomorphism (@initial C).
