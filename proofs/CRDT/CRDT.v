@@ -206,16 +206,13 @@ Fixpoint run
 (*
   We'll need the following lemma, which states that the current state of a node
   is at least as "large" (according to the partial order of the CRDT) as any
-  prior states resulting from update operations in the history.
+  prior states resulting from update operations in the node's history.
 *)
 
 Theorem runUpperBound
   [argument result]
   (crdt : stateCRDT argument result)
-  h
-  getHistory
-  getArgument
-  n
+  n h getHistory getArgument
 : historyConsistent getHistory getArgument h ->
   inHistory n h ->
   order crdt.(merge)
