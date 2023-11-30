@@ -295,3 +295,28 @@ Proof.
 Qed.
 
 #[export] Hint Resolve strongConvergence : main.
+
+(* A simple CRDT: a Boolean event flag *)
+
+Program Definition booleanEventFlag : stateCRDT unit bool :=
+  {|
+    state := bool;
+    initial := false;
+    merge := orb;
+    update _ _ := true;
+    query := id;
+  |}.
+Next Obligation.
+  split; clean.
+  - destruct a; search.
+  - destruct a, b; search.
+  - destruct a, b, c; search.
+  - search.
+Qed.
+Next Obligation.
+  destruct a; search.
+Qed.
+
+Compute
+  booleanEventFlag.(query)
+    (booleanEventFlag.(update) tt booleanEventFlag.(initial)).
