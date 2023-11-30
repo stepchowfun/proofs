@@ -150,23 +150,25 @@ Arguments opMerge [_ _ _] _ _.
 #[export] Hint Constructors history : main.
 
 (*
-  The argument and prior history for each update operation are determined by
-  the update ID.
+  The argument and prior history for each update operation should be determined
+  by the update ID. To formalize this, we define the following consistency
+  predicate.
 *)
 
 Inductive historyConsistent
   [argument result]
   [crdt : stateCRDT argument result]
-  (getHistory : nat -> option (history crdt))
   (getArgument : nat -> option argument)
+  (getHistory : nat -> option (history crdt))
 : history crdt -> Prop
 :=
 | emptyConsistent : historyConsistent _ _ (opEmpty crdt)
 | updateConsistent :
   forall n h x,
-  getHistory n = Some h ->
   getArgument n = Some x ->
-  historyConsistent _ _ h -> historyConsistent _ _ (opUpdate n x h)
+  getHistory n = Some h ->
+  historyConsistent _ _ h ->
+  historyConsistent _ _ (opUpdate n x h)
 | mergeConsistent :
   forall h1 h2,
   historyConsistent _ _ h1 ->
@@ -215,8 +217,8 @@ Fixpoint run
 Theorem runUpperBound
   [argument result]
   (crdt : stateCRDT argument result)
-  getHistory getArgument h1 h2 n x
-: historyConsistent getHistory getArgument h1 ->
+  getArgument getHistory h1 h2 n x
+: historyConsistent getArgument getHistory h1 ->
   inHistory n h1 ->
   Some x = getArgument n ->
   Some h2 = getHistory n ->
@@ -254,9 +256,9 @@ Theorem strongConvergence
   (crdt : stateCRDT argument result)
   (h1 h2 : history crdt)
 : (
-    exists getHistory getArgument,
-    historyConsistent getHistory getArgument h1 /\
-    historyConsistent getHistory getArgument h2
+    exists getArgument getHistory,
+    historyConsistent getArgument getHistory h1 /\
+    historyConsistent getArgument getHistory h2
   ) ->
   (forall n, inHistory n h1 <-> inHistory n h2) ->
   run h1 = run h2.
@@ -323,22 +325,22 @@ Definition exampleHistory : history booleanEventFlag :=
     ).
 
 Goal
-  exists getHistory getArgument,
-  historyConsistent getHistory getArgument exampleHistory.
+  exists getArgument getHistory,
+  historyConsistent getArgument getHistory exampleHistory.
 Proof.
   exists (
     fun a =>
       match a with
-      | 0 => Some (opEmpty _)
-      | 1 => Some (opUpdate 0 tt (opEmpty _))
+      | 0 => Some tt
+      | 1 => Some tt
       | _ => None
       end
   ).
   exists (
     fun a =>
       match a with
-      | 0 => Some tt
-      | 1 => Some tt
+      | 0 => Some (opEmpty _)
+      | 1 => Some (opUpdate 0 tt (opEmpty _))
       | _ => None
       end
   ).
