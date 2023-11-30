@@ -111,18 +111,27 @@ Qed.
 #[export] Hint Resolve semilatticeCorrespondence : main.
 
 (*
-  A state-based CRDT is a semilattice of states (as defined above) with a
-  monotonic update operation.
+  A *state-based CRDT* is a semilattice of states (as defined above) with a
+  query operation and a monotonic update operation.
 *)
 
-Record stateCRDT
-  [A T] (initial : A) (merge : A -> A -> A) (update : T -> A -> A)
-:= {
+Record stateCRDT argument result := {
+  state : Type;
+  initial : state;
+  merge : state -> state -> state;
+  update : argument -> state -> state;
+  query : state -> result;
   semilattice : algebraicSemilattice initial merge;
   monotonicity x a : merge a (update x a) = update x a;
 }.
 
 #[export] Hint Constructors stateCRDT : main.
+
+Arguments state [_ _].
+Arguments initial [_ _].
+Arguments merge [_ _] _ _.
+Arguments update [_ _] _ _.
+Arguments query [_ _] _.
 
 (*
   The *history* of a node is the graph of operations that led to the current
@@ -130,10 +139,10 @@ Record stateCRDT
   stating the strong convergence theorem.
 *)
 
-Inductive history T :=
-| opEmpty : history T
-| opUpdate : nat -> history T -> T -> history T
-| opMerge : history T -> history T -> history T.
+Inductive history [argument result] (crdt : stateCRDT argument result) :=
+| opEmpty : history crdt
+| opUpdate : nat -> history crdt -> argument -> history crdt
+| opMerge : history crdt -> history crdt -> history crdt.
 
 #[export] Hint Constructors history : main.
 
@@ -143,12 +152,13 @@ Inductive history T :=
 *)
 
 Inductive historyConsistent
-  [T]
-  (getHistory : nat -> history T)
-  (getArgument : nat -> T)
-: history T -> Prop
+  [argument result]
+  [crdt : stateCRDT argument result]
+  (getHistory : nat -> history crdt)
+  (getArgument : nat -> argument)
+: history crdt -> Prop
 :=
-| emptyConsistent : historyConsistent _ _ (opEmpty T)
+| emptyConsistent : historyConsistent _ _ (opEmpty crdt)
 | updateConsistent :
   forall n h x,
   getHistory n = h ->
@@ -167,7 +177,8 @@ Inductive historyConsistent
   with a given ID.
 *)
 
-Inductive inHistory [T] (n1 : nat) : history T -> Prop :=
+Inductive inHistory [argument result] [crdt : stateCRDT argument result] n1
+: history crdt -> Prop :=
 | inThisUpdate:
   forall n2 h x, inHistory n1 h -> inHistory n1 (opUpdate _ n2 h x)
 | inNestedUpdate :
@@ -182,17 +193,14 @@ Inductive inHistory [T] (n1 : nat) : history T -> Prop :=
 (* This function replays a node's history to compute its current state. *)
 
 Fixpoint run
-  [A T]
-  (initial : A)
-  (merge : A -> A -> A)
-  (update : T -> A -> A)
-  (h1 : history T)
+  [argument result]
+  [crdt : stateCRDT argument result]
+  (h1 : history crdt)
 :=
   match h1 with
-  | opEmpty _ => initial
-  | opUpdate _ n h x => update x (run initial merge update h)
-  | opMerge _ h2 h3 =>
-    merge (run initial merge update h2) (run initial merge update h3)
+  | opEmpty _ => crdt.(initial)
+  | opUpdate _ n h x => crdt.(update) x (run h)
+  | opMerge _ h2 h3 => crdt.(merge) (run h2) (run h3)
   end.
 
 (*
@@ -202,58 +210,40 @@ Fixpoint run
 *)
 
 Theorem runUpperBound
-    A T
-    (initial : A)
-    (merge : A -> A -> A)
-    (update : T -> A -> A)
-    (h : history T)
-    getHistory
-    getArgument
-    n
-: stateCRDT initial merge update ->
-  historyConsistent getHistory getArgument h ->
+  [argument result]
+  (crdt : stateCRDT argument result)
+  h
+  getHistory
+  getArgument
+  n
+: historyConsistent getHistory getArgument h ->
   inHistory n h ->
-  order merge
-    (update (getArgument n) (run initial merge update (getHistory n)))
-    (run initial merge update h).
+  order crdt.(merge)
+    (crdt.(update) (getArgument n) (run (getHistory n)))
+    (run h).
 Proof.
+  destruct crdt.
   clean.
-  destruct (semilatticeCorrespondence A initial merge).
-  clear H3.
-  feed H2.
-  destruct H2, H3.
-  induction h; search; invert H0.
+  destruct (semilatticeCorrespondence state0 initial0 merge0).
+  clear H2.
+  feed H1.
+  destruct H1, H2.
+  induction h; search; invert H.
   - feed IHh.
-    invert H1.
-    + feed IHh.
-      apply transitivity with (
-        b := (run initial merge update (getHistory n0))
-      ); search.
-      clean.
-      apply monotonicity with (initial := initial).
-      search.
-    + clean.
-      apply idempotency with (initial := initial).
-      search.
+    invert H0; search.
+    feed IHh.
+    apply transitivity with (b := run (getHistory n0)); search.
   - feed IHh1.
     feed IHh2.
-    invert H1;
+    invert H0;
       [
-        feed IHh1;
-          apply transitivity with (b := (run initial merge update h1));
-          search |
-        feed IHh2;
-          apply transitivity with (b := (run initial merge update h2));
-          search
+        feed IHh1; apply transitivity with (b := run h1); search |
+        feed IHh2; apply transitivity with (b := run h2); search
       ];
       clean;
-      specialize (
-        H4
-          (run initial merge update h1)
-          (run initial merge update h2)
-      );
-      destruct H4;
-      destruct H0;
+      specialize (H3 (run h1) (run h2));
+      destruct H3;
+      destruct H;
       search.
 Qed.
 
@@ -265,67 +255,43 @@ Qed.
 *)
 
 Theorem strongConvergence
-  A T
-  (initial : A)
-  (merge : A -> A -> A)
-  (update : T -> A -> A)
-: stateCRDT initial merge update ->
-  forall h1 h2,
-  (
+  [argument result]
+  (crdt : stateCRDT argument result)
+  (h1 h2 : history crdt)
+: (
     exists getHistory getArgument,
     historyConsistent getHistory getArgument h1 /\
     historyConsistent getHistory getArgument h2
   ) ->
   (forall n, inHistory n h1 <-> inHistory n h2) ->
-  run initial merge update h1 = run initial merge update h2.
+  run h1 = run h2.
 Proof.
   clean.
-  destruct H.
-  destruct (semilatticeCorrespondence A initial merge).
+  destruct (
+    semilatticeCorrespondence crdt.(state) crdt.(initial) crdt.(merge)
+  ).
   clear H3.
-  feed H.
-  destruct H, H3.
-  apply antisymmetry with (R := order merge); search.
-  - assert (forall n, inHistory n h1 -> inHistory n h2); try apply H1.
-    clear H1.
-    induction h1; search.
-    + invert H0.
-      repeat feed IHh1.
-    + invert H0.
-      repeat feed IHh1_1.
+  feed H2; [ destruct crdt; search | idtac ].
+  destruct H2, H3.
+  apply antisymmetry with (R := order crdt.(merge)); search.
+  - assert (forall n, inHistory n h1 -> inHistory n h2); try apply H0.
+    clear H0.
+    induction h1; search; clean; invert H.
+    + repeat feed IHh1.
+    + repeat feed IHh1_1.
       repeat feed IHh1_2.
-      destruct (
-        H4
-          (run initial merge update h1_1)
-          (run initial merge update h1_2)
-      ).
-      assert (
-        upperBound
-          (order merge)
-          (run initial merge update h1_1)
-          (run initial merge update h1_2)
-          (run initial merge update h2)
-        ); search.
-  - assert (forall n, inHistory n h2 -> inHistory n h1); try apply H1.
-    clear H1.
-    induction h2; search.
-    + invert H2.
-      repeat feed IHh2.
-    + invert H2.
-      repeat feed IHh2_1.
+      destruct (H4 (run h1_1) (run h1_2)).
+      assert (upperBound (order crdt.(merge)) (run h1_1) (run h1_2) (run h2));
+        search.
+  - assert (forall n, inHistory n h2 -> inHistory n h1); try apply H0.
+    clear H0.
+    induction h2; search; clean; invert H1.
+    + repeat feed IHh2.
+    + repeat feed IHh2_1.
       repeat feed IHh2_2.
-      destruct (
-        H4
-          (run initial merge update h2_1)
-          (run initial merge update h2_2)
-      ).
-      assert (
-        upperBound
-          (order merge)
-          (run initial merge update h2_1)
-          (run initial merge update h2_2)
-          (run initial merge update h1)
-        ); search.
+      destruct (H4 (run h2_1) (run h2_2)).
+      assert (upperBound (order crdt.(merge)) (run h2_1) (run h2_2) (run h1));
+        search.
 Qed.
 
 #[export] Hint Resolve strongConvergence : main.
