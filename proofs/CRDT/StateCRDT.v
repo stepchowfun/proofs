@@ -1,17 +1,19 @@
-(*************************************************)
-(*************************************************)
-(****                                         ****)
-(****   Conflict-free replicated data types   ****)
-(****                                         ****)
-(*************************************************)
-(*************************************************)
+(*************************************************************)
+(*************************************************************)
+(****                                                     ****)
+(****   State-based conflict-free replicated data types   ****)
+(****                                                     ****)
+(*************************************************************)
+(*************************************************************)
 
 Require Import Main.Tactics.
 
 (*
-  An *algebraic semilattice* is a commutative, idempotent monoid. Some texts
-  define it as a commutative, idempotent semigroup, but the monoidal version is
-  more natural for our purposes.
+  The theory of state-based conflict-free replicated data types is based on the
+  idea of *bounded semilattices*. We'll give two definitions of this concept
+  and prove they are equivalent.
+
+  First, a bounded *algebraic semilattice* is a commutative, idempotent monoid.
 *)
 
 Record algebraicSemilattice [A] (initial : A) (merge : A -> A -> A) := {
@@ -24,6 +26,10 @@ Record algebraicSemilattice [A] (initial : A) (merge : A -> A -> A) := {
 #[export] Hint Constructors algebraicSemilattice : main.
 
 (*
+  There other way to define a semilattice is a bit more complicated than the
+  algebraic presentation above. Before we introduce it, we need to develop some
+  order theory.
+
   A *partial order* is a homogeneous relation that is reflexive, transitive,
   and antisymmetric.
 *)
@@ -36,49 +42,47 @@ Record partialOrder [A] (R : A -> A -> Prop) := {
 
 #[export] Hint Constructors partialOrder : main.
 
-(*
-  A *least upper bound* of two elements is an upper bound of those elements
-  that is at least as small as any other upper bound of those elements.
-*)
+(* An *upper bound* of two elements is at least as large as those elements. *)
 
 Definition upperBound [A] (R : A -> A -> Prop) a b ub := R a ub /\ R b ub.
+
+(*
+  A *least upper bound* or *join* of two elements is an upper bound of those
+  elements that is at least as small as any other upper bound of those
+  elements.
+*)
 
 Definition leastUpperBound [A] (R : A -> A -> Prop) a b bound :=
   upperBound R a b bound /\ forall ub, upperBound R a b ub -> R bound ub.
 
 (*
-  An *join-semilattice* is a partial order in which any finite subset of
-  elements has a least upper bound. Some texts only require a least upper bound
-  for any finite, nonempty subset of elements, but we'll need it for the empty
-  set too.
-
-  The partial order is fully determined by the least upper bound function.
+  The least upper bounds, if they exist, completely determine the partial
+  order.
 *)
 
-Definition order [A] (merge : A -> A -> A) a b := merge a b = b.
+Definition order [A] (join : A -> A -> A) a b := join a b = b.
 
 Theorem partialOrderDeterminedByLeastUpperBounds
-  (A : Type) (merge : A -> A -> A) (R : A -> A -> Prop)
+  A a b (join : A -> A -> A) (R : A -> A -> Prop)
 : partialOrder R ->
-  (forall a b, leastUpperBound R a b (merge a b)) ->
-  forall a b, R a b <-> order merge a b.
+  leastUpperBound R a b (join a b) ->
+  R a b <-> order join a b.
 Proof.
   unfold leastUpperBound, upperBound, order.
-  clean.
-  split; clean.
-  - apply antisymmetry with (R := R); search.
-    + apply H0; search.
-    + apply H0.
-  - specialize (H0 a b).
-    search.
+  search.
 Qed.
 
 #[export] Hint Resolve partialOrderDeterminedByLeastUpperBounds : main.
 
-Definition joinSemilattice [A] (initial : A) (merge : A -> A -> A) :=
-  partialOrder (order merge) /\
-  (forall a, order merge initial a) /\
-  (forall a b, leastUpperBound (order merge) a b (merge a b)).
+(*
+  A bounded *join-semilattice* is a partial order in which any finite subset of
+  elements has a least upper bound.
+*)
+
+Definition joinSemilattice [A] (initial : A) (join : A -> A -> A) :=
+  partialOrder (order join) /\
+  (forall a, order join initial a) /\
+  (forall a b, leastUpperBound (order join) a b (join a b)).
 
 (* These two types of semilattices are equivalent. *)
 
@@ -111,8 +115,8 @@ Qed.
 #[export] Hint Resolve semilatticeCorrespondence : main.
 
 (*
-  A *state-based CRDT* is a semilattice of states (as defined above) with a
-  query operation and a monotonic update operation.
+  A *state-based CRDT* is a bounded semilattice of states (as defined above)
+  with a query operation and a monotonic update operation.
 *)
 
 Record stateCRDT argument result := {
@@ -140,9 +144,9 @@ Arguments query [_ _] _.
 *)
 
 Inductive history [argument result] (crdt : stateCRDT argument result) :=
-| opEmpty : history crdt
-| opUpdate : nat -> argument -> history crdt -> history crdt
-| opMerge : history crdt -> history crdt -> history crdt.
+| opEmpty : history _
+| opUpdate : nat -> argument -> history _ -> history _
+| opMerge : history _ -> history _ -> history _.
 
 Arguments opUpdate [_ _ _] _ _ _.
 Arguments opMerge [_ _ _] _ _.
@@ -151,7 +155,7 @@ Arguments opMerge [_ _ _] _ _.
 
 (*
   The argument and prior history for each update operation should be determined
-  by the update ID. To formalize this, we define the following consistency
+  by the update ID. To formalize that, we define the following consistency
   predicate.
 *)
 
@@ -185,13 +189,13 @@ Inductive historyConsistent
 Inductive inHistory [argument result] [crdt : stateCRDT argument result] n1
 : history crdt -> Prop :=
 | inThisUpdate:
-  forall n2 h x, inHistory n1 h -> inHistory n1 (opUpdate n2 x h)
+  forall n2 h x, inHistory _ h -> inHistory _ (opUpdate n2 x h)
 | inNestedUpdate :
-  forall h x, inHistory n1 (opUpdate n1 x h)
+  forall h x, inHistory _ (opUpdate n1 x h)
 | inMergeLeft :
-  forall h1 h2, inHistory n1 h1 -> inHistory n1 (opMerge h1 h2)
+  forall h1 h2, inHistory _ h1 -> inHistory _ (opMerge h1 h2)
 | inMergeRight :
-  forall h1 h2, inHistory n1 h2 -> inHistory n1 (opMerge h1 h2).
+  forall h1 h2, inHistory _ h2 -> inHistory _ (opMerge h1 h2).
 
 #[export] Hint Constructors inHistory : main.
 
@@ -215,7 +219,7 @@ Fixpoint run
 *)
 
 Theorem runUpperBound
-  [argument result]
+  argument result
   (crdt : stateCRDT argument result)
   getArgument getHistory h1 h2 n x
 : historyConsistent getArgument getHistory h1 ->
@@ -252,7 +256,7 @@ Qed.
 *)
 
 Theorem strongConvergence
-  [argument result]
+  argument result
   (crdt : stateCRDT argument result)
   (h1 h2 : history crdt)
 : (
@@ -295,7 +299,7 @@ Qed.
 
 #[export] Hint Resolve strongConvergence : main.
 
-(* A simple CRDT: a Boolean event flag *)
+(* A simple state-based CRDT: a Boolean event flag *)
 
 Program Definition booleanEventFlag : stateCRDT unit bool :=
   {|
