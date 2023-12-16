@@ -208,7 +208,7 @@ Fixpoint run
 :=
   match h1 with
   | opEmpty _ => crdt.(initial)
-  | opUpdate n x h => crdt.(update) x (run h)
+  | opUpdate n x h2 => crdt.(update) x (run h2)
   | opMerge h2 h3 => crdt.(merge) (run h2) (run h3)
   end.
 
