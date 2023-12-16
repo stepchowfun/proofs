@@ -13,7 +13,7 @@ Require Import Main.Tactics.
   idea of *bounded semilattices*. We'll give two definitions of this concept
   and prove they are equivalent.
 
-  First, a bounded *algebraic semilattice* is a commutative, idempotent monoid.
+  First, a bounded *algebraic semilattice* is an idempotent commutative monoid.
 *)
 
 Record algebraicSemilattice [A] (initial : A) (merge : A -> A -> A) := {
