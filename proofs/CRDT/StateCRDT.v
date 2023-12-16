@@ -154,30 +154,27 @@ Arguments opMerge [_ _ _] _ _.
 #[export] Hint Constructors history : main.
 
 (*
-  The argument and prior history for each update operation should be determined
-  by the update ID. To formalize that, we define the following consistency
-  predicate.
+  Any updates with the same ID should be identical. To formalize that, we
+  define the following consistency predicate.
 *)
 
 Inductive historyConsistent
   [argument result]
   [crdt : stateCRDT argument result]
-  (getArgument : nat -> option argument)
-  (getHistory : nat -> option (history crdt))
+  (getUpdate : nat -> option (history crdt))
 : history crdt -> Prop
 :=
-| emptyConsistent : historyConsistent _ _ (opEmpty crdt)
+| emptyConsistent : historyConsistent _ (opEmpty crdt)
 | updateConsistent :
   forall n h x,
-  getArgument n = Some x ->
-  getHistory n = Some h ->
-  historyConsistent _ _ h ->
-  historyConsistent _ _ (opUpdate n x h)
+  getUpdate n = Some (opUpdate n x h) ->
+  historyConsistent _ h ->
+  historyConsistent _ (opUpdate n x h)
 | mergeConsistent :
   forall h1 h2,
-  historyConsistent _ _ h1 ->
-  historyConsistent _ _ h2 ->
-  historyConsistent _ _ (opMerge h1 h2).
+  historyConsistent _ h1 ->
+  historyConsistent _ h2 ->
+  historyConsistent _ (opMerge h1 h2).
 
 #[export] Hint Constructors historyConsistent : main.
 
@@ -221,30 +218,32 @@ Fixpoint run
 Theorem runUpperBound
   argument result
   (crdt : stateCRDT argument result)
-  getArgument getHistory h1 h2 n x
-: historyConsistent getArgument getHistory h1 ->
+  getUpdate h1 h2 n x
+: historyConsistent getUpdate h1 ->
   inHistory n h1 ->
-  Some x = getArgument n ->
-  Some h2 = getHistory n ->
-  order crdt.(merge) (crdt.(update) x (run h2)) (run h1).
+  let update := opUpdate n x h2 in
+  getUpdate n = Some update ->
+  order crdt.(merge) (run update) (run h1).
 Proof.
   destruct crdt.
   clean.
+  subst update1.
   destruct (semilatticeCorrespondence state0 initial0 merge0).
-  clear H4.
-  feed H3.
-  destruct H3, H4.
+  clear H3.
+  feed H2.
+  destruct H2, H3.
   induction h1; search; invert H; invert H0; clean.
   - apply transitivity with (b := run h1); search.
-  - replace x with a; search.
+  - rewrite H1 in H7.
+    replace x with a; search.
     replace h2 with h1; search.
   - apply transitivity with (b := run h1_1); search.
-    specialize (H5 (run h1_1) (run h1_2)).
-    destruct H5, H.
+    specialize (H4 (run h1_1) (run h1_2)).
+    destruct H4, H.
     search.
   - apply transitivity with (b := run h1_2); search.
-    specialize (H5 (run h1_1) (run h1_2)).
-    destruct H5, H.
+    specialize (H4 (run h1_1) (run h1_2)).
+    destruct H4, H.
     search.
 Qed.
 
@@ -259,11 +258,9 @@ Theorem strongConvergence
   argument result
   (crdt : stateCRDT argument result)
   (h1 h2 : history crdt)
-: (
-    exists getArgument getHistory,
-    historyConsistent getArgument getHistory h1 /\
-    historyConsistent getArgument getHistory h2
-  ) ->
+  getUpdate
+: historyConsistent getUpdate h1 ->
+  historyConsistent getUpdate h2 ->
   (forall n, inHistory n h1 <-> inHistory n h2) ->
   run h1 = run h2.
 Proof.
@@ -275,8 +272,8 @@ Proof.
   feed H2; [ destruct crdt; search | idtac ].
   destruct H2, H3.
   apply antisymmetry with (R := order crdt.(merge)); search.
-  - assert (forall n, inHistory n h1 -> inHistory n h2); try apply H0.
-    clear H0.
+  - assert (forall n, inHistory n h1 -> inHistory n h2); try apply H1.
+    clear H1.
     induction h1; search; clean; invert H.
     + repeat feed IHh1.
       eSearch.
@@ -285,9 +282,9 @@ Proof.
       destruct (H4 (run h1_1) (run h1_2)).
       assert (upperBound (order crdt.(merge)) (run h1_1) (run h1_2) (run h2));
         search.
-  - assert (forall n, inHistory n h2 -> inHistory n h1); try apply H0.
-    clear H0.
-    induction h2; search; clean; invert H1.
+  - assert (forall n, inHistory n h2 -> inHistory n h1); try apply H1.
+    clear H1.
+    induction h2; search; clean; invert H0.
     + repeat feed IHh2.
       eSearch.
     + repeat feed IHh2_1.
@@ -321,30 +318,15 @@ Next Obligation.
 Qed.
 
 Definition exampleHistory : history booleanEventFlag :=
-  opMerge
-    (opEmpty _)
-    (
-      opUpdate 1 tt
-        (opUpdate 0 tt (opEmpty _))
-    ).
+  opMerge (opEmpty _) (opUpdate 1 tt (opUpdate 0 tt (opEmpty _))).
 
-Goal
-  exists getArgument getHistory,
-  historyConsistent getArgument getHistory exampleHistory.
+Goal exists getUpdate, historyConsistent getUpdate exampleHistory.
 Proof.
   exists (
     fun a =>
       match a with
-      | 0 => Some tt
-      | 1 => Some tt
-      | _ => None
-      end
-  ).
-  exists (
-    fun a =>
-      match a with
-      | 0 => Some (opEmpty _)
-      | 1 => Some (opUpdate 0 tt (opEmpty _))
+      | 0 => Some (opUpdate 0 tt (opEmpty _))
+      | 1 => Some (opUpdate 1 tt (opUpdate 0 tt (opEmpty _)))
       | _ => None
       end
   ).
