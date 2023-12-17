@@ -15,10 +15,10 @@ Import Coq.Lists.List.ListNotations.
 Import Coq.ZArith.BinIntDef.Z.
 
 (*
-  To construct *operation-based CRDT*, we need a set of states with an initial
-  state, a query method, an update method, and a delivery precondition. The
-  update method returns an operation which can be interpreted as a state
-  transformer.
+  The data for an operation-based conflict-free replicated data type consists
+  of set of states with an initial state, a query method, an update method, and
+  a delivery precondition. The update method returns an operation which can be
+  interpreted as a state transformer.
 *)
 
 Record operationCRDTData argument result := {
@@ -77,8 +77,8 @@ Inductive historyValid
 #[export] Hint Constructors historyValid : main.
 
 (*
-  A history is *consistent* with a partial order when every operation is not
-  less than or equal to the previous operations in the history.
+  A history is *consistent* with a partial order when every operation in the
+  history is not less than or equal to the previous operations in the history.
 *)
 
 Inductive historyConsistent [A] (R : A -> A -> Prop) : list A -> Prop
@@ -91,20 +91,37 @@ Inductive historyConsistent [A] (R : A -> A -> Prop) : list A -> Prop
 
 #[export] Hint Constructors historyConsistent : main.
 
-(* To qualify as a CRDT, concurrent operations must commute. *)
+(*
+  A partial order is *valid* if every history consistent with that order is
+  valid.
+*)
+
+Definition orderValid
+  [argument result]
+  (crdtData : operationCRDTData argument result)
+  (R : crdtData.(operation) -> crdtData.(operation) -> Prop)
+:=
+  partialOrder R /\
+  forall h, historyConsistent R h -> historyValid crdtData h.
+
+(*
+  To qualify as an *operation-based CRDT*, concurrent operations must commute.
+  Two operations are concurrent if they are unrelated according to some valid
+  order. Two operations commute if for any state in which the precondition is
+  satisfied for both operations, executing both operations in either order
+  results in the same state.
+*)
 
 Record operationCRDT
   [argument result]
   (crdtData : operationCRDTData argument result)
 := {
   commutativity R s o1 o2 :
-    partialOrder R ->
-    (forall h, historyConsistent R h -> historyValid crdtData h) ->
-    ((~ R o1 o2) /\ (~ R o2 o1)) ->
+    orderValid crdtData R ->
+    ~ R o1 o2 ->
+    ~ R o2 o1 ->
     crdtData.(precondition) s o1 ->
     crdtData.(precondition) s o2 ->
-    crdtData.(precondition) (crdtData.(interpret) o2 s) o1 /\
-    crdtData.(precondition) (crdtData.(interpret) o1 s) o2 /\
     crdtData.(interpret) o1 (crdtData.(interpret) o2 s) =
       crdtData.(interpret) o2 (crdtData.(interpret) o1 s);
 }.
@@ -113,7 +130,8 @@ Record operationCRDT
 
 (*
   We're now ready to state and prove the strong convergence theorem: any two
-  nodes with the same set of updates in their histories are in the same state.
+  nodes with the same set of updates in their histories are in the same state
+  if their histories are consistent with a valid order.
 *)
 
 Theorem operationStrongConvergence
@@ -122,18 +140,18 @@ Theorem operationStrongConvergence
   (crdt : operationCRDT crdtData)
   (h1 h2 : list crdtData.(operation))
   R
-: partialOrder R ->
-  (forall h, historyConsistent R h -> historyValid crdtData h) ->
+: orderValid crdtData R ->
   historyConsistent R h1 ->
   historyConsistent R h2 ->
   (forall o, In o h1 <-> In o h2) ->
   run crdtData h1 = run crdtData h2.
 Proof.
+  unfold orderValid.
   clean.
   outro h2.
   induction h1; clean.
   - destruct h2; search.
-    specialize (H3 o); search.
+    specialize (H2 o); search.
   - assert (
       In a h2 ->
       exists h3,
@@ -143,35 +161,34 @@ Proof.
     ).
     + assert (forall o, In o h2 -> R a o -> a = o).
       * clean.
-        invert H1.
-        specialize (H3 o).
+        invert H0.
+        specialize (H2 o).
         specialize (H9 o).
         search.
-      * clear h1 H1 H3 IHh1.
+      * clear h1 H0 H2 IHh1.
         outro h2.
         induction h2; search.
         clean.
-        destruct H1.
+        destruct H0.
         -- exists h2.
            search.
-        -- invert H2.
+        -- invert H1.
            do 3 feed IHh2.
            destruct IHh2.
+           destruct H1.
            destruct H2.
-           destruct H3.
            exists (a0 :: x).
            repeat split; clean.
            ++ destruct H8; search.
-              specialize (H2 o); search.
+              specialize (H1 o); search.
            ++ repeat destruct H8; search.
-              specialize (H2 o); search.
-           ++ rewrite H3.
+              specialize (H1 o); search.
+           ++ rewrite H2.
               pose proof (
-                crdt.(commutativity crdtData) R (run crdtData x) a0 a H H0
+                crdt.(commutativity crdtData) R (run crdtData x) a0 a
               ).
-              feed H8.
-              ** split; search.
-                 specialize (H4 a0).
+              do 3 feed H8.
+              ** specialize (H4 a0).
                  feed H4.
                  intro.
                  feed H4.
@@ -180,13 +197,13 @@ Proof.
                  feed H7.
               ** feed H8.
                  --- assert (historyValid crdtData (a0 :: x)).
-                     +++ apply H0.
+                     +++ apply H3.
                          constructor.
                          *** invert H5.
                              search.
                          *** clean.
                              apply H7.
-                             specialize (H2 o2).
+                             specialize (H1 o2).
                              search.
                      +++ invert H9.
                          search.
@@ -199,7 +216,7 @@ Proof.
                  --- invert H5.
                      search.
                  --- apply H7.
-                     specialize (H2 o2).
+                     specialize (H1 o2).
                      search.
               ** destruct H8.
                  --- subst o2.
@@ -213,23 +230,23 @@ Proof.
                  --- invert H5.
                      search.
     + feed H4.
-      * specialize (H3 a).
+      * specialize (H2 a).
         search.
       * do 2 destruct H4.
         destruct H5.
         rewrite H5.
         clean.
         rewrite IHh1 with (h2 := x); search.
-        -- invert H1.
+        -- invert H0.
            search.
         -- invert H6.
            search.
         -- clean.
-           destruct (H3 o).
+           destruct (H2 o).
            destruct (H4 o).
            split; clean.
            ++ assert (~ In a h1).
-              ** invert H1.
+              ** invert H0.
                  destruct H.
                  specialize (H15 a).
                  search.
