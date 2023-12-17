@@ -22,22 +22,22 @@ Import Coq.ZArith.BinIntDef.Z.
 *)
 
 Record operationCRDTData argument result := {
-  oState : Type;
-  oOperation : Type;
-  oInitial : oState;
-  oUpdate : argument -> oState -> oOperation;
-  oInterpret : oOperation -> oState -> oState;
-  oQuery : oState -> result;
-  oPrecondition : oState -> oOperation -> Prop;
+  state : Type;
+  operation : Type;
+  initial : state;
+  update : argument -> state -> operation;
+  interpret : operation -> state -> state;
+  query : state -> result;
+  precondition : state -> operation -> Prop;
 }.
 
-Arguments oState [_ _].
-Arguments oOperation [_ _].
-Arguments oInitial [_ _].
-Arguments oUpdate [_ _] _ _.
-Arguments oInterpret [_ _] _ _.
-Arguments oQuery [_ _] _.
-Arguments oPrecondition [_ _] _ _.
+Arguments state [_ _].
+Arguments operation [_ _].
+Arguments initial [_ _].
+Arguments update [_ _] _ _.
+Arguments interpret [_ _] _ _.
+Arguments query [_ _] _.
+Arguments precondition [_ _] _ _.
 
 #[export] Hint Constructors operationCRDTData : main.
 
@@ -51,11 +51,11 @@ Arguments oPrecondition [_ _] _ _.
 Fixpoint run
   [argument result]
   (crdtData : operationCRDTData argument result)
-  (h1 : list crdtData.(oOperation))
+  (h1 : list crdtData.(operation))
 :=
   match h1 with
-  | [] => crdtData.(oInitial)
-  | o :: h2 => crdtData.(oInterpret) o (run crdtData h2)
+  | [] => crdtData.(initial)
+  | o :: h2 => crdtData.(interpret) o (run crdtData h2)
   end.
 
 (*
@@ -66,12 +66,12 @@ Fixpoint run
 Inductive historyValid
   [argument result]
   (crdtData : operationCRDTData argument result)
-: list crdtData.(oOperation) -> Prop
+: list crdtData.(operation) -> Prop
 :=
 | emptyValid : historyValid _ []
 | operationValid o h :
   historyValid _ h ->
-  crdtData.(oPrecondition) (run crdtData h) o ->
+  crdtData.(precondition) (run crdtData h) o ->
   historyValid _ (o :: h).
 
 #[export] Hint Constructors historyValid : main.
@@ -97,16 +97,16 @@ Record operationCRDT
   [argument result]
   (crdtData : operationCRDTData argument result)
 := {
-  oCommutativity R s o1 o2 :
+  commutativity R s o1 o2 :
     partialOrder R ->
     (forall h, historyConsistent R h -> historyValid crdtData h) ->
     ((~ R o1 o2) /\ (~ R o2 o1)) ->
-    crdtData.(oPrecondition) s o1 ->
-    crdtData.(oPrecondition) s o2 ->
-    crdtData.(oPrecondition) (crdtData.(oInterpret) o2 s) o1 /\
-    crdtData.(oPrecondition) (crdtData.(oInterpret) o1 s) o2 /\
-    crdtData.(oInterpret) o1 (crdtData.(oInterpret) o2 s) =
-      crdtData.(oInterpret) o2 (crdtData.(oInterpret) o1 s);
+    crdtData.(precondition) s o1 ->
+    crdtData.(precondition) s o2 ->
+    crdtData.(precondition) (crdtData.(interpret) o2 s) o1 /\
+    crdtData.(precondition) (crdtData.(interpret) o1 s) o2 /\
+    crdtData.(interpret) o1 (crdtData.(interpret) o2 s) =
+      crdtData.(interpret) o2 (crdtData.(interpret) o1 s);
 }.
 
 #[export] Hint Constructors operationCRDT : main.
@@ -120,7 +120,7 @@ Theorem operationStrongConvergence
   argument result
   (crdtData : operationCRDTData argument result)
   (crdt : operationCRDT crdtData)
-  (h1 h2 : list crdtData.(oOperation))
+  (h1 h2 : list crdtData.(operation))
   R
 : partialOrder R ->
   (forall h, historyConsistent R h -> historyValid crdtData h) ->
@@ -167,7 +167,7 @@ Proof.
               specialize (H2 o); search.
            ++ rewrite H3.
               pose proof (
-                crdt.(oCommutativity crdtData) R (run crdtData x) a0 a H H0
+                crdt.(commutativity crdtData) R (run crdtData x) a0 a H H0
               ).
               feed H8.
               ** split; search.
@@ -246,20 +246,22 @@ Qed.
 
 (* A simple operation-based CRDT: a counter *)
 
+Open Scope Z_scope.
+
 Definition counterData : operationCRDTData bool Z :=
   {|
-    oState := Z;
-    oOperation := bool;
-    oInitial := 0%Z;
-    oUpdate x _ := x;
-    oInterpret o s := (if o then s + 1 else s - 1)%Z;
-    oQuery s := s;
-    oPrecondition _ _ := True;
+    state := Z;
+    operation := bool;
+    initial := 0;
+    update x _ := x;
+    interpret o s := if o then s + 1 else s - 1;
+    query s := s;
+    precondition _ _ := True;
   |}.
 
 Program Definition counter : operationCRDT counterData :=
   {|
-    oCommutativity := _;
+    commutativity := _;
   |}.
 Next Obligation.
   search.
