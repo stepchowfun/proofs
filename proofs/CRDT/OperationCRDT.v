@@ -134,7 +134,7 @@ Record operationCRDT
   if their histories are consistent with a valid order.
 *)
 
-Theorem operationStrongConvergence
+Theorem strongConvergence
   argument result
   (crdtData : operationCRDTData argument result)
   (crdt : operationCRDT crdtData)
@@ -259,7 +259,7 @@ Proof.
               ** destruct H8; search.
 Qed.
 
-#[export] Hint Resolve operationStrongConvergence : main.
+#[export] Hint Resolve strongConvergence : main.
 
 (* A simple operation-based CRDT: a counter *)
 
