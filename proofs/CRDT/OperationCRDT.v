@@ -42,7 +42,7 @@ Arguments precondition [_ _] _ _.
 #[export] Hint Constructors crdtData : main.
 
 (*
-  The history of a node is a list of operations. Here, `o :: h` signifies a
+  The history of a node is a list of operations. `o :: h` is understood as a
   history with `o` as the final operation (even though this position is
   traditionally considered the beginning of the list). The following function
   replays a node's history to compute its current state.
@@ -90,16 +90,21 @@ Inductive historyConsistent [A] (R : A -> A -> Prop) : list A -> Prop :=
 #[export] Hint Constructors historyConsistent : main.
 
 (*
-  A partial order is *valid* if every history consistent with that order is
-  valid.
+  A partial order is *valid* for a set of operations if every history that
+  consists of those operations and is consistent with that order is valid.
 *)
 
 Definition orderValid
   [argument result]
   (crdtData : crdtData argument result)
+  (P : crdtData.(operation) -> Prop)
   (R : crdtData.(operation) -> crdtData.(operation) -> Prop)
 :=
-  partialOrder R /\ forall h, historyConsistent R h -> historyValid crdtData h.
+  partialOrder R /\
+  forall h,
+    (forall o, In o h -> P o) ->
+    historyConsistent R h ->
+    historyValid crdtData h.
 
 (*
   If two histories which are consistent with the same valid partial order
@@ -111,7 +116,7 @@ Definition orderValid
 
 Record crdt [argument result] (crdtData : crdtData argument result) := {
   commutativity R h o1 o2 :
-    orderValid crdtData R ->
+    orderValid crdtData (fun o3 => In o3 h \/ o3 = o1 \/ o3 = o2) R ->
     historyConsistent R (o1 :: o2 :: h) ->
     historyConsistent R (o2 :: o1 :: h) ->
     let s := run crdtData h in
@@ -133,7 +138,7 @@ Theorem strongConvergence
   (crdt : crdt crdtData)
   (h1 h2 : list crdtData.(operation))
   R
-: orderValid crdtData R ->
+: orderValid crdtData (fun o => In o h2) R ->
   historyConsistent R h1 ->
   historyConsistent R h2 ->
   (forall o, In o h1 <-> In o h2) ->
@@ -179,29 +184,39 @@ Proof.
            ++ rewrite H2.
               pose proof (crdt.(commutativity crdtData) R x a0 a).
               cbn in H8.
-              do 2 feed H8.
-              ** constructor.
-                 --- constructor; invert H5; search.
-                 --- clean.
-                     apply H7.
-                     specialize (H1 o2).
-                     search.
+              feed H8.
+              ** unfold orderValid.
+                 split; search.
+                 clean.
+                 apply H3; search.
+                 clean.
+                 specialize (H9 o H11).
+                 destruct H9; search.
+                 specialize (H1 o).
+                 search.
               ** feed H8.
-                 constructor.
                  --- constructor.
-                     +++ invert H5.
-                         search.
+                     +++ constructor; invert H5; search.
                      +++ clean.
                          apply H7.
                          specialize (H1 o2).
                          search.
-                 --- clean.
-                     destruct H9.
-                     +++ specialize (H4 a0).
-                         specialize (H7 a).
-                         search.
-                     +++ invert H5.
-                         search.
+                 --- feed H8.
+                     constructor.
+                     +++ constructor.
+                         *** invert H5.
+                             search.
+                         *** clean.
+                             apply H7.
+                             specialize (H1 o2).
+                             search.
+                     +++ clean.
+                         destruct H9.
+                         *** specialize (H4 a0).
+                             specialize (H7 a).
+                             search.
+                         *** invert H5.
+                             search.
            ++ apply operationConsistent; clean.
               ** apply operationConsistent; clean.
                  --- invert H5.
@@ -229,6 +244,13 @@ Proof.
         clean.
         rewrite IHh1 with (h2 := x); search.
         -- invert H0.
+           search.
+        -- invert H6.
+           clean.
+           apply H3; search.
+           clean.
+           specialize (H6 o H8).
+           specialize (H4 o).
            search.
         -- invert H6.
            search.
