@@ -18,7 +18,9 @@ Import Coq.ZArith.BinIntDef.Z.
   The data for an operation-based conflict-free replicated data type consists
   of set of states with an initial state, a query method, an update method, and
   a delivery precondition. The update method returns an operation which can be
-  interpreted as a state transformer.
+  interpreted as a state transformer to be broadcasted to other nodes. Later,
+  we'll introduce the laws that these data must satisfy to prove the strong
+  convergence theorem.
 *)
 
 Record crdtData argument result := {
@@ -90,11 +92,12 @@ Inductive historyConsistent [A] (R : A -> A -> Prop) : list A -> Prop :=
 #[export] Hint Constructors historyConsistent : main.
 
 (*
-  A partial order is *valid* for a set of operations if every history that
-  consists of those operations and is consistent with that order is valid.
+  A partial order is *satisfactory* for a set of operations if every history
+  that is consistent with that order and consists only of operations in that
+  set is valid.
 *)
 
-Definition orderValid
+Definition orderSatisfactory
   [argument result]
   (crdtData : crdtData argument result)
   (P : crdtData.(operation) -> Prop)
@@ -107,16 +110,17 @@ Definition orderValid
     historyValid crdtData h.
 
 (*
-  If two histories which are consistent with the same valid partial order
-  differ only in the order of their last two operations, we say those two
-  operations are *concurrent*. They *commute* if applying them in either order
-  results in the same final state. Concurrent operations of an *operation-based
-  CRDT* are required to commute.
+  If two histories that differ only in the order of their last two operations
+  are both consistent with a partial order that is satisfactory for the
+  operations in those histories, we say those last two operations are
+  *concurrent*. They *commute* if both histories result in the same final
+  state. In the context of *operation-based CRDTs*, concurrent operations are
+  required to commute.
 *)
 
 Record crdt [argument result] (crdtData : crdtData argument result) := {
   commutativity R h o1 o2 :
-    orderValid crdtData (fun o3 => In o3 h \/ o3 = o1 \/ o3 = o2) R ->
+    orderSatisfactory crdtData (fun o3 => In o3 h \/ o3 = o1 \/ o3 = o2) R ->
     historyConsistent R (o1 :: o2 :: h) ->
     historyConsistent R (o2 :: o1 :: h) ->
     let s := run crdtData h in
@@ -128,8 +132,9 @@ Record crdt [argument result] (crdtData : crdtData argument result) := {
 
 (*
   We're now ready to state and prove the strong convergence theorem: any two
-  nodes with the same set of updates in their histories are in the same state
-  if their histories are consistent with a valid order.
+  nodes with the same set of operations in their histories end up in the same
+  state if their histories are consistent with an order that is satisfactory
+  for the operations in those histories.
 *)
 
 Theorem strongConvergence
@@ -138,13 +143,13 @@ Theorem strongConvergence
   (crdt : crdt crdtData)
   (h1 h2 : list crdtData.(operation))
   R
-: orderValid crdtData (fun o => In o h2) R ->
+: orderSatisfactory crdtData (fun o => In o h2) R ->
   historyConsistent R h1 ->
   historyConsistent R h2 ->
   (forall o, In o h1 <-> In o h2) ->
   run crdtData h1 = run crdtData h2.
 Proof.
-  unfold orderValid.
+  unfold orderSatisfactory.
   clean.
   outro h2.
   induction h1; clean.
@@ -185,7 +190,7 @@ Proof.
               pose proof (crdt.(commutativity crdtData) R x a0 a).
               cbn in H8.
               feed H8.
-              ** unfold orderValid.
+              ** unfold orderSatisfactory.
                  split; search.
                  clean.
                  apply H3; search.
