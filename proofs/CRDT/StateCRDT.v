@@ -82,7 +82,7 @@ Qed.
 Definition joinSemilattice [A] (initial : A) (join : A -> A -> A) :=
   partialOrder (order join) /\
   (forall a, order join initial a) /\
-  (forall a b, leastUpperBound (order join) a b (join a b)).
+  forall a b, leastUpperBound (order join) a b (join a b).
 
 (* These two types of semilattices are equivalent. *)
 
@@ -119,7 +119,7 @@ Qed.
   with a query operation and a monotonic update operation.
 *)
 
-Record stateCRDT argument result := {
+Record crdt argument result := {
   state : Type;
   initial : state;
   merge : state -> state -> state;
@@ -135,7 +135,7 @@ Arguments merge [_ _] _ _.
 Arguments update [_ _] _ _.
 Arguments query [_ _] _.
 
-#[export] Hint Constructors stateCRDT : main.
+#[export] Hint Constructors crdt : main.
 
 (*
   The *history* of a node is the graph of operations that led to the current
@@ -143,7 +143,7 @@ Arguments query [_ _] _.
   stating the strong convergence theorem.
 *)
 
-Inductive history [argument result] (crdt : stateCRDT argument result) :=
+Inductive history [argument result] (crdt : crdt argument result) :=
 | opEmpty : history _
 | opUpdate : nat -> argument -> history _ -> history _
 | opMerge : history _ -> history _ -> history _.
@@ -160,10 +160,9 @@ Arguments opMerge [_ _ _] _ _.
 
 Inductive historyConsistent
   [argument result]
-  [crdt : stateCRDT argument result]
+  [crdt : crdt argument result]
   (getUpdate : nat -> option (history crdt))
-: history crdt -> Prop
-:=
+: history crdt -> Prop :=
 | emptyConsistent : historyConsistent _ (opEmpty crdt)
 | updateConsistent :
   forall n h x,
@@ -183,7 +182,7 @@ Inductive historyConsistent
   with a given ID.
 *)
 
-Inductive inHistory [argument result] [crdt : stateCRDT argument result] n1
+Inductive inHistory [argument result] [crdt : crdt argument result] n1
 : history crdt -> Prop :=
 | inThisUpdate:
   forall n2 h x, inHistory _ h -> inHistory _ (opUpdate n2 x h)
@@ -200,7 +199,7 @@ Inductive inHistory [argument result] [crdt : stateCRDT argument result] n1
 
 Fixpoint run
   [argument result]
-  [crdt : stateCRDT argument result]
+  [crdt : crdt argument result]
   (h1 : history crdt)
 :=
   match h1 with
@@ -217,7 +216,7 @@ Fixpoint run
 
 Theorem runUpperBound
   argument result
-  (crdt : stateCRDT argument result)
+  (crdt : crdt argument result)
   getUpdate h1 h2 n x
 : historyConsistent getUpdate h1 ->
   inHistory n h1 ->
@@ -256,7 +255,7 @@ Qed.
 
 Theorem strongConvergence
   argument result
-  (crdt : stateCRDT argument result)
+  (crdt : crdt argument result)
   (h1 h2 : history crdt)
   getUpdate
 : historyConsistent getUpdate h1 ->
@@ -298,7 +297,7 @@ Qed.
 
 (* A simple state-based CRDT: a Boolean event flag *)
 
-Program Definition booleanEventFlag : stateCRDT unit bool :=
+Program Definition booleanEventFlag : crdt unit bool :=
   {|
     state := bool;
     initial := false;
