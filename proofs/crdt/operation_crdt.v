@@ -23,13 +23,13 @@ Import Coq.ZArith.BinIntDef.Z.
   convergence theorem.
 *)
 
-Record CrdtData argument result := {
+Record CrdtData A Q := {
   State : Type;
   Operation : Type;
   initial : State;
-  update : argument -> State -> Operation;
+  update : A -> State -> Operation;
   interpret : Operation -> State -> State;
-  query : State -> result;
+  query : State -> Q;
   Precondition : State -> Operation -> Prop;
 }.
 
@@ -50,10 +50,7 @@ Arguments Precondition [_ _] _ _.
   replays a node's history to compute its current state.
 *)
 
-Fixpoint run
-  [argument result]
-  (CrdtData : CrdtData argument result)
-  (h1 : list CrdtData.(Operation))
+Fixpoint run [A Q] (CrdtData : CrdtData A Q) (h1 : list CrdtData.(Operation))
 :=
   match h1 with
   | [] => CrdtData.(initial)
@@ -65,9 +62,7 @@ Fixpoint run
   operation.
 *)
 
-Inductive HistoryValid
-  [argument result]
-  (crdt_data : CrdtData argument result)
+Inductive HistoryValid [A Q] (crdt_data : CrdtData A Q)
 : list crdt_data.(Operation) -> Prop :=
 | empty_valid : HistoryValid _ []
 | operation_valid o h :
@@ -82,7 +77,7 @@ Inductive HistoryValid
   history is not less than or equal to the previous operations in the history.
 *)
 
-Inductive HistoryConsistent [A] (R : A -> A -> Prop) : list A -> Prop :=
+Inductive HistoryConsistent [T] (R : T -> T -> Prop) : list T -> Prop :=
 | empty_consistent : HistoryConsistent _ []
 | operation_consistent o1 h :
   HistoryConsistent _ h ->
@@ -98,8 +93,8 @@ Inductive HistoryConsistent [A] (R : A -> A -> Prop) : list A -> Prop :=
 *)
 
 Definition OrderSatisfactory
-  [argument result]
-  (crdt_data : CrdtData argument result)
+  [A Q]
+  (crdt_data : CrdtData A Q)
   (P : crdt_data.(Operation) -> Prop)
   (R : crdt_data.(Operation) -> crdt_data.(Operation) -> Prop)
 :=
@@ -118,7 +113,7 @@ Definition OrderSatisfactory
   required to commute.
 *)
 
-Record Crdt [argument result] (crdt_data : CrdtData argument result) := {
+Record Crdt [A Q] (crdt_data : CrdtData A Q) := {
   commutativity R h o1 o2 :
     OrderSatisfactory crdt_data (fun o3 => In o3 h \/ o3 = o1 \/ o3 = o2) R ->
     HistoryConsistent R (o1 :: o2 :: h) ->
@@ -138,8 +133,8 @@ Record Crdt [argument result] (crdt_data : CrdtData argument result) := {
 *)
 
 Theorem strong_convergence
-  argument result
-  (crdt_data : CrdtData argument result)
+  A Q
+  (crdt_data : CrdtData A Q)
   (crdt : Crdt crdt_data)
   (h1 h2 : list crdt_data.(Operation))
   R

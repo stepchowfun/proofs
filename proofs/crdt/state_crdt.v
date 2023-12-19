@@ -16,11 +16,11 @@ Require Import main.tactics.
   First, a bounded *algebraic semilattice* is an idempotent commutative monoid.
 *)
 
-Record AlgebraicSemilattice [A] (initial : A) (merge : A -> A -> A) := {
-  idempotency a : merge a a = a;
-  commutativity a b : merge a b = merge b a;
-  associativity a b c : merge a (merge b c) = merge (merge a b) c;
-  identity a : merge initial a = a;
+Record AlgebraicSemilattice [T] (initial : T) (merge : T -> T -> T) := {
+  idempotency x : merge x x = x;
+  commutativity x y : merge x y = merge y x;
+  associativity x y z : merge x (merge y z) = merge (merge x y) z;
+  identity x : merge initial x = x;
 }.
 
 #[export] Hint Constructors AlgebraicSemilattice : main.
@@ -34,17 +34,17 @@ Record AlgebraicSemilattice [A] (initial : A) (merge : A -> A -> A) := {
   and antisymmetric.
 *)
 
-Record PartialOrder [A] (R : A -> A -> Prop) := {
-  reflexivity a : R a a;
-  transitivity a b c : R a b -> R b c -> R a c;
-  antisymmetry a b : R a b -> R b a -> a = b;
+Record PartialOrder [T] (R : T -> T -> Prop) := {
+  reflexivity x : R x x;
+  transitivity x y z : R x y -> R y z -> R x z;
+  antisymmetry x y : R x y -> R y x -> x = y;
 }.
 
 #[export] Hint Constructors PartialOrder : main.
 
 (* An *upper bound* of two elements is at least as large as those elements. *)
 
-Definition UpperBound [A] (R : A -> A -> Prop) a b ub := R a ub /\ R b ub.
+Definition UpperBound [T] (R : T -> T -> Prop) x y ub := R x ub /\ R y ub.
 
 (*
   A *least upper bound* or *join* of two elements is an upper bound of those
@@ -52,21 +52,21 @@ Definition UpperBound [A] (R : A -> A -> Prop) a b ub := R a ub /\ R b ub.
   elements.
 *)
 
-Definition LeastUpperBound [A] (R : A -> A -> Prop) a b bound :=
-  UpperBound R a b bound /\ forall ub, UpperBound R a b ub -> R bound ub.
+Definition LeastUpperBound [T] (R : T -> T -> Prop) x y bound :=
+  UpperBound R x y bound /\ forall ub, UpperBound R x y ub -> R bound ub.
 
 (*
   The least upper bounds, if they exist, completely determine the partial
   Order.
 *)
 
-Definition Order [A] (join : A -> A -> A) a b := join a b = b.
+Definition Order [T] (join : T -> T -> T) x y := join x y = y.
 
 Theorem partial_order_determined_by_least_upper_bounds
-  A a b (join : A -> A -> A) (R : A -> A -> Prop)
+  T x y (join : T -> T -> T) (R : T -> T -> Prop)
 : PartialOrder R ->
-  LeastUpperBound R a b (join a b) ->
-  R a b <-> Order join a b.
+  LeastUpperBound R x y (join x y) ->
+  R x y <-> Order join x y.
 Proof.
   unfold LeastUpperBound, UpperBound, Order.
   search.
@@ -79,14 +79,14 @@ Qed.
   elements has a least upper bound.
 *)
 
-Definition JoinSemilattice [A] (initial : A) (join : A -> A -> A) :=
+Definition JoinSemilattice [T] (initial : T) (join : T -> T -> T) :=
   PartialOrder (Order join) /\
-  (forall a, Order join initial a) /\
-  forall a b, LeastUpperBound (Order join) a b (join a b).
+  (forall x, Order join initial x) /\
+  forall x y, LeastUpperBound (Order join) x y (join x y).
 
 (* These two types of semilattices are equivalent. *)
 
-Theorem semilattice_correspondence A (initial : A) (merge : A -> A -> A) :
+Theorem semilattice_correspondence T (initial : T) (merge : T -> T -> T) :
   AlgebraicSemilattice initial merge <-> JoinSemilattice initial merge.
 Proof.
   split; clean; destruct H.
@@ -95,21 +95,26 @@ Proof.
     + unfold Order, LeastUpperBound, UpperBound.
       repeat split; search.
   - unfold LeastUpperBound, UpperBound in H0.
-    split; clean.
-    + specialize (H1 a a). search.
+    split; clean; search.
+    + specialize (H1 x x).
+      search.
     + apply antisymmetry with (R := Order merge); search; apply H1;
-      specialize (H1 a b) + specialize (H1 b a);
+      specialize (H1 x y) + specialize (H1 y x);
       solve [search].
     + apply antisymmetry with (R := Order merge); search;
-      repeat (apply H1; split);
-      apply transitivity with (b := merge a b) +
-        apply transitivity with (b := merge b c);
-      search;
-      apply (H1 a _) +
-        apply (H1 b _) +
-        apply (H1 (merge _ _) _) +
-        apply (H1 _ (merge _ _)); solve [search].
-    + apply antisymmetry with (R := Order merge); search; apply H1; search.
+      repeat (apply H1; split).
+      * apply transitivity with (y := merge x y); search.
+        -- specialize (H1 x y). search.
+        -- specialize (H1 (merge x y) z). search.
+      * apply transitivity with (y := merge x y); search.
+        -- specialize (H1 x y). search.
+        -- specialize (H1 (merge x y) z). search.
+      * apply transitivity with (y := merge y z); search.
+        -- specialize (H1 y z). search.
+        -- specialize (H1 x (merge y z)). search.
+      * apply transitivity with (y := merge y z); search.
+        -- specialize (H1 y z). search.
+        -- specialize (H1 x (merge y z)). search.
 Qed.
 
 #[export] Hint Resolve semilattice_correspondence : main.
@@ -119,12 +124,12 @@ Qed.
   with a query operation and a monotonic update operation.
 *)
 
-Record crdt argument result := {
+Record Crdt A Q := {
   State : Type;
   initial : State;
   merge : State -> State -> State;
-  update : argument -> State -> State;
-  query : State -> result;
+  update : A -> State -> State;
+  query : State -> Q;
   semilattice : AlgebraicSemilattice initial merge;
   monotonicity x a : merge a (update x a) = update x a;
 }.
@@ -135,7 +140,7 @@ Arguments merge [_ _] _ _.
 Arguments update [_ _] _ _.
 Arguments query [_ _] _.
 
-#[export] Hint Constructors crdt : main.
+#[export] Hint Constructors Crdt : main.
 
 (*
   The *history* of a node is the graph of operations that led to the current
@@ -143,9 +148,9 @@ Arguments query [_ _] _.
   stating the strong convergence theorem.
 *)
 
-Inductive History [argument result] (crdt : crdt argument result) :=
+Inductive History [A Q] (crdt : Crdt A Q) :=
 | op_empty : History _
-| up_update : nat -> argument -> History _ -> History _
+| up_update : nat -> A -> History _ -> History _
 | op_merge : History _ -> History _ -> History _.
 
 Arguments up_update [_ _ _] _ _ _.
@@ -159,8 +164,7 @@ Arguments op_merge [_ _ _] _ _.
 *)
 
 Inductive HistoryConsistent
-  [argument result]
-  [crdt : crdt argument result]
+  [A Q] [crdt : Crdt A Q]
   (get_update : nat -> option (History crdt))
 : History crdt -> Prop :=
 | empty_consistent : HistoryConsistent _ (op_empty crdt)
@@ -182,7 +186,7 @@ Inductive HistoryConsistent
   with a given ID.
 *)
 
-Inductive InHistory [argument result] [crdt : crdt argument result] n1
+Inductive InHistory [A Q] [crdt : Crdt A Q] n1
 : History crdt -> Prop :=
 | in_this_update:
   forall n2 h x, InHistory _ h -> InHistory _ (up_update n2 x h)
@@ -197,11 +201,7 @@ Inductive InHistory [argument result] [crdt : crdt argument result] n1
 
 (* This function replays a node's history to compute its current state. *)
 
-Fixpoint run
-  [argument result]
-  [crdt : crdt argument result]
-  (h1 : History crdt)
-:=
+Fixpoint run [A Q] [crdt : Crdt A Q] (h1 : History crdt) :=
   match h1 with
   | op_empty _ => crdt.(initial)
   | up_update n x h2 => crdt.(update) x (run h2)
@@ -215,8 +215,8 @@ Fixpoint run
 *)
 
 Theorem run_upper_bound
-  argument result
-  (crdt : crdt argument result)
+  A Q
+  (crdt : Crdt A Q)
   get_update h1 h2 n x
 : HistoryConsistent get_update h1 ->
   InHistory n h1 ->
@@ -232,15 +232,15 @@ Proof.
   feed H2.
   destruct H2, H3.
   induction h1; search; invert H; invert H0; clean.
-  - apply transitivity with (b := run h1); search.
+  - apply transitivity with (y := run h1); search.
   - rewrite H1 in H7.
     replace x with a; search.
     replace h2 with h1; search.
-  - apply transitivity with (b := run h1_1); search.
+  - apply transitivity with (y := run h1_1); search.
     specialize (H4 (run h1_1) (run h1_2)).
     destruct H4, H.
     search.
-  - apply transitivity with (b := run h1_2); search.
+  - apply transitivity with (y := run h1_2); search.
     specialize (H4 (run h1_1) (run h1_2)).
     destruct H4, H.
     search.
@@ -254,8 +254,8 @@ Qed.
 *)
 
 Theorem strong_convergence
-  argument result
-  (crdt : crdt argument result)
+  A Q
+  (crdt : Crdt A Q)
   (h1 h2 : History crdt)
   get_update
 : HistoryConsistent get_update h1 ->
@@ -297,7 +297,7 @@ Qed.
 
 (* A simple state-based CRDT: a Boolean event flag *)
 
-Program Definition boolean_event_flag : crdt unit bool :=
+Program Definition boolean_event_flag : Crdt unit bool :=
   {|
     State := bool;
     initial := false;
@@ -307,9 +307,9 @@ Program Definition boolean_event_flag : crdt unit bool :=
   |}.
 Next Obligation.
   split; clean.
-  - destruct a; search.
-  - destruct a, b; search.
-  - destruct a, b, c; search.
+  - destruct x; search.
+  - destruct x, y; search.
+  - destruct x, y, z; search.
   - search.
 Qed.
 
