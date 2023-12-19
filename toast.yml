@@ -107,7 +107,7 @@ tasks:
       # [ref:flags]
       ./linters/lint-imports.rb \
         '^\s*Require ' \
-        '^\s*Require Import (Coq|Extraction|Main)\.' \
+        '^\s*Require (Import )?(Coq|Main)\.' \
         "coqc \
           -set 'Default Goal Selector=!' \
           -set 'Loose Hint Behavior=Strict' \

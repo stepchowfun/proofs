@@ -103,7 +103,7 @@ Qed.
 
 (* Now let's extract the code to OCaml. *)
 
-From Coq Require Extraction.
+Require Coq.extraction.Extraction.
 
 Recursive Extraction xor.
 
