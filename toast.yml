@@ -107,14 +107,14 @@ tasks:
       # [ref:flags]
       ./linters/lint-imports.rb \
         '^\s*Require ' \
-        '^\s*Require (Import )?(Coq|Main)\.' \
+        '^\s*Require (Import )?(Coq|main)\.' \
         "coqc \
           -set 'Default Goal Selector=!' \
           -set 'Loose Hint Behavior=Strict' \
           -set 'Primitive Projections' \
           -set 'Printing Projections' \
           -unset 'Printing Primitive Projection Parameters' \
-          -Q proofs Main ?" \
+          -Q proofs main ?" \
         $(
           find . -type d \( \
             -path ./.git \
@@ -132,7 +132,7 @@ tasks:
           -set 'Primitive Projections' \
           -set 'Printing Projections' \
           -unset 'Printing Primitive Projection Parameters' \
-          -Q proofs Main ?" \
+          -Q proofs main ?" \
         $(
           find . -type d \( \
             -path ./.git \

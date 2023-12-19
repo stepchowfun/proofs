@@ -8,6 +8,10 @@ If you submit a pull request, please ensure your change passes the [GitHub Actio
 
 We're fortunate to have good tooling around enforcing a consistent style throughout the codebase. If you have [Toast](https://github.com/stepchowfun/toast), you can run the various lint checks by running `toast lint`. Otherwise, you can rely on our CI to do it for you. Here, we make note of a few conventions which are not yet enforced automatically. Please adhere to these conventions when possible, and provide appropriate justification for deviations from this guide. If you notice any style violations which appear unintentional, we invite you to bring them to our attention.
 
+### Case
+
+**Rule:** Things which are statically known to be types (i.e., inhabitants of `Type`, `Set`, `Prop`, or `SProp`) should be named with `UpperCamelCase`. This extends to types with parameters or indices (or both), and it also extends to functions which are statically known to return types (e.g., a predicate that returns a proposition). Modules, functors, and module types should also be named with `UpperCamelCase`. Everything else should be in `snake_case`.
+
 ### Comments
 
 **Rule:** Comments should be written in American English.
