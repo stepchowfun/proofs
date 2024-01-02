@@ -28,9 +28,9 @@ Record AlgebraicSemilattice [T] (initial : T) (merge : T -> T -> T) := {
 (*
   There other way to define a semilattice is a bit more complicated than the
   algebraic presentation above. Before we introduce it, we need to develop some
-  Order theory.
+  order theory.
 
-  A *partial Order* is a homogeneous relation that is reflexive, transitive,
+  A *partial order* is a homogeneous relation that is reflexive, transitive,
   and antisymmetric.
 *)
 
@@ -57,7 +57,7 @@ Definition LeastUpperBound [T] (R : T -> T -> Prop) x y bound :=
 
 (*
   The least upper bounds, if they exist, completely determine the partial
-  Order.
+  order.
 *)
 
 Definition Order [T] (join : T -> T -> T) x y := join x y = y.
@@ -75,7 +75,7 @@ Qed.
 #[export] Hint Resolve partial_order_determined_by_least_upper_bounds : main.
 
 (*
-  A bounded *join-semilattice* is a partial Order in which any finite subset of
+  A bounded *join-semilattice* is a partial order in which any finite subset of
   elements has a least upper bound.
 *)
 
@@ -210,8 +210,8 @@ Fixpoint run [A Q] [crdt : Crdt A Q] (h1 : History crdt) :=
 
 (*
   We'll need the following lemma, which states that the current state of a node
-  is at least as "large" (according to the partial Order of the CRDT) as any
-  prior states resulting from update operations in the node's History.
+  is at least as "large" (according to the partial order of the CRDT) as any
+  prior states resulting from update operations in the node's history.
 *)
 
 Theorem run_upper_bound
