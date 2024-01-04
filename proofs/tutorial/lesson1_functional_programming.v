@@ -163,8 +163,8 @@ Check id. (* `forall T : Set, T -> T` *)
   depend on the value of the second argument.
 
   It's awkward to have to explicitly provide the type argument whenever we call
-  the `id` function. We can declare the argument *implicit* by using curly
-  braces instead of parentheses. Then Coq will try to figure it out
+  the `id` function. We can declare the argument *implicit* by using square
+  brackets instead of parentheses. Then Coq will try to figure it out
   automatically whenever we use the function.
 *)
 
@@ -306,7 +306,7 @@ Compute map_option (fun n => true) (some nat 3). (* `some bool true` *)
 (*
   The type argument for `some` can be deduced automatically from its other
   argument, so we can make it implicit as shown below. We couldn't do this with
-  curly braces in the definition, since this type argument was automatically
+  square brackets in the definition, since this type argument was automatically
   added by Coq as a consequence of it being a parameter. We could have made the
   parameter implicit, but that would have affected `none` and `option` too.
 *)
