@@ -19,5 +19,4 @@ jobs:
       with:
         tasks: verify lint
         docker_repo: stephanmisc/toast
-        read_remote_cache: ${{ github.event_name == 'push' }}
         write_remote_cache: ${{ github.event_name == 'push' }}
