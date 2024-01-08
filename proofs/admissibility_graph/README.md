@@ -22,7 +22,7 @@ To make those informal descriptions more precise, the following axioms determine
 
 This development contains verified proofs of the following theorems:
 
-**Theorem (reflection).** Given two admissibility graphs with the same nodes that have matching edges between all pairs of *distinct* nodes, then they allow the same dependencies. On other words, it doesn't matter if a node trusts or exports itself.
+**Theorem (reflection).** Given two admissibility graphs with the same nodes that have matching edges between all pairs of *distinct* nodes, then they allow the same dependencies. On other words, nothing is gained by having a node trust or export itself.
 
 **Theorem (admission).** `X` is allowed to depend on `Y` [iff](https://en.wikipedia.org/wiki/If_and_only_if) there is a path of `trusts` edges from some `U` to `X` and a path of `exports` edges from some `V` to `Y` and `U` = `V` or there is an edge `U trusts V` or `V exports U`.
 
