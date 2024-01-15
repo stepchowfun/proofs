@@ -53,33 +53,33 @@ Inductive Allowed [Node] (g : AdmissibilityGraph Node) (n : Node) : Node
 (*
   Given two admissibility graphs with the same nodes that have matching edges
   between all pairs of *distinct* nodes, then they allow the same dependencies.
-  On other words, it doesn't matter if a node trusts or exports itself.
+  In other words, nothing is gained by having a node trust or export itself.
 *)
 
 Theorem reflection :
   forall (Node : Type) (g1 g2 : AdmissibilityGraph Node),
-  (forall n1 n2, n1 = n2 /\ (Trusts g1 n1 n2 <-> Trusts g2 n1 n2)) ->
-  (forall n1 n2, n1 = n2 /\ (Exports g1 n1 n2 <-> Exports g2 n1 n2)) ->
+  (forall n1 n2, n1 = n2 \/ (Trusts g1 n1 n2 <-> Trusts g2 n1 n2)) ->
+  (forall n1 n2, n1 = n2 \/ (Exports g1 n1 n2 <-> Exports g2 n1 n2)) ->
   forall n1 n2, Allowed g1 n1 n2 <-> Allowed g2 n1 n2.
 Proof.
   split; clean.
   - induction H1; search.
-    + destruct (H n n1).
+    + specialize (H n n1).
+      search.
+    + specialize (H0 n1 n).
+      search.
+    + specialize (H n1 n).
       esearch.
-    + destruct (H0 n1 n).
-      esearch.
-    + destruct (H n1 n).
-      esearch.
-    + destruct (H0 n1 n2).
+    + specialize (H0 n1 n2).
       esearch.
   - induction H1; search.
-    + destruct (H n n1).
+    + specialize (H n n1).
+      search.
+    + specialize (H0 n1 n).
+      search.
+    + specialize (H n1 n).
       esearch.
-    + destruct (H0 n1 n).
-      esearch.
-    + destruct (H n1 n).
-      esearch.
-    + destruct (H0 n1 n2).
+    + specialize (H0 n1 n2).
       esearch.
 Qed.
 
