@@ -18,17 +18,33 @@ To make those informal descriptions more precise, the following axioms determine
    - Also, if some `Z` is allowed to depend on `X`, then `Z` is allowed to depend on `Y`.
 4. No other dependencies are allowed.
 
+## Wooden admissibility graphs
+
+If `X trusts Y` or `X exports Y`, we say `X` is a *parent* of `Y` and `Y` is a *child* of `X`. An important special case which enables additional reasoning power at the expense of flexibility is to limit each node to having at most one parent. The resulting structure is called a *wooden admissibility graph*.
+
+## Closure concepts
+
+Some of the theorems below are stated in terms of the following reflexive transitive closures:
+
+- If there is a (possibly empty) chain of `trusts` relationships from `X` to `Y`, we say `X` is *trusting* of `Y`.
+- If there is a (possibly empty) chain of `exports` relationships from `X` to `Y`, we say `X` is *exporting* `Y`.
+- If there is a (possibly empty) chain of parent-child relationships from `X` to `Y`, we say `X` is an *ancestor* of `Y`.
+
 ## Theorems
 
 This development contains verified proofs of the following theorems:
 
 **Theorem (reflection).** Given two admissibility graphs with the same nodes that have matching edges between all pairs of *distinct* nodes, then they allow the same dependencies. In other words, nothing is gained by having a node trust or export itself.
 
-**Theorem (admission).** `X` is allowed to depend on `Y` [iff](https://en.wikipedia.org/wiki/If_and_only_if) there is a path of `trusts` edges from some `U` to `X` and a path of `exports` edges from some `V` to `Y` and `U` = `V` or there is an edge `U trusts V` or `V exports U`.
+**Theorem (admission).** `X` is allowed to depend on `Y` [iff](https://en.wikipedia.org/wiki/If_and_only_if) there some `U` is trusting of `X` and some `V` is exporting `Y` and `U` = `V` or there is an edge `U trusts V` or `V exports U`.
 
 **Theorem (duality).** Given two admissibility graphs `G₁` and `G₂` with the same set of nodes and edges such `X trusts Y` in `G₁` implies `X exports Y` in `G₂` and `X exports Y` in `G₁` implies `X trusts Y` in `G₂`, then if `G₁` allows some `X` to depend on some `Y`, `G₂` allows `Y` to depend on `X`.
 
 **Theorem (transposition).** Given two admissibility graphs `G₁` and `G₂` with the same set of nodes and edges such that `X trusts Y` in `G₁` is equivalent to `X exports Y` in `G₂` and `X exports Y` in `G₁` is equivalent to `X trusts Y` in `G₂`, then `G₁` allows some `X` to depend on some `Y` iff `G₂` allows `Y` to depend on `X`.
+
+**Theorem (encapsulation).** In a wooden admissibility graph, if `X trusts Y` and `Z` is allowed to depend on `Y`, then either `X` is an ancestor of `Z` or (`X exports Y` and `Z` is allowed to depend on `X`).
+
+**Theorem (sandboxing).** In a wooden admissibility graph, if `X exports Y` and `Y` is allowed to depend on `Z`, then either `X` is an ancestor of `Z` or (`X trusts Y` and `X` is allowed to depend on `Z`).
 
 ## An algorithm to validate dependencies
 
