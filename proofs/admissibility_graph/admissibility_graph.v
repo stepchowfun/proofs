@@ -35,7 +35,20 @@ Arguments Trusts [_] _ _.
 Arguments Exports [_] _ _.
 
 (*
-  Every node may depend on itself, the nodes it trusts, the nodes that export
+  If there is a (possibly empty) chain of trust from one node to another, we
+  say the former is *trusting* of the latter. Likewise, if there is a (possibly
+  empty) chain of exports from one node to another, we say the former is
+  *exporting* the latter.
+*)
+
+Definition Trusting [Node] (g : AdmissibilityGraph Node) n1 n2 :=
+  clos_refl_trans (Trusts g) n1 n2.
+
+Definition Exporting [Node] (g : AdmissibilityGraph Node) n1 n2 :=
+  clos_refl_trans (Exports g) n1 n2.
+
+(*
+  Every node can depend on itself, the nodes it trusts, the nodes that export
   it, any node that a node that trusts it can depend on, and any node that is
   exported by a node that it can depend on.
 *)
@@ -94,10 +107,11 @@ Theorem admission :
   forall (Node : Type) (g : AdmissibilityGraph Node) n1 n2,
   Allowed g n1 n2 <->
   exists n3 n4,
-    clos_refl_trans (fun n5 n6 => Trusts g n6 n5) n1 n3 /\
-    (n3 = n4 \/ Trusts g n3 n4 \/ Exports g n4 n3) /\
-    clos_refl_trans (fun n5 n6 => Exports g n5 n6) n4 n2.
+    Trusting g n3 n1 /\
+    Exporting g n4 n2 /\
+    (n3 = n4 \/ Trusts g n3 n4 \/ Exports g n4 n3).
 Proof.
+  unfold Trusting, Exporting.
   split; clean.
   - induction H.
     + exists n, n.
@@ -114,8 +128,8 @@ Proof.
       destruct H1.
       exists x, x0.
       esearch.
-  - induction (clos_rt_rt1n Node (fun n5 n6 => Trusts g n6 n5) n1 x H);
-    induction (clos_rt_rtn1 Node (fun n5 n6 => Exports g n5 n6) x0 n2 H1);
+  - induction (clos_rt_rtn1 Node (Trusts g) x n1 H);
+    induction (clos_rt_rtn1 Node (Exports g) x0 n2 H0);
     esearch.
 Qed.
 
@@ -142,11 +156,12 @@ Proof.
   do 2 destruct H1.
   destruct H2.
   apply admission.
+  unfold Trusting, Exporting in *.
   exists x0, x.
   repeat split; search.
-  - clear H H1 H2.
-    apply clos_rt_rt1n in H3.
-    induction H3; esearch.
+  - clear H H1 H3.
+    apply clos_rt_rt1n in H2.
+    induction H2; esearch.
   - clear H0 H2 H3.
     apply clos_rt_rtn1 in H1.
     induction H1; esearch.
@@ -175,3 +190,91 @@ Proof.
 Qed.
 
 #[export] Hint Resolve transposition : main.
+
+(*
+  If a node trusts or exports another node, we say the former node is a
+  *parent* of the latter and the latter is a child of the former.
+*)
+
+Definition ParentChild [Node] (g : AdmissibilityGraph Node) (n1 n2 : Node) :=
+  Trusts g n1 n2 \/ Exports g n1 n2.
+
+(*
+  An important special case which enables additional reasoning power at the
+  expense of flexibility is to restrict the graph to a directed forest. The
+  resulting structure is called a *wooden admissibility graph*.
+*)
+
+Definition Wooden [Node] (g : AdmissibilityGraph Node) :=
+  forall n1 n2 n3, ParentChild g n1 n3 -> ParentChild g n2 n3 -> n1 = n2.
+
+(*
+  If there is a (possibly empty) chain of lineage from one node to another, we
+  say the former is an *ancestor* of the latter.
+*)
+
+Definition Ancestor [Node] (g : AdmissibilityGraph Node) n1 n2 :=
+  clos_refl_trans (ParentChild g) n1 n2.
+
+(*
+  In a wooden admissibility graph, the nodes which can depend on a trusted
+  child of a node have that parent as an ancestor or gain access via the child
+  being exported by the parent.
+*)
+
+Theorem encapsulation :
+  forall (Node : Type) (g : AdmissibilityGraph Node) n1 n2 n3,
+  Wooden g ->
+  Trusts g n1 n2 ->
+  Allowed g n3 n2 ->
+  Ancestor g n1 n3 \/ (Exports g n1 n2 /\ Allowed g n3 n1).
+Proof.
+  clean.
+  induction H1; search.
+  - left.
+    assert (n1 = n); search.
+    unfold Wooden in H.
+    apply H with (n3 := n0); search.
+  - left.
+    apply rt_trans with (y := n0); search.
+  - feed IHAllowed.
+    destruct IHAllowed; esearch.
+    left.
+    apply rt_trans with (y := n0); search.
+  - right.
+    specialize (H n0 n1 n2).
+    do 2 feed H.
+Qed.
+
+#[export] Hint Resolve encapsulation : main.
+
+(*
+  In a wooden admissibility graph, the nodes which can be depended on by an
+  exported child of a node have that parent as an ancestor or grant access via
+  the child being trusted by the parent.
+*)
+
+Theorem sandboxing :
+  forall (Node : Type) (g : AdmissibilityGraph Node) n1 n2 n3,
+  Wooden g ->
+  Exports g n1 n2 ->
+  Allowed g n2 n3 ->
+  Ancestor g n1 n3 \/ (Trusts g n1 n2 /\ Allowed g n1 n3).
+Proof.
+  clean.
+  induction H1; search.
+  - left.
+    apply rt_trans with (y := n); search.
+  - assert (n0 = n1); search.
+    unfold Wooden in H.
+    apply H with (n3 := n); search.
+  - right.
+    specialize (H n0 n1 n).
+    do 2 feed H.
+  - feed IHAllowed.
+    destruct IHAllowed; esearch.
+    left.
+    apply rt_trans with (y := n0); search.
+Qed.
+
+#[export] Hint Resolve sandboxing : main.
