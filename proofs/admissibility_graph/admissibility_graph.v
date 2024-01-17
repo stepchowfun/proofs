@@ -182,14 +182,14 @@ Qed.
   of the dependencies allowed by the original graph.
 *)
 
-Theorem transposition :
+Theorem duality :
   forall (Node : Type) (g : AdmissibilityGraph Node) n1 n2,
   Allowed g n1 n2 <-> Allowed (transpose g) n2 n1.
 Proof.
   split; clean; induction H; esearch.
 Qed.
 
-#[export] Hint Resolve transposition : main.
+#[export] Hint Resolve duality : main.
 
 (*
   If a node trusts or exports another node, we say the former node is a
@@ -434,19 +434,19 @@ Proof.
     destruct H2.
     clear H3.
     feed H2.
-    + apply -> transposition.
+    + apply -> duality.
       search.
     + clean.
       rewrite <- transpose_exporting in H2.
       repeat (destruct H2; search).
-      apply transposition in H3.
+      apply duality in H3.
       search.
   - pose proof (childIngress Node (transpose g) n1 n2 n3).
     feed H2; [ apply -> transpose_wooden; search | idtac ].
     feed H2; [ apply -> transpose_parent_child; search | idtac ].
     destruct H2.
     clear H2.
-    apply transposition in H3; search.
+    apply duality in H3; search.
 Qed.
 
 #[export] Hint Resolve childEgress : main.
@@ -469,12 +469,12 @@ Proof.
   pose proof (encapsulation Node (transpose g) n1 n2 n3).
   feed H2; [ apply -> transpose_wooden; search | idtac ].
   feed H2; [ apply -> transpose_parent_child; search | idtac ].
-  feed H2; [ apply -> transposition; search | idtac ].
+  feed H2; [ apply -> duality; search | idtac ].
   destruct H2.
   - apply transpose_ancestor in H2.
     search.
   - clean.
-    apply transposition in H3.
+    apply duality in H3.
     search.
 Qed.
 
