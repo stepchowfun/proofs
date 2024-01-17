@@ -453,9 +453,8 @@ Qed.
 
 (*
   An important consequence of the previous theorem: in a wooden admissibility
-  graph, the nodes which can be depended on by an exported child of a parent
-  have that parent as an ancestor or the child is trusted and egress is via the
-  parent.
+  graph, the nodes which can be depended on by a child of a parent have that
+  parent as an ancestor or the child is trusted and egress is via the parent.
 *)
 
 Theorem sandboxing :
