@@ -170,28 +170,6 @@ Qed.
 #[export] Hint Resolve duality : main.
 
 (*
-  Swapping the edge types in an admissibility graph results in flipping the
-  direction of the allowed dependencies.
-*)
-
-Theorem transposition :
-  forall (Node : Type) (g1 g2 : AdmissibilityGraph Node),
-  (forall n1 n2, Trusts g1 n1 n2 <-> Exports g2 n1 n2) ->
-  (forall n1 n2, Exports g1 n1 n2 <-> Trusts g2 n1 n2) ->
-  forall n1 n2, Allowed g1 n1 n2 <-> Allowed g2 n2 n1.
-Proof.
-  split; apply duality.
-  - apply H.
-  - apply H0.
-  - apply H0.
-  - clean.
-    apply <- H.
-    search.
-Qed.
-
-#[export] Hint Resolve transposition : main.
-
-(*
   If a node trusts or exports another node, we say the former node is a
   *parent* of the latter and the latter is a child of the former.
 *)
@@ -209,72 +187,117 @@ Definition Wooden [Node] (g : AdmissibilityGraph Node) :=
   forall n1 n2 n3, ParentChild g n1 n3 -> ParentChild g n2 n3 -> n1 = n2.
 
 (*
-  If there is a (possibly empty) chain of lineage from one node to another, we
-  say the former is an *ancestor* of the latter.
-*)
+  In a wooden admissibility graph, the following three situations characterize
+  which nodes can depend on the trusted children of a parent:
 
-Definition Ancestor [Node] (g : AdmissibilityGraph Node) n1 n2 :=
-  clos_refl_trans (ParentChild g) n1 n2.
-
-(*
-  In a wooden admissibility graph, the nodes which can depend on a trusted
-  child of a node have that parent as an ancestor or gain access via the child
-  being exported by the parent.
+  1. The nodes that the parent is trusting of can depend on the trusted
+     children of the parent.
+  2. Nodes that can depend on the parent can depend on its exported children,
+     which may or may not be trusted.
+  3. The trusted children can be depended on by their own exported children
+     and the nodes that those exported children are trusting of.
 *)
 
 Theorem encapsulation :
   forall (Node : Type) (g : AdmissibilityGraph Node) n1 n2 n3,
   Wooden g ->
   Trusts g n1 n2 ->
-  Allowed g n3 n2 ->
-  Ancestor g n1 n3 \/ (Exports g n1 n2 /\ Allowed g n3 n1).
+  (
+    Allowed g n3 n2 <->
+    Trusting g n1 n3 \/
+    (Exports g n1 n2 /\ Allowed g n3 n1) \/
+    (exists n4, Exports g n2 n4 /\ Trusting g n4 n3)
+  ).
 Proof.
-  clean.
-  induction H1; search.
-  - left.
-    assert (n1 = n); search.
-    unfold Wooden in H.
-    apply H with (n3 := n0); search.
-  - left.
-    apply rt_trans with (y := n0); search.
-  - feed IHAllowed.
-    destruct IHAllowed; esearch.
-    left.
-    apply rt_trans with (y := n0); search.
-  - right.
-    specialize (H n0 n1 n2).
-    do 2 feed H.
+  split; clean.
+  - induction H1; search.
+    + left.
+      assert (n1 = n); search.
+      unfold Wooden in H.
+      apply H with (n3 := n0); search.
+    + do 2 right.
+      exists n.
+      search.
+    + feed IHAllowed.
+      destruct IHAllowed; search.
+      * left.
+        apply rt_trans with (y := n0); search.
+      * destruct H3; esearch.
+        do 2 destruct H3.
+        do 2 right.
+        exists x.
+        split; search.
+        apply rt_trans with (y := n0); search.
+    + right.
+      specialize (H n0 n1 n2).
+      do 2 feed H.
+  - destruct H1; search.
+    + apply admission.
+      exists n1, n2.
+      search.
+    + destruct H1; esearch.
+      destruct H1.
+      apply admission.
+      exists x, n2.
+      search.
 Qed.
 
 #[export] Hint Resolve encapsulation : main.
 
 (*
-  In a wooden admissibility graph, the nodes which can be depended on by an
-  exported child of a node have that parent as an ancestor or grant access via
-  the child being trusted by the parent.
+  In a wooden admissibility graph, the following three situations characterize
+  which nodes the exported children of a parent can depend on:
+
+  1. The exported children of the parent can depend on the nodes that the
+     parent is exporting.
+  2. The trusted children of the parent, which may or may not be exported, can
+     depend on nodes that the parent can depend on.
+  3. The exported children can depend on their own trusted children and the
+     nodes that those trusted children are exporting.
 *)
 
 Theorem sandboxing :
   forall (Node : Type) (g : AdmissibilityGraph Node) n1 n2 n3,
   Wooden g ->
   Exports g n1 n2 ->
-  Allowed g n2 n3 ->
-  Ancestor g n1 n3 \/ (Trusts g n1 n2 /\ Allowed g n1 n3).
+  (
+    Allowed g n2 n3 <->
+    Exporting g n1 n3 \/
+    (Trusts g n1 n2 /\ Allowed g n1 n3) \/
+    (exists n4, Trusts g n2 n4 /\ Exporting g n4 n3)
+  ).
 Proof.
-  clean.
-  induction H1; search.
-  - left.
-    apply rt_trans with (y := n); search.
-  - assert (n0 = n1); search.
-    unfold Wooden in H.
-    apply H with (n3 := n); search.
-  - right.
-    specialize (H n0 n1 n).
-    do 2 feed H.
-  - feed IHAllowed.
-    destruct IHAllowed; esearch.
-    left.
-    apply rt_trans with (y := n0); search.
+  split; clean.
+  - induction H1; search.
+    + do 2 right.
+      exists n0.
+      search.
+    + left.
+      assert (n1 = n0); search.
+      unfold Wooden in H.
+      apply H with (n3 := n); search.
+    + right.
+      specialize (H n0 n1 n).
+      do 2 feed H.
+    + feed IHAllowed.
+      destruct IHAllowed; search.
+      * left.
+        apply rt_trans with (y := n0); search.
+      * destruct H3; esearch.
+        do 2 destruct H3.
+        do 2 right.
+        exists x.
+        split; search.
+        apply rt_trans with (y := n0); search.
+  - destruct H1; search.
+    + apply admission.
+      exists n2, n1.
+      search.
+    + destruct H1; esearch.
+      destruct H1.
+      apply admission.
+      exists n2, x.
+      search.
 Qed.
 
 #[export] Hint Resolve sandboxing : main.
