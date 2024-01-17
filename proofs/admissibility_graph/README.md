@@ -20,6 +20,8 @@ To make those informal descriptions more precise, the following axioms determine
    - If some `Z` is allowed to depend on `X`, then `Z` is also allowed to depend on `Y`.
 4. No other dependencies are allowed.
 
+The *transpose* of an admissibility graph is the graph formed by swapping the edge types—`X trusts Y` becomes `X exports Y` and vice versa.
+
 ## Wooden admissibility graphs
 
 If `X trusts Y` or `X exports Y`, we say `X` is a *parent* of `Y` and `Y` is a *child* of `X`. An important special case which enables additional reasoning power at the expense of flexibility is to limit each node to having at most one parent. The resulting structure is called a *wooden admissibility graph*.
@@ -42,7 +44,7 @@ This development contains verified proofs of the following theorems:
 
 **Theorem (admission).** `X` is allowed to depend on `Y` [iff](https://en.wikipedia.org/wiki/If_and_only_if) there some `U` is trusting of `X` and some `V` is exporting `Y` and `U` = `V` or there is an edge `U trusts V` or `V exports U`.
 
-**Theorem (transposition).** Given two admissibility graphs `G₁` and `G₂` with the same set of nodes and edges such that `X trusts Y` in `G₁` is equivalent to `X exports Y` in `G₂` and `X exports Y` in `G₁` is equivalent to `X trusts Y` in `G₂`, then `G₁` allows some `X` to depend on some `Y` iff `G₂` allows `Y` to depend on `X`.
+**Theorem (transposition).** Given an admissibility graph `G`, `G` allows `X` to depend on `Y` iff the transpose of `G` allows `Y` to depend on `X`.
 
 **Theorem (encapsulation).** In a wooden admissibility graph, if `X` is a parent of `Y` and `Z` is allowed to depend on `Y`, then either `X` is an ancestor of `Z` or (`X exports Y` and `Z` is allowed to depend on `X`).
 

@@ -35,6 +35,26 @@ Arguments Trusts [_] _ _.
 Arguments Exports [_] _ _.
 
 (*
+  The *transpose* of an admissibility graph is the result of swapping the edge
+  types.
+*)
+
+Definition transpose [Node] (g : AdmissibilityGraph Node) :=
+  {|
+    Trusts := g.(Exports);
+    Exports := g.(Trusts);
+  |}.
+
+Theorem transpose_involution :
+  forall (Node : Type) (g : AdmissibilityGraph Node),
+  g = transpose (transpose g).
+Proof.
+  search.
+Qed.
+
+#[export] Hint Resolve transpose_involution : main.
+
+(*
   If there is a (possibly empty) chain of trust from one node to another, we
   say the former is *trusting* of the latter. Likewise, if there is a (possibly
   empty) chain of exports from one node to another, we say the former is
@@ -46,6 +66,28 @@ Definition Trusting [Node] (g : AdmissibilityGraph Node) n1 n2 :=
 
 Definition Exporting [Node] (g : AdmissibilityGraph Node) n1 n2 :=
   clos_refl_trans (Exports g) n1 n2.
+
+Theorem transpose_trusting :
+  forall (Node : Type) (g : AdmissibilityGraph Node),
+  Trusting g = Exporting (transpose g).
+Proof.
+  clean.
+  assert (forall n1 n2, Trusting g n1 n2 = Exporting (transpose g) n1 n2);
+    search.
+Qed.
+
+#[export] Hint Resolve transpose_trusting : main.
+
+Theorem transpose_exporting :
+  forall (Node : Type) (g : AdmissibilityGraph Node),
+  Exporting g = Trusting (transpose g).
+Proof.
+  clean.
+  assert (forall n1 n2, Exporting g n1 n2 = Trusting (transpose g) n1 n2);
+    search.
+Qed.
+
+#[export] Hint Resolve transpose_trusting : main.
 
 (*
   Every node can depend on itself, the nodes it trusts, the nodes that export
@@ -136,57 +178,15 @@ Qed.
 #[export] Hint Resolve admission : main.
 
 (*
-  Given two admissibility graphs with the same set of nodes such that edges in
-  the first graph imply corresponding edges of the opposite type in the second
-  graph, then the second graph allows flipped versions of any dependencies
-  allowed by the first graph.
-*)
-
-Theorem duality :
-  forall (Node : Type) (g1 g2 : AdmissibilityGraph Node),
-  (forall n1 n2, Trusts g1 n1 n2 -> Exports g2 n1 n2) ->
-  (forall n1 n2, Exports g1 n1 n2 -> Trusts g2 n1 n2) ->
-  forall n1 n2, Allowed g1 n1 n2 -> Allowed g2 n2 n1.
-Proof.
-  clean.
-  destruct (admission Node g1 n1 n2).
-  specialize (H2 H1).
-  clear H1 H3.
-  destruct H2.
-  do 2 destruct H1.
-  destruct H2.
-  apply admission.
-  unfold Trusting, Exporting in *.
-  exists x0, x.
-  repeat split; search.
-  - clear H H1 H3.
-    apply clos_rt_rt1n in H2.
-    induction H2; esearch.
-  - clear H0 H2 H3.
-    apply clos_rt_rtn1 in H1.
-    induction H1; esearch.
-Qed.
-
-#[export] Hint Resolve duality : main.
-
-(*
-  Swapping the edge types in an admissibility graph results in flipping the
-  direction of the allowed dependencies.
+  The dependencies allowed by the transpose of a graph are the flipped versions
+  of the dependencies allowed by the original graph.
 *)
 
 Theorem transposition :
-  forall (Node : Type) (g1 g2 : AdmissibilityGraph Node),
-  (forall n1 n2, Trusts g1 n1 n2 <-> Exports g2 n1 n2) ->
-  (forall n1 n2, Exports g1 n1 n2 <-> Trusts g2 n1 n2) ->
-  forall n1 n2, Allowed g1 n1 n2 <-> Allowed g2 n2 n1.
+  forall (Node : Type) (g : AdmissibilityGraph Node) n1 n2,
+  Allowed g n1 n2 <-> Allowed (transpose g) n2 n1.
 Proof.
-  split; apply duality.
-  - apply H.
-  - apply H0.
-  - apply H0.
-  - clean.
-    apply <- H.
-    search.
+  split; clean; induction H; esearch.
 Qed.
 
 #[export] Hint Resolve transposition : main.
@@ -199,6 +199,16 @@ Qed.
 Definition ParentChild [Node] (g : AdmissibilityGraph Node) (n1 n2 : Node) :=
   Trusts g n1 n2 \/ Exports g n1 n2.
 
+Theorem transpose_parent_child :
+  forall (Node : Type) (g : AdmissibilityGraph Node) n1 n2,
+  ParentChild g n1 n2 <-> ParentChild (transpose g) n1 n2.
+Proof.
+  unfold ParentChild.
+  search.
+Qed.
+
+#[export] Hint Resolve transpose_parent_child : main.
+
 (*
   If there is a (possibly empty) chain of lineage from one node to another, we
   say the former is an *ancestor* of the latter.
@@ -206,6 +216,25 @@ Definition ParentChild [Node] (g : AdmissibilityGraph Node) (n1 n2 : Node) :=
 
 Definition Ancestor [Node] (g : AdmissibilityGraph Node) n1 n2 :=
   clos_refl_trans (ParentChild g) n1 n2.
+
+Theorem transpose_ancestor :
+  forall (Node : Type) (g : AdmissibilityGraph Node) n1 n2,
+  Ancestor g n1 n2 <-> Ancestor (transpose g) n1 n2.
+Proof.
+  split; clean.
+  - induction H; search.
+    + apply rt_step.
+      apply -> transpose_parent_child.
+      search.
+    + apply rt_trans with (y := y); search.
+  - induction H; search.
+    + apply rt_step.
+      apply transpose_parent_child in H.
+      search.
+    + apply rt_trans with (y := y); search.
+Qed.
+
+#[export] Hint Resolve transpose_parent_child : main.
 
 (* The ancestor relation is a superset of the trusting relation. *)
 
@@ -239,6 +268,22 @@ Qed.
 
 Definition Wooden [Node] (g : AdmissibilityGraph Node) :=
   forall n1 n2 n3, ParentChild g n1 n3 -> ParentChild g n2 n3 -> n1 = n2.
+
+Theorem transpose_wooden :
+  forall (Node : Type) (g : AdmissibilityGraph Node),
+  Wooden g <-> Wooden (transpose g).
+Proof.
+  unfold Wooden.
+  split; clean.
+  - apply <- transpose_parent_child in H0.
+    apply <- transpose_parent_child in H1.
+    esearch.
+  - apply transpose_parent_child in H0.
+    apply transpose_parent_child in H1.
+    esearch.
+Qed.
+
+#[export] Hint Resolve transpose_wooden : main.
 
 (*
   In a wooden admissibility graph, the following three situations characterize
@@ -383,72 +428,25 @@ Theorem childEgress :
   ).
 Proof.
   split; clean.
-  - destruct H0.
-    + induction H1; search.
-      * do 2 right.
-        exists n0.
-        search.
-      * left.
-        assert (n1 = n0); search.
-        unfold Wooden in H.
-        apply H with (n3 := n); search.
-      * right.
-        left.
-        assert (n1 = n0); search.
-        unfold Wooden in H.
-        apply H with (n3 := n); search.
-      * feed IHAllowed.
-        destruct IHAllowed; search.
-        -- left.
-           apply rt_trans with (y := n0); search.
-        -- destruct H3; esearch.
-           do 2 destruct H3.
-           do 2 right.
-           exists x.
-           split; search.
-           apply rt_trans with (y := n0); search.
-    + induction H1; search.
-      * do 2 right.
-        exists n0.
-        search.
-      * left.
-        assert (n1 = n0); search.
-        unfold Wooden in H.
-        apply H with (n3 := n); search.
-      * right.
-        left.
-        assert (n1 = n0); search.
-        unfold Wooden in H.
-        apply H with (n3 := n); search.
-      * feed IHAllowed.
-        destruct IHAllowed; search.
-        -- left.
-           apply rt_trans with (y := n0); search.
-        -- destruct H3; esearch.
-           do 2 destruct H3.
-           do 2 right.
-           exists x.
-           split; search.
-           apply rt_trans with (y := n0); search.
-  - destruct H0.
-    + destruct H1; search.
-      * apply admission.
-        exists n1, n1.
-        search.
-      * destruct H1; esearch.
-        do 2 destruct H1.
-        apply admission.
-        exists n2, x.
-        search.
-    + destruct H1; search.
-      * apply admission.
-        exists n2, n1.
-        search.
-      * destruct H1; esearch.
-        do 2 destruct H1.
-        apply admission.
-        exists n2, x.
-        search.
+  - pose proof (childIngress Node (transpose g) n1 n2 n3).
+    feed H2; [ apply -> transpose_wooden; search | idtac ].
+    feed H2; [ apply -> transpose_parent_child; search | idtac ].
+    destruct H2.
+    clear H3.
+    feed H2.
+    + apply -> transposition.
+      search.
+    + clean.
+      rewrite <- transpose_exporting in H2.
+      repeat (destruct H2; search).
+      apply transposition in H3.
+      search.
+  - pose proof (childIngress Node (transpose g) n1 n2 n3).
+    feed H2; [ apply -> transpose_wooden; search | idtac ].
+    feed H2; [ apply -> transpose_parent_child; search | idtac ].
+    destruct H2.
+    clear H2.
+    apply transposition in H3; search.
 Qed.
 
 #[export] Hint Resolve childEgress : main.
@@ -468,18 +466,16 @@ Theorem sandboxing :
   Ancestor g n1 n3 \/ (Trusts g n1 n2 /\ Allowed g n1 n3).
 Proof.
   clean.
-  pose proof (childEgress Node g n1 n2 n3 H H0).
+  pose proof (encapsulation Node (transpose g) n1 n2 n3).
+  feed H2; [ apply -> transpose_wooden; search | idtac ].
+  feed H2; [ apply -> transpose_parent_child; search | idtac ].
+  feed H2; [ apply -> transposition; search | idtac ].
   destruct H2.
-  clear H3.
-  feed H2.
-  destruct H2; search.
-  destruct H2; search.
-  do 2 destruct H2.
-  left.
-  apply rt_trans with (y := n2); search.
-  apply rt_trans with (y := x); search.
-  apply exportingAncestor.
-  search.
+  - apply transpose_ancestor in H2.
+    search.
+  - clean.
+    apply transposition in H3.
+    search.
 Qed.
 
 #[export] Hint Resolve sandboxing : main.
