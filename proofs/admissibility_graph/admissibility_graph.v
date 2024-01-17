@@ -170,12 +170,66 @@ Qed.
 #[export] Hint Resolve duality : main.
 
 (*
+  Swapping the edge types in an admissibility graph results in flipping the
+  direction of the allowed dependencies.
+*)
+
+Theorem transposition :
+  forall (Node : Type) (g1 g2 : AdmissibilityGraph Node),
+  (forall n1 n2, Trusts g1 n1 n2 <-> Exports g2 n1 n2) ->
+  (forall n1 n2, Exports g1 n1 n2 <-> Trusts g2 n1 n2) ->
+  forall n1 n2, Allowed g1 n1 n2 <-> Allowed g2 n2 n1.
+Proof.
+  split; apply duality.
+  - apply H.
+  - apply H0.
+  - apply H0.
+  - clean.
+    apply <- H.
+    search.
+Qed.
+
+#[export] Hint Resolve transposition : main.
+
+(*
   If a node trusts or exports another node, we say the former node is a
   *parent* of the latter and the latter is a child of the former.
 *)
 
 Definition ParentChild [Node] (g : AdmissibilityGraph Node) (n1 n2 : Node) :=
   Trusts g n1 n2 \/ Exports g n1 n2.
+
+(*
+  If there is a (possibly empty) chain of lineage from one node to another, we
+  say the former is an *ancestor* of the latter.
+*)
+
+Definition Ancestor [Node] (g : AdmissibilityGraph Node) n1 n2 :=
+  clos_refl_trans (ParentChild g) n1 n2.
+
+(* The ancestor relation is a superset of the trusting relation. *)
+
+Theorem trustingAncestor [Node] (g : AdmissibilityGraph Node) n1 n2 :
+  Trusting g n1 n2 -> Ancestor g n1 n2.
+Proof.
+  clean.
+  induction H; search.
+  apply rt_trans with (y := y); search.
+Qed.
+
+#[export] Hint Resolve trustingAncestor : main.
+
+(* The ancestor relation is a superset of the exporting relation. *)
+
+Theorem exportingAncestor [Node] (g : AdmissibilityGraph Node) n1 n2 :
+  Exporting g n1 n2 -> Ancestor g n1 n2.
+Proof.
+  clean.
+  induction H; search.
+  apply rt_trans with (y := y); search.
+Qed.
+
+#[export] Hint Resolve exportingAncestor : main.
 
 (*
   An important special case which enables additional reasoning power at the
@@ -198,7 +252,7 @@ Definition Wooden [Node] (g : AdmissibilityGraph Node) :=
      and the nodes that those exported children are trusting of.
 *)
 
-Theorem encapsulation :
+Theorem trustedIngress :
   forall (Node : Type) (g : AdmissibilityGraph Node) n1 n2 n3,
   Wooden g ->
   Trusts g n1 n2 ->
@@ -242,6 +296,36 @@ Proof.
       search.
 Qed.
 
+#[export] Hint Resolve trustedIngress : main.
+
+(*
+  An important consequence of the previous theorem: in a wooden admissibility
+  graph, the nodes which can depend on a trusted child of a parent have that
+  parent as an ancestor or the child is exported and ingress is via the parent.
+*)
+
+Theorem encapsulation :
+  forall (Node : Type) (g : AdmissibilityGraph Node) n1 n2 n3,
+  Wooden g ->
+  Trusts g n1 n2 ->
+  Allowed g n3 n2 ->
+  Ancestor g n1 n3 \/ (Exports g n1 n2 /\ Allowed g n3 n1).
+Proof.
+  clean.
+  pose proof (trustedIngress Node g n1 n2 n3 H H0).
+  destruct H2.
+  clear H3.
+  feed H2.
+  destruct H2; search.
+  destruct H2; search.
+  do 2 destruct H2.
+  left.
+  apply rt_trans with (y := n2); search.
+  apply rt_trans with (y := x); search.
+  apply trustingAncestor.
+  search.
+Qed.
+
 #[export] Hint Resolve encapsulation : main.
 
 (*
@@ -256,7 +340,7 @@ Qed.
      nodes that those trusted children are exporting.
 *)
 
-Theorem sandboxing :
+Theorem exportedEgress :
   forall (Node : Type) (g : AdmissibilityGraph Node) n1 n2 n3,
   Wooden g ->
   Exports g n1 n2 ->
@@ -298,6 +382,37 @@ Proof.
       apply admission.
       exists n2, x.
       search.
+Qed.
+
+#[export] Hint Resolve exportedEgress : main.
+
+(*
+  An important consequence of the previous theorem: in a wooden admissibility
+  graph, the nodes which can be depended on by an exported child of a parent
+  have that parent as an ancestor or the child is trusted and egress is via the
+  parent.
+*)
+
+Theorem sandboxing :
+  forall (Node : Type) (g : AdmissibilityGraph Node) n1 n2 n3,
+  Wooden g ->
+  Exports g n1 n2 ->
+  Allowed g n2 n3 ->
+  Ancestor g n1 n3 \/ (Trusts g n1 n2 /\ Allowed g n1 n3).
+Proof.
+  clean.
+  pose proof (exportedEgress Node g n1 n2 n3 H H0).
+  destruct H2.
+  clear H3.
+  feed H2.
+  destruct H2; search.
+  destruct H2; search.
+  do 2 destruct H2.
+  left.
+  apply rt_trans with (y := n2); search.
+  apply rt_trans with (y := x); search.
+  apply exportingAncestor.
+  search.
 Qed.
 
 #[export] Hint Resolve sandboxing : main.
