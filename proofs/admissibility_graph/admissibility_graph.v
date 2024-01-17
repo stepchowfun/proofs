@@ -242,20 +242,19 @@ Definition Wooden [Node] (g : AdmissibilityGraph Node) :=
 
 (*
   In a wooden admissibility graph, the following three situations characterize
-  which nodes can depend on the trusted children of a parent:
+  which nodes can depend on the children of a parent:
 
-  1. The nodes that the parent is trusting of can depend on the trusted
-     children of the parent.
-  2. Nodes that can depend on the parent can depend on its exported children,
-     which may or may not be trusted.
-  3. The trusted children can be depended on by their own exported children
-     and the nodes that those exported children are trusting of.
+  1. The nodes that the parent is trusting of can depend on the children of the
+     parent.
+  2. Nodes that can depend on the parent can depend on its exported children.
+  3. The children can be depended on by their own exported children and the
+     nodes that those exported children are trusting of.
 *)
 
-Theorem trustedIngress :
+Theorem childIngress :
   forall (Node : Type) (g : AdmissibilityGraph Node) n1 n2 n3,
   Wooden g ->
-  Trusts g n1 n2 ->
+  ParentChild g n1 n2 ->
   (
     Allowed g n3 n2 <->
     Trusting g n1 n3 \/
@@ -264,55 +263,87 @@ Theorem trustedIngress :
   ).
 Proof.
   split; clean.
-  - induction H1; search.
-    + left.
-      assert (n1 = n); search.
-      unfold Wooden in H.
-      apply H with (n3 := n0); search.
-    + do 2 right.
-      exists n.
-      search.
-    + feed IHAllowed.
-      destruct IHAllowed; search.
+  - destruct H0.
+    + induction H1; search.
       * left.
-        apply rt_trans with (y := n0); search.
-      * destruct H3; esearch.
-        do 2 destruct H3.
-        do 2 right.
-        exists x.
-        split; search.
-        apply rt_trans with (y := n0); search.
-    + right.
-      specialize (H n0 n1 n2).
-      do 2 feed H.
-  - destruct H1; search.
-    + apply admission.
-      exists n1, n2.
-      search.
-    + destruct H1; esearch.
-      destruct H1.
-      apply admission.
-      exists x, n2.
-      search.
+        assert (n1 = n); search.
+        unfold Wooden in H.
+        apply H with (n3 := n0); search.
+      * do 2 right.
+        exists n.
+        search.
+      * feed IHAllowed.
+        destruct IHAllowed; search.
+        -- left.
+           apply rt_trans with (y := n0); search.
+        -- destruct H3; esearch.
+           do 2 destruct H3.
+           do 2 right.
+           exists x.
+           split; search.
+           apply rt_trans with (y := n0); search.
+      * right.
+        specialize (H n0 n1 n2).
+        do 2 feed H.
+    + induction H1; search.
+      * left.
+        assert (n1 = n); search.
+        unfold Wooden in H.
+        apply H with (n3 := n0); search.
+      * do 2 right.
+        exists n.
+        search.
+      * feed IHAllowed.
+        destruct IHAllowed; search.
+        -- left.
+           apply rt_trans with (y := n0); search.
+        -- destruct H3; esearch.
+           do 2 destruct H3.
+           do 2 right.
+           exists x.
+           split; search.
+           apply rt_trans with (y := n0); search.
+      * right.
+        specialize (H n0 n1 n2).
+        do 2 feed H.
+  - destruct H0.
+    + destruct H1; search.
+      * apply admission.
+        exists n1, n2.
+        search.
+      * destruct H1; esearch.
+        do 2 destruct H1.
+        apply admission.
+        exists x, n2.
+        search.
+    + destruct H1; search.
+      * apply admission.
+        exists n1, n1.
+        search.
+      * destruct H1; esearch.
+        do 2 destruct H1.
+        apply admission.
+        exists x, n2.
+        search.
 Qed.
 
-#[export] Hint Resolve trustedIngress : main.
+#[export] Hint Resolve childIngress : main.
 
 (*
   An important consequence of the previous theorem: in a wooden admissibility
-  graph, the nodes which can depend on a trusted child of a parent have that
-  parent as an ancestor or the child is exported and ingress is via the parent.
+  graph, the nodes which can depend on a child of a parent have that parent as
+  an ancestor or the child is exported and ingress is via the parent.
 *)
 
 Theorem encapsulation :
   forall (Node : Type) (g : AdmissibilityGraph Node) n1 n2 n3,
   Wooden g ->
-  Trusts g n1 n2 ->
+  ParentChild g n1 n2 ->
   Allowed g n3 n2 ->
   Ancestor g n1 n3 \/ (Exports g n1 n2 /\ Allowed g n3 n1).
 Proof.
   clean.
-  pose proof (trustedIngress Node g n1 n2 n3 H H0).
+  pose proof (childIngress Node g n1 n2 n3 H H0).
   destruct H2.
   clear H3.
   feed H2.
@@ -330,20 +361,20 @@ Qed.
 
 (*
   In a wooden admissibility graph, the following three situations characterize
-  which nodes the exported children of a parent can depend on:
+  which nodes the children of a parent can depend on:
 
-  1. The exported children of the parent can depend on the nodes that the
-     parent is exporting.
-  2. The trusted children of the parent, which may or may not be exported, can
-     depend on nodes that the parent can depend on.
-  3. The exported children can depend on their own trusted children and the
-     nodes that those trusted children are exporting.
+  1. The children of the parent can depend on the nodes that the parent is
+     exporting.
+  2. The trusted children of the parent can depend on nodes that the parent can
+     depend on.
+  3. The children can depend on their own trusted children and the nodes that
+     those trusted children are exporting.
 *)
 
-Theorem exportedEgress :
+Theorem childEgress :
   forall (Node : Type) (g : AdmissibilityGraph Node) n1 n2 n3,
   Wooden g ->
-  Exports g n1 n2 ->
+  ParentChild g n1 n2 ->
   (
     Allowed g n2 n3 <->
     Exporting g n1 n3 \/
@@ -352,39 +383,75 @@ Theorem exportedEgress :
   ).
 Proof.
   split; clean.
-  - induction H1; search.
-    + do 2 right.
-      exists n0.
-      search.
-    + left.
-      assert (n1 = n0); search.
-      unfold Wooden in H.
-      apply H with (n3 := n); search.
-    + right.
-      specialize (H n0 n1 n).
-      do 2 feed H.
-    + feed IHAllowed.
-      destruct IHAllowed; search.
+  - destruct H0.
+    + induction H1; search.
+      * do 2 right.
+        exists n0.
+        search.
       * left.
-        apply rt_trans with (y := n0); search.
-      * destruct H3; esearch.
-        do 2 destruct H3.
-        do 2 right.
-        exists x.
-        split; search.
-        apply rt_trans with (y := n0); search.
-  - destruct H1; search.
-    + apply admission.
-      exists n2, n1.
-      search.
-    + destruct H1; esearch.
-      destruct H1.
-      apply admission.
-      exists n2, x.
-      search.
+        assert (n1 = n0); search.
+        unfold Wooden in H.
+        apply H with (n3 := n); search.
+      * right.
+        left.
+        assert (n1 = n0); search.
+        unfold Wooden in H.
+        apply H with (n3 := n); search.
+      * feed IHAllowed.
+        destruct IHAllowed; search.
+        -- left.
+           apply rt_trans with (y := n0); search.
+        -- destruct H3; esearch.
+           do 2 destruct H3.
+           do 2 right.
+           exists x.
+           split; search.
+           apply rt_trans with (y := n0); search.
+    + induction H1; search.
+      * do 2 right.
+        exists n0.
+        search.
+      * left.
+        assert (n1 = n0); search.
+        unfold Wooden in H.
+        apply H with (n3 := n); search.
+      * right.
+        left.
+        assert (n1 = n0); search.
+        unfold Wooden in H.
+        apply H with (n3 := n); search.
+      * feed IHAllowed.
+        destruct IHAllowed; search.
+        -- left.
+           apply rt_trans with (y := n0); search.
+        -- destruct H3; esearch.
+           do 2 destruct H3.
+           do 2 right.
+           exists x.
+           split; search.
+           apply rt_trans with (y := n0); search.
+  - destruct H0.
+    + destruct H1; search.
+      * apply admission.
+        exists n1, n1.
+        search.
+      * destruct H1; esearch.
+        do 2 destruct H1.
+        apply admission.
+        exists n2, x.
+        search.
+    + destruct H1; search.
+      * apply admission.
+        exists n2, n1.
+        search.
+      * destruct H1; esearch.
+        do 2 destruct H1.
+        apply admission.
+        exists n2, x.
+        search.
 Qed.
 
-#[export] Hint Resolve exportedEgress : main.
+#[export] Hint Resolve childEgress : main.
 
 (*
   An important consequence of the previous theorem: in a wooden admissibility
@@ -396,12 +463,12 @@ Qed.
 Theorem sandboxing :
   forall (Node : Type) (g : AdmissibilityGraph Node) n1 n2 n3,
   Wooden g ->
-  Exports g n1 n2 ->
+  ParentChild g n1 n2 ->
   Allowed g n2 n3 ->
   Ancestor g n1 n3 \/ (Trusts g n1 n2 /\ Allowed g n1 n3).
 Proof.
   clean.
-  pose proof (exportedEgress Node g n1 n2 n3 H H0).
+  pose proof (childEgress Node g n1 n2 n3 H H0).
   destruct H2.
   clear H3.
   feed H2.
