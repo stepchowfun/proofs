@@ -28,7 +28,6 @@ Some of the theorems below are stated in terms of the following reflexive transi
 
 - If there is a (possibly empty) chain of `trusts` relationships from `X` to `Y`, we say `X` is *trusting* of `Y`.
 - If there is a (possibly empty) chain of `exports` relationships from `X` to `Y`, we say `X` is *exporting* `Y`.
-- If there is a (possibly empty) chain of parent-child relationships from `X` to `Y`, we say `X` is an *ancestor* of `Y`.
 
 ## Theorems
 
@@ -40,11 +39,9 @@ This development contains verified proofs of the following theorems:
 
 **Theorem (duality).** Given two admissibility graphs `G₁` and `G₂` with the same set of nodes and edges such `X trusts Y` in `G₁` implies `X exports Y` in `G₂` and `X exports Y` in `G₁` implies `X trusts Y` in `G₂`, then if `G₁` allows some `X` to depend on some `Y`, `G₂` allows `Y` to depend on `X`.
 
-**Theorem (transposition).** Given two admissibility graphs `G₁` and `G₂` with the same set of nodes and edges such that `X trusts Y` in `G₁` is equivalent to `X exports Y` in `G₂` and `X exports Y` in `G₁` is equivalent to `X trusts Y` in `G₂`, then `G₁` allows some `X` to depend on some `Y` iff `G₂` allows `Y` to depend on `X`.
+**Theorem (encapsulation).** In a wooden admissibility graph in which `X trusts Y`, `Z` is allowed to depend on `Y` iff `X` is trusting of `Z` or (`X exports Y` and `Z` is allowed to depend on `X`) or (`Y` exports some `W` and `W` is trusting of `Z`).
 
-**Theorem (encapsulation).** In a wooden admissibility graph, if `X trusts Y` and `Z` is allowed to depend on `Y`, then either `X` is an ancestor of `Z` or (`X exports Y` and `Z` is allowed to depend on `X`).
-
-**Theorem (sandboxing).** In a wooden admissibility graph, if `X exports Y` and `Y` is allowed to depend on `Z`, then either `X` is an ancestor of `Z` or (`X trusts Y` and `X` is allowed to depend on `Z`).
+**Theorem (sandboxing).** In a wooden admissibility graph in which `X exports Y`, `Y` is allowed to depend on `Z` iff `X` is exporting `Z` or (`X trusts Y` and `X` is allowed to depend on `Z`) or (`Y` trusts some `W` and `W` is exporting `Z`).
 
 ## An algorithm to validate dependencies
 
