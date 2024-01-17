@@ -44,9 +44,9 @@ This development contains verified proofs of the following theorems:
 
 **Theorem (transposition).** Given two admissibility graphs `G₁` and `G₂` with the same set of nodes and edges such that `X trusts Y` in `G₁` is equivalent to `X exports Y` in `G₂` and `X exports Y` in `G₁` is equivalent to `X trusts Y` in `G₂`, then `G₁` allows some `X` to depend on some `Y` iff `G₂` allows `Y` to depend on `X`.
 
-**Theorem (encapsulation).** In a wooden admissibility graph, if `X trusts Y` and `Z` is allowed to depend on `Y`, then either `X` is an ancestor of `Z` or (`X exports Y` and `Z` is allowed to depend on `X`).
+**Theorem (encapsulation).** In a wooden admissibility graph, if `X` is a parent of `Y` and `Z` is allowed to depend on `Y`, then either `X` is an ancestor of `Z` or (`X exports Y` and `Z` is allowed to depend on `X`).
 
-**Theorem (sandboxing).** In a wooden admissibility graph, if `X exports Y` and `Y` is allowed to depend on `Z`, then either `X` is an ancestor of `Z` or (`X trusts Y` and `X` is allowed to depend on `Z`).
+**Theorem (sandboxing).** In a wooden admissibility graph, if `X` is a parent of `Y` and `Y` is allowed to depend on `Z`, then either `X` is an ancestor of `Z` or (`X trusts Y` and `X` is allowed to depend on `Z`).
 
 Some of these theorems are direct consequences of more general theorems which are proven as well.
 
