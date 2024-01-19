@@ -26,6 +26,8 @@ The *transpose* of an admissibility graph is the graph formed by swapping the ed
 
 If `X trusts Y` or `X exports Y`, we say `X` is a *parent* of `Y` and `Y` is a *child* of `X`. An important special case which enables additional reasoning power at the expense of flexibility is to limit each node to having at most one parent. The resulting structure is called a *wooden admissibility graph*, and it enjoys the *encapsulation* and *sandboxing* theorems below.
 
+In a wooden admissibility graph, we say `X` *protects* `Y` if `X trusts Y` and not `X exports Y`. Dually, in a wooden admissibility graph, we say `X` *contains* `Y` if `X exports Y` and not `X trusts Y`.
+
 ## Closure concepts
 
 Some of the theorems below are stated in terms of the following reflexive transitive closures:
@@ -46,9 +48,9 @@ This development contains verified proofs of the following theorems:
 
 **Theorem (duality).** Given an admissibility graph `G`, `G` allows `X` to depend on `Y` iff the transpose of `G` allows `Y` to depend on `X`.
 
-**Theorem (encapsulation).** In a wooden admissibility graph, if `X` is a parent of `Y` and `Z` is allowed to depend on `Y`, then either `X` is an ancestor of `Z` or (`X exports Y` and `Z` is allowed to depend on `X`). Thus, for wooden admissibility graphs, we might say `X` *protects* `Y` to mean (`X trusts Y` but not `X exports Y`).
+**Theorem (encapsulation).** In a wooden admissibility graph, if `X` protects `Y` and `Z` is allowed to depend on `Y`, then `X` is an ancestor of `Z`.
 
-**Theorem (sandboxing).** In a wooden admissibility graph, if `X` is a parent of `Y` and `Y` is allowed to depend on `Z`, then either `X` is an ancestor of `Z` or (`X trusts Y` and `X` is allowed to depend on `Z`). Thus, for wooden admissibility graphs, we might say `X` *contains* `Y` to mean (`X exports Y` but not `X trusts Y`).
+**Theorem (sandboxing).** In a wooden admissibility graph, if `X` contains `Y` and `Y` is allowed to depend on `Z`, then `X` is an ancestor of `Z`.
 
 Some of these theorems are direct consequences of more general theorems which are proven as well.
 
