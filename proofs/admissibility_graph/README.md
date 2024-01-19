@@ -46,9 +46,9 @@ This development contains verified proofs of the following theorems:
 
 **Theorem (duality).** Given an admissibility graph `G`, `G` allows `X` to depend on `Y` iff the transpose of `G` allows `Y` to depend on `X`.
 
-**Theorem (encapsulation).** In a wooden admissibility graph, if `X` is a parent of `Y` and `Z` is allowed to depend on `Y`, then either `X` is an ancestor of `Z` or (`X exports Y` and `Z` is allowed to depend on `X`).
+**Theorem (encapsulation).** In a wooden admissibility graph, if `X` is a parent of `Y` and `Z` is allowed to depend on `Y`, then either `X` is an ancestor of `Z` or (`X exports Y` and `Z` is allowed to depend on `X`). Thus, for wooden admissibility graphs, we might say `X` *protects* `Y` to mean (`X trusts Y` but not `X exports Y`).
 
-**Theorem (sandboxing).** In a wooden admissibility graph, if `X` is a parent of `Y` and `Y` is allowed to depend on `Z`, then either `X` is an ancestor of `Z` or (`X trusts Y` and `X` is allowed to depend on `Z`).
+**Theorem (sandboxing).** In a wooden admissibility graph, if `X` is a parent of `Y` and `Y` is allowed to depend on `Z`, then either `X` is an ancestor of `Z` or (`X trusts Y` and `X` is allowed to depend on `Z`). Thus, for wooden admissibility graphs, we might say `X` *contains* `Y` to mean (`X exports Y` but not `X trusts Y`).
 
 Some of these theorems are direct consequences of more general theorems which are proven as well.
 
