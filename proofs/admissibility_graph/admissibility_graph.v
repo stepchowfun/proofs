@@ -238,7 +238,7 @@ Qed.
 
 (* The ancestor relation is a superset of the trusting relation. *)
 
-Theorem trustingAncestor [Node] (g : AdmissibilityGraph Node) n1 n2 :
+Theorem trusting_ancestor [Node] (g : AdmissibilityGraph Node) n1 n2 :
   Trusting g n1 n2 -> Ancestor g n1 n2.
 Proof.
   clean.
@@ -246,11 +246,11 @@ Proof.
   apply rt_trans with (y := y); search.
 Qed.
 
-#[export] Hint Resolve trustingAncestor : main.
+#[export] Hint Resolve trusting_ancestor : main.
 
 (* The ancestor relation is a superset of the exporting relation. *)
 
-Theorem exportingAncestor [Node] (g : AdmissibilityGraph Node) n1 n2 :
+Theorem exporting_ancestor [Node] (g : AdmissibilityGraph Node) n1 n2 :
   Exporting g n1 n2 -> Ancestor g n1 n2.
 Proof.
   clean.
@@ -258,7 +258,7 @@ Proof.
   apply rt_trans with (y := y); search.
 Qed.
 
-#[export] Hint Resolve exportingAncestor : main.
+#[export] Hint Resolve exporting_ancestor : main.
 
 (*
   An important special case which enables additional reasoning power at the
@@ -286,6 +286,52 @@ Qed.
 #[export] Hint Resolve transpose_wooden : main.
 
 (*
+  In a wooden admissibility graph, a node *protects* another node if it trusts
+  that node and doesn't export it. Dually, in a wooden admissibility graph, a
+  node *contains* another node if it exports that node and doesn't trust it.
+*)
+
+Definition Protects [Node] (g : AdmissibilityGraph Node) n1 n2 :=
+  Wooden g /\ Trusts g n1 n2 /\ ~ Exports g n1 n2.
+
+Definition Contains [Node] (g : AdmissibilityGraph Node) n1 n2 :=
+  Wooden g /\ ~ Trusts g n1 n2 /\ Exports g n1 n2.
+
+Theorem transpose_protects :
+  forall (Node : Type) (g : AdmissibilityGraph Node) n1 n2,
+  Protects g n1 n2 <-> Contains (transpose g) n1 n2.
+Proof.
+  unfold Protects, Contains.
+  clean.
+  split; clean.
+  - split; search.
+    apply -> transpose_wooden.
+    search.
+  - split; search.
+    apply transpose_wooden.
+    search.
+Qed.
+
+#[export] Hint Resolve transpose_protects : main.
+
+Theorem transpose_contains :
+  forall (Node : Type) (g : AdmissibilityGraph Node) n1 n2,
+  Contains g n1 n2 <-> Protects (transpose g) n1 n2.
+Proof.
+  unfold Protects, Contains.
+  clean.
+  split; clean.
+  - split; search.
+    apply -> transpose_wooden.
+    search.
+  - split; search.
+    apply transpose_wooden.
+    search.
+Qed.
+
+#[export] Hint Resolve transpose_contains : main.
+
+(*
   In a wooden admissibility graph, the following three situations characterize
   which nodes can depend on the children of a parent:
 
@@ -296,7 +342,7 @@ Qed.
      nodes that those exported children are trusting of.
 *)
 
-Theorem childIngress :
+Theorem child_ingress :
   forall (Node : Type) (g : AdmissibilityGraph Node) n1 n2 n3,
   Wooden g ->
   ParentChild g n1 n2 ->
@@ -372,7 +418,7 @@ Proof.
         search.
 Qed.
 
-#[export] Hint Resolve childIngress : main.
+#[export] Hint Resolve child_ingress : main.
 
 (*
   An important consequence of the previous theorem: in a wooden admissibility
@@ -382,23 +428,22 @@ Qed.
 
 Theorem encapsulation :
   forall (Node : Type) (g : AdmissibilityGraph Node) n1 n2 n3,
-  Wooden g ->
-  ParentChild g n1 n2 ->
-  Allowed g n3 n2 ->
-  Ancestor g n1 n3 \/ (Exports g n1 n2 /\ Allowed g n3 n1).
+  Protects g n1 n2 -> Allowed g n3 n2 -> Ancestor g n1 n3.
 Proof.
   clean.
-  pose proof (childIngress Node g n1 n2 n3 H H0).
-  destruct H2.
-  clear H3.
-  feed H2.
-  destruct H2; search.
-  destruct H2; search.
-  do 2 destruct H2.
-  left.
+  destruct H.
+  destruct H1.
+  pose proof (child_ingress Node g n1 n2 n3 H).
+  feed H3.
+  destruct H3.
+  clear H4.
+  feed H3.
+  destruct H3; search.
+  destruct H3; search.
+  do 2 destruct H3.
   apply rt_trans with (y := n2); search.
   apply rt_trans with (y := x); search.
-  apply trustingAncestor.
+  apply trusting_ancestor.
   search.
 Qed.
 
@@ -416,7 +461,7 @@ Qed.
      those trusted children are exporting.
 *)
 
-Theorem childEgress :
+Theorem child_egress :
   forall (Node : Type) (g : AdmissibilityGraph Node) n1 n2 n3,
   Wooden g ->
   ParentChild g n1 n2 ->
@@ -428,7 +473,7 @@ Theorem childEgress :
   ).
 Proof.
   split; clean.
-  - pose proof (childIngress Node (transpose g) n1 n2 n3).
+  - pose proof (child_ingress Node (transpose g) n1 n2 n3).
     feed H2; [ apply -> transpose_wooden; search | idtac ].
     feed H2; [ apply -> transpose_parent_child; search | idtac ].
     destruct H2.
@@ -441,7 +486,7 @@ Proof.
       repeat (destruct H2; search).
       apply duality in H3.
       search.
-  - pose proof (childIngress Node (transpose g) n1 n2 n3).
+  - pose proof (child_ingress Node (transpose g) n1 n2 n3).
     feed H2; [ apply -> transpose_wooden; search | idtac ].
     feed H2; [ apply -> transpose_parent_child; search | idtac ].
     destruct H2.
@@ -449,7 +494,7 @@ Proof.
     apply duality in H3; search.
 Qed.
 
-#[export] Hint Resolve childEgress : main.
+#[export] Hint Resolve child_egress : main.
 
 (*
   An important consequence of the previous theorem: in a wooden admissibility
@@ -459,22 +504,14 @@ Qed.
 
 Theorem sandboxing :
   forall (Node : Type) (g : AdmissibilityGraph Node) n1 n2 n3,
-  Wooden g ->
-  ParentChild g n1 n2 ->
-  Allowed g n2 n3 ->
-  Ancestor g n1 n3 \/ (Trusts g n1 n2 /\ Allowed g n1 n3).
+  Contains g n1 n2 -> Allowed g n2 n3 -> Ancestor g n1 n3.
 Proof.
   clean.
   pose proof (encapsulation Node (transpose g) n1 n2 n3).
-  feed H2; [ apply -> transpose_wooden; search | idtac ].
-  feed H2; [ apply -> transpose_parent_child; search | idtac ].
-  feed H2; [ apply -> duality; search | idtac ].
-  destruct H2.
-  - apply transpose_ancestor in H2.
-    search.
-  - clean.
-    apply duality in H3.
-    search.
+  feed H1; [ apply transpose_protects; search | idtac ].
+  feed H1; [ apply -> duality; search | idtac ].
+  apply transpose_ancestor in H1.
+  search.
 Qed.
 
 #[export] Hint Resolve sandboxing : main.
