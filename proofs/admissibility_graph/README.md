@@ -24,9 +24,14 @@ The *transpose* of an admissibility graph is the graph formed by swapping the ed
 
 ## Wooden admissibility graphs
 
-If `X trusts Y` or `X exports Y`, we say `X` is a *parent* of `Y` and `Y` is a *child* of `X`. An important special case which enables additional reasoning power at the expense of flexibility is to limit each node to having at most one parent. The resulting structure is called a *wooden admissibility graph*, and it enjoys the *encapsulation* and *sandboxing* theorems below.
+If `X trusts Y` or `X exports Y`, we say `X` is a *parent* of `Y` and `Y` is a *child* of `X`. An important special case which enables additional reasoning power at the expense of flexibility is to limit each node to having at most one parent. In this situation, we say the graph is *wooden*.
 
-In a wooden admissibility graph, we say `X` *protects* `Y` if `X trusts Y` and not `X exports Y`. Dually, in a wooden admissibility graph, we say `X` *contains* `Y` if `X exports Y` and not `X trusts Y`.
+For wooden admissibility graphs, we define the following relations:
+
+- `X` *protects* `Y`: `X trusts Y` and not `X exports Y`.
+- `X` *contains* `Y`: `X exports Y` and not `X trusts Y`.
+
+The *encapsulation* and *sandboxing* theorems below are stated in terms of these two relations.
 
 ## Closure concepts
 
