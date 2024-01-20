@@ -20,7 +20,7 @@ To make those informal descriptions more precise, the following axioms determine
    - If some `Z` is allowed to depend on `X`, then `Z` is also allowed to depend on `Y`.
 4. No other dependencies are allowed.
 
-The *transpose* of an admissibility graph is the graph formed by swapping the edge types; `X` trusts `Y` becomes `X` exports `Y` and vice versa.
+The *transpose* of an admissibility graph is the graph formed by swapping the edge types: `X` trusts `Y` becomes `X` exports `Y` and vice versa.
 
 ## Wooden admissibility graphs
 
@@ -28,8 +28,8 @@ If `X` trusts `Y` or `X` exports `Y`, we say `X` is a *parent* of `Y` and `Y` is
 
 For wooden admissibility graphs, we define the following relations:
 
-- `X` *protects* `Y`: `X` trusts `Y` and not `X` exports `Y`.
-- `X` *contains* `Y`: `X` exports `Y` and not `X` trusts `Y`.
+- `X` *protects* `Y`: `X` trusts `Y` but doesn't export `Y`.
+- `X` *contains* `Y`: `X` exports `Y` but doesn't trust `Y`.
 
 The *encapsulation* and *sandboxing* theorems below are stated in terms of these two relations.
 
