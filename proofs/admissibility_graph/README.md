@@ -24,7 +24,7 @@ The *transpose* of an admissibility graph is the graph formed by swapping the ed
 
 ## Wooden admissibility graphs
 
-If `X` trusts `Y` or `X` exports `Y`, we say `X` is a *parent* of `Y` and `Y` is a *child* of `X`. An important special case which enables additional reasoning power at the expense of flexibility is to limit each node to having at most one parent. In this situation, we say the graph is *wooden*.
+If `X` trusts `Y` or `X` exports `Y`, we say `X` is a *parent* of `Y` and `Y` is a *child* of `X`. An important special case which enables additional reasoning power at the expense of flexibility is when each node has at most one parent. In this situation, we say the graph is *wooden*.
 
 For wooden admissibility graphs, we define the following relations:
 
