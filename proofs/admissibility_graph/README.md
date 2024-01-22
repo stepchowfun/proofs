@@ -20,28 +20,24 @@ To make those informal descriptions more precise, the following axioms determine
    - If some `Z` is allowed to depend on `X`, then `Z` is also allowed to depend on `Y`.
 4. No other dependencies are allowed.
 
-The *transpose* of an admissibility graph is the graph formed by swapping the edge types: `X` trusts `Y` becomes `X` exports `Y` and vice versa.
-
-## Wooden admissibility graphs
-
-If `X` trusts `Y` or `X` exports `Y`, we say `X` is a *parent* of `Y` and `Y` is a *child* of `X`. An important special case which enables additional reasoning power at the expense of flexibility is when each node has at most one parent. In this situation, we say the graph is *wooden*.
-
-For wooden admissibility graphs, we define the following relations:
-
-- `X` *protects* `Y`: `X` trusts `Y` but doesn't export `Y`.
-- `X` *contains* `Y`: `X` exports `Y` but doesn't trust `Y`.
-
-The *encapsulation* and *sandboxing* theorems below are stated in terms of these two relations.
+If `X` trusts `Y` or `X` exports `Y`, we say `X` is a *parent* of `Y` and `Y` is a *child* of `X`. The *transpose* of an admissibility graph is the graph formed by swapping the edge types: `X` trusts `Y` becomes `X` exports `Y` and vice versa.
 
 ## Closure concepts
 
-Some of the theorems below are stated in terms of the following reflexive transitive closures:
+Some of the definitions and theorems below are stated in terms of the following reflexive transitive closures:
 
 - If there is a (possibly empty) chain of trusts relationships from `X` to `Y`, we say `X` is *trusting* of `Y`.
 - If there is a (possibly empty) chain of exports relationships from `X` to `Y`, we say `X` is *exporting* `Y`.
 - If there is a (possibly empty) chain of parent-child relationships from `X` to `Y`, we say `X` is an *ancestor* of `Y`.
 
 So the trusting and exporting relations are subsets of the ancestor relation.
+
+## Modularity concepts
+
+The following definitions formalize the idea that a *module* is self-contained.
+
+- `X` *covers* `Y`: if `Y` is an ancestor of `Z` and `W` is a parent of `Z`, then `X` is an ancestor of `W`.
+- `X` is a *module*: if `X` is a parent of `Y`, X covers `Y`.
 
 ## Theorems
 
@@ -52,10 +48,6 @@ This development contains verified proofs of the following theorems:
 **Theorem (reflection).** If two admissibility graphs with the same nodes have corresponding edges between all pairs of *distinct* nodes, then they allow the same dependencies. In other words, nothing is gained by having a node trust or export itself.
 
 **Theorem (admission).** `X` is allowed to depend on `Y` iff there some `U` is trusting of `X` and some `V` is exporting `Y` and (`U` = `V` or there is an edge `U` trusts `V` or `V` exports `U`).
-
-**Theorem (encapsulation).** In a wooden admissibility graph, if `X` protects `Y` and `Z` is allowed to depend on `Y`, then `X` is an ancestor of `Z`.
-
-**Theorem (sandboxing).** In a wooden admissibility graph, if `X` contains `Y` and `Y` is allowed to depend on `Z`, then `X` is an ancestor of `Z`.
 
 Some of these theorems are direct consequences of more general theorems which are proven as well.
 
