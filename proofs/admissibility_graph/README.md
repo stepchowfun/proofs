@@ -47,11 +47,11 @@ So the trusting and exporting relations are subsets of the ancestor relation.
 
 This development contains verified proofs of the following theorems:
 
-**Theorem (reflection).** Given two admissibility graphs with the same nodes that have matching edges between all pairs of *distinct* nodes, then they allow the same dependencies. In other words, nothing is gained by having a node trust or export itself.
+**Theorem (duality).** Given an admissibility graph `G`, `G` allows `X` to depend on `Y` iff the transpose of `G` allows `Y` to depend on `X`.
+
+**Theorem (reflection).** If two admissibility graphs with the same nodes have corresponding edges between all pairs of *distinct* nodes, then they allow the same dependencies. In other words, nothing is gained by having a node trust or export itself.
 
 **Theorem (admission).** `X` is allowed to depend on `Y` iff there some `U` is trusting of `X` and some `V` is exporting `Y` and (`U` = `V` or there is an edge `U` trusts `V` or `V` exports `U`).
-
-**Theorem (duality).** Given an admissibility graph `G`, `G` allows `X` to depend on `Y` iff the transpose of `G` allows `Y` to depend on `X`.
 
 **Theorem (encapsulation).** In a wooden admissibility graph, if `X` protects `Y` and `Z` is allowed to depend on `Y`, then `X` is an ancestor of `Z`.
 

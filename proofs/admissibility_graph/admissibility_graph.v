@@ -106,7 +106,21 @@ Inductive Allowed [Node] (g : AdmissibilityGraph Node) (n : Node) : Node
 #[export] Hint Constructors Allowed : main.
 
 (*
-  Given two admissibility graphs with the same nodes that have matching edges
+  The dependencies allowed by the transpose of a graph are the flipped versions
+  of the dependencies allowed by the original graph.
+*)
+
+Theorem duality :
+  forall (Node : Type) (g : AdmissibilityGraph Node) n1 n2,
+  Allowed g n1 n2 <-> Allowed (transpose g) n2 n1.
+Proof.
+  split; clean; induction H; esearch.
+Qed.
+
+#[export] Hint Resolve duality : main.
+
+(*
+  If two admissibility graphs with the same nodes have corresponding edges
   between all pairs of *distinct* nodes, then they allow the same dependencies.
   In other words, nothing is gained by having a node trust or export itself.
 *)
@@ -117,25 +131,14 @@ Theorem reflection :
   (forall n1 n2, n1 = n2 \/ (Exports g1 n1 n2 <-> Exports g2 n1 n2)) ->
   forall n1 n2, Allowed g1 n1 n2 <-> Allowed g2 n1 n2.
 Proof.
-  split; clean.
-  - induction H1; search.
-    + specialize (H n n1).
-      search.
-    + specialize (H0 n1 n).
-      search.
-    + specialize (H n1 n).
-      esearch.
-    + specialize (H0 n1 n2).
-      esearch.
-  - induction H1; search.
-    + specialize (H n n1).
-      search.
-    + specialize (H0 n1 n).
-      search.
-    + specialize (H n1 n).
-      esearch.
-    + specialize (H0 n1 n2).
-      esearch.
+  split; clean; (
+    induction H1; search; [
+      specialize (H n n1) |
+      specialize (H0 n1 n) |
+      specialize (H n1 n) |
+      specialize (H0 n1 n2)
+    ]; esearch
+  ).
 Qed.
 
 #[export] Hint Resolve reflection : main.
@@ -176,20 +179,6 @@ Proof.
 Qed.
 
 #[export] Hint Resolve admission : main.
-
-(*
-  The dependencies allowed by the transpose of a graph are the flipped versions
-  of the dependencies allowed by the original graph.
-*)
-
-Theorem duality :
-  forall (Node : Type) (g : AdmissibilityGraph Node) n1 n2,
-  Allowed g n1 n2 <-> Allowed (transpose g) n2 n1.
-Proof.
-  split; clean; induction H; esearch.
-Qed.
-
-#[export] Hint Resolve duality : main.
 
 (*
   If a node trusts or exports another node, we say the former node is a
