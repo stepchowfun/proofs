@@ -37,7 +37,7 @@ So the trusting and exporting relations are subsets of the ancestor relation.
 The following definitions formalize the idea that a *module* is self-contained.
 
 - `X` *covers* `Y`: if `Y` is an ancestor of `Z` and `W` is a parent of `Z`, then `X` is an ancestor of `W`.
-- `X` is a *module*: if `X` is a parent of `Y`, X covers `Y`.
+- `X` is a *module*: if `X` is a parent of `Y`, `X` covers `Y`.
 
 ## Theorems
 
