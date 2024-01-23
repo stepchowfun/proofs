@@ -248,7 +248,7 @@ Qed.
 Definition Covers [Node] (g : AdmissibilityGraph Node) n1 n2 :=
   forall n3 n4, Ancestor g n2 n3 -> ParentChild g n4 n3 -> Ancestor g n1 n4.
 
-(* A node is a moduleencapsulation* if it covers all of its children. *)
+(* A node is a *module* if it covers all of its children. *)
 
 Definition Module [Node] (g : AdmissibilityGraph Node) n1 :=
   forall n2, ParentChild g n1 n2 -> Covers g n1 n2.
