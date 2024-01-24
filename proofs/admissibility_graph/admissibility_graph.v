@@ -242,13 +242,69 @@ Qed.
 
 (*
   A node *covers* another node if the former is an ancestor of any parents of
-  any nodes that have the latter as an ancestor.
+  any nodes that have the latter as an ancestor. This doesn't imply that the
+  former node can depend on the latter.
 *)
 
 Definition Covers [Node] (g : AdmissibilityGraph Node) n1 n2 :=
   forall n3 n4, Ancestor g n2 n3 -> ParentChild g n4 n3 -> Ancestor g n1 n4.
 
+Theorem transpose_covers Node (g : AdmissibilityGraph Node) n1 n2 :
+  Covers g n1 n2 <-> Covers (transpose g) n1 n2.
+Proof.
+  unfold Covers.
+  split; clean.
+  - apply -> transpose_ancestor.
+    apply transpose_ancestor in H0.
+    apply transpose_parent_child in H1.
+    esearch.
+  - apply transpose_ancestor.
+    apply -> transpose_ancestor in H0.
+    apply -> transpose_parent_child in H1.
+    esearch.
+Qed.
+
+#[export] Hint Resolve transpose_covers : main.
+
+
+(*
+  If a node covers another, then an ancestor of the former covers any node
+  which has the latter as an ancestor.
+*)
+
+Theorem cover_extension Node (g : AdmissibilityGraph Node) n1 n2 n3 n4 :
+  Ancestor g n1 n2 ->
+  Ancestor g n3 n4 ->
+  Covers g n2 n3 ->
+  Covers g n1 n4.
+Proof.
+  unfold Covers.
+  clean.
+  specialize (H1 n0 n5).
+  feed H1.
+  - apply rt_trans with (y := n4); search.
+  - feed H1.
+    apply rt_trans with (y := n2); search.
+Qed.
+
+#[export] Hint Resolve cover_extension : main.
+
 (* A node is a *module* if it covers all of its children. *)
 
 Definition Module [Node] (g : AdmissibilityGraph Node) n1 :=
   forall n2, ParentChild g n1 n2 -> Covers g n1 n2.
+
+Theorem transpose_module Node (g : AdmissibilityGraph Node) n :
+  Module g n <-> Module (transpose g) n.
+Proof.
+  unfold Module.
+  split; clean.
+  - apply -> transpose_covers.
+    apply transpose_parent_child in H0.
+    esearch.
+  - apply transpose_covers.
+    apply -> transpose_parent_child in H0.
+    esearch.
+Qed.
+
+#[export] Hint Resolve transpose_module : main.
