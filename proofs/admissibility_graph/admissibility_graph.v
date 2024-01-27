@@ -272,7 +272,7 @@ Qed.
   which has the latter as an ancestor.
 *)
 
-Theorem cover_extension Node (g : AdmissibilityGraph Node) n1 n2 n3 n4 :
+Theorem coverage_extension Node (g : AdmissibilityGraph Node) n1 n2 n3 n4 :
   Ancestor g n1 n2 ->
   Ancestor g n3 n4 ->
   Covers g n2 n3 ->
@@ -287,7 +287,7 @@ Proof.
     apply rt_trans with (y := n2); search.
 Qed.
 
-#[export] Hint Resolve cover_extension : main.
+#[export] Hint Resolve coverage_extension : main.
 
 (* A node is a *module* if it covers all of its children. *)
 
@@ -308,3 +308,88 @@ Proof.
 Qed.
 
 #[export] Hint Resolve transpose_module : main.
+
+(*
+  The nodes within a module which can be depended on from nodes outside the
+  module are exported by the module.
+*)
+
+Theorem encapsulation Node (g : AdmissibilityGraph Node) n1 n2 n3 :
+  Module g n1 ->
+  Ancestor g n1 n2 ->
+  Allowed g n3 n2 ->
+  Ancestor g n1 n3 \/ Exporting g n1 n2.
+Proof.
+  clean.
+  apply admission in H1.
+  do 3 destruct H1.
+  destruct H2.
+  assert (Ancestor g n1 x0 \/ Exporting g n1 n2).
+  - clear H1.
+    apply clos_rt_rtn1 in H2.
+    induction H2; search.
+    apply clos_rtn1_rt in H2.
+    apply clos_rt_rt1n in H0.
+    invert H0; search.
+    apply clos_rt1n_rt in H5.
+    unfold Module in H.
+    specialize (H y0).
+    feed H.
+    unfold Covers in H.
+    specialize (H z y).
+    feed H.
+    feed H.
+    feed IHclos_refl_trans_n1.
+    destruct IHclos_refl_trans_n1; search.
+    right.
+    apply rt_trans with (y := y); search.
+  - destruct H4; search.
+    assert (Ancestor g n1 x \/ Exporting g n1 n2).
+    + clear H1.
+      destruct H3; search.
+      destruct H1.
+      * apply clos_rt_rt1n in H4.
+        invert H4; search.
+        apply clos_rt1n_rt in H5.
+        unfold Module in H.
+        specialize (H y).
+        feed H.
+        unfold Covers in H.
+        specialize (H x0 x).
+        left.
+        do 2 feed H.
+      * left.
+        apply rt_trans with (y := x0); search.
+    + clear H4.
+      destruct H5; search.
+      apply clos_rt_rtn1 in H1.
+      induction H1; search.
+      destruct IHclos_refl_trans_n1; search.
+      left.
+      apply rt_trans with (y := y); search.
+Qed.
+
+#[export] Hint Resolve encapsulation : main.
+
+(*
+  The nodes within a module which can depend on nodes outside the module are
+  trusted by the module.
+*)
+
+Theorem sandboxing Node (g : AdmissibilityGraph Node) n1 n2 n3 :
+  Module g n1 ->
+  Ancestor g n1 n2 ->
+  Allowed g n2 n3 ->
+  Ancestor g n1 n3 \/ Trusting g n1 n2.
+Proof.
+  clean.
+  pose proof (encapsulation Node (transpose g) n1 n2 n3).
+  feed H2; [ apply -> transpose_module; search | idtac ].
+  feed H2; [ apply -> transpose_ancestor; search | idtac ].
+  feed H2; [ apply -> duality; search | idtac ].
+  destruct H2; search.
+  apply <- transpose_ancestor in H2.
+  search.
+Qed.
+
+#[export] Hint Resolve sandboxing : main.
