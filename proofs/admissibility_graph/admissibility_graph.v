@@ -277,37 +277,6 @@ Qed.
 #[export] Hint Resolve transpose_module : main.
 
 (*
-  If a node has two ancestors and one of them is a module, then one of the
-  ancestors is an ancestor of the other.
-*)
-
-Theorem modularity Node (g : AdmissibilityGraph Node) n1 n2 n3 :
-  Module g n1 ->
-  Ancestor g n1 n3 ->
-  Ancestor g n2 n3 ->
-  Ancestor g n1 n2 \/ Ancestor g n2 n1.
-Proof.
-  unfold Module.
-  clean.
-  apply clos_rt_rt1n in H1.
-  induction H1; search.
-  feed IHclos_refl_trans_1n.
-  destruct IHclos_refl_trans_1n.
-  - apply clos_rt_rt1n in H3.
-    invert H3.
-    + right.
-      apply rt_trans with (y := y); search.
-    + left.
-      apply H with (n2 := y0) (n3 := y); search.
-      apply clos_rt1n_rt in H5.
-      search.
-  - right.
-    apply rt_trans with (y := y); search.
-Qed.
-
-#[export] Hint Resolve modularity : main.
-
-(*
   The nodes within a module which can be depended on from nodes outside the
   module are exported by the module.
 *)
