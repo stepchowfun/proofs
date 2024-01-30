@@ -34,7 +34,7 @@ So the trusting and exporting relations are subsets of the ancestor relation.
 
 ## Modularity
 
-A node `M` is a *module* if for all `X`, `Y`, and `Z`, if `M` is a parent of `X` and `Z` is a parent of `Y`, then `M` is an ancestor of `Z` if `X` is an ancestor of `Y`.
+A node `M` is a *module* if for all `X`, `Y`, and `Z`, if `M` is a parent of `X` and `Z` is a parent of `Y`, then `X` is an ancestor of `Y` implies `M` is an ancestor of `Z`.
 
 ## Theorems
 
