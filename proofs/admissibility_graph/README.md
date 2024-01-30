@@ -12,13 +12,11 @@ The nodes are the components of the system. There are two types of directed edge
 To make those informal descriptions more precise, the following axioms determine which dependencies are allowed.
 
 1. Every node is allowed to depend on itself.
-2. If `X` trusts `Y`:
-   - `X` is allowed to depend on `Y`.
-   - If `X` is allowed to depend on some `Z`, then `Y` is also allowed to depend on `Z`.
-3. If `X` exports `Y`:
-   - `Y` is allowed to depend on `X`.
-   - If some `Z` is allowed to depend on `X`, then `Z` is also allowed to depend on `Y`.
-4. No other dependencies are allowed.
+2. If `X` trusts `Y`, `X` is allowed to depend on `Y`.
+3. If `X` exports `Y`, `Y` is allowed to depend on `X`.
+4. If `X` trusts `Y` and `X` is allowed to depend on some `Z`, then `Y` is also allowed to depend on `Z`.
+5. If `X` exports `Y` and some `Z` is allowed to depend on `X`, then `Z` is also allowed to depend on `Y`.
+6. No other dependencies are allowed (i.e., the relation is defined inductively by the previous axioms).
 
 If `X` trusts `Y` or `X` exports `Y`, we say `X` is a *parent* of `Y` and `Y` is a *child* of `X`. The *transpose* of an admissibility graph is the graph formed by swapping the edge types: `X` trusts `Y` becomes `X` exports `Y` and vice versa.
 
@@ -31,6 +29,8 @@ Some of the definitions and theorems below are stated in terms of the following 
 - If there is a (possibly empty) chain of parent-child relationships from `X` to `Y`, we say `X` is an *ancestor* of `Y`.
 
 So the trusting and exporting relations are subsets of the ancestor relation.
+
+It may be desirable to require the ancestor relation to be antisymmetric, but none of the theorems below rely on that.
 
 ## Modularity
 
