@@ -32,12 +32,9 @@ Some of the definitions and theorems below are stated in terms of the following 
 
 So the trusting and exporting relations are subsets of the ancestor relation.
 
-## Modularity concepts
+## Modularity
 
-The following definitions formalize the idea that a *module* is self-contained.
-
-- `X` *covers* `Y`: if `Y` is an ancestor of `Z` and `W` is a parent of `Z`, then `X` is an ancestor of `W`.
-- `X` is a *module*: if `X` is a parent of `Y`, `X` covers `Y`.
+A node `M` is a *module* if for all `X`, `Y`, and `Z`, if `M` is a parent of `X` and `Z` is a parent of `Y`, then `M` is an ancestor of `Z` if `X` is an ancestor of `Y`.
 
 ## Theorems
 
@@ -48,8 +45,6 @@ This development contains verified proofs of the following theorems:
 **Theorem (reflection).** If two admissibility graphs with the same nodes have corresponding edges between all pairs of *distinct* nodes, then they allow the same dependencies. In other words, nothing is gained by having a node trust or export itself.
 
 **Theorem (admission).** `X` is allowed to depend on `Y` iff there some `U` is trusting of `X` and some `V` is exporting `Y` and (`U` = `V` or there is an edge `U` trusts `V` or `V` exports `U`).
-
-**Theorem (coverage extension).** If `X` is an ancestor of `Y` and `U` is an ancestor of `V`, then `X` covers `V` if `Y` covers `U`.
 
 **Theorem (encapsulation).** If `M` is a module and an ancestor of `X` and if some `Y` is allowed to depend on `X`, then either `M` is an ancestor of `Y` or `M` is exporting `X`.
 
