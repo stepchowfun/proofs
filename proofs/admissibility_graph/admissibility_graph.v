@@ -136,6 +136,32 @@ Qed.
 
 #[export] Hint Resolve reflection : main.
 
+(* The following theorems generalize the egress and ingress axioms. *)
+
+Theorem egress_extension Node (g : AdmissibilityGraph Node) n1 n2 n3 :
+  Trusting g n1 n2 ->
+  Allowed g n1 n3 ->
+  Allowed g n2 n3.
+Proof.
+  clean.
+  apply clos_rt_rtn1 in H.
+  induction H; esearch.
+Qed.
+
+#[export] Hint Resolve egress_extension : main.
+
+Theorem ingress_extension Node (g : AdmissibilityGraph Node) n1 n2 n3 :
+  Exporting g n1 n2 ->
+  Allowed g n3 n1 ->
+  Allowed g n3 n2.
+Proof.
+  clean.
+  apply clos_rt_rtn1 in H.
+  induction H; esearch.
+Qed.
+
+#[export] Hint Resolve ingress_extension : main.
+
 (*
   The following theorem gives an equivalent way to characterize which
   dependencies should be allowed.
@@ -148,9 +174,9 @@ Theorem admission Node (g : AdmissibilityGraph Node) n1 n2 :
     Exporting g n4 n2 /\
     (n3 = n4 \/ Trusts g n3 n4 \/ Exports g n4 n3).
 Proof.
-  unfold Trusting, Exporting.
   split; clean.
-  - induction H.
+  - unfold Trusting, Exporting.
+    induction H.
     + exists n, n.
       search.
     + exists n, n1.
@@ -165,9 +191,8 @@ Proof.
       destruct H1.
       exists x, x0.
       esearch.
-  - induction (clos_rt_rtn1 Node (Trusts g) x n1 H);
-    induction (clos_rt_rtn1 Node (Exports g) x0 n2 H0);
-    esearch.
+  - apply egress_extension with (n1 := x); search.
+    apply ingress_extension with (n1 := x0); search.
 Qed.
 
 #[export] Hint Resolve admission : main.
