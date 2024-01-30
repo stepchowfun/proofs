@@ -50,6 +50,8 @@ This development contains verified proofs of the following theorems:
 
 **Theorem (sandboxing).** If `M` is a module and an ancestor of `X` and if `X` is allowed to depend on some `Y`, then either `M` is an ancestor of `Y` or `M` is trusting of `X`.
 
+**Theorem (modularity).** If `X` and a module `M` are both ancestors of some `Y`, then either `X` is an ancestor of `M` or `M` is an ancestor of `X`.
+
 Some of these theorems are direct consequences of more general theorems which are proven as well.
 
 ## An algorithm to validate dependencies
