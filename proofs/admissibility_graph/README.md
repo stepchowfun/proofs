@@ -46,8 +46,6 @@ This development contains verified proofs of the following theorems:
 
 **Theorem (admission).** `X` is allowed to depend on `Y` iff there some `U` is trusting of `X` and some `V` is exporting `Y` and (`U` = `V` or there is an edge `U` trusts `V` or `V` exports `U`).
 
-**Theorem (modularity).** If `X` and a module `M` are both ancestors of some `Y`, then either `X` is an ancestor of `M` or `M` is an ancestor of `X`.
-
 **Theorem (encapsulation).** If `M` is a module and an ancestor of `X` and if some `Y` is allowed to depend on `X`, then either `M` is an ancestor of `Y` or `M` is exporting `X`.
 
 **Theorem (sandboxing).** If `M` is a module and an ancestor of `X` and if `X` is allowed to depend on some `Y`, then either `M` is an ancestor of `Y` or `M` is trusting of `X`.
