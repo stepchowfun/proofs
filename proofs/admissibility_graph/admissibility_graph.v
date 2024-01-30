@@ -241,69 +241,31 @@ Qed.
 #[export] Hint Resolve exporting_ancestor : main.
 
 (*
-  A node *covers* another node if the former is an ancestor of any parents of
-  any nodes that have the latter as an ancestor. This doesn't imply that the
-  former node can depend on the latter.
+  A node is a *module* if it's an ancestor of every parent of every node that
+  has a child of the module as an ancestor.
 *)
-
-Definition Covers [Node] (g : AdmissibilityGraph Node) n1 n2 :=
-  forall n3 n4, Ancestor g n2 n3 -> ParentChild g n4 n3 -> Ancestor g n1 n4.
-
-Theorem transpose_covers Node (g : AdmissibilityGraph Node) n1 n2 :
-  Covers g n1 n2 <-> Covers (transpose g) n1 n2.
-Proof.
-  unfold Covers.
-  split; clean.
-  - apply -> transpose_ancestor.
-    apply transpose_ancestor in H0.
-    apply transpose_parent_child in H1.
-    esearch.
-  - apply transpose_ancestor.
-    apply -> transpose_ancestor in H0.
-    apply -> transpose_parent_child in H1.
-    esearch.
-Qed.
-
-#[export] Hint Resolve transpose_covers : main.
-
-
-(*
-  If a node covers another, then an ancestor of the former covers any node
-  which has the latter as an ancestor.
-*)
-
-Theorem coverage_extension Node (g : AdmissibilityGraph Node) n1 n2 n3 n4 :
-  Ancestor g n1 n2 ->
-  Ancestor g n3 n4 ->
-  Covers g n2 n3 ->
-  Covers g n1 n4.
-Proof.
-  unfold Covers.
-  clean.
-  specialize (H1 n0 n5).
-  feed H1.
-  - apply rt_trans with (y := n4); search.
-  - feed H1.
-    apply rt_trans with (y := n2); search.
-Qed.
-
-#[export] Hint Resolve coverage_extension : main.
-
-(* A node is a *module* if it covers all of its children. *)
 
 Definition Module [Node] (g : AdmissibilityGraph Node) n1 :=
-  forall n2, ParentChild g n1 n2 -> Covers g n1 n2.
+  forall n2 n3 n4,
+  ParentChild g n1 n2 ->
+  ParentChild g n4 n3 ->
+  Ancestor g n2 n3 ->
+  Ancestor g n1 n4.
 
 Theorem transpose_module Node (g : AdmissibilityGraph Node) n :
   Module g n <-> Module (transpose g) n.
 Proof.
   unfold Module.
   split; clean.
-  - apply -> transpose_covers.
+  - apply -> transpose_ancestor.
     apply transpose_parent_child in H0.
+    apply transpose_parent_child in H1.
+    apply transpose_ancestor in H2.
     esearch.
-  - apply transpose_covers.
+  - apply transpose_ancestor.
     apply -> transpose_parent_child in H0.
+    apply -> transpose_parent_child in H1.
+    apply -> transpose_ancestor in H2.
     esearch.
 Qed.
 
@@ -333,12 +295,8 @@ Proof.
     invert H0; search.
     apply clos_rt1n_rt in H5.
     unfold Module in H.
-    specialize (H y0).
-    feed H.
-    unfold Covers in H.
-    specialize (H z y).
-    feed H.
-    feed H.
+    specialize (H y0 z y).
+    do 3 feed H.
     feed IHclos_refl_trans_n1.
     destruct IHclos_refl_trans_n1; search.
     right.
@@ -352,11 +310,7 @@ Proof.
         invert H4; search.
         apply clos_rt1n_rt in H5.
         unfold Module in H.
-        specialize (H y).
-        feed H.
-        unfold Covers in H.
-        specialize (H x0 x).
-        left.
+        specialize (H y x0 x).
         do 2 feed H.
       * left.
         apply rt_trans with (y := x0); search.
