@@ -267,7 +267,7 @@ Qed.
 
 (* It may be desirable to require the ancestor relation to be antisymmetric. *)
 
-Definition antisymmetric [Node] (g : AdmissibilityGraph Node) :=
+Definition Antisymmetric [Node] (g : AdmissibilityGraph Node) :=
   forall n1 n2, Ancestor g n1 n2 -> Ancestor g n2 n1 -> n1 = n2.
 
 (*
