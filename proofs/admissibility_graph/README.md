@@ -20,7 +20,7 @@ To make those informal descriptions more precise, the following axioms determine
 
 If `X` trusts `Y` or `X` exports `Y`, we say `X` is a *parent* of `Y` and `Y` is a *child* of `X`. The *transpose* of an admissibility graph is the graph formed by swapping the edge types: `X` trusts `Y` becomes `X` exports `Y` and vice versa.
 
-## Closure concepts
+## Reflexive transitive closures
 
 Some of the definitions and theorems below are stated in terms of the following reflexive transitive closures:
 
@@ -32,9 +32,13 @@ So the trusting and exporting relations are subsets of the ancestor relation.
 
 It may be desirable to require the ancestor relation to be antisymmetric, but none of the theorems below rely on that.
 
-## Modularity
+## Derived notions
 
-A node `M` is a *module* if for all `X`, `Y`, and `Z`, if `M` is a parent of `X` and `Z` is a parent of `Y`, then `X` is an ancestor of `Y` implies `M` is an ancestor of `Z`.
+The notions of *trust* and *export* are primitive in the framework of admissibility graphs. Several derived notions are useful as well:
+
+- `M` is a *module* if for all `X`, `Y`, and `Z`, if `M` is a parent of `X` and `Z` is a parent of `Y`, then `X` is an ancestor of `Y` implies `M` is an ancestor of `Z`.
+- `X` is *encapsulated* within `M` if `M` is a module and an ancestor of `X` which is not exporting `X`.
+- `X` is *sandboxed* within `M` if `M` is a module and an ancestor of `X` which is not trusting of `X`.
 
 ## Theorems
 
@@ -46,9 +50,9 @@ This development contains verified proofs of the following theorems:
 
 **Theorem (admission).** `X` is allowed to depend on `Y` iff there some `U` is trusting of `X` and some `V` is exporting `Y` and (`U` = `V` or there is an edge `U` trusts `V` or `V` exports `U`).
 
-**Theorem (encapsulation).** If `M` is a module and an ancestor of `X` and if some `Y` is allowed to depend on `X`, then either `M` is an ancestor of `Y` or `M` is exporting `X`.
+**Theorem (encapsulation).** If `X` is encapsulated within `M` and `Y` is allowed to depend on `X`, then `M` is an ancestor of `Y`.
 
-**Theorem (sandboxing).** If `M` is a module and an ancestor of `X` and if `X` is allowed to depend on some `Y`, then either `M` is an ancestor of `Y` or `M` is trusting of `X`.
+**Theorem (sandboxing).** If `X` is sandboxed within `M` and `X` is allowed to depend on `Y`, then `M` is an ancestor of `Y`.
 
 ## An algorithm to validate dependencies
 
