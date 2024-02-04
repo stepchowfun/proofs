@@ -302,27 +302,75 @@ Qed.
 #[export] Hint Resolve transpose_module : main.
 
 (*
-  The nodes within a module which can be depended on from nodes outside the
-  module are exported by the module.
+  A node is *encapsulated* within a module if the module is an ancestor of the
+  node and isn't exporting it. A node is *sandboxed* within a module if the
+  module is an ancestor of the node and isn't trusting of it.
+*)
+
+Definition Encapsulated [Node] (g : AdmissibilityGraph Node) n1 n2 :=
+  Module g n1 /\ Ancestor g n1 n2 /\ ~ Exporting g n1 n2.
+
+Definition Sandboxed [Node] (g : AdmissibilityGraph Node) n1 n2 :=
+  Module g n1 /\ Ancestor g n1 n2 /\ ~ Trusting g n1 n2.
+
+Theorem transpose_encapsulated Node (g : AdmissibilityGraph Node) n1 n2 :
+  Encapsulated g n1 n2 <-> Sandboxed (transpose g) n1 n2.
+Proof.
+  unfold Encapsulated, Sandboxed.
+  split; clean.
+  - repeat split; search.
+    + apply -> transpose_module.
+      search.
+    + apply -> transpose_ancestor.
+      search.
+  - repeat split; search.
+    + apply transpose_module.
+      search.
+    + apply transpose_ancestor.
+      search.
+Qed.
+
+#[export] Hint Resolve transpose_encapsulated : main.
+
+Theorem transpose_sandboxed Node (g : AdmissibilityGraph Node) n1 n2 :
+  Sandboxed g n1 n2 <-> Encapsulated (transpose g) n1 n2.
+Proof.
+  unfold Encapsulated, Sandboxed.
+  split; clean.
+  - repeat split; search.
+    + apply -> transpose_module.
+      search.
+    + apply -> transpose_ancestor.
+      search.
+  - repeat split; search.
+    + apply transpose_module.
+      search.
+    + apply transpose_ancestor.
+      search.
+Qed.
+
+#[export] Hint Resolve transpose_sandboxed : main.
+
+(*
+  The nodes which can depend on a node encapsulated within a module have the
+  module as an ancestor.
 *)
 
 Theorem encapsulation Node (g : AdmissibilityGraph Node) n1 n2 n3 :
-  Module g n1 ->
-  Ancestor g n1 n2 ->
-  Allowed g n3 n2 ->
-  Ancestor g n1 n3 \/ Exporting g n1 n2.
+  Encapsulated g n1 n2 -> Allowed g n3 n2 -> Ancestor g n1 n3.
 Proof.
+  unfold Encapsulated.
   clean.
-  apply admission in H1.
-  do 3 destruct H1.
-  destruct H2.
+  apply admission in H0.
+  do 3 destruct H0.
+  destruct H3.
   assert (Ancestor g n1 x0 \/ Exporting g n1 n2).
-  - clear H1.
-    apply clos_rt_rtn1 in H2.
-    induction H2; search.
-    apply clos_rtn1_rt in H2.
-    apply clos_rt_rt1n in H0.
-    invert H0; search.
+  - clear H0 H2.
+    apply clos_rt_rtn1 in H3.
+    induction H3; search.
+    apply clos_rtn1_rt in H3.
+    apply clos_rt_rt1n in H1.
+    invert H1; search.
     apply clos_rt1n_rt in H5.
     unfold Module in H.
     specialize (H y0 z y).
@@ -331,48 +379,45 @@ Proof.
     destruct IHclos_refl_trans_n1; search.
     right.
     apply rt_trans with (y := y); search.
-  - destruct H4; search.
+  - destruct H5; search.
     assert (Ancestor g n1 x \/ Exporting g n1 n2).
-    + clear H1.
-      destruct H3; search.
-      destruct H1.
-      * apply clos_rt_rt1n in H4.
-        invert H4; search.
-        apply clos_rt1n_rt in H5.
+    + clear H0.
+      destruct H4; search.
+      destruct H0.
+      * apply clos_rt_rt1n in H5.
+        invert H5; search.
+        apply clos_rt1n_rt in H6.
         unfold Module in H.
         specialize (H y x0 x).
         do 2 feed H.
       * left.
         apply rt_trans with (y := x0); search.
-    + clear H4.
-      destruct H5; search.
-      apply clos_rt_rtn1 in H1.
-      induction H1; search.
+    + clear H5.
+      destruct H6; search.
+      clear H2.
+      apply clos_rt_rtn1 in H0.
+      induction H0; search.
       destruct IHclos_refl_trans_n1; search.
-      left.
-      apply rt_trans with (y := y); search.
+      * apply rt_trans with (y := y); search.
+      * apply rt_trans with (y := y); search.
+        apply rt_trans with (y := z0); search.
 Qed.
 
 #[export] Hint Resolve encapsulation : main.
 
 (*
-  The nodes within a module which can depend on nodes outside the module are
-  trusted by the module.
+  The nodes which can be depended on by a node sandboxed within a module have
+  the module as an ancestor.
 *)
 
 Theorem sandboxing Node (g : AdmissibilityGraph Node) n1 n2 n3 :
-  Module g n1 ->
-  Ancestor g n1 n2 ->
-  Allowed g n2 n3 ->
-  Ancestor g n1 n3 \/ Trusting g n1 n2.
+  Sandboxed g n1 n2 -> Allowed g n2 n3 -> Ancestor g n1 n3.
 Proof.
   clean.
   pose proof (encapsulation Node (transpose g) n1 n2 n3).
-  feed H2; [ apply -> transpose_module; search | idtac ].
-  feed H2; [ apply -> transpose_ancestor; search | idtac ].
-  feed H2; [ apply -> duality; search | idtac ].
-  destruct H2; search.
-  apply <- transpose_ancestor in H2.
+  feed H1; [ apply -> transpose_sandboxed; search | idtac ].
+  feed H1; [ apply -> duality; search | idtac ].
+  apply transpose_ancestor.
   search.
 Qed.
 
