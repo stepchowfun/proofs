@@ -217,7 +217,9 @@ Qed.
 
 (*
   If there is a (possibly empty) chain of lineage from one node to another, we
-  say the former is an *ancestor* of the latter.
+  say the former is an *ancestor* of the latter and the latter is a
+  *descendant* of the former. We omit the formal definition of the descendant
+  relation in favor of consistently using the ancestor relation everywhere.
 *)
 
 Definition Ancestor [Node] (g : AdmissibilityGraph Node) n1 n2 :=
@@ -271,8 +273,8 @@ Definition Antisymmetric [Node] (g : AdmissibilityGraph Node) :=
   forall n1 n2, Ancestor g n1 n2 -> Ancestor g n2 n1 -> n1 = n2.
 
 (*
-  A node is a *module* if it's an ancestor of every parent of every node that
-  has a child of the module as an ancestor.
+  A node is a *module* if it's an ancestor of every parent of every descendant
+  of every child of the module.
 *)
 
 Definition Module [Node] (g : AdmissibilityGraph Node) n1 :=
@@ -352,8 +354,8 @@ Qed.
 #[export] Hint Resolve transpose_sandboxed : main.
 
 (*
-  The nodes which can depend on a node encapsulated within a module have the
-  module as an ancestor.
+  The nodes which can depend on a node encapsulated within a module are
+  descendants of the module.
 *)
 
 Theorem encapsulation Node (g : AdmissibilityGraph Node) n1 n2 n3 :
@@ -406,8 +408,8 @@ Qed.
 #[export] Hint Resolve encapsulation : main.
 
 (*
-  The nodes which can be depended on by a node sandboxed within a module have
-  the module as an ancestor.
+  The nodes which can be depended on by a node sandboxed within a module are
+  descendants of the module.
 *)
 
 Theorem sandboxing Node (g : AdmissibilityGraph Node) n1 n2 n3 :
