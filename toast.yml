@@ -6,7 +6,7 @@ command_prefix: |
   set -euxo pipefail
 
   # Load the opam environment.
-  if type opam > /dev/null 2>&1; then
+  if test -d ~/.opam; then
     eval "$(opam env)"
   fi
 tasks:
@@ -50,7 +50,7 @@ tasks:
       - install_packages
     user: user
     command: |
-      # Install Coq via OPAM.
+      # Install Coq via opam.
       opam init --disable-sandboxing --yes
       eval "$(opam env)"
       opam switch create 5.1.1 --yes
