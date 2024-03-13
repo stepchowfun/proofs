@@ -2,8 +2,8 @@ image: ubuntu:22.04
 default: verify
 user: user
 command_prefix: |
-  # Make Bash not silently ignore errors.
-  set -euo pipefail
+  # Make Bash log commands and not silently ignore errors.
+  set -euxo pipefail
 
   # Load the opam environment.
   if type opam > /dev/null 2>&1; then
