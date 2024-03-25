@@ -114,7 +114,18 @@ Qed.
 
   Types declared with `Record` support neither indices nor recursion, so eta
   conversion (but not expansion or contraction) is supported for them.
+*)
 
+Record Square := { width : nat; height : nat; square : width = height }.
+
+Goal
+  forall s,
+  s = {| width := s.(width); height := s.(height) ; square := s.(square) |}.
+Proof.
+  reflexivity.
+Qed.
+
+(*
   Even though eta-conversion for (co)inductive types is generally absent,
   corresponding eta laws can be proven in many cases.
 *)
