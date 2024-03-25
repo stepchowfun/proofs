@@ -7,7 +7,7 @@
 (*****************************)
 
 (*
-  In Coq does not eta-contract terms during reduction. Suppose we had the
+  Coq does not eta-contract terms during reduction. Suppose we had the
   following function:
 *)
 
@@ -18,8 +18,8 @@ Parameter f : nat -> unit.
 Check fun x => f x.
 
 (*
-  If we have eta contraction for both function types and the unit type, then
-  that term has two normal forms:
+  If we have eta contraction for function types and the unit type, then that
+  term has two normal forms:
 *)
 
 Check f. (* Eta-contract the function *)
