@@ -28,6 +28,21 @@ Check fun x => tt. (* Eta-contract the body of the function *)
 (*
   So, we can't have both forms of eta contraction if we care about confluence.
 
+  Eta contraction can also break subject reduction when combined with universe
+  cumulativity. The term
+
+  ```
+  fun (x : Type_0) => (fun (y : Type_1) => y) x
+  ```
+
+  has type `Type_0 -> Type_1` but eta contracts to
+
+  ```
+  fun (y : Type_1) => y
+  ```
+
+  which has type `Type_1 -> Type_1` [1].
+
   What about eta expansion? The problem is that eta expansion is non-
   normalizing.
 
@@ -112,11 +127,10 @@ Qed.
 (*
   References:
 
-  [1] https://coq.inria.fr/doc/V8.18.0/refman/language/core/conversion.html
-      #expansion
+  [1] https://www.meven.ac/documents/WITS-22.pdf
   [2] Jay, C. Barry, and Neil Ghani. "The Virtues of Eta-Expansion." Journal of
       Functional Programming 5, no. 2 (1995): 135–54.
       https://doi.org/10.1017/S0956796800001301.
-  [3] https://ncatlab.org/nlab/show/identity+type
+  [3] https://ncatlab.org/nlab/show/identity+type#EtaConversion
   [4] https://proofassistants.stackexchange.com/a/1503
 *)
