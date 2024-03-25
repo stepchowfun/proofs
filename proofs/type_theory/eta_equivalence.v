@@ -41,7 +41,8 @@ Check fun x => tt. (* Eta-contract the body of the function *)
   fun (y : Type_1) => y
   ```
 
-  which has type `Type_1 -> Type_1` [1].
+  which has type `Type_1 -> Type_1` [1]. In Coq, neither of those two types is
+  convertible to the other, since Coq does not have contravariance.
 
   What about eta expansion? The problem is that eta expansion is non-
   normalizing.
@@ -127,7 +128,7 @@ Qed.
 (*
   References:
 
-  [1] https://www.meven.ac/documents/WITS-22.pdf
+  [1] https://www.meven.ac/documents/22-WITS-abstract.pdf
   [2] Jay, C. Barry, and Neil Ghani. "The Virtues of Eta-Expansion." Journal of
       Functional Programming 5, no. 2 (1995): 135–54.
       https://doi.org/10.1017/S0956796800001301.
