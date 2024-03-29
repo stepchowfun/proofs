@@ -6,7 +6,6 @@
 (******************************)
 (******************************)
 
-Require Import Coq.Arith.Le.
 Require Import Coq.Arith.Peano_dec.
 Require Import Coq.Lists.List.
 Require Import main.system_f.free_var.
@@ -232,7 +231,10 @@ Proof.
   induction H2; search; clean.
   specialize (IHTLocallyClosed t2 (S i)).
   feed IHTLocallyClosed.
-  apply t_local_closure_monotonic with (i1 := i); search.
+  - apply t_local_closure_monotonic with (i1 := i); search.
+  - apply tlc_for_all.
+    apply IHTLocallyClosed.
+    search.
 Qed.
 
 #[export] Hint Resolve locally_closed_open_for_all : main.
@@ -272,7 +274,9 @@ Proof.
     apply t_local_closure_monotonic with (i1 := nt); search.
   - specialize (IHELocallyClosed t0 (S it)).
     feed IHELocallyClosed.
-    apply t_local_closure_monotonic with (i1 := it); search.
+    + apply t_local_closure_monotonic with (i1 := it); search.
+    + apply IHELocallyClosed.
+      search.
   - apply locally_closed_open_for_all; search.
     constructor.
     apply t_local_closure_monotonic with (i1 := nt); search.
