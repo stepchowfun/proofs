@@ -18,15 +18,16 @@ Parameter f : nat -> unit.
 Check fun x => f x.
 
 (*
-  If we have eta contraction for function types and the unit type, then that
-  term has two normal forms:
+  If we have eta contraction for function types and eta expansion for the unit
+  type (which is the only reasonable direction for the unit type), then the
+  above term has two normal forms:
 *)
 
 Check f. (* Eta-contract the function *)
-Check fun x => tt. (* Eta-contract the body of the function *)
+Check fun x => tt. (* Eta-expand the body of the function *)
 
 (*
-  So, we can't have both forms of eta contraction if we care about confluence.
+  So, we can't have both forms of eta if we care about confluence.
 
   Eta contraction can also break subject reduction when combined with universe
   cumulativity. The term
