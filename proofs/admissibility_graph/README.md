@@ -50,9 +50,15 @@ This development contains verified proofs of the following theorems:
 
 **Theorem (admission).** `X` is allowed to depend on `Y` iff there some `U` is trusting of `X` and some `V` is exporting `Y` and (`U` = `V` or there is an edge `U` trusts `V` or `V` exports `U`).
 
-**Theorem (encapsulation).** If `X` is encapsulated within `M` and `Y` is allowed to depend on `X`, then `M` is an ancestor of `Y`. This theorem is intended to explain why encapsulation matters: informally, (1) the definition of `X` can be updated without affecting non-descendants `N` of `M`, and (2) if `X` has mutable state, then `N` need not be considered when reasoning about that state (e.g., to prove an invariant) unless `X` depends on `N`.
+**Theorem (encapsulation).** If `X` is encapsulated within `M` and `Y` is allowed to depend on `X`, then `M` is an ancestor of `Y`.
 
-**Theorem (sandboxing).** If `X` is sandboxed within `M` and `X` is allowed to depend on `Y`, then `M` is an ancestor of `Y`. This theorem is intended to explain why sandboxing matters: informally, (1) the definition of any node `N` that isn't a descendant of `M` can be updated without affecting `X`, and (2) if `N` has mutable state, then `X` need not be considered when reasoning about that state (e.g., to prove an invariant) unless `N` depends on `X`.
+> [!TIP]
+> This theorem is intended to explain why encapsulation matters: informally, (1) the definition of `X` can be updated without affecting non-descendants `N` of `M`, and (2) if `X` has mutable state, then `N` need not be considered when reasoning about that state (e.g., to prove an invariant) unless `X` depends on `N`.
+
+**Theorem (sandboxing).** If `X` is sandboxed within `M` and `X` is allowed to depend on `Y`, then `M` is an ancestor of `Y`.
+
+> [!TIP]
+> This theorem is intended to explain why sandboxing matters: informally, (1) the definition of any node `N` that isn't a descendant of `M` can be updated without affecting `X`, and (2) if `N` has mutable state, then `X` need not be considered when reasoning about that state (e.g., to prove an invariant) unless `N` depends on `X`.
 
 ## An algorithm to validate dependencies
 
