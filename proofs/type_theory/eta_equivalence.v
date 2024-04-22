@@ -44,7 +44,7 @@ Check fun (x : Type@{U0}) => (fun (y : Type@{U1}) => y) x.
   the type of its eta-contracted form:
 *)
 
-Check (fun (y : Type@{U1}) => y).
+Check fun (y : Type@{U1}) => y.
 
 (*
   Now the type is `Type@{U1} -> Type@{U1}`. In Coq, neither of those two types
