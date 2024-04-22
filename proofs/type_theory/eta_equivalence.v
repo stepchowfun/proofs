@@ -30,20 +30,25 @@ Check fun x => tt. (* Eta-expand the body of the function *)
   So, we can't have both forms of eta if we care about confluence.
 
   Eta contraction can also break subject reduction when combined with universe
-  cumulativity. The term
+  cumulativity. Consider the type of the following function:
+*)
 
-  ```
-  fun (x : Type_0) => (fun (y : Type_1) => y) x
-  ```
+Universes U0 U1.
+Constraint U0 < U1.
 
-  has type `Type_0 -> Type_1` but eta contracts to
+Check fun (x : Type@{U0}) => (fun (y : Type@{U1}) => y) x.
 
-  ```
-  fun (y : Type_1) => y
-  ```
+(*
+  The type is `Type@{U0} -> Type@{U1}` (you may need to configure your Coq
+  environment to display universe levels in order to see this). Now consider
+  the type of its eta-contracted form:
+*)
 
-  which has type `Type_1 -> Type_1` [1]. In Coq, neither of those two types is
-  convertible to the other, since Coq does not have contravariance.
+Check (fun (y : Type@{U1}) => y).
+
+(*
+  Now the type is `Type@{U1} -> Type@{U1}`. In Coq, neither of those two types
+  is convertible to the other, since Coq does not have contravariance.
 
   What about eta expansion? The problem is that eta expansion is non-
   normalizing.
