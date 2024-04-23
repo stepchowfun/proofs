@@ -40,7 +40,7 @@ Definition Delta :=
 Definition Omega :=
   Tau (fun (P : Power Universe) => forall (X : Universe), Sigma X P -> P X).
 
-Definition Bad := (
+Definition bad := (
   fun (
     Zero :
       forall (P : Power Universe),
@@ -66,12 +66,12 @@ Definition Bad := (
       One Omega (fun (X : Universe) => One (Tau (Sigma X)))
 ).
 
-Check Bad. (* `ExFalso` *)
-Check Bad False. (* `False` *)
+Check bad. (* `ExFalso` *)
+Check bad False. (* `False` *)
 
 (*
   ```
-  Compute Bad.
-  Compute Bad False.
+  Compute bad.
+  Compute bad False.
   ```
 *)
