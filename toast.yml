@@ -1,4 +1,4 @@
-image: ubuntu:22.04
+image: ubuntu:24.04
 default: verify
 user: user
 command_prefix: |
@@ -37,8 +37,8 @@ tasks:
     description: Create a user who doesn't have root privileges.
     user: root
     command: |
-      # Create a user named `user` with a home directory.
-      adduser --disabled-password --gecos '' user
+      # Create a user named `user` with a home directory and with Bash as the login shell.
+      useradd user --create-home --shell /bin/bash
 
       # Without this, Ruby will assume files are encoded as ASCII.
       echo 'export LANG="C.UTF-8"' >> /home/user/.profile
