@@ -4,9 +4,9 @@
 
 This is my personal repository of formally verified mathematics, including results from category theory, type theory, domain theory, etc., and some original research. All the proofs are verified using the [Coq proof assistant](https://coq.inria.fr/).
 
-If you want to set up your own repository of formally verified mathematics, you can simply fork this repository and replace the contents of the [`proofs`](https://github.com/stepchowfun/proofs/tree/main/proofs) directory with your own proofs. Setting up a Coq project from scratch is not particularly straightforward, so this scaffolding can save you time.
+If you want to set up your own repository of formally verified mathematics, you can simply fork this repository and replace the contents of the [`proofs`](https://github.com/stepchowfun/proofs/tree/main/proofs)<!-- [dir:proofs] --> directory with your own proofs. Setting up a Coq project from scratch is not particularly straightforward, so this scaffolding can save you time.
 
-If you are new to Coq, the repository contains a tutorial [here](https://github.com/stepchowfun/proofs/tree/main/proofs/tutorial). I recommend [Software Foundations](https://softwarefoundations.cis.upenn.edu/) and [Certified Programming with Dependent Types](http://adam.chlipala.net/cpdt/) for further learning.
+If you are new to Coq, the repository contains a tutorial [here](https://github.com/stepchowfun/proofs/tree/main/proofs/tutorial)<!-- [dir:proofs/tutorial] -->. I recommend [Software Foundations](https://softwarefoundations.cis.upenn.edu/) and [Certified Programming with Dependent Types](http://adam.chlipala.net/cpdt/) for further learning.
 
 ## Instructions
 
