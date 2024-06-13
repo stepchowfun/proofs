@@ -2,13 +2,16 @@ image: ubuntu:24.04
 default: verify
 user: user
 command_prefix: |
-  # Make Bash log commands and not silently ignore errors.
-  set -euxo pipefail
+  # Make not silently ignore errors.
+  set -euo pipefail
 
-  # Load the opam environment.
-  if test -d ~/.opam; then
+  # Load the opam environment, if it exists.
+  if [ -d "$HOME/.opam" ]; then
     eval "$(opam env)"
   fi
+
+  # Make Bash log commands.
+  set -x
 tasks:
   install_packages:
     description: Install system packages.
