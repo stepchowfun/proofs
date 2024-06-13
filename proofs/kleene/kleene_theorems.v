@@ -26,7 +26,7 @@ Module KleeneTheorems (Kleene : KleeneData).
 
   Definition Monotone f := forall x1 x2, Leq x1 x2 -> Leq (f x1) (f x2).
 
-  #[export] Hint Unfold Monotone : main.
+  Hint Unfold Monotone : main.
 
   (*
     A function is Scott-continuous if it preserves suprema of directed subsets.
@@ -41,7 +41,7 @@ Module KleeneTheorems (Kleene : KleeneData).
     Supremum P x1 ->
     Supremum (fun x2 => exists x3, P x3 /\ x2 = f x3) (f x1).
 
-  #[export] Hint Unfold Continuous : main.
+  Hint Unfold Continuous : main.
 
   (* This function performs iterated application of a function to `bottom`. *)
 
@@ -81,7 +81,7 @@ Module KleeneTheorems (Kleene : KleeneData).
     unfold Supremum. search.
   Qed.
 
-  #[export] Hint Resolve supremum_uniqueness : main.
+  Hint Resolve supremum_uniqueness : main.
 
   (* Scott-continuity implies monotonicity. *)
 
@@ -93,7 +93,7 @@ Module KleeneTheorems (Kleene : KleeneData).
     - unfold Supremum in H. feed H; esearch.
   Qed.
 
-  #[export] Hint Resolve continuous_implis_monotone : main.
+  Hint Resolve continuous_implis_monotone : main.
 
   (*
     Iterated applications of a monotone function `f` to bottom form an
@@ -111,7 +111,7 @@ Module KleeneTheorems (Kleene : KleeneData).
     - left. clean. induction n; search.
   Qed.
 
-  #[export] Hint Resolve omega_chain : main.
+  Hint Resolve omega_chain : main.
 
   (* The ascending kleene chain of `f` is directed. *)
 
@@ -130,7 +130,7 @@ Module KleeneTheorems (Kleene : KleeneData).
       + exists (approx f x). esearch.
   Qed.
 
-  #[export] Hint Resolve kleene_chain_directed : main.
+  Hint Resolve kleene_chain_directed : main.
 
   (**********************************)
   (* The kleene fixed-point theorem *)
@@ -185,5 +185,5 @@ Module KleeneTheorems (Kleene : KleeneData).
         * unfold Supremum in H1. search.
   Qed.
 
-  #[export] Hint Resolve kleene : main.
+  Hint Resolve kleene : main.
 End KleeneTheorems.

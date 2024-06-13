@@ -27,8 +27,8 @@ Record NaturalTransformation [C D] (F G : Functor C D) := {
 Arguments eta [_ _ _ _] _ _.
 Arguments naturality [_ _ _ _] _ [_ _] _.
 
-#[export] Hint Resolve naturality : main.
-#[export] Hint Rewrite @naturality : main.
+Hint Resolve naturality : main.
+Hint Rewrite @naturality : main.
 
 Theorem eq_natural_transformation
   [C D]
@@ -54,7 +54,7 @@ Proof.
     search.
 Qed.
 
-#[export] Hint Resolve eq_natural_transformation : main.
+Hint Resolve eq_natural_transformation : main.
 
 Program Definition left_whisker
   [C D E]
@@ -134,7 +134,7 @@ Proof.
   search.
 Qed.
 
-#[export] Hint Resolve hor_comp_natural_transformation_alt : main.
+Hint Resolve hor_comp_natural_transformation_alt : main.
 
 Definition natural_isomorphism
   [C D] [F G : Functor C D]

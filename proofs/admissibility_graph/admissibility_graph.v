@@ -51,7 +51,7 @@ Proof.
   search.
 Qed.
 
-#[export] Hint Resolve transpose_involution : main.
+Hint Resolve transpose_involution : main.
 
 (*
   If there is a (possibly empty) chain of trust from one node to another, we
@@ -73,7 +73,7 @@ Proof.
     search.
 Qed.
 
-#[export] Hint Resolve transpose_trusting : main.
+Hint Resolve transpose_trusting : main.
 
 Theorem transpose_exporting Node (g : AdmissibilityGraph Node) :
   Exporting g = Trusting (transpose g).
@@ -82,7 +82,7 @@ Proof.
     search.
 Qed.
 
-#[export] Hint Resolve transpose_trusting : main.
+Hint Resolve transpose_trusting : main.
 
 (*
   Every node can depend on itself, the nodes it trusts, the nodes that export
@@ -98,7 +98,7 @@ Inductive Allowed [Node] (g : AdmissibilityGraph Node) (n : Node) : Node
 | egress : forall n1 n2, Trusts g n1 n -> Allowed g n1 n2 -> Allowed g n n2
 | ingress : forall n1 n2, Exports g n1 n2 -> Allowed g n n1 -> Allowed g n n2.
 
-#[export] Hint Constructors Allowed : main.
+Hint Constructors Allowed : main.
 
 (*
   The dependencies allowed by the transpose of a graph are the flipped versions
@@ -111,7 +111,7 @@ Proof.
   split; clean; induction H; esearch.
 Qed.
 
-#[export] Hint Resolve duality : main.
+Hint Resolve duality : main.
 
 (*
   If two admissibility graphs with the same nodes have corresponding edges
@@ -134,7 +134,7 @@ Proof.
   ).
 Qed.
 
-#[export] Hint Resolve reflection : main.
+Hint Resolve reflection : main.
 
 (* The following theorems generalize the egress and ingress axioms. *)
 
@@ -148,7 +148,7 @@ Proof.
   induction H; esearch.
 Qed.
 
-#[export] Hint Resolve egress_extension : main.
+Hint Resolve egress_extension : main.
 
 Theorem ingress_extension Node (g : AdmissibilityGraph Node) n1 n2 n3 :
   Exporting g n1 n2 ->
@@ -160,7 +160,7 @@ Proof.
   induction H; esearch.
 Qed.
 
-#[export] Hint Resolve ingress_extension : main.
+Hint Resolve ingress_extension : main.
 
 (*
   The following theorem gives an equivalent way to characterize which
@@ -195,7 +195,7 @@ Proof.
     apply ingress_extension with (n1 := x0); search.
 Qed.
 
-#[export] Hint Resolve admission : main.
+Hint Resolve admission : main.
 
 (*
   If a node trusts or exports another node, we say the former node is a
@@ -213,7 +213,7 @@ Proof.
   search.
 Qed.
 
-#[export] Hint Resolve transpose_parent_child : main.
+Hint Resolve transpose_parent_child : main.
 
 (*
   If there is a (possibly empty) chain of lineage from one node to another, we
@@ -241,7 +241,7 @@ Proof.
     + apply rt_trans with (y := y); search.
 Qed.
 
-#[export] Hint Resolve transpose_parent_child : main.
+Hint Resolve transpose_parent_child : main.
 
 (* The ancestor relation is a superset of the trusting relation. *)
 
@@ -253,7 +253,7 @@ Proof.
   apply rt_trans with (y := y); search.
 Qed.
 
-#[export] Hint Resolve trusting_ancestor : main.
+Hint Resolve trusting_ancestor : main.
 
 (* The ancestor relation is a superset of the exporting relation. *)
 
@@ -265,7 +265,7 @@ Proof.
   apply rt_trans with (y := y); search.
 Qed.
 
-#[export] Hint Resolve exporting_ancestor : main.
+Hint Resolve exporting_ancestor : main.
 
 (* It may be desirable to require the ancestor relation to be antisymmetric. *)
 
@@ -301,7 +301,7 @@ Proof.
     esearch.
 Qed.
 
-#[export] Hint Resolve transpose_module : main.
+Hint Resolve transpose_module : main.
 
 (*
   A node is *encapsulated* within a module if the module is an ancestor of the
@@ -332,7 +332,7 @@ Proof.
       search.
 Qed.
 
-#[export] Hint Resolve transpose_encapsulated : main.
+Hint Resolve transpose_encapsulated : main.
 
 Theorem transpose_sandboxed Node (g : AdmissibilityGraph Node) n1 n2 :
   Sandboxed g n1 n2 <-> Encapsulated (transpose g) n1 n2.
@@ -351,7 +351,7 @@ Proof.
       search.
 Qed.
 
-#[export] Hint Resolve transpose_sandboxed : main.
+Hint Resolve transpose_sandboxed : main.
 
 (*
   The nodes which can depend on a node encapsulated within a module are
@@ -405,7 +405,7 @@ Proof.
         apply rt_trans with (y := z0); search.
 Qed.
 
-#[export] Hint Resolve encapsulation : main.
+Hint Resolve encapsulation : main.
 
 (*
   The nodes which can be depended on by a node sandboxed within a module are
@@ -423,4 +423,4 @@ Proof.
   search.
 Qed.
 
-#[export] Hint Resolve sandboxing : main.
+Hint Resolve sandboxing : main.

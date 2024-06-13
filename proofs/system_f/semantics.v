@@ -21,7 +21,7 @@ Inductive Value : Term -> Prop :=
   ELocallyClosed (e_t_abs e) 0 0 ->
   Value (e_t_abs e).
 
-#[export] Hint Constructors Value : main.
+Hint Constructors Value : main.
 
 Inductive Step : Term -> Term -> Prop :=
 | s_beta :
@@ -50,7 +50,7 @@ Inductive Step : Term -> Term -> Prop :=
   TLocallyClosed t 0 ->
   Step (e_t_app (e_t_abs e1) t) (et_open e1 0 t).
 
-#[export] Hint Constructors Step : main.
+Hint Constructors Step : main.
 
 Theorem StepRegularity :
   forall e1 e2,
@@ -64,7 +64,7 @@ Proof.
   - invert H; search.
 Qed.
 
-#[export] Hint Resolve StepRegularity : main.
+Hint Resolve StepRegularity : main.
 
 Inductive StepStar : Term -> Term -> Prop :=
 | ss_refl :
@@ -77,7 +77,7 @@ Inductive StepStar : Term -> Term -> Prop :=
   StepStar e2 e3 ->
   StepStar e1 e3.
 
-#[export] Hint Constructors StepStar : main.
+Hint Constructors StepStar : main.
 
 Theorem StepStarRegularity :
   forall e1 e2,
@@ -87,4 +87,4 @@ Proof.
   clean. induction H; search. pose proof (StepRegularity e1 e2). search.
 Qed.
 
-#[export] Hint Resolve StepStarRegularity : main.
+Hint Resolve StepStarRegularity : main.

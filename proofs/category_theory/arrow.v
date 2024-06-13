@@ -53,7 +53,7 @@ Proof.
   split; clean; exists x0; search.
 Qed.
 
-#[export] Hint Resolve op_isomorphism : main.
+Hint Resolve op_isomorphism : main.
 
 Theorem op_mono_epi [C x y] f :
   @Monomorphism C x y f <-> @Epimorphism (opposite_category C) y x f.
@@ -61,7 +61,7 @@ Proof.
   search.
 Qed.
 
-#[export] Hint Resolve op_mono_epi : main.
+Hint Resolve op_mono_epi : main.
 
 Theorem op_epi_mono [C x y] f :
   @Epimorphism C x y f <-> @Monomorphism (opposite_category C) y x f.
@@ -69,7 +69,7 @@ Proof.
   search.
 Qed.
 
-#[export] Hint Resolve op_epi_mono : main.
+Hint Resolve op_epi_mono : main.
 
 Theorem op_ret_sec [C x y] f :
   @Retraction C x y f <-> @Section (opposite_category C) y x f.
@@ -77,7 +77,7 @@ Proof.
   search.
 Qed.
 
-#[export] Hint Resolve op_ret_sec : main.
+Hint Resolve op_ret_sec : main.
 
 Theorem op_sec_ret [C x y] f :
   @Section C x y f <-> @Retraction (opposite_category C) y x f.
@@ -85,7 +85,7 @@ Proof.
   search.
 Qed.
 
-#[export] Hint Resolve op_sec_ret : main.
+Hint Resolve op_sec_ret : main.
 
 Theorem id_iso [C] x : Isomorphism (@id C x).
 Proof.
@@ -95,7 +95,7 @@ Proof.
   search.
 Qed.
 
-#[export] Hint Resolve id_iso : main.
+Hint Resolve id_iso : main.
 
 Theorem left_id_unique [C] (x : Object C):
   ArrowUnique (
@@ -109,7 +109,7 @@ Proof.
   search.
 Qed.
 
-#[export] Hint Resolve left_id_unique : main.
+Hint Resolve left_id_unique : main.
 
 Theorem right_id_unique [C] (x : Object C):
   ArrowUnique (
@@ -123,7 +123,7 @@ Proof.
   search.
 Qed.
 
-#[export] Hint Resolve right_id_unique : main.
+Hint Resolve right_id_unique : main.
 
 Theorem inverse_unique [C] [x y : Object C] (f : Arrow x y) :
   ArrowUnique (Inverse f).
@@ -137,7 +137,7 @@ Proof.
   search.
 Qed.
 
-#[export] Hint Resolve inverse_unique : main.
+Hint Resolve inverse_unique : main.
 
 Theorem inverse_involution [C] [x y : Object C] (f h : Arrow x y) g :
   Inverse f g -> Inverse g h -> f = h.
@@ -150,7 +150,7 @@ Proof.
     rewrite <- c_assoc. rewrite H. search.
 Qed.
 
-#[export] Hint Resolve inverse_involution : main.
+Hint Resolve inverse_involution : main.
 
 Theorem iso_implies_epi [C x y] f :
   @Isomorphism C x y f -> @Epimorphism C x y f.
@@ -167,7 +167,7 @@ Proof.
   search.
 Qed.
 
-#[export] Hint Resolve iso_implies_epi : main.
+Hint Resolve iso_implies_epi : main.
 
 Theorem iso_implies_mono [C x y] f :
   @Isomorphism C x y f -> @Monomorphism C x y f.
@@ -179,7 +179,7 @@ Proof.
   search.
 Qed.
 
-#[export] Hint Resolve iso_implies_mono : main.
+Hint Resolve iso_implies_mono : main.
 
 Theorem sec_implies_mono [C x y] f : @Section C x y f -> @Monomorphism C x y f.
 Proof.
@@ -194,7 +194,7 @@ Proof.
   search.
 Qed.
 
-#[export] Hint Resolve sec_implies_mono : main.
+Hint Resolve sec_implies_mono : main.
 
 Theorem ret_implies_epi [C x y] f :
   @Retraction C x y f -> @Epimorphism C x y f.
@@ -205,7 +205,7 @@ Proof.
   search.
 Qed.
 
-#[export] Hint Resolve ret_implies_epi : main.
+Hint Resolve ret_implies_epi : main.
 
 Theorem mono_ret_equiv_iso [C x y] f :
   @Monomorphism C x y f /\ @Retraction C x y f <-> @Isomorphism C x y f.
@@ -232,7 +232,7 @@ Proof.
     search.
 Qed.
 
-#[export] Hint Resolve mono_ret_equiv_iso : main.
+Hint Resolve mono_ret_equiv_iso : main.
 
 Theorem epi_sec_equiv_iso [C x y] f :
   @Epimorphism C x y f /\ @Section C x y f <-> @Isomorphism C x y f.
@@ -244,4 +244,4 @@ Proof.
   search.
 Qed.
 
-#[export] Hint Resolve epi_sec_equiv_iso : main.
+Hint Resolve epi_sec_equiv_iso : main.

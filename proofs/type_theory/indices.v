@@ -29,14 +29,14 @@ Inductive Exp1 : Set -> Type :=
 | add1 : Exp1 nat -> Exp1 nat -> Exp1 nat
 | less_than1 : Exp1 nat -> Exp1 nat -> Exp1 bool.
 
-#[export] Hint Constructors Exp1 : main.
+Hint Constructors Exp1 : main.
 
 Inductive Exp2 (a : Set) : Set :=
 | const2 : a -> Exp2 a
 | add2 : nat = a -> Exp2 nat -> Exp2 nat -> Exp2 a
 | less_than2 : bool = a -> Exp2 nat -> Exp2 nat -> Exp2 a.
 
-#[export] Hint Constructors Exp2 : main.
+Hint Constructors Exp2 : main.
 
 Fixpoint exp1_to_exp2 (a : Set) (e1 : Exp1 a) : Exp2 a :=
   match e1 with
@@ -66,7 +66,7 @@ Proof.
   induction e; search.
 Qed.
 
-#[export] Hint Resolve exp1_to_exp2_to_exp1 : main.
+Hint Resolve exp1_to_exp2_to_exp1 : main.
 
 Theorem exp2_to_exp1_to_exp2 :
   forall (a : Set) (e : Exp2 a), exp1_to_exp2 a (exp2_to_exp1 a e) = e.
@@ -75,7 +75,7 @@ Proof.
   induction e; search.
 Qed.
 
-#[export] Hint Resolve exp2_to_exp1_to_exp2 : main.
+Hint Resolve exp2_to_exp1_to_exp2 : main.
 
 (*
   Just for fun, we implement evaluators for both of the inductive definitions
@@ -113,7 +113,7 @@ Proof.
   search.
 Qed.
 
-#[export] Hint Resolve exp1_to_exp2_preserves_eval : main.
+Hint Resolve exp1_to_exp2_preserves_eval : main.
 
 Theorem exp2_to_exp1_preserves_eval :
   forall (a : Set) (e : Exp2 a), eval2 a e = eval1 a (exp2_to_exp1 a e).
@@ -126,4 +126,4 @@ Proof.
   search.
 Qed.
 
-#[export] Hint Resolve exp2_to_exp1_preserves_eval : main.
+Hint Resolve exp2_to_exp1_preserves_eval : main.

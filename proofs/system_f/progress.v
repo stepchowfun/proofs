@@ -32,4 +32,4 @@ Proof.
     + exists (e_t_app x t2). invert H. search.
 Qed.
 
-#[export] Hint Resolve progress : main.
+Hint Resolve progress : main.

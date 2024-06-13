@@ -59,4 +59,4 @@ Proof.
     search.
 Qed.
 
-#[export] Hint Resolve equivalent_refl : main.
+Hint Resolve equivalent_refl : main.

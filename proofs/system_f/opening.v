@@ -55,7 +55,7 @@ Proof.
   clean. induction H; search.
 Qed.
 
-#[export] Hint Resolve ttt_open_locally_closed : main.
+Hint Resolve ttt_open_locally_closed : main.
 
 Theorem eee_open_locally_closed :
   forall e1 e2 ie it,
@@ -65,7 +65,7 @@ Proof.
   clean. induction H; search.
 Qed.
 
-#[export] Hint Resolve eee_open_locally_closed : main.
+Hint Resolve eee_open_locally_closed : main.
 
 Theorem eet_open_locally_closed :
   forall e ie it t,
@@ -75,7 +75,7 @@ Proof.
   clean. induction H; search.
 Qed.
 
-#[export] Hint Resolve eet_open_locally_closed : main.
+Hint Resolve eet_open_locally_closed : main.
 
 (***************************************************************************)
 (* If the opening of a term/type is locally closed at some level, then the *)
@@ -95,7 +95,7 @@ Proof.
   - invert H. search.
 Qed.
 
-#[export] Hint Resolve t_t_locally_closed_open : main.
+Hint Resolve t_t_locally_closed_open : main.
 
 Theorem e_e_locally_closed_open :
   forall e1 e2 ie it,
@@ -112,7 +112,7 @@ Proof.
   - invert H. search.
 Qed.
 
-#[export] Hint Resolve e_e_locally_closed_open : main.
+Hint Resolve e_e_locally_closed_open : main.
 
 Theorem e_t_locally_closed_open :
   forall e ie it t,
@@ -128,7 +128,7 @@ Proof.
   - invert H. esearch.
 Qed.
 
-#[export] Hint Resolve e_t_locally_closed_open : main.
+Hint Resolve e_t_locally_closed_open : main.
 
 (********************************)
 (* Free variables of an opening *)
@@ -146,7 +146,7 @@ Proof.
   - induction t1; search. unfold incl. search.
 Qed.
 
-#[export] Hint Resolve ttt_free_open : main.
+Hint Resolve ttt_free_open : main.
 
 Theorem eeee_free_open :
   forall e1 e2 i,
@@ -160,7 +160,7 @@ Proof.
   - induction e1; search. unfold incl. search.
 Qed.
 
-#[export] Hint Resolve eeee_free_open : main.
+Hint Resolve eeee_free_open : main.
 
 Theorem eeet_free_open :
   forall e i t,
@@ -170,7 +170,7 @@ Proof.
   clean. split; outro i; induction e; search.
 Qed.
 
-#[export] Hint Resolve eeet_free_open : main.
+Hint Resolve eeet_free_open : main.
 
 Theorem etee_free_open :
   forall e1 e2 i,
@@ -191,7 +191,7 @@ Proof.
   - induction e1; search. unfold incl. search.
 Qed.
 
-#[export] Hint Resolve etee_free_open : main.
+Hint Resolve etee_free_open : main.
 
 Theorem etet_free_open :
   forall e i t,
@@ -214,7 +214,7 @@ Proof.
       apply ttt_free_open.
 Qed.
 
-#[export] Hint Resolve etet_free_open : main.
+Hint Resolve etet_free_open : main.
 
 (********************************************)
 (* Opening binders preserves local closure. *)
@@ -237,7 +237,7 @@ Proof.
     search.
 Qed.
 
-#[export] Hint Resolve locally_closed_open_for_all : main.
+Hint Resolve locally_closed_open_for_all : main.
 
 Theorem locally_closed_open_abs :
   forall e1 e2 ie it t,
@@ -258,7 +258,7 @@ Proof.
     apply e_local_closure_monotonic with (ie1 := ie) (it1 := nt); search.
 Qed.
 
-#[export] Hint Resolve locally_closed_open_abs : main.
+Hint Resolve locally_closed_open_abs : main.
 
 Theorem locally_closed_open_t_abs :
   forall e ie it t,
@@ -282,4 +282,4 @@ Proof.
     apply t_local_closure_monotonic with (i1 := nt); search.
 Qed.
 
-#[export] Hint Resolve locally_closed_open_t_abs : main.
+Hint Resolve locally_closed_open_t_abs : main.

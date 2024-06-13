@@ -28,10 +28,10 @@ Arguments f_map [_ _] _ [_ _] _.
 Arguments f_ident [_ _] _ _.
 Arguments f_comp [_ _] _ [_ _ _] _ _.
 
-#[export] Hint Resolve f_ident : main.
-#[export] Hint Rewrite @f_ident : main.
-#[export] Hint Resolve f_comp : main.
-#[export] Hint Rewrite @f_comp : main.
+Hint Resolve f_ident : main.
+Hint Rewrite @f_ident : main.
+Hint Resolve f_comp : main.
+Hint Rewrite @f_comp : main.
 
 Definition endofunctor C := Functor C C.
 
@@ -55,7 +55,7 @@ Proof.
   f_equal; apply proof_irrelevance.
 Qed.
 
-#[export] Hint Resolve comp_functor_ident_left : main.
+Hint Resolve comp_functor_ident_left : main.
 
 Theorem comp_functor_ident_right [C D] (F : Functor C D) :
   comp_functor F (id_functor D) = F.
@@ -65,7 +65,7 @@ Proof.
   f_equal; apply proof_irrelevance.
 Qed.
 
-#[export] Hint Resolve comp_functor_ident_right : main.
+Hint Resolve comp_functor_ident_right : main.
 
 Theorem comp_functor_assoc
   [B C D E]
@@ -78,4 +78,4 @@ Proof.
   f_equal; apply proof_irrelevance.
 Qed.
 
-#[export] Hint Resolve comp_functor_assoc : main.
+Hint Resolve comp_functor_assoc : main.

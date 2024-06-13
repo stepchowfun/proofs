@@ -25,8 +25,8 @@ Proof.
     + discriminate H0.
 Qed.
 
-#[export] Hint Resolve -> reflect_iff : main.
-#[export] Hint Resolve <- reflect_iff : main.
+Hint Resolve -> reflect_iff : main.
+Hint Resolve <- reflect_iff : main.
 
 Ltac reflect b :=
   let H1 := fresh "H" in
@@ -54,7 +54,7 @@ Inductive Even : nat -> Prop :=
 | even_zero : Even 0
 | even_ss : forall n : nat, Even n -> Even (S (S n)).
 
-#[export] Hint Constructors Even : main.
+Hint Constructors Even : main.
 
 Fixpoint is_even n :=
   match n with
@@ -94,7 +94,7 @@ Proof.
     + intros. destruct (H n). unfold P in H1. auto.
 Qed.
 
-#[export] Hint Resolve even_refl : main.
+Hint Resolve even_refl : main.
 
 (* A proof by reflection of `Even 1000` *)
 

@@ -27,7 +27,7 @@ Proof.
   esearch.
 Qed.
 
-#[export] Hint Resolve isomorphic_refl : main.
+Hint Resolve isomorphic_refl : main.
 
 Theorem isomorphic_trans [C] (x y z : Object C) :
   Isomorphic x y -> Isomorphic y z -> Isomorphic x z.
@@ -77,4 +77,4 @@ Proof.
   ]; search.
 Qed.
 
-#[export] Hint Resolve op_isomorphic : main.
+Hint Resolve op_isomorphic : main.

@@ -18,7 +18,7 @@ To write proofs, you'll want to use an IDE that supports interactive theorem pro
 
 You'll need the following:
 
-- [Coq](https://coq.inria.fr/) >= 8.17.1
+- [Coq](https://coq.inria.fr/) >= 8.18.0
   - Make sure to update your [`PATH`](https://en.wikipedia.org/wiki/PATH_\(variable\)) to include the location of the Coq binaries (`coqc`, `coqdep`, etc.).
 - [GNU Make](https://www.gnu.org/software/make/) >= 3.79.1
   - You also need these common Unix tools: `cp`, `find`, and `rm`. If you have `make`, you probably already have those other programs too.
