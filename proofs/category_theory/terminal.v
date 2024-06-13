@@ -23,7 +23,7 @@ Proof.
   search.
 Qed.
 
-#[export] Hint Resolve op_initial_terminal : main.
+Hint Resolve op_initial_terminal : main.
 
 Theorem op_terminal_initial [C] x :
   @terminal C x <-> @initial (opposite_category C) x.
@@ -31,7 +31,7 @@ Proof.
   search.
 Qed.
 
-#[export] Hint Resolve op_terminal_initial : main.
+Hint Resolve op_terminal_initial : main.
 
 Theorem terminal_unique C : UniqueUpToIsomorphism (@terminal C).
 Proof.
@@ -42,4 +42,4 @@ Proof.
   apply initial_unique; search.
 Qed.
 
-#[export] Hint Resolve terminal_unique : main.
+Hint Resolve terminal_unique : main.

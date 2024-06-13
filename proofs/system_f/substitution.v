@@ -53,7 +53,7 @@ Proof.
   induction t1; search.
 Qed.
 
-#[export] Hint Resolve ttt_sub_bound : main.
+Hint Resolve ttt_sub_bound : main.
 
 Theorem eee_sub_bound :
   forall e1 e2 x,
@@ -63,7 +63,7 @@ Proof.
   induction e1; search.
 Qed.
 
-#[export] Hint Resolve eee_sub_bound : main.
+Hint Resolve eee_sub_bound : main.
 
 Theorem eet_sub_bound :
   forall e t x,
@@ -73,7 +73,7 @@ Proof.
   induction e; search; clean; f_equal; search; apply ttt_sub_bound; search.
 Qed.
 
-#[export] Hint Resolve eet_sub_bound : main.
+Hint Resolve eet_sub_bound : main.
 
 (*****************************************)
 (* Substitution preserves local closure. *)
@@ -90,7 +90,7 @@ Proof.
   apply t_local_closure_monotonic with (i1 := i); search.
 Qed.
 
-#[export] Hint Resolve tt_sub_locally_closed : main.
+Hint Resolve tt_sub_locally_closed : main.
 
 Theorem ee_sub_locally_closed :
   forall e1 e2 ie it x,
@@ -103,7 +103,7 @@ Proof.
     apply e_local_closure_monotonic with (ie1 := ie) (it1 := it); search.
 Qed.
 
-#[export] Hint Resolve ee_sub_locally_closed : main.
+Hint Resolve ee_sub_locally_closed : main.
 
 Theorem et_sub_locally_closed :
   forall e ie it t x,
@@ -116,7 +116,7 @@ Proof.
   apply t_local_closure_monotonic with (i1 := it); search.
 Qed.
 
-#[export] Hint Resolve et_sub_locally_closed : main.
+Hint Resolve et_sub_locally_closed : main.
 
 (************************************)
 (* Free variables of a substitution *)
@@ -163,7 +163,7 @@ Proof.
     ); search.
 Qed.
 
-#[export] Hint Resolve ttt_free_sub : main.
+Hint Resolve ttt_free_sub : main.
 
 Theorem eeee_free_sub :
   forall e1 e2 x,
@@ -180,7 +180,7 @@ Proof.
     ); search.
 Qed.
 
-#[export] Hint Resolve eeee_free_sub : main.
+Hint Resolve eeee_free_sub : main.
 
 Theorem eeet_free_sub :
   forall e t x,
@@ -189,7 +189,7 @@ Proof.
   clean. induction e; search.
 Qed.
 
-#[export] Hint Resolve eeet_free_sub : main.
+Hint Resolve eeet_free_sub : main.
 
 Theorem etee_free_sub :
   forall e1 e2 x,
@@ -204,7 +204,7 @@ Proof.
   - apply incl_tran with (m := et_free_vars e1 ++ t_free_vars t); search.
 Qed.
 
-#[export] Hint Resolve etee_free_sub : main.
+Hint Resolve etee_free_sub : main.
 
 Theorem etet_free_sub :
   forall e t x,
@@ -233,4 +233,4 @@ Proof.
     ); search.
 Qed.
 
-#[export] Hint Resolve etet_free_sub : main.
+Hint Resolve etet_free_sub : main.

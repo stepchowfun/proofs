@@ -21,4 +21,4 @@ Proof.
   clean. induction H0; esearch.
 Qed.
 
-#[export] Hint Resolve soundness : main.
+Hint Resolve soundness : main.

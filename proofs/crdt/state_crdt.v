@@ -23,7 +23,7 @@ Record AlgebraicSemilattice [T] (initial : T) (merge : T -> T -> T) := {
   identity x : merge initial x = x;
 }.
 
-#[export] Hint Constructors AlgebraicSemilattice : main.
+Hint Constructors AlgebraicSemilattice : main.
 
 (*
   There other way to define a semilattice is a bit more complicated than the
@@ -40,7 +40,7 @@ Record PartialOrder [T] (R : T -> T -> Prop) := {
   antisymmetry x y : R x y -> R y x -> x = y;
 }.
 
-#[export] Hint Constructors PartialOrder : main.
+Hint Constructors PartialOrder : main.
 
 (* An *upper bound* of two elements is at least as large as those elements. *)
 
@@ -72,7 +72,7 @@ Proof.
   search.
 Qed.
 
-#[export] Hint Resolve partial_order_determined_by_least_upper_bounds : main.
+Hint Resolve partial_order_determined_by_least_upper_bounds : main.
 
 (*
   A bounded *join-semilattice* is a partial order in which any finite subset of
@@ -117,7 +117,7 @@ Proof.
         -- specialize (H1 x (merge y z)). search.
 Qed.
 
-#[export] Hint Resolve semilattice_correspondence : main.
+Hint Resolve semilattice_correspondence : main.
 
 (*
   A *state-based CRDT* is a bounded semilattice of states (as defined above)
@@ -140,7 +140,7 @@ Arguments merge [_ _] _ _.
 Arguments update [_ _] _ _.
 Arguments query [_ _] _.
 
-#[export] Hint Constructors Crdt : main.
+Hint Constructors Crdt : main.
 
 (*
   The *history* of a node is the graph of operations that led to the current
@@ -156,7 +156,7 @@ Inductive History [A Q] (crdt : Crdt A Q) :=
 Arguments up_update [_ _ _] _ _ _.
 Arguments op_merge [_ _ _] _ _.
 
-#[export] Hint Constructors History : main.
+Hint Constructors History : main.
 
 (*
   Any updates with the same ID should be identical. To formalize that, we
@@ -179,7 +179,7 @@ Inductive HistoryConsistent
   HistoryConsistent _ h2 ->
   HistoryConsistent _ (op_merge h1 h2).
 
-#[export] Hint Constructors HistoryConsistent : main.
+Hint Constructors HistoryConsistent : main.
 
 (*
   The following relation indicates when a node's history contains an update
@@ -197,7 +197,7 @@ Inductive InHistory [A Q] [crdt : Crdt A Q] n1
 | in_merge_right :
   forall h1 h2, InHistory _ h2 -> InHistory _ (op_merge h1 h2).
 
-#[export] Hint Constructors InHistory : main.
+Hint Constructors InHistory : main.
 
 (* This function replays a node's history to compute its current state. *)
 
@@ -246,7 +246,7 @@ Proof.
     search.
 Qed.
 
-#[export] Hint Resolve run_upper_bound : main.
+Hint Resolve run_upper_bound : main.
 
 (*
   We're now ready to state and prove the strong convergence theorem: any two
@@ -293,7 +293,7 @@ Proof.
         search.
 Qed.
 
-#[export] Hint Resolve strong_convergence : main.
+Hint Resolve strong_convergence : main.
 
 (* A simple state-based CRDT: a Boolean event flag *)
 

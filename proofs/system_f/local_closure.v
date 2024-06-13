@@ -27,7 +27,7 @@ Inductive TLocallyClosed : Ty -> nat -> Prop :=
   TLocallyClosed t (S n) ->
   TLocallyClosed (t_for_all t) n.
 
-#[export] Hint Constructors TLocallyClosed : main.
+Hint Constructors TLocallyClosed : main.
 
 Inductive ELocallyClosed : Term -> nat -> nat -> Prop :=
 | elc_free_var :
@@ -57,7 +57,7 @@ Inductive ELocallyClosed : Term -> nat -> nat -> Prop :=
   TLocallyClosed t nt ->
   ELocallyClosed (e_t_app e t) ne nt.
 
-#[export] Hint Constructors ELocallyClosed : main.
+Hint Constructors ELocallyClosed : main.
 
 (*************************************************)
 (* Local closure is monotonic with the level(s). *)

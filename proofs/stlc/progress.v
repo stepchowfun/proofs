@@ -20,4 +20,4 @@ Proof.
   - destruct IHHasType1; destruct IHHasType2; esearch. invert H; esearch.
 Qed.
 
-#[export] Hint Resolve progress : main.
+Hint Resolve progress : main.

@@ -52,7 +52,7 @@ Inductive HasType : Context -> Term -> Ty -> Prop :=
   HasType c e (t_for_all t1) ->
   HasType c (e_t_app e t2) (tt_open t1 0 t2).
 
-#[export] Hint Constructors HasType : main.
+Hint Constructors HasType : main.
 
 (*****************************************)
 (* The regularity of the typing judgment *)
@@ -102,7 +102,7 @@ Proof.
       * unfold TWellFormed in H2. search.
 Qed.
 
-#[export] Hint Resolve typing_regularity : main.
+Hint Resolve typing_regularity : main.
 
 (*********************)
 (* Context weakening *)
@@ -155,4 +155,4 @@ Proof.
     assert (In a (t_domain c3) \/ In a (t_domain c1)); search.
 Qed.
 
-#[export] Hint Resolve context_weakening : main.
+Hint Resolve context_weakening : main.

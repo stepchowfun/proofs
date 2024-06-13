@@ -27,7 +27,7 @@ Proof.
   clean. outro i. induction t1; search.
 Qed.
 
-#[export] Hint Resolve tt_sub_intro : main.
+Hint Resolve tt_sub_intro : main.
 
 Theorem ee_sub_intro :
   forall e1 e2 i x,
@@ -37,7 +37,7 @@ Proof.
   induction e1; search.
 Qed.
 
-#[export] Hint Resolve ee_sub_intro : main.
+Hint Resolve ee_sub_intro : main.
 
 Theorem et_sub_intro :
   forall e i t x,
@@ -47,7 +47,7 @@ Proof.
   induction e; search; clean; rewrite tt_sub_intro with (x := x); search.
 Qed.
 
-#[export] Hint Resolve et_sub_intro : main.
+Hint Resolve et_sub_intro : main.
 
 (******************************************)
 (* Substitution distributes over opening. *)
@@ -64,7 +64,7 @@ Proof.
     apply t_local_closure_monotonic with (i1 := i); search.
 Qed.
 
-#[export] Hint Resolve tttt_sub_open : main.
+Hint Resolve tttt_sub_open : main.
 
 Theorem eeee_sub_open :
   forall e1 e2 e3 ie it x,
@@ -79,7 +79,7 @@ Proof.
     apply e_local_closure_monotonic with (ie1 := ie) (it1 := it); search.
 Qed.
 
-#[export] Hint Resolve eeee_sub_open : main.
+Hint Resolve eeee_sub_open : main.
 
 Theorem eeet_sub_open :
   forall e1 e2 ie it t x,
@@ -93,7 +93,7 @@ Proof.
     apply e_local_closure_monotonic with (ie1 := ie) (it1 := it); search.
 Qed.
 
-#[export] Hint Resolve eeet_sub_open : main.
+Hint Resolve eeet_sub_open : main.
 
 Theorem etee_sub_open :
   forall i e1 e2 t x,
@@ -105,7 +105,7 @@ Proof.
   apply t_local_closure_monotonic with (i1 := i); search.
 Qed.
 
-#[export] Hint Resolve etee_sub_open : main.
+Hint Resolve etee_sub_open : main.
 
 Theorem etet_sub_open :
   forall i e t1 t2 x,
@@ -117,4 +117,4 @@ Proof.
   apply t_local_closure_monotonic with (i1 := i); search.
 Qed.
 
-#[export] Hint Resolve etet_sub_open : main.
+Hint Resolve etet_sub_open : main.

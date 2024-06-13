@@ -29,7 +29,7 @@ Arguments is_c_ident_left [_ _ _ _ _ _ _] _.
 Arguments is_c_ident_right [_ _ _ _ _ _ _] _.
 Arguments is_c_assoc [_ _ _ _ _ _ _ _ _] _ _ _.
 
-#[export] Hint Constructors IsCategory : main.
+Hint Constructors IsCategory : main.
 
 Record Category := {
   Object; Arrow; id; compose;
@@ -57,11 +57,11 @@ Definition c_assoc
   compose (compose f g) h = compose f (compose g h)
 := C.(category_laws).(is_c_assoc) f g h.
 
-#[export] Hint Resolve c_assoc : main.
-#[export] Hint Resolve c_ident_left : main.
-#[export] Hint Rewrite @c_ident_left : main.
-#[export] Hint Resolve c_ident_right : main.
-#[export] Hint Rewrite @c_ident_right : main.
+Hint Resolve c_assoc : main.
+Hint Resolve c_ident_left : main.
+Hint Rewrite @c_ident_left : main.
+Hint Resolve c_ident_right : main.
+Hint Rewrite @c_ident_right : main.
 
 Program Definition opposite_category C : Category := {|
   Object := Object C;
@@ -77,4 +77,4 @@ Proof.
   f_equal; apply proof_irrelevance.
 Qed.
 
-#[export] Hint Resolve opposite_involution : main.
+Hint Resolve opposite_involution : main.

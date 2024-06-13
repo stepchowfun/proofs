@@ -13,11 +13,11 @@ Require Import main.tactics.
 Module TrivialKleeneData <: KleeneData.
   Definition T := unit.
 
-  #[export] Hint Unfold T : main.
+  Hint Unfold T : main.
 
   Definition Leq (x y : T) := True.
 
-  #[export] Hint Unfold Leq : main.
+  Hint Unfold Leq : main.
 
   Theorem reflexivity : forall x, Leq x x.
   Proof.
@@ -45,14 +45,14 @@ Module TrivialKleeneData <: KleeneData.
     (forall x2, P x2 -> Leq x2 x1) /\
     forall x3, (forall x2, P x2 -> Leq x2 x3) -> Leq x1 x3.
 
-  #[export] Hint Unfold Supremum : main.
+  Hint Unfold Supremum : main.
 
   (* Coq requires that we copy this verbatim from `ContextGraph`. *)
   Definition Directed P :=
     (exists x1, P x1) /\
     forall x1 x2, P x1 -> P x2 -> exists x3, Leq x1 x3 /\ Leq x2 x3 /\ P x3.
 
-  #[export] Hint Unfold Directed : main.
+  Hint Unfold Directed : main.
 
   Theorem directed_complete :
     forall P,
@@ -66,7 +66,7 @@ Module TrivialKleeneData <: KleeneData.
 
   Definition bottom := tt.
 
-  #[export] Hint Unfold bottom : main.
+  Hint Unfold bottom : main.
 
   Theorem bottom_least : forall x, Leq bottom x.
   Proof.

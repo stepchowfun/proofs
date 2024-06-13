@@ -22,7 +22,7 @@ Proof.
   clean. induction H; invert H0; esearch.
 Qed.
 
-#[export] Hint Resolve typing_judgment_closed : main.
+Hint Resolve typing_judgment_closed : main.
 
 Theorem context_invariance :
   forall c1 c2 e t,
@@ -36,7 +36,7 @@ Proof.
   - eapply ht_app; search.
 Qed.
 
-#[export] Hint Resolve context_invariance : main.
+Hint Resolve context_invariance : main.
 
 Theorem substitution_preserves_typing :
   forall c x e1 e2 t1 t2,
@@ -56,7 +56,7 @@ Proof.
       search.
 Qed.
 
-#[export] Hint Resolve substitution_preserves_typing : main.
+Hint Resolve substitution_preserves_typing : main.
 
 Theorem preservation :
   forall e1 e2 t,
@@ -71,4 +71,4 @@ Proof.
     invert H; search.
 Qed.
 
-#[export] Hint Resolve preservation : main.
+Hint Resolve preservation : main.

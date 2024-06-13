@@ -63,7 +63,7 @@ Proof.
     rewrite t_domain_concat in *. clean. search.
 Qed.
 
-#[export] Hint Resolve e_substitution_preserves_typing : main.
+Hint Resolve e_substitution_preserves_typing : main.
 
 Theorem t_substitution_preserves_typing :
   forall c1 c2 e t1 t2 x,
@@ -126,7 +126,7 @@ Proof.
     destruct H4; search.
 Qed.
 
-#[export] Hint Resolve t_substitution_preserves_typing : main.
+Hint Resolve t_substitution_preserves_typing : main.
 
 Theorem preservation :
   forall e1 e2 t,
@@ -148,4 +148,4 @@ Proof.
     replace c_empty with (c_concat c_empty (c_sub c_empty x t2)); esearch.
 Qed.
 
-#[export] Hint Resolve preservation : main.
+Hint Resolve preservation : main.

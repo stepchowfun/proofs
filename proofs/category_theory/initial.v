@@ -31,4 +31,4 @@ Proof.
   split; search.
 Qed.
 
-#[export] Hint Resolve initial_unique : main.
+Hint Resolve initial_unique : main.

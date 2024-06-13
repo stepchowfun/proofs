@@ -35,11 +35,11 @@ Arguments m_assoc [_ _ _ _] _.
 Arguments m_ident1 [_ _ _ _] _.
 Arguments m_ident2 [_ _ _ _] _.
 
-#[export] Hint Resolve m_assoc : main.
-#[export] Hint Resolve m_ident1 : main.
-#[export] Hint Rewrite @m_ident1 : main.
-#[export] Hint Resolve m_ident2 : main.
-#[export] Hint Rewrite @m_ident2 : main.
+Hint Resolve m_assoc : main.
+Hint Resolve m_ident1 : main.
+Hint Rewrite @m_ident1 : main.
+Hint Resolve m_ident2 : main.
+Hint Rewrite @m_ident2 : main.
 
 Theorem eq_monad
   [C]
@@ -54,4 +54,4 @@ Proof.
   f_equal; apply proof_irrelevance.
 Qed.
 
-#[export] Hint Resolve eq_monad : main.
+Hint Resolve eq_monad : main.

@@ -41,7 +41,7 @@ Arguments interpret [_ _] _ _.
 Arguments query [_ _] _.
 Arguments Precondition [_ _] _ _.
 
-#[export] Hint Constructors CrdtData : main.
+Hint Constructors CrdtData : main.
 
 (*
   The history of a node is a list of operations. `o :: h` is understood as a
@@ -70,7 +70,7 @@ Inductive HistoryValid [A Q] (crdt_data : CrdtData A Q)
   crdt_data.(Precondition) (run crdt_data h) o ->
   HistoryValid _ (o :: h).
 
-#[export] Hint Constructors HistoryValid : main.
+Hint Constructors HistoryValid : main.
 
 (*
   A history is *consistent* with a partial order when every operation in the
@@ -84,7 +84,7 @@ Inductive HistoryConsistent [T] (R : T -> T -> Prop) : list T -> Prop :=
   (forall o2, In o2 h -> ~ R o1 o2) ->
   HistoryConsistent _ (o1 :: h).
 
-#[export] Hint Constructors HistoryConsistent : main.
+Hint Constructors HistoryConsistent : main.
 
 (*
   A partial order is *satisfactory* for a set of operations if every history
@@ -123,7 +123,7 @@ Record Crdt [A Q] (crdt_data : CrdtData A Q) := {
       crdt_data.(interpret) o2 (crdt_data.(interpret) o1 s);
 }.
 
-#[export] Hint Constructors Crdt : main.
+Hint Constructors Crdt : main.
 
 (*
   We're now ready to state and prove the strong convergence theorem: any two
@@ -272,7 +272,7 @@ Proof.
               ** destruct H8; search.
 Qed.
 
-#[export] Hint Resolve strong_convergence : main.
+Hint Resolve strong_convergence : main.
 
 (* A simple operation-based CRDT: a counter *)
 

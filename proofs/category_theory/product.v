@@ -47,7 +47,7 @@ Proof.
     split; rewrite c_assoc; search.
 Qed.
 
-#[export] Hint Resolve product_unique : main.
+Hint Resolve product_unique : main.
 
 Theorem product_commutator
   [C]
@@ -86,7 +86,7 @@ Proof.
   apply H1; esearch.
 Qed.
 
-#[export] Hint Resolve product_commutative : main.
+Hint Resolve product_commutative : main.
 
 Theorem product_associative
   [C]
@@ -249,7 +249,7 @@ Proof.
       search.
 Qed.
 
-#[export] Hint Resolve product_associative : main.
+Hint Resolve product_associative : main.
 
 Theorem product_terminal
   [C]
@@ -281,4 +281,4 @@ Proof.
     esearch.
 Qed.
 
-#[export] Hint Resolve product_terminal : main.
+Hint Resolve product_terminal : main.

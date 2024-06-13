@@ -85,7 +85,7 @@ Inductive CWellFormed : Context -> Prop :=
   CWellFormed c ->
   CWellFormed (c_t_extend c x).
 
-#[export] Hint Constructors CWellFormed : main.
+Hint Constructors CWellFormed : main.
 
 (*****************************)
 (* Concatenation of contexts *)
@@ -120,8 +120,8 @@ Proof.
   clean. split; induction c; esearch. clean. destruct H; esearch.
 Qed.
 
-#[export] Hint Resolve -> e_domain_lookup : main.
-#[export] Hint Resolve <- e_domain_lookup : main.
+Hint Resolve -> e_domain_lookup : main.
+Hint Resolve <- e_domain_lookup : main.
 
 Theorem t_domain_lookup :
   forall c x,
@@ -130,8 +130,8 @@ Proof.
   clean. induction c; search.
 Qed.
 
-#[export] Hint Resolve -> t_domain_lookup : main.
-#[export] Hint Resolve <- t_domain_lookup : main.
+Hint Resolve -> t_domain_lookup : main.
+Hint Resolve <- t_domain_lookup : main.
 
 (************************************)
 (* Facts about type well-formedness *)
@@ -146,7 +146,7 @@ Proof.
   clean. apply t_domain_lookup. invert H. search.
 Qed.
 
-#[export] Hint Resolve t_well_formed_closed : main.
+Hint Resolve t_well_formed_closed : main.
 
 Theorem t_lookup_well_formed :
   forall c x t,
@@ -158,7 +158,7 @@ Proof.
   destruct (name_eq x x0); search. clean. invert H0. search.
 Qed.
 
-#[export] Hint Resolve t_lookup_well_formed : main.
+Hint Resolve t_lookup_well_formed : main.
 
 (****************************)
 (* Facts about substitution *)
@@ -171,7 +171,7 @@ Proof.
   induction c; search.
 Qed.
 
-#[export] Hint Resolve c_sub_e_domain : main.
+Hint Resolve c_sub_e_domain : main.
 
 Theorem c_sub_t_domain :
   forall c x t,
@@ -180,7 +180,7 @@ Proof.
   induction c; search.
 Qed.
 
-#[export] Hint Resolve c_sub_t_domain : main.
+Hint Resolve c_sub_t_domain : main.
 
 (*****************************************)
 (* Facts about concatenation of contexts *)
@@ -191,7 +191,7 @@ Proof.
   induction c; search.
 Qed.
 
-#[export] Hint Resolve c_concat_empty : main.
+Hint Resolve c_concat_empty : main.
 
 Theorem c_concat_assoc :
   forall c1 c2 c3,
@@ -200,7 +200,7 @@ Proof.
   induction c2; induction c3; search.
 Qed.
 
-#[export] Hint Resolve c_concat_assoc : main.
+Hint Resolve c_concat_assoc : main.
 
 (*****************************************)
 (* Facts about concatenation and domains *)
@@ -213,7 +213,7 @@ Proof.
   induction c2; search.
 Qed.
 
-#[export] Hint Resolve e_domain_concat : main.
+Hint Resolve e_domain_concat : main.
 
 Theorem t_domain_concat :
   forall c1 c2,
@@ -222,7 +222,7 @@ Proof.
   induction c2; search.
 Qed.
 
-#[export] Hint Resolve t_domain_concat : main.
+Hint Resolve t_domain_concat : main.
 
 (****************************************)
 (* Facts about concatenation and lookup *)
@@ -236,7 +236,7 @@ Proof.
   induction c2; search.
 Qed.
 
-#[export] Hint Resolve c_concat_e_lookup : main.
+Hint Resolve c_concat_e_lookup : main.
 
 Theorem c_concat_t_lookup :
   forall c1 c2 x,
@@ -246,7 +246,7 @@ Proof.
   induction c2; search.
 Qed.
 
-#[export] Hint Resolve c_concat_t_lookup : main.
+Hint Resolve c_concat_t_lookup : main.
 
 Theorem c_e_lookup_concat_right :
   forall c1 c2 t x,
@@ -256,7 +256,7 @@ Proof.
   induction c2; search.
 Qed.
 
-#[export] Hint Resolve c_e_lookup_concat_right : main.
+Hint Resolve c_e_lookup_concat_right : main.
 
 Theorem c_e_lookup_concat_left :
   forall c1 c2 t x,
@@ -267,7 +267,7 @@ Proof.
   induction c2; search.
 Qed.
 
-#[export] Hint Resolve c_e_lookup_concat_left : main.
+Hint Resolve c_e_lookup_concat_left : main.
 
 Theorem c_t_lookup_concat_right :
   forall c1 c2 x,
@@ -277,7 +277,7 @@ Proof.
   induction c2; search.
 Qed.
 
-#[export] Hint Resolve c_t_lookup_concat_right : main.
+Hint Resolve c_t_lookup_concat_right : main.
 
 Theorem c_t_lookup_concat_left :
   forall c1 c2 x,
@@ -287,7 +287,7 @@ Proof.
   induction c2; search.
 Qed.
 
-#[export] Hint Resolve c_t_lookup_concat_left : main.
+Hint Resolve c_t_lookup_concat_left : main.
 
 Theorem c_e_lookup_none :
   forall c1 c2 t x,
@@ -302,7 +302,7 @@ Proof.
   unfold not in H4. search.
 Qed.
 
-#[export] Hint Resolve c_e_lookup_none : main.
+Hint Resolve c_e_lookup_none : main.
 
 Theorem c_t_lookup_none :
   forall c1 c2 x,
@@ -317,7 +317,7 @@ Proof.
   unfold not in H3. search.
 Qed.
 
-#[export] Hint Resolve c_t_lookup_none : main.
+Hint Resolve c_t_lookup_none : main.
 
 (***************************************)
 (* Facts about context well-formedness *)
@@ -338,7 +338,7 @@ Proof.
   - rewrite t_domain_concat in *. search.
 Qed.
 
-#[export] Hint Resolve c_well_formed_e_skip : main.
+Hint Resolve c_well_formed_e_skip : main.
 
 Theorem c_well_formed_t_skip :
   forall c1 c2 t x,
@@ -376,4 +376,4 @@ Proof.
     rewrite c_sub_t_domain in H1. search.
 Qed.
 
-#[export] Hint Resolve c_well_formed_t_skip : main.
+Hint Resolve c_well_formed_t_skip : main.

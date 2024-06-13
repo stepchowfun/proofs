@@ -46,4 +46,4 @@ Inductive HasType : Context -> Term -> Ty -> Prop :=
   HasType c e2 t2 ->
   HasType c (e_app e1 e2) t1.
 
-#[export] Hint Constructors HasType : main.
+Hint Constructors HasType : main.

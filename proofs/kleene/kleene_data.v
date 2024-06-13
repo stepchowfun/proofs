@@ -20,10 +20,10 @@ Module Type KleeneData.
   Axiom transitivity : forall x y z, Leq x y -> Leq y z -> Leq x z.
   Axiom antisymmetry : forall x y, Leq x y -> Leq y x -> x = y.
 
-  #[export] Hint Resolve reflexivity : main.
-  #[export] Hint Resolve transitivity : main.
-  #[export] Hint Resolve antisymmetry: main.
-  #[export] Hint Rewrite antisymmetry: main.
+  Hint Resolve reflexivity : main.
+  Hint Resolve transitivity : main.
+  Hint Resolve antisymmetry: main.
+  Hint Rewrite antisymmetry: main.
 
   (*
     A supremum of a subset of `T` is a least element of `T` which is greater
@@ -35,7 +35,7 @@ Module Type KleeneData.
     (forall x2, P x2 -> Leq x2 x1) /\
     forall x3, (forall x2, P x2 -> Leq x2 x3) -> Leq x1 x3.
 
-  #[export] Hint Unfold Supremum : main.
+  Hint Unfold Supremum : main.
 
   (*
     A directed subset of `T` is a non-empty subset of `T` such that any two
@@ -46,7 +46,7 @@ Module Type KleeneData.
     (exists x1, P x1) /\
     forall x1 x2, P x1 -> P x2 -> exists x3, Leq x1 x3 /\ Leq x2 x3 /\ P x3.
 
-  #[export] Hint Unfold Directed : main.
+  Hint Unfold Directed : main.
 
   (*
     Assumption: Let the partial order be directed-complete. That means every
@@ -58,7 +58,7 @@ Module Type KleeneData.
     Directed P ->
     exists x, Supremum P x.
 
-  #[export] Hint Resolve directed_complete : main.
+  Hint Resolve directed_complete : main.
 
   (*
     Assumption: Let `T` have a least element called bottom. This makes our
@@ -69,5 +69,5 @@ Module Type KleeneData.
 
   Axiom bottom_least : forall x, Leq bottom x.
 
-  #[export] Hint Resolve bottom_least : main.
+  Hint Resolve bottom_least : main.
 End KleeneData.
