@@ -23,9 +23,10 @@ tasks:
       # - curl            - Used for installing Tagref
       # - libgmp3-dev     - Used by opam to build Coq
       # - opam            - Used to install OCaml and Coq
+      # - pkg-config      - Used by opam to build Coq
       # - ruby            - Used by the linter scripts
       apt-get update
-      apt-get install --yes build-essential curl libgmp3-dev opam ruby
+      apt-get install --yes build-essential curl libgmp3-dev opam pkg-config ruby
 
   install_tagref:
     description: Install Tagref, a reference checking tool.
