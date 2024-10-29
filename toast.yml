@@ -57,9 +57,9 @@ tasks:
       # Install Coq via opam.
       opam init --disable-sandboxing --yes
       eval "$(opam env)"
-      opam switch create 5.1.1 --yes
+      opam switch create 5.2.0 --yes
       eval "$(opam env)"
-      opam pin add coq 8.18.0 --yes
+      opam pin add coq 8.19.2 --yes
 
   install_tools:
     description: Install the tools needed to verify the Coq proofs.
