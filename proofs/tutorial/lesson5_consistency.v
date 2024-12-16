@@ -109,23 +109,23 @@ Fail Check IdSet (forall T : Set, T -> T) IdSet.
   Let's fix some particular universe and let Coq choose some level `i` for it.
 *)
 
-Definition universe := Type.
+Definition U := Type.
 
 (* Here's an identity function for that universe: *)
 
-Definition IdUniverse (T : universe) (x : T) := x.
+Definition IdU (T : U) (x : T) := x.
 
 (* Like with `IdSet`, predicativity forbids the following: *)
 
-Fail Check IdUniverse (forall T : universe, T -> T) IdUniverse.
+Fail Check IdU (forall T : U, T -> T) IdU.
 
 (*
   ```
   The command has indeed failed with message:
-  The term "forall T : universe, T -> T" has type "Type"
-  while it is expected to have type "universe"
-  (universe inconsistency: Cannot enforce universe.u0 < universe.u0 because
-  universe.u0 = universe.u0).
+  The term "forall T : U, T -> T" has type
+  "Type" while it is expected to have type
+  "U" (universe inconsistency: Cannot enforce
+  U.u0 < U.u0 because U.u0 = U.u0).
   ```
 *)
 

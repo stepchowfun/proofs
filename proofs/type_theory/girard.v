@@ -22,48 +22,48 @@
 Definition ExFalso := forall (P : Type), P.
 Definition Negate := fun (Phi : Type) => Phi -> ExFalso.
 Definition Power := fun (S : Type) => S -> Type.
-Definition Universe :=
+Definition U :=
   forall (X : Type),
     ((Power (Power X) -> X) -> Power (Power X)).
 Definition Tau :=
-  fun (T : Power (Power Universe)) =>
+  fun (T : Power (Power U)) =>
     fun (X : Type) =>
       fun (F : Power (Power X) -> X) =>
         fun (P : Power X) =>
-          T (fun (Y : Universe) => P (F (Y X F))).
+          T (fun (Y : U) => P (F (Y X F))).
 Definition Sigma :=
-  fun (s : Universe) =>
-    s Universe (fun (t : Power (Power Universe)) => Tau t).
+  fun (s : U) =>
+    s U (fun (t : Power (Power U)) => Tau t).
 Definition Delta :=
-  fun (y : Universe) =>
-    Negate (forall (P : Power Universe), Sigma y P -> P (Tau (Sigma y))).
+  fun (y : U) =>
+    Negate (forall (P : Power U), Sigma y P -> P (Tau (Sigma y))).
 Definition Omega :=
-  Tau (fun (P : Power Universe) => forall (X : Universe), Sigma X P -> P X).
+  Tau (fun (P : Power U) => forall (X : U), Sigma X P -> P X).
 
 Definition bad := (
   fun (
     Zero :
-      forall (P : Power Universe),
-        (forall (X : Universe), Sigma X P -> P X) -> P Omega
+      forall (P : Power U),
+        (forall (X : U), Sigma X P -> P X) -> P Omega
   ) => (
     Zero Delta (
-      fun (X : Universe) =>
+      fun (X : U) =>
         fun (Two : Sigma X Delta) =>
           fun (
             Three :
-              forall (P : Power Universe), Sigma X P -> P (Tau (Sigma X))
+              forall (P : Power U), Sigma X P -> P (Tau (Sigma X))
           ) => Three Delta Two (
-            fun (P : Power Universe) =>
-              Three (fun (y : Universe) => P (Tau (Sigma y)))
+            fun (P : Power U) =>
+              Three (fun (y : U) => P (Tau (Sigma y)))
           )
     )
   ) (
-    fun (P : Power Universe) => Zero (fun (y : Universe) => P (Tau (Sigma y)))
+    fun (P : Power U) => Zero (fun (y : U) => P (Tau (Sigma y)))
   )
 ) (
-  fun (P : Power Universe) =>
-    fun (One : forall (X : Universe), Sigma X P -> P X) =>
-      One Omega (fun (X : Universe) => One (Tau (Sigma X)))
+  fun (P : Power U) =>
+    fun (One : forall (X : U), Sigma X P -> P X) =>
+      One Omega (fun (X : U) => One (Tau (Sigma X)))
 ).
 
 Check bad. (* `ExFalso` *)
