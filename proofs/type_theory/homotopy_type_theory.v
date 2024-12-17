@@ -119,7 +119,19 @@ Proof.
   destruct x; auto.
 Qed.
 
-Definition invertBit : Bit -> Bit :=
-  match weekendToBitPath in _ = Z return Z -> Z with
-  | eq_refl _ => invertWeekend
+Definition invertWeekendWithTheorem :=
+  exist (fun invert => forall x, invert (invert x) = x)
+    invertWeekend
+    invertWeekendInvolution.
+
+Definition invertBitWithTheorem :=
+  match weekendToBitPath in _ = Z
+  return { invert : Z -> Z | forall x, invert (invert x) = x } with
+  | eq_refl _ => invertWeekendWithTheorem
   end.
+
+Definition invertBit : Bit -> Bit :=
+  proj1_sig invertBitWithTheorem.
+
+Definition invertBitInvolution : forall x, invertBit (invertBit x) = x :=
+  proj2_sig invertBitWithTheorem.
