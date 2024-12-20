@@ -122,7 +122,7 @@ Definition pathToHomotopy [X] [Y : X -> Type]
 
 (* Function extensionality *)
 
-Axiom function_extensionality :
+Axiom functionExtensionality :
   forall (X : U) (Y : X -> U) (f g : forall x : X, Y x),
   Equivalence (pathToHomotopy f g).
 
