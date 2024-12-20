@@ -21,16 +21,16 @@ Definition U := Type.
 Definition Homotopy [X] [Y : X -> Type] (f g : forall x : X, Y x) :=
   forall x, f x = g x.
 
+(* Quasi-inverse *)
+
+Definition QuasiInverse [X Y] (f : X -> Y) :=
+  { g : Y -> X & Homotopy (f ∘ g) id * Homotopy (g ∘ f) id }.
+
 (* Equivalence *)
 
 Definition Equivalence [X Y] (f : X -> Y) :=
   { g : Y -> X & Homotopy (f ∘ g) id } *
   { g : Y -> X & Homotopy (g ∘ f) id }.
-
-(* Quasi-inverse *)
-
-Definition QuasiInverse [X Y] (f : X -> Y) :=
-  { g : Y -> X & Homotopy (f ∘ g) id * Homotopy (g ∘ f) id }.
 
 (* Equivalence is logically equivalent to quasi-inverse. *)
 
@@ -123,7 +123,7 @@ Definition pathToHomotopy [X] [Y : X -> Type]
 (* Function extensionality *)
 
 Axiom function_extensionality :
-  forall (X : U) (Y : X -> Type) (f g : forall x : X, Y x),
+  forall (X : U) (Y : X -> U) (f g : forall x : X, Y x),
   Equivalence (pathToHomotopy f g).
 
 (* Univalence *)
@@ -173,7 +173,7 @@ Definition weekendToBitIsEquivalence : Equivalence weekendToBit := (
     )
 ).
 
-Definition weekendToBitPath : Weekend = Bit :=
+Definition weekendBitPath : Weekend = Bit :=
   projT1
     (fst (univalence Weekend Bit))
     (existT _ weekendToBit weekendToBitIsEquivalence).
@@ -195,7 +195,7 @@ Definition invertWeekendWithTheorem :=
     invertWeekendInvolution.
 
 Definition invertBitWithTheorem :=
-  match weekendToBitPath in _ = Z
+  match weekendBitPath in _ = Z
   return { invert : Z -> Z | forall x, invert (invert x) = x } with
   | eq_refl _ => invertWeekendWithTheorem
   end.
