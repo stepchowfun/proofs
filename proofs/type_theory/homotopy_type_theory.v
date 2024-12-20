@@ -27,28 +27,27 @@ Definition Equivalence [X Y] (f : X -> Y) :=
   { g : Y -> X & Homotopy (f ∘ g) id } *
   { g : Y -> X & Homotopy (g ∘ f) id }.
 
+(* Quasi-inverse *)
+
+Definition QuasiInverse [X Y] (f : X -> Y) :=
+  { g : Y -> X & Homotopy (f ∘ g) id * Homotopy (g ∘ f) id }.
+
 (* Equivalence is logically equivalent to quasi-inverse. *)
 
-Goal
-  forall X Y (f : X -> Y),
-  { g : Y -> X & Homotopy (f ∘ g) id * Homotopy (g ∘ f) id } ->
-  Equivalence f.
+Theorem quasiInverseToEquivalence :
+  forall X Y (f : X -> Y), QuasiInverse f -> Equivalence f.
 Proof.
   intros.
-  destruct X0.
-  destruct p.
+  destruct X0, p.
   split; exists x; auto.
 Qed.
 
-Goal
-  forall X Y (f : X -> Y),
-  Equivalence f ->
-  { g : Y -> X & Homotopy (f ∘ g) id * Homotopy (g ∘ f) id }.
+Theorem equivalenceToQuasiInverse :
+  forall X Y (f : X -> Y), Equivalence f -> QuasiInverse f.
 Proof.
-  unfold Equivalence, Homotopy, compose, id.
+  unfold Equivalence, QuasiInverse, Homotopy, compose, id.
   intros.
-  destruct X0.
-  destruct s, s0.
+  destruct X0, s, s0.
   exists (fun y => x0 (f (x y))).
   split; intros.
   - rewrite e0.
@@ -57,20 +56,61 @@ Proof.
     auto.
 Qed.
 
-(* Paths can be converted to equivalences. *)
+(* Equivalence is an equivalence relation. *)
 
-Definition idIsEquivalence X : Equivalence (@id X) := (
+Definition reflexivity X : Equivalence (@id X) := (
   existT (fun g => Homotopy g _) _ (@eq_refl _),
   existT (fun g => Homotopy g _) _ (@eq_refl _)
 ).
 
+Theorem symmetry [X Y] (f : X -> Y) (e : Equivalence f) :
+  { g : Y -> X & Equivalence g }.
+Proof.
+  assert (QuasiInverse f).
+  - apply equivalenceToQuasiInverse.
+    auto.
+  - destruct X0.
+    exists x.
+    apply quasiInverseToEquivalence.
+    exists f.
+    destruct p.
+    auto.
+Qed.
+
+Theorem transitivity
+  [X Y Z] (f : X -> Y) (g : Y -> Z) (e1 : Equivalence f) (e2 : Equivalence g) :
+  { h : X -> Z & Equivalence h }.
+Proof.
+  assert (QuasiInverse f).
+  - apply equivalenceToQuasiInverse.
+    auto.
+  - assert (QuasiInverse g).
+    + apply equivalenceToQuasiInverse.
+      auto.
+    + exists (g ∘ f).
+      apply quasiInverseToEquivalence.
+      destruct X0, X1.
+      exists (x ∘ x0).
+      destruct p, p0.
+      unfold Homotopy, compose, id in *.
+      split; intro.
+      * rewrite h.
+        rewrite h1.
+        auto.
+      * rewrite h2.
+        rewrite h0.
+        auto.
+Qed.
+
+(* Paths can be converted to equivalences. *)
+
 Definition pathToEquivalence [X Y] (p : X = Y) :
   { f : X -> Y & Equivalence f } :=
   match p in _ = Z return { f : X -> Z & Equivalence f } with
-  | eq_refl _ => existT _ _ (idIsEquivalence X)
+  | eq_refl _ => existT _ _ (reflexivity X)
   end.
 
-(* Paths between functions can be converted to homotopies. *)
+(* Paths between maps can be converted to homotopies. *)
 
 Definition pathToHomotopy [X] [Y : X -> Type]
   (f g : forall x : X, Y x) (p : f = g) :
