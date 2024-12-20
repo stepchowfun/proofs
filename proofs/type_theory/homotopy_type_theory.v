@@ -27,6 +27,36 @@ Definition Equivalence [X Y] (f : X -> Y) :=
   { g : Y -> X & Homotopy (f ∘ g) id } *
   { g : Y -> X & Homotopy (g ∘ f) id }.
 
+(* Equivalence is logically equivalent to quasi-inverse. *)
+
+Goal
+  forall X Y (f : X -> Y),
+  { g : Y -> X & Homotopy (f ∘ g) id * Homotopy (g ∘ f) id } ->
+  Equivalence f.
+Proof.
+  intros.
+  destruct X0.
+  destruct p.
+  split; exists x; auto.
+Qed.
+
+Goal
+  forall X Y (f : X -> Y),
+  Equivalence f ->
+  { g : Y -> X & Homotopy (f ∘ g) id * Homotopy (g ∘ f) id }.
+Proof.
+  unfold Equivalence, Homotopy, compose, id.
+  intros.
+  destruct X0.
+  destruct s, s0.
+  exists (fun y => x0 (f (x y))).
+  split; intros.
+  - rewrite e0.
+    auto.
+  - rewrite e.
+    auto.
+Qed.
+
 (* Paths can be converted to equivalences. *)
 
 Definition idIsEquivalence X : Equivalence (@id X) := (
