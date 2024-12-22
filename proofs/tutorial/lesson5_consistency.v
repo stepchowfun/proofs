@@ -197,7 +197,7 @@ Inductive Foo8 (T : Large) : Prop :=
 Inductive Weird :=
 | make_weird : Weird -> Weird.
 
-Goal ~Weird.
+Goal Weird -> False.
   intro.
   induction H.
   auto.
@@ -208,7 +208,7 @@ Qed.
 Inductive Weirder :=
 | make_weirder : (nat -> Weirder) -> Weirder.
 
-Goal Weirder -> False. (* `~Weirder` fails since `Weirder` isn't in `Prop`. *)
+Goal Weirder -> False.
   intro.
   induction H.
   apply H.
