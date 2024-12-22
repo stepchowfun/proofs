@@ -197,10 +197,23 @@ Inductive Foo8 (T : Large) : Prop :=
 Inductive Weird :=
 | make_weird : Weird -> Weird.
 
+Goal ~Weird.
+  intro.
+  induction H.
+  auto.
+Qed.
+
 (* This "reflexive" type is also allowed: *)
 
 Inductive Weirder :=
 | make_weirder : (nat -> Weirder) -> Weirder.
+
+Goal Weirder -> False. (* `~Weirder` fails since `Weirder` isn't in `Prop`. *)
+  intro.
+  induction H.
+  apply H.
+  exact 0.
+Qed.
 
 (* However, the following is not allowed: *)
 

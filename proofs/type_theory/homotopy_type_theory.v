@@ -34,7 +34,7 @@ Definition Equivalence [X Y] (f : X -> Y) :=
 
 (* Equivalence is logically equivalent to quasi-inverse. *)
 
-Theorem quasiInverseToEquivalence :
+Theorem quasi_inverse_to_equivalence :
   forall X Y (f : X -> Y), QuasiInverse f -> Equivalence f.
 Proof.
   intros.
@@ -42,7 +42,7 @@ Proof.
   split; exists x; auto.
 Qed.
 
-Theorem equivalenceToQuasiInverse :
+Theorem equivalence_to_quasi_inverse :
   forall X Y (f : X -> Y), Equivalence f -> QuasiInverse f.
 Proof.
   unfold Equivalence, QuasiInverse, Homotopy, compose, id.
@@ -67,11 +67,11 @@ Theorem symmetry [X Y] (f : X -> Y) (e : Equivalence f) :
   { g : Y -> X & Equivalence g }.
 Proof.
   assert (QuasiInverse f).
-  - apply equivalenceToQuasiInverse.
+  - apply equivalence_to_quasi_inverse.
     auto.
   - destruct X0.
     exists x.
-    apply quasiInverseToEquivalence.
+    apply quasi_inverse_to_equivalence.
     exists f.
     destruct p.
     auto.
@@ -82,13 +82,13 @@ Theorem transitivity
   { h : X -> Z & Equivalence h }.
 Proof.
   assert (QuasiInverse f).
-  - apply equivalenceToQuasiInverse.
+  - apply equivalence_to_quasi_inverse.
     auto.
   - assert (QuasiInverse g).
-    + apply equivalenceToQuasiInverse.
+    + apply equivalence_to_quasi_inverse.
       auto.
     + exists (g ∘ f).
-      apply quasiInverseToEquivalence.
+      apply quasi_inverse_to_equivalence.
       destruct X0, X1.
       exists (x ∘ x0).
       destruct p, p0.
@@ -104,7 +104,7 @@ Qed.
 
 (* Paths can be converted to equivalences. *)
 
-Definition pathToEquivalence [X Y] (p : X = Y) :
+Definition path_to_equivalence [X Y] (p : X = Y) :
   { f : X -> Y & Equivalence f } :=
   match p in _ = Z return { f : X -> Z & Equivalence f } with
   | eq_refl _ => existT _ _ (reflexivity X)
@@ -112,7 +112,7 @@ Definition pathToEquivalence [X Y] (p : X = Y) :
 
 (* Paths between maps can be converted to homotopies. *)
 
-Definition pathToHomotopy [X] [Y : X -> Type]
+Definition path_to_homotopy [X] [Y : X -> Type]
   (f g : forall x : X, Y x) (p : f = g) :
   Homotopy f g :=
   fun x =>
@@ -122,13 +122,13 @@ Definition pathToHomotopy [X] [Y : X -> Type]
 
 (* Function extensionality *)
 
-Axiom functionExtensionality :
+Axiom function_extensionality :
   forall (X : U) (Y : X -> U) (f g : forall x : X, Y x),
-  Equivalence (pathToHomotopy f g).
+  Equivalence (path_to_homotopy f g).
 
 (* Univalence *)
 
-Axiom univalence : forall (X Y : U), Equivalence (@pathToEquivalence X Y).
+Axiom univalence : forall (X Y : U), Equivalence (@path_to_equivalence X Y).
 
 (* An example of using univalence *)
 
@@ -140,21 +140,21 @@ Inductive Weekend : U :=
 | Saturday
 | Sunday.
 
-Definition weekendToBit x :=
+Definition weekend_to_bit x :=
   match x with
   | Saturday => Zero
   | Sunday => One
   end.
 
-Definition bitToWeekend x :=
+Definition bit_to_weekend x :=
   match x with
   | Zero => Saturday
   | One => Sunday
   end.
 
-Definition weekendToBitIsEquivalence : Equivalence weekendToBit := (
-  existT (fun g => Homotopy (weekendToBit ∘ g) id)
-    bitToWeekend
+Definition weekend_bit_equivalence : Equivalence weekend_to_bit := (
+  existT (fun g => Homotopy (weekend_to_bit ∘ g) id)
+    bit_to_weekend
     (
       fun x =>
         match x with
@@ -162,8 +162,8 @@ Definition weekendToBitIsEquivalence : Equivalence weekendToBit := (
         | One => eq_refl _
         end
     ),
-  existT (fun g => Homotopy (g ∘ weekendToBit) id)
-    bitToWeekend
+  existT (fun g => Homotopy (g ∘ weekend_to_bit) id)
+    bit_to_weekend
     (
       fun x =>
         match x with
@@ -173,35 +173,35 @@ Definition weekendToBitIsEquivalence : Equivalence weekendToBit := (
     )
 ).
 
-Definition weekendBitPath : Weekend = Bit :=
+Definition weekend_bit_path : Weekend = Bit :=
   projT1
     (fst (univalence Weekend Bit))
-    (existT _ weekendToBit weekendToBitIsEquivalence).
+    (existT _ weekend_to_bit weekend_bit_equivalence).
 
-Definition invertWeekend x :=
+Definition invert_weekend x :=
   match x with
   | Saturday => Sunday
   | Sunday => Saturday
   end.
 
-Theorem invertWeekendInvolution x : invertWeekend (invertWeekend x) = x.
+Theorem invert_weekend_involution x : invert_weekend (invert_weekend x) = x.
 Proof.
   destruct x; auto.
 Qed.
 
-Definition invertWeekendWithTheorem :=
+Definition invert_weekend_with_theorem :=
   exist (fun invert => forall x, invert (invert x) = x)
-    invertWeekend
-    invertWeekendInvolution.
+    invert_weekend
+    invert_weekend_involution.
 
-Definition invertBitWithTheorem :=
-  match weekendBitPath in _ = Z
+Definition invert_bit_with_theorem :=
+  match weekend_bit_path in _ = Z
   return { invert : Z -> Z | forall x, invert (invert x) = x } with
-  | eq_refl _ => invertWeekendWithTheorem
+  | eq_refl _ => invert_weekend_with_theorem
   end.
 
-Definition invertBit : Bit -> Bit :=
-  proj1_sig invertBitWithTheorem.
+Definition invert_bit : Bit -> Bit :=
+  proj1_sig invert_bit_with_theorem.
 
-Definition invertBitInvolution : forall x, invertBit (invertBit x) = x :=
-  proj2_sig invertBitWithTheorem.
+Definition invert_bit_involution : forall x, invert_bit (invert_bit x) = x :=
+  proj2_sig invert_bit_with_theorem.
