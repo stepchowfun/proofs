@@ -16,6 +16,13 @@ Require Import Coq.Program.Basics.
 
 Definition U := Type.
 
+(* Transport *)
+
+Definition transport [A] [x y : A] [P : A -> Type] (p : x = y) (px : P x) :=
+  match p in _ = z return P z with
+  | eq_refl => px
+  end.
+
 (* Homotopy *)
 
 Definition Homotopy [X] [Y : X -> Type] (f g : forall x : X, Y x) :=
@@ -56,59 +63,17 @@ Proof.
     auto.
 Qed.
 
-(* Equivalence is an equivalence relation. *)
-
-Definition reflexivity X : Equivalence (@id X) := (
-  existT (fun g => Homotopy g _) _ (@eq_refl _),
-  existT (fun g => Homotopy g _) _ (@eq_refl _)
-).
-
-Theorem symmetry [X Y] (f : X -> Y) (e : Equivalence f) :
-  { g : Y -> X & Equivalence g }.
-Proof.
-  assert (QuasiInverse f).
-  - apply equivalence_to_quasi_inverse.
-    auto.
-  - destruct X0.
-    exists x.
-    apply quasi_inverse_to_equivalence.
-    exists f.
-    destruct p.
-    auto.
-Qed.
-
-Theorem transitivity
-  [X Y Z] (f : X -> Y) (g : Y -> Z) (e1 : Equivalence f) (e2 : Equivalence g) :
-  { h : X -> Z & Equivalence h }.
-Proof.
-  assert (QuasiInverse f).
-  - apply equivalence_to_quasi_inverse.
-    auto.
-  - assert (QuasiInverse g).
-    + apply equivalence_to_quasi_inverse.
-      auto.
-    + exists (g ∘ f).
-      apply quasi_inverse_to_equivalence.
-      destruct X0, X1.
-      exists (x ∘ x0).
-      destruct p, p0.
-      unfold Homotopy, compose, id in *.
-      split; intro.
-      * rewrite h.
-        rewrite h1.
-        auto.
-      * rewrite h2.
-        rewrite h0.
-        auto.
-Qed.
-
 (* Paths can be converted to equivalences. *)
 
 Definition path_to_equivalence [X Y] (p : X = Y) :
   { f : X -> Y & Equivalence f } :=
-  match p in _ = Z return { f : X -> Z & Equivalence f } with
-  | eq_refl _ => existT _ _ (reflexivity X)
-  end.
+  existT (@Equivalence X Y) (transport p)
+    match p with
+    | eq_refl => (
+        existT (fun g => Homotopy g _) _ (@eq_refl _),
+        existT (fun g => Homotopy g _) _ (@eq_refl _)
+      )
+    end.
 
 (* Paths between maps can be converted to homotopies. *)
 
