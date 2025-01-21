@@ -274,6 +274,62 @@ Fail Compute head (empty bool).
   ```
 *)
 
+(**********************)
+(* The convoy pattern *)
+(**********************)
+
+(* Suppose we have a number `n`. *)
+
+Parameter n : nat.
+
+(*
+  The following variable `x` has an interesting type. When `n` is even, `x` is
+  a `nat`. Conversely, when `n` is odd, `x` is a `string`. However, the parity
+  of `n` is unknown here, so `x` seems to have some kind of superposition of
+  types.
+*)
+
+Parameter x : BoolToType (Nat.even n).
+
+(*
+  Suppose we want to do something with `x`. Since the type of `x` depends on
+  whether `n` is even or odd, we should expect to handle those two cases
+  separately. For example, if `n` is even, then we might want to do some
+  arithmetic with `x`, since it's a `nat`. Otherwise, `x` is a string, so we
+  might want to compute its length. Unfortunately, simply pattern matching on
+  the parity of `n` doesn't work:
+*)
+
+Fail Check
+  match Nat.even n with
+  | true => x + 1
+  | false => length x
+  end.
+
+(*
+  ```
+  The command has indeed failed with message:
+  The term "x" has type "BoolToType (Nat.even n)"
+  while it is expected to have type "nat".
+  ```
+*)
+
+(*
+  The issue is that Coq doesn't refine the type of `x` based on the knowledge
+  gained in each case. To make the example work, we can use the *convoy
+  pattern*. First, we use dependent pattern matching to construct a function
+  that takes in an arbitrary `BoolToType (Nat.even n)`, then we immediately
+  call that function on `x`. Dependent pattern matching specializes the type of
+  the result on each case, so each branch only needs to consider the specific
+  value of `Nat.even n` (`true` or `false`) corresponding to that case.
+*)
+
+Check
+  match Nat.even n as b return BoolToType b -> nat with
+  | true => fun y => y + 1
+  | false => fun y => length y
+  end x.
+
 (*************)
 (* Exercises *)
 (*************)
