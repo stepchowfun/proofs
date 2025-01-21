@@ -158,7 +158,7 @@ Definition pluck [T : Set] (x : BoolOrNat T) :=
   | some_nat n => n
   end.
 
-Check pluck. (* `BoolOrNat ?T -> ?T` *)
+Check pluck. (* `forall T : Set, BoolOrNat T -> T` *)
 
 Compute pluck (some_nat 42). (* `42` *)
 
