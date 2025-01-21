@@ -249,7 +249,7 @@ Proof.
       search.
   - unfold update.
     assert (exists k, i = length (firstn j l) + k).
-    + rewrite (firstn_length j l).
+    + rewrite (length_firstn j l).
       rewrite min_l; search.
       induction i; search.
       destruct (lt_eq_lt_dec j i); [destruct s | idtac]; search.
@@ -288,10 +288,10 @@ Proof.
   assert (length (firstn i l) = i).
   - apply firstn_length_le.
     search.
-  - rewrite app_length.
+  - rewrite length_app.
     rewrite H0.
     change (length (x :: skipn (S i) l)) with (S (length (skipn (S i) l))).
-    rewrite skipn_length.
+    rewrite length_skipn.
     search.
 Qed.
 
@@ -506,10 +506,10 @@ Proof.
     + destruct (le_lt_dec i j).
       * replace (firstn i (swap i j l)) with (firstn i l); search.
         apply nth_ext with (d := 0) (d' := 0).
-        -- repeat rewrite firstn_length; search.
+        -- repeat rewrite length_firstn; search.
            rewrite swap_preserves_length; search.
         -- intros.
-           rewrite firstn_length in H3.
+           rewrite length_firstn in H3.
            repeat rewrite nth_firstn; search.
            rewrite nth_swap_other; search.
       * rewrite <- (firstn_skipn j).
@@ -525,7 +525,7 @@ Proof.
                      search.
                  --- apply Forall_nth.
                      intros.
-                     rewrite firstn_length in H3.
+                     rewrite length_firstn in H3.
                      rewrite nth_firstn; search.
                      rewrite nth_indep with (d := d) (d' := 0);
                      search.
@@ -548,15 +548,15 @@ Proof.
                        S (length (skipn (S j) (firstn i l))) =
                        length (skipn j (firstn i (swap i j l)))
                      ).
-                     repeat rewrite skipn_length.
-                     repeat rewrite firstn_length.
+                     repeat rewrite length_skipn.
+                     repeat rewrite length_firstn.
                      rewrite swap_preserves_length; search.
                  --- intros.
                      change (
                        n < S (length (skipn (S j) (firstn i l)))
                      ) in H3.
-                     rewrite skipn_length in H3.
-                     rewrite firstn_length in H3.
+                     rewrite length_skipn in H3.
+                     rewrite length_firstn in H3.
                      replace (Nat.min i (length l)) with i in H3;
                      search.
                      rewrite nth_skipn.
@@ -571,10 +571,10 @@ Proof.
                          rewrite nth_skipn.
                          rewrite nth_firstn; search.
            ++ apply nth_ext with (d := 0) (d' := 0).
-              ** repeat rewrite firstn_length.
+              ** repeat rewrite length_firstn.
                  rewrite swap_preserves_length; search.
               ** intros.
-                 rewrite firstn_length in H3.
+                 rewrite length_firstn in H3.
                  repeat rewrite nth_firstn; search.
                  rewrite nth_swap_other; search.
         -- rewrite firstn_firstn.
@@ -647,7 +647,7 @@ Proof.
     apply sorted_app; search.
     apply Forall_nth.
     intros.
-    rewrite firstn_length in H4.
+    rewrite length_firstn in H4.
     rewrite nth_firstn; search.
     rewrite nth_indep with (d := d) (d' := 0); search.
     apply H2.

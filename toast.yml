@@ -59,7 +59,7 @@ tasks:
       eval "$(opam env)"
       opam switch create 5.2.0 --yes
       eval "$(opam env)"
-      opam pin add coq 8.19.2 --yes
+      opam pin add coq 8.20.1 --yes
 
   install_tools:
     description: Install the tools needed to verify the Coq proofs.
