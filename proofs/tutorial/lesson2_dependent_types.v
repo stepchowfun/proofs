@@ -294,10 +294,10 @@ Parameter x : BoolToType (Nat.even n).
 (*
   Suppose we want to do something with `x`. Since the type of `x` depends on
   whether `n` is even or odd, we should expect to handle those two cases
-  separately. For example, if `n` is even, then we might want to do some
-  arithmetic with `x`, since it's a `nat`. Otherwise, `x` is a string, so we
-  might want to compute its length. Unfortunately, simply pattern matching on
-  the parity of `n` doesn't work:
+  separately. For example, if `n` is even, we might want to do some arithmetic
+  with `x`, since it's a `nat` in that case. Otherwise, `x` is a string, and
+  perhaps we wish to compute its length. Unfortunately, we can't do that by
+  naively pattern matching on the parity of `n`:
 *)
 
 Fail Check
@@ -312,16 +312,15 @@ Fail Check
   The term "x" has type "BoolToType (Nat.even n)"
   while it is expected to have type "nat".
   ```
-*)
 
-(*
   The issue is that Coq doesn't refine the type of `x` based on the knowledge
-  gained in each case. To make the example work, we can use the *convoy
-  pattern*. First, we use dependent pattern matching to construct a function
-  that takes in an arbitrary `BoolToType (Nat.even n)`, then we immediately
-  call that function on `x`. Dependent pattern matching specializes the type of
-  the result on each case, so each branch only needs to consider the specific
-  value of `Nat.even n` (`true` or `false`) corresponding to that case.
+  gained about the parity of `n` in each case. To make the example work, we can
+  use the *convoy pattern*. First, we use dependent pattern matching to
+  construct a function which accepts an arbitrary `BoolToType (Nat.even n)`,
+  then we immediately call that function on `x`. Dependent pattern matching
+  specializes the type of the result on each case, so each branch only needs to
+  consider the specific value of `Nat.even n` (`true` or `false`) corresponding
+  to that case.
 *)
 
 Check
