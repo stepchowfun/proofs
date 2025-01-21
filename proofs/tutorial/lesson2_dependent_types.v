@@ -37,17 +37,17 @@ Check "Hello, World!". (* `string` *)
   return types as well. Functions that return types are called *type families*.
 *)
 
-Definition BoolToSet x :=
+Definition BoolToType x :=
   match x with
   | true => nat
   | false => string
   end.
 
-Check BoolToSet. (* `bool -> Set` *)
+Check BoolToType. (* `bool -> Set` *)
 
-Compute BoolToSet true. (* `nat` *)
+Compute BoolToType true. (* `nat` *)
 
-Compute BoolToSet false. (* `string` *)
+Compute BoolToType false. (* `string` *)
 
 (*
   Coq considers types *definitionally equal* if they compute to syntactically
@@ -58,10 +58,10 @@ Compute BoolToSet false. (* `string` *)
 
 Definition age1 : nat := 42.
 
-Definition age2 : BoolToSet true := 42.
+Definition age2 : BoolToType true := 42.
 
 (*
-  Using `BoolToSet`, we can construct a function for which the return type
+  Using `BoolToType`, we can construct a function for which the return type
   depends on the argument. Note the use of the `return` keyword to specify how
   the type of the `match` expression depends on the value being matched on. In
   general, such an annotation is needed when the branches of a pattern match
@@ -69,12 +69,12 @@ Definition age2 : BoolToSet true := 42.
 *)
 
 Definition weird x :=
-  match x return BoolToSet x with
+  match x return BoolToType x with
   | true => 42
   | false => "hello"
   end.
 
-Check weird. (* `forall x : bool, BoolToSet x` *)
+Check weird. (* `forall x : bool, BoolToType x` *)
 
 Compute weird true. (* `42` *)
 
@@ -86,12 +86,12 @@ Compute weird false. (* `"hello"` *)
 *)
 
 Definition weirder x :=
-  match negb x as y return BoolToSet y with
+  match negb x as y return BoolToType y with
   | true => 42
   | false => "hello"
   end.
 
-Check weirder. (* `forall x : bool, BoolToSet (negb x)` *)
+Check weirder. (* `forall x : bool, BoolToType (negb x)` *)
 
 Compute weirder true. (* `"hello"` *)
 
