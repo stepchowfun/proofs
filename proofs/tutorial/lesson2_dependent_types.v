@@ -324,7 +324,7 @@ Fail Check
 *)
 
 Check
-  match Nat.even n as b return BoolToType b -> nat with
+  match Nat.even n as b return BoolToType b -> _ with
   | true => fun y => y + 1
   | false => fun y => length y
   end x.
