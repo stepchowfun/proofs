@@ -26,7 +26,13 @@ tasks:
       # - pkg-config      - Used by opam to build Coq
       # - ruby            - Used by the linter scripts
       apt-get update
-      apt-get install --yes build-essential curl libgmp3-dev opam pkg-config ruby
+      apt-get install --yes \
+        build-essential \
+        curl \
+        libgmp3-dev \
+        opam \
+        pkg-config \
+        ruby
 
   install_tagref:
     description: Install Tagref, a reference checking tool.
@@ -35,13 +41,16 @@ tasks:
     user: root
     command: |
       # Install Tagref using the official installer script.
-      curl https://raw.githubusercontent.com/stepchowfun/tagref/main/install.sh -LSfs | sh
+      curl \
+        https://raw.githubusercontent.com/stepchowfun/tagref/main/install.sh \
+        -LSfs | sh
 
   create_user:
     description: Create a user who doesn't have root privileges.
     user: root
     command: |
-      # Create a user named `user` with a home directory and with Bash as the login shell.
+      # Create a user named `user` with a home directory and with Bash as the
+      # login shell.
       useradd user --create-home --shell /bin/bash
 
       # Without this, Ruby will assume files are encoded as ASCII.
@@ -87,6 +96,7 @@ tasks:
       - verify
     input_paths:
       - linters
+      - toast.yml # To lint the tag references
     user: user
     command: |
       # Make sure the `LANG` environment variable is set for Ruby.
