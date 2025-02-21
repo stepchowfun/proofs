@@ -168,25 +168,25 @@ Inductive Foo4 : Prop :=
 
 (*
   There are no constraints between the universe of an inductive type and the
-  universes of its indices.
-*)
-
-Inductive Foo5 : Large -> Set :=
-| make_foo5 : Foo5 Set.
-
-Inductive Foo6 : Large -> Prop :=
-| make_foo6 : Foo6 Set.
-
-(*
-  There are no constraints between the universe of an inductive type and the
   universes of its parameters.
 *)
 
-Inductive Foo7 (T : Large) : Set :=
-| make_foo7 : Foo7 T.
+Inductive Foo5 (T : Large) : Set :=
+| make_foo5 : Foo5 T.
 
-Inductive Foo8 (T : Large) : Prop :=
-| make_foo8 : Foo8 T.
+Inductive Foo6 (T : Large) : Prop :=
+| make_foo6 : Foo6 T.
+
+(*
+  There are no constraints between the universe of an inductive type and the
+  universes of its indices.
+*)
+
+Inductive Foo7 : Large -> Set :=
+| make_foo7 : Foo7 Set.
+
+Inductive Foo8 : Large -> Prop :=
+| make_foo8 : Foo8 Set.
 
 (***********************************************************)
 (* Inductive types have a "strict positivity requirement". *)
