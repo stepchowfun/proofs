@@ -60,9 +60,9 @@ Definition recursor (P : Type) (p_zero : P) (p_succ : P -> P) : Nat -> P :=
 
 Definition add m n := recursor Nat n succ m.
 
-Definition toBuiltInNat n := recursor nat 0 S n.
+Definition to_built_in_nat n := recursor nat 0 S n.
 
-Compute toBuiltInNat (add (succ zero) (succ (succ zero))). (* `3` *)
+Compute to_built_in_nat (add (succ zero) (succ (succ zero))). (* `3` *)
 
 (*
   Unfotunately, we need function extensionality to define the dependent
