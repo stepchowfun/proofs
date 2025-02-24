@@ -11,7 +11,7 @@ Require Import Coq.Logic.FunctionalExtensionality.
 (*
   W-types are the types of well-founded trees and generalize inductive types
   like `bool`, `nat`, `list`, etc. The parameter `A` encodes both the choice of
-  constructor and its non- recursive arguments. The family `B` encodes the
+  constructor and its non-recursive arguments. The family `B` encodes the
   number of recursive arguments for a given choice of `A`. The name `sup` is
   short for "supremum", since each node in the tree is the least upper bound of
   its subtrees in the "subtree of" relation.
@@ -112,6 +112,21 @@ Definition eliminator
       end
   ).
 
+Goal forall n, add zero n = n.
+Proof.
+  reflexivity.
+Qed.
+
+Goal forall n, add n zero = n.
+Proof.
+  apply eliminator; auto.
+  intros.
+  cbn.
+  unfold add in H.
+  rewrite H.
+  reflexivity.
+Qed.
+
 (*
   There are two situations above where function extensionality was required:
 
@@ -122,8 +137,9 @@ Definition eliminator
      `fun _ : unit => f tt`, even though they are extensionally equal.
 
   There's a more sophisticated encoding of natural numbers as a W-type which
-  doesn't require function extensionality to define a dependent eliminator.
-  It's described in the following paper:
+  doesn't require function extensionality to define a dependent eliminator, as
+  long as we have η-conversion for Π and Σ types and the unit type. It's
+  described in the following paper:
 
     Jasper Hugunin. Why Not W?. In 26th International Conference on Types for
     Proofs and Programs (TYPES 2020). Leibniz International Proceedings in
