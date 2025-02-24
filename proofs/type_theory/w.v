@@ -65,8 +65,8 @@ Definition toBuiltInNat n := recursor nat 0 S n.
 Compute toBuiltInNat (add (succ zero) (succ (succ zero))). (* `3` *)
 
 (*
-  Unfotunately, to defined the dependent eliminator for this encoding of `Nat`,
-  we need function extensionality.
+  Unfotunately, we need function extensionality to define the dependent
+  eliminator for this encoding of `Nat`.
 *)
 
 Definition eliminator
@@ -130,4 +130,22 @@ Definition eliminator
     Informatics (LIPIcs), Volume 188, pp. 8:1-8:9, Schloss Dagstuhl –
     Leibniz-Zentrum für Informatik (2021)
     https://doi.org/10.4230/LIPIcs.TYPES.2020.8
+
+  However, even the more sophisticated encoding with its axiom-free eliminator
+  suffers from the general ergonomic issue that the `f` argument of the `sup`
+  constructor interacts poorly with judgmental equality by virtue of being a
+  function. For example, here's another definition of zero that is
+  extensionally but not judgmentally equal to `zero`:
 *)
+
+Definition other_zero : Nat := sup true (fun x : Empty_set => zero).
+
+Goal zero = other_zero.
+Proof.
+  assert_fails reflexivity. (* Not judgmentally equal *)
+  unfold zero, other_zero.
+  f_equal.
+  apply functional_extensionality.
+  intro.
+  destruct x.
+Qed.
