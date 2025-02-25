@@ -132,11 +132,14 @@ Proof.
 Qed.
 
 (*
+  The unit type is an exception in Coq; it cannot be defined as a primitive
+  record since eta conversion for it would require conversion to be typed.
+
   Even though eta-conversion for (co)inductive types is generally absent,
-  corresponding eta laws can be proven in many cases.
+  propositional eta laws can still be proven in many cases.
 *)
 
-Goal forall x : unit, x = tt.
+Goal forall x, x = tt.
 Proof.
   destruct x.
   reflexivity.
