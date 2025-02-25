@@ -65,7 +65,7 @@ Definition to_built_in_nat n := recursor nat 0 S n.
 Compute to_built_in_nat (add (succ zero) (succ (succ zero))). (* `3` *)
 
 (*
-  Unfotunately, we need function extensionality to define the dependent
+  Unfortunately, we need function extensionality to define the dependent
   eliminator for this encoding of `Nat`.
 *)
 
@@ -134,24 +134,14 @@ Qed.
      `fun x : Empty_set => match x with end`, even though they are
      extensionally equal.
   2. In the successor case, `f` is not judgmentally equal to
-     `fun _ : unit => f tt`, even though they are extensionally equal.
+     `fun _ : unit => f tt`, even though they are extensionally equal. This
+     would go through if we had η-conversion for the unit type (along with
+     η-conversion on Π types, which we already have in Coq).
 
-  There's a more sophisticated encoding of natural numbers as a W-type which
-  doesn't require function extensionality to define a dependent eliminator, as
-  long as we have η-conversion for Π and Σ types and the unit type. It's
-  described in the following paper:
-
-    Jasper Hugunin. Why Not W?. In 26th International Conference on Types for
-    Proofs and Programs (TYPES 2020). Leibniz International Proceedings in
-    Informatics (LIPIcs), Volume 188, pp. 8:1-8:9, Schloss Dagstuhl –
-    Leibniz-Zentrum für Informatik (2021)
-    https://doi.org/10.4230/LIPIcs.TYPES.2020.8
-
-  However, even the more sophisticated encoding with its axiom-free eliminator
-  suffers from the general ergonomic issue that the `f` argument of the `sup`
-  constructor interacts poorly with judgmental equality by virtue of being a
-  function. For example, here's another definition of zero that is
-  extensionally but not judgmentally equal to `zero`:
+  This encoding of natural numbers suffers from the general issue that the `f`
+  argument of the `sup` constructor interacts poorly with judgmental equality
+  by virtue of being a function. For example, here's another definition of zero
+  that is extensionally but not judgmentally equal to `zero`:
 *)
 
 Definition other_zero : Nat := sup true (fun x : Empty_set => zero).
@@ -165,3 +155,19 @@ Proof.
   intro.
   destruct x.
 Qed.
+
+(*
+  There's a more sophisticated encoding of natural numbers as a W-type which
+  doesn't require function extensionality to define a dependent eliminator, as
+  long as we have η-conversion for Π and Σ types and the unit type. It's
+  described in the following paper:
+
+    Jasper Hugunin. Why Not W?. In 26th International Conference on Types for
+    Proofs and Programs (TYPES 2020). Leibniz International Proceedings in
+    Informatics (LIPIcs), Volume 188, pp. 8:1-8:9, Schloss Dagstuhl –
+    Leibniz-Zentrum für Informatik (2021)
+    https://doi.org/10.4230/LIPIcs.TYPES.2020.8
+
+  In Coq, we can define Σ with η-conversion as a primitive record type.
+  Unfortunately, we don't have a unit type with η-conversion in Coq.
+*)
