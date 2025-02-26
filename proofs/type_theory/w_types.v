@@ -17,7 +17,7 @@ Require Import Coq.Logic.FunctionalExtensionality.
   its subtrees in the "subtree of" relation.
 *)
 
-Inductive W [A : Type] (B : A -> Type) :=
+Inductive W [A] (B : A -> Type) :=
 | sup (a : A) (f : B a -> W B) : W B.
 
 Arguments sup [_ _] _ _.
@@ -47,7 +47,7 @@ Definition zero : Nat := sup true (fun x : Empty_set => match x with end).
 
 Definition succ (p : Nat) : Nat := sup false (fun _ => p).
 
-Definition recursor (P : Type) (p_zero : P) (p_succ : P -> P) : Nat -> P :=
+Definition recursor P (p_zero : P) (p_succ : P -> P) : Nat -> P :=
   W_rect bool arities (fun _ => P) (
     fun (a : bool) =>
       match a
@@ -159,15 +159,12 @@ Qed.
 (*
   There's a more sophisticated encoding of natural numbers as a W-type which
   doesn't require function extensionality to define a dependent eliminator, as
-  long as we have η-conversion for Π and Σ types and the unit type. It's
-  described in the following paper:
+  long as we have η-conversion for Π and Σ types. It's described in the
+  following paper:
 
     Jasper Hugunin. Why Not W?. In 26th International Conference on Types for
     Proofs and Programs (TYPES 2020). Leibniz International Proceedings in
     Informatics (LIPIcs), Volume 188, pp. 8:1-8:9, Schloss Dagstuhl –
     Leibniz-Zentrum für Informatik (2021)
     https://doi.org/10.4230/LIPIcs.TYPES.2020.8
-
-  In Coq, we can define Σ with η-conversion as a primitive record type.
-  Unfortunately, we don't have a unit type with η-conversion in Coq.
 *)
