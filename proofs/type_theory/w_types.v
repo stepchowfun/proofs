@@ -53,8 +53,8 @@ Definition recursor P (p_zero : P) (p_succ : P -> P) : Nat -> P :=
       match a
       return forall (f : arities a -> W arities) (h : arities a -> P), P
       with
-      | true => fun f h => p_zero
-      | false => fun f h => p_succ (h tt)
+      | true => fun _ _ => p_zero
+      | false => fun _ h => p_succ (h tt)
       end
   ).
 
@@ -82,7 +82,7 @@ Definition eliminator
         forall (f : arities a -> W arities) (h : forall b, P (f b)),
         P (sup a f)
       with
-      | true => fun f h =>
+      | true => fun f _ =>
         match
           functional_extensionality
             (fun x : Empty_set => match x with end)
@@ -144,7 +144,7 @@ Qed.
   that is extensionally but not judgmentally equal to `zero`:
 *)
 
-Definition other_zero : Nat := sup true (fun x : Empty_set => zero).
+Definition other_zero : Nat := sup true (fun _ : Empty_set => zero).
 
 Goal zero = other_zero.
 Proof.
