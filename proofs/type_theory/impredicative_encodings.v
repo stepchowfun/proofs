@@ -1,21 +1,29 @@
 (*****************************************************************************)
 (*****************************************************************************)
 (****                                                                     ****)
-(****   A demonstration (but not a proof) of why Church encodings don't   ****)
-(****   support dependent elimination                                     ****)
+(****   A demonstration (but not a proof) of why naive impredicative      ****)
+(****   encodings don't support dependent elimination                     ****)
 (****                                                                     ****)
 (*****************************************************************************)
 (*****************************************************************************)
 
 (*
   This file demonstrates the problems one encounters when trying to implement
-  inductive types (in particular, pairs) with Church encodings. For an actual
-  impossibility result, see:
+  inductive types (in particular, pairs) with naive impredicative encodings.
+  For an actual impossibility result, see:
 
     Geuvers, H. (2001). Induction Is Not Derivable in Second Order Dependent
     Type Theory. In: Abramsky, S. (eds) Typed Lambda Calculi and Applications.
     TLCA 2001. Lecture Notes in Computer Science, vol 2044. Springer, Berlin,
     Heidelberg. https://doi.org/10.1007/3-540-45413-6_16
+
+  However, for a contrasting result, see:
+
+    Steve Awodey, Jonas Frey, and Sam Speight. 2018. Impredicative Encodings of
+    (Higher) Inductive Types. In Proceedings of the 33rd Annual ACM/IEEE
+    Symposium on Logic in Computer Science (LICS '18). Association for
+    Computing Machinery, New York, NY, USA, 76–85.
+    https://doi.org/10.1145/3209108.3209130
 
   These encodings of pairs require an impredicative universe in order to be
   defined in the same universe as their component types, so we'll use `Prop`.
@@ -24,7 +32,7 @@
 Module NonDependentPairsWithNonDependentElimination.
   (*
     Just as in System F, non-dependent pairs with non-dependent elimination
-    work fine, but we don't get eta equivalence.
+    work fine, but we don't get eta equivalence (not even propositionally).
   *)
 
   Definition Pair (X Y : Prop) : Prop :=
@@ -62,9 +70,9 @@ End NonDependentPairsWithNonDependentElimination.
 Module DependentPairsWithNonDependentElimination.
   (*
     Dependent pairs with non-dependent elimination almost work, except we can't
-    define the second projection in full generality. In other words, we can
-    encode "weak sums" (i.e., existentials) but not "strong sums". Of course,
-    without the second projection, we don't have the associated equivalences.
+    define the second projection in full generality. In other words, we have
+    "weak sums" (i.e., existentials) but not "strong sums". Of course, without
+    the second projection, we don't have the associated equivalences.
   *)
 
   Definition Pair (X : Prop) (Y : X -> Prop) : Prop :=
@@ -83,14 +91,10 @@ Module DependentPairsWithNonDependentElimination.
   Definition first (X : Prop) (Y : X -> Prop) : Pair X Y -> X :=
     fun p => eliminate X Y X (fun x _ => x) p.
 
-  (*
-    ```
-    Definition second (X : Prop) (Y : X -> Prop) (p : Pair X Y) :
-      Y (first X Y p)
-    :=
-      eliminate X Y (Y (first X Y p)) (fun _ y => y) p.
-    ```
-  *)
+  Fail Definition second (X : Prop) (Y : X -> Prop) (p : Pair X Y) :
+    Y (first X Y p)
+  :=
+    eliminate X Y (Y (first X Y p)) (fun _ y => y) p.
 
   Parameter second :
     forall (X : Prop) (Y : X -> Prop) (p : Pair X Y), Y (first X Y p).
@@ -118,14 +122,10 @@ Module NonDependentPairsWithDependentElimination.
     induction principle.
   *)
 
-  (*
-    ```
-    Definition Pair (X Y : Prop) : Prop :=
-      forall (Z : Pair X Y -> Prop),
-      (forall (x : X) (y : Y), Z (construct X Y x y)) ->
-      forall (p : Pair X Y), Z p.
-    ```
-  *)
+  Fail Definition Pair (X Y : Prop) : Prop :=
+    forall (Z : Pair X Y -> Prop),
+    (forall (x : X) (y : Y), Z (construct X Y x y)) ->
+    forall (p : Pair X Y), Z p.
 End NonDependentPairsWithDependentElimination.
 
 Module DependentPairsWithDependentElimination.
@@ -134,12 +134,8 @@ Module DependentPairsWithDependentElimination.
     same problem.
   *)
 
-  (*
-    ```
-    Definition Pair (X : Prop) (Y : X -> Prop) : Prop :=
-      forall (Z : Pair X Y -> Prop),
-      (forall (x : X) (y : Y x), Z (construct X Y x y)) ->
-      forall (p : Pair X Y), Z p.
-    ```
-  *)
+  Fail Definition Pair (X : Prop) (Y : X -> Prop) : Prop :=
+    forall (Z : Pair X Y -> Prop),
+    (forall (x : X) (y : Y x), Z (construct X Y x y)) ->
+    forall (p : Pair X Y), Z p.
 End DependentPairsWithDependentElimination.
