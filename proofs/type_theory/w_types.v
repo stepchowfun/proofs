@@ -22,17 +22,14 @@ Inductive W [A] (B : A -> Type) :=
 
 Arguments sup [_ _] _ _.
 
-Check W_ind.
+Check W_rect.
 
 (*
   ```
-  W_ind :
-    forall (A : Type) (B : A -> Type) (P : W B -> Prop),
-    (
-      forall (a : A) (f : B a -> W B),
-      (forall b : B a, P (f b)) ->
-      P (sup a f)
-    ) ->
+  W_rect :
+    forall (A : Type) (B : A -> Type) (P : W B -> Type),
+    (forall (a : A) (f : B a -> W B), (forall b : B a, P (f b)) ->
+      P (sup a f)) ->
     forall w : W B, P w
   ```
 *)
@@ -130,6 +127,16 @@ Proof.
   reflexivity.
 Qed.
 
+Goal pre_zero <> pre_succ pre_zero.
+Proof.
+  intro.
+  pose (f := pre_recursor Type unit (fun _ => Empty_set)).
+  pose (x := tt : f pre_zero).
+  rewrite H in x.
+  cbn in x.
+  destruct x.
+Qed.
+
 (*
   There are two situations above where function extensionality was required:
 
@@ -142,9 +149,9 @@ Qed.
      η-conversion on Π types, which we already have in Coq).
 
   This encoding of natural numbers suffers from the general issue that the `f`
-  argument of the `sup` constructor interacts poorly with judgmental equality
-  by virtue of being a function. For example, here's another definition of zero
-  that is extensionally but not judgmentally equal to `zero`:
+  argument of the `sup` constructor isn't sufficiently constrained. For
+  example, here's another definition of zero that is extensionally but not
+  judgmentally equal to `zero`:
 *)
 
 Definition other_zero : PreNat := sup true (fun _ : Empty_set => pre_zero).
@@ -245,18 +252,17 @@ Definition eliminator
         | eq_refl => p_zero
         end
       | false => fun f h c =>
-        let eq := c.(y).(x) in
-        match eq
+        match c.(y).(x) as e
         in _ = z
         return
           forall p : Canonical (z tt),
           P {| x := z tt; y := p |} ->
           P {|
             x := sup false z;
-            y := {| x := c.(x); y := {| x := eq; y := p |} |}
+            y := {| x := c.(x); y := {| x := e; y := p |} |}
           |}
         with
-        | eq_refl => fun p ih => p_succ {| x := c.(x); y := p |} ih
+        | eq_refl => fun p i => p_succ {| x := c.(x); y := p |} i
         end
         c.(y).(y) (h tt c.(y).(y))
       end
@@ -284,4 +290,14 @@ Proof.
   unfold add in H.
   rewrite H.
   reflexivity.
+Qed.
+
+Goal zero <> succ zero.
+Proof.
+  intro.
+  pose (f := recursor Type unit (fun _ => Empty_set)).
+  pose (x := tt : f zero).
+  rewrite H in x.
+  cbn in x.
+  destruct x.
 Qed.
