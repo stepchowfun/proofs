@@ -10,11 +10,11 @@ Require Import Coq.Logic.FunctionalExtensionality.
 
 (*
   W-types are the types of well-founded trees and generalize inductive types
-  like `bool`, `nat`, `list`, etc. The parameter `A` encodes both the choice of
+  like `bool`, `nat`, `list`, etc. The type `A` encodes both the choice of
   constructor and its non-recursive arguments. The family `B` encodes the
-  number of recursive arguments for a given choice of `A`. The name `sup` is
-  short for "supremum", since each node in the tree is the least upper bound of
-  its subtrees in the "subtree of" relation.
+  number of recursive arguments for each value of `A`. The name `sup` is short
+  for "supremum", since each node in the tree is the least upper bound of its
+  subtrees in the "subtree of" relation.
 *)
 
 Inductive W [A] (B : A -> Type) :=
@@ -36,7 +36,10 @@ Check W_rect.
 
 (* The standard encoding of the natural numbers as a W-type is as follows: *)
 
-Definition arities (b : bool) := if b then Empty_set else unit.
+Definition arities (b : bool) :=
+  if b           (* Two constructors: *zero* and *successor* *)
+  then Empty_set (* Zero case: no recursive arguments *)
+  else unit.     (* Successor case: one recursive argument *)
 
 Definition PreNat := W arities.
 
@@ -84,7 +87,7 @@ Definition pre_eliminator
       with
       | true => fun f _ =>
         match
-          functional_extensionality
+          functional_extensionality (* Here *)
             (fun x : Empty_set => match x with end)
             f
             (fun x => match x with end)
@@ -95,7 +98,7 @@ Definition pre_eliminator
         end
       | false => fun f h =>
         match
-          functional_extensionality
+          functional_extensionality (* And here *)
             (fun _ => f tt)
             f
             (
@@ -148,10 +151,9 @@ Qed.
      would go through if we had η-conversion for the unit type (along with
      η-conversion on Π types, which we already have in Coq).
 
-  This encoding of natural numbers suffers from the general issue that the `f`
-  argument of the `sup` constructor isn't sufficiently constrained. For
-  example, here's another definition of zero that is extensionally but not
-  judgmentally equal to `zero`:
+  The issue is that the `f` argument of the `sup` constructor isn't
+  sufficiently constrained. For example, here's another definition of zero that
+  is extensionally but not judgmentally equal to `zero`:
 *)
 
 Definition other_zero : PreNat := sup true (fun _ : Empty_set => pre_zero).
@@ -178,9 +180,14 @@ Qed.
     Leibniz-Zentrum für Informatik (2021)
     https://doi.org/10.4230/LIPIcs.TYPES.2020.8
 
-  The Σ type in Coq's standard library doesn't have definitional
-  η-conversion:
+  Coq has η-conversion for Π types but not for the Σ type defined in the
+  standard library:
 *)
+
+Goal forall T (P : T -> Type) (f : forall x : T, P x), f = fun x => f x.
+Proof.
+  reflexivity.
+Qed.
 
 Goal
   forall T (P : T -> Type) (s : { x : T & P x }),
@@ -193,7 +200,8 @@ Proof.
 Qed.
 
 (*
-  However, we can define a Σ with η-conversion as a primitive record type:
+  Fortunately, we can define a Σ type with η-conversion as a primitive record
+  type:
 *)
 
 Record Sigma [T] (P : T -> Type) := sigma { x : T; y : P x }.
