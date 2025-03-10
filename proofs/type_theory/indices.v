@@ -4,8 +4,8 @@
 (****   A demonstration that instead of having inductive families      ****)
 (****   (i.e., inductive types with indices) built into the type       ****)
 (****   theory, we can emulate them with families of inductive types   ****)
-(****   (i.e., inductive types with parameters) if propositional       ****)
-(****   equality is taken to be primitive                              ****)
+(****   (in particular, inductive types with non-uniform parameters)   ****)
+(****   if propositional equality is taken to be primitive             ****)
 (****                                                                  ****)
 (**************************************************************************)
 (**************************************************************************)
@@ -18,27 +18,31 @@ Require Import main.tactics.
   definition is an inductive family, and the second is a family of inductive
   types.
 
-  Note that `exp1` lives in `Type` because its `const1` constructor quantifies
-  over `Set`. `exp2`, however, can live in `Set` since parameter arguments are
+  Note that `Exp1` lives in `Type` because its `const1` constructor quantifies
+  over `Set`. `Exp2`, however, can live in `Set` since parameter arguments are
   not considered for universe constraints on inductive data types. In that
   sense, we have gained something from using a parameter instead of an index.
+
+  Note also that the parameter in `Exp2` is "non-uniform", meaning that some
+  constructors have recursive arguments with a different value for the
+  parameter.
 *)
 
 Inductive Exp1 : Set -> Type :=
-| const1 : forall (a : Set), a -> Exp1 a
+| const1 : forall (T : Set), T -> Exp1 T
 | add1 : Exp1 nat -> Exp1 nat -> Exp1 nat
 | less_than1 : Exp1 nat -> Exp1 nat -> Exp1 bool.
 
 Hint Constructors Exp1 : main.
 
-Inductive Exp2 (a : Set) : Set :=
-| const2 : a -> Exp2 a
-| add2 : nat = a -> Exp2 nat -> Exp2 nat -> Exp2 a
-| less_than2 : bool = a -> Exp2 nat -> Exp2 nat -> Exp2 a.
+Inductive Exp2 (T : Set) : Set :=
+| const2 : T -> Exp2 T
+| add2 : nat = T -> Exp2 nat -> Exp2 nat -> Exp2 T
+| less_than2 : bool = T -> Exp2 nat -> Exp2 nat -> Exp2 T.
 
 Hint Constructors Exp2 : main.
 
-Fixpoint exp1_to_exp2 (a : Set) (e1 : Exp1 a) : Exp2 a :=
+Fixpoint exp1_to_exp2 (T : Set) (e1 : Exp1 T) : Exp2 T :=
   match e1 with
   | const1 b x => const2 b x
   | add1 e2 e3 => add2 nat eq_refl (exp1_to_exp2 nat e2) (exp1_to_exp2 nat e3)
@@ -46,9 +50,9 @@ Fixpoint exp1_to_exp2 (a : Set) (e1 : Exp1 a) : Exp2 a :=
     less_than2 bool eq_refl (exp1_to_exp2 nat e2) (exp1_to_exp2 nat e3)
   end.
 
-Fixpoint exp2_to_exp1 (a : Set) (e1 : Exp2 a) : Exp1 a :=
+Fixpoint exp2_to_exp1 (T : Set) (e1 : Exp2 T) : Exp1 T :=
   match e1 with
-  | const2 _ x => const1 a x
+  | const2 _ x => const1 T x
   | add2 _ H e2 e3 =>
     match H in (_ = b) return Exp1 b with
     | eq_refl => add1 (exp2_to_exp1 nat e2) (exp2_to_exp1 nat e3)
@@ -60,7 +64,7 @@ Fixpoint exp2_to_exp1 (a : Set) (e1 : Exp2 a) : Exp1 a :=
   end.
 
 Theorem exp1_to_exp2_to_exp1 :
-  forall (a : Set) (e : Exp1 a), exp2_to_exp1 a (exp1_to_exp2 a e) = e.
+  forall (T : Set) (e : Exp1 T), exp2_to_exp1 T (exp1_to_exp2 T e) = e.
 Proof.
   clean.
   induction e; search.
@@ -69,7 +73,7 @@ Qed.
 Hint Resolve exp1_to_exp2_to_exp1 : main.
 
 Theorem exp2_to_exp1_to_exp2 :
-  forall (a : Set) (e : Exp2 a), exp1_to_exp2 a (exp2_to_exp1 a e) = e.
+  forall (T : Set) (e : Exp2 T), exp1_to_exp2 T (exp2_to_exp1 T e) = e.
 Proof.
   clean.
   induction e; search.
@@ -82,14 +86,14 @@ Hint Resolve exp2_to_exp1_to_exp2 : main.
   and prove they are preserved by the isomorphisms.
 *)
 
-Fixpoint eval1 (a : Set) (e1 : Exp1 a) : a :=
+Fixpoint eval1 (T : Set) (e1 : Exp1 T) : T :=
   match e1 in Exp1 b return b with
   | const1 _ x => x
   | add1 e2 e3 => eval1 nat e2 + eval1 nat e3
   | less_than1 e2 e3 => ltb (eval1 nat e2) (eval1 nat e3)
   end.
 
-Fixpoint eval2 (a : Set) (e1 : Exp2 a) : a :=
+Fixpoint eval2 (T : Set) (e1 : Exp2 T) : T :=
   match e1 with
   | const2 _ x => x
   | add2 _ H e2 e3 =>
@@ -103,7 +107,7 @@ Fixpoint eval2 (a : Set) (e1 : Exp2 a) : a :=
   end.
 
 Theorem exp1_to_exp2_preserves_eval :
-  forall (a : Set) (e : Exp1 a), eval1 a e = eval2 a (exp1_to_exp2 a e).
+  forall (T : Set) (e : Exp1 T), eval1 T e = eval2 T (exp1_to_exp2 T e).
 Proof.
   clean.
   induction e; search.
@@ -116,7 +120,7 @@ Qed.
 Hint Resolve exp1_to_exp2_preserves_eval : main.
 
 Theorem exp2_to_exp1_preserves_eval :
-  forall (a : Set) (e : Exp2 a), eval2 a e = eval1 a (exp2_to_exp1 a e).
+  forall (T : Set) (e : Exp2 T), eval2 T e = eval1 T (exp2_to_exp1 T e).
 Proof.
   clean.
   induction e; search.
