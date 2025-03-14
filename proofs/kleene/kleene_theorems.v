@@ -98,7 +98,7 @@ Module KleeneTheorems (Kleene : KleeneData).
   (*
     Iterated applications of a monotone function `f` to bottom form an
     ω-chain, which means they are a totally ordered subset of `T`. This
-    ω-chain is called the ascending kleene chain of `f`.
+    ω-chain is called the ascending Kleene chain of `f`.
   *)
 
   Theorem omega_chain :
@@ -113,7 +113,7 @@ Module KleeneTheorems (Kleene : KleeneData).
 
   Hint Resolve omega_chain : main.
 
-  (* The ascending kleene chain of `f` is directed. *)
+  (* The ascending Kleene chain of `f` is directed. *)
 
   Theorem kleene_chain_directed :
     forall f,
@@ -133,13 +133,13 @@ Module KleeneTheorems (Kleene : KleeneData).
   Hint Resolve kleene_chain_directed : main.
 
   (**********************************)
-  (* The kleene fixed-point theorem *)
+  (* The Kleene fixed-point theorem *)
   (**********************************)
 
   (*
-    The kleene fixed-point theorem states that the least fixed-point of a
+    The Kleene fixed-point theorem states that the least fixed-point of a
     Scott-continuous function over a pointed directed-complete partial order
-    exists and is the supremum of the ascending kleene chain.
+    exists and is the supremum of the ascending Kleene chain.
   *)
 
   Theorem kleene :
