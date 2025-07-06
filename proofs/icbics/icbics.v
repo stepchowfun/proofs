@@ -25,8 +25,8 @@ Require Import Coq.Sorting.Permutation.
 Require Import Coq.Sorting.Sorted.
 Require Import main.tactics.
 
+Import Coq.Arith.PeanoNat.Nat.
 Import Coq.Lists.List.ListNotations.
-Import PeanoNat.Nat.
 
 (*****************)
 (* The algorithm *)
