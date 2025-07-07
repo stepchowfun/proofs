@@ -322,8 +322,8 @@ Qed.
   structural subterms of the input. Lesson 5 explains the motivation for that
   restriction.
 
-  The `add` function from Lesson 1 satisfies the restriction, but the following
-  function doesn't:
+  Many common functions satisfy the restriction. The following functon is an
+  example of one that doesn't:
 *)
 
 Fail Fixpoint alternator (l : list nat) : list nat :=
