@@ -6,7 +6,7 @@
 (**********************)
 (**********************)
 
-Require Import Coq.Logic.ProofIrrelevance.
+Require Import Stdlib.Logic.ProofIrrelevance.
 Require Import main.category_theory.category.
 Require Import main.tactics.
 

@@ -6,13 +6,13 @@
 (*****************************************************************)
 (*****************************************************************)
 
-Require Import Coq.Lists.List.
-Require Import Coq.ZArith.BinIntDef.
+Require Import Stdlib.Lists.List.
+Require Import Stdlib.ZArith.BinIntDef.
 Require Import main.crdt.state_crdt(PartialOrder(..)).
 Require Import main.tactics.
 
-Import Coq.Lists.List.ListNotations.
-Import Coq.ZArith.BinIntDef.Z.
+Import Stdlib.Lists.List.ListNotations.
+Import Stdlib.ZArith.BinIntDef.Z.
 
 (*
   The data for an operation-based conflict-free replicated data type consists

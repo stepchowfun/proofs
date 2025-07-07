@@ -1,16 +1,16 @@
-(****************************************************************************)
-(****************************************************************************)
-(****                                                                    ****)
-(****   Restrictions imposed by Coq to ensure consistency of the logic   ****)
-(****                                                                    ****)
-(****************************************************************************)
-(****************************************************************************)
+(*****************************************************************************)
+(*****************************************************************************)
+(****                                                                     ****)
+(****   Restrictions imposed by Rocq to ensure consistency of the logic   ****)
+(****                                                                     ****)
+(*****************************************************************************)
+(*****************************************************************************)
 
 (********************************************************)
 (* All functions must be statically known to terminate. *)
 (********************************************************)
 
-(* Coq rejects all nonterminating functions, such as: *)
+(* Rocq rejects all nonterminating functions, such as: *)
 
 Fail Fixpoint f (n : nat) : False := f n.
 
@@ -32,14 +32,14 @@ Fail Fixpoint f (n : nat) : False := f n.
   Definition paradox : False := f 0.
   ```
 
-  To prevent this, Coq requires that recursive functions have some argument
-  which is structurally "decreasing" at every recursive call. Coq can
+  To prevent this, Rocq requires that recursive functions have some argument
+  which is structurally "decreasing" at every recursive call. Rocq can
   automatically figure out which argument that is.
 *)
 
-(***************************************************)
-(* A brief summary of the universe behavior in Coq *)
-(***************************************************)
+(****************************************************)
+(* A brief summary of the universe behavior in Rocq *)
+(****************************************************)
 
 (*
   Consider a type, such as `nat`. What is its type? Suppose we call it `Type`,
@@ -103,10 +103,10 @@ Fail Check IdSet (forall T : Set, T -> T) IdSet.
   (universe inconsistency: Cannot enforce Set+1 <= Set).
   ```
 
-  When we write `Type`, Coq automatically figures out which level `i` should be
-  used. In fact, there is no way to explicitly specify it.
+  When we write `Type`, Rocq automatically figures out which level `i` should
+  be used. In fact, there is no way to explicitly specify it.
 
-  Let's fix some particular universe and let Coq choose some level `i` for it.
+  Let's fix some particular universe and let Rocq choose some level `i` for it.
 *)
 
 Definition U := Type.
@@ -226,7 +226,7 @@ Fail Inductive Bad :=
   Non strictly positive occurrence of "Bad" in "(Bad -> nat) -> Bad".
   ```
 
-  Why does coq reject `Bad`? Suppose it were allowed. Consider the following
+  Why does Rocq reject `Bad`? Suppose it were allowed. Consider the following
   function:
 
   ```
@@ -252,13 +252,13 @@ Fail Inductive AlsoBad :=
   `AlsoBad` could be used to construct a diverging function in an impredicative
   universe, as demonstrated in this paper:
 
-    Coquand, T., Paulin, C. (1990). Inductively defined types. In: Martin-Löf,
-    P., Mints, G. (eds) COLOG-88. COLOG 1988. Lecture Notes in Computer
+    Coquand, T., Paulin, C. (1990). Inductively defined types. In: Martin-
+    Löf, P., Mints, G. (eds) COLOG-88. COLOG 1988. Lecture Notes in Computer
     Science, vol 417. Springer, Berlin, Heidelberg.
     https://doi.org/10.1007/3-540-52335-9_47
 
   `AlsoBad` is not known to cause any theoretical issues in predicative
-  universes, but Coq still rejects it regardless of the universe in which it's
+  universes, but Rocq still rejects it regardless of the universe in which it's
   defined.
 *)
 
@@ -267,12 +267,12 @@ Fail Inductive AlsoBad :=
 (*************)
 
 (*
-  1. Explain why Coq requires that all functions terminate on all inputs. How
-     does Coq enforce this?
+  1. Explain why Rocq requires that all functions terminate on all inputs. How
+     does Rocq enforce this?
   2. No type can be its own type, yet `Check Type` reports `Type : Type`.
      What's really going on here?
   3. Describe cumulativity. Can you think of an example in which it's useful?
   4. Describe impredicativity. Does `Set` have it? Does `Prop` have it? Do the
      `Type` universes have it?
-  5. Describe the restrictions Coq imposes on inductive data types.
+  5. Describe the restrictions Rocq imposes on inductive data types.
 *)

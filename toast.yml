@@ -19,11 +19,11 @@ tasks:
     command: |
       # Install the following packages:
       #
-      # - build-essential - Used by opam to build Coq
+      # - build-essential - Used by opam to build Rocq
       # - curl            - Used for installing Tagref
-      # - libgmp3-dev     - Used by opam to build Coq
-      # - opam            - Used to install OCaml and Coq
-      # - pkg-config      - Used by opam to build Coq
+      # - libgmp3-dev     - Used by opam to build Rocq
+      # - opam            - Used to install OCaml and Rocq
+      # - pkg-config      - Used by opam to build Rocq
       # - ruby            - Used by the linter scripts
       apt-get update
       apt-get install --yes \
@@ -56,37 +56,35 @@ tasks:
       # Without this, Ruby will assume files are encoded as ASCII.
       echo 'export LANG="C.UTF-8"' >> /home/user/.profile
 
-  install_coq:
-    description: Install Coq.
+  install_rocq:
+    description: Install Rocq.
     dependencies:
       - create_user
       - install_packages
     user: user
     command: |
-      # Install Coq via opam.
+      # Install Rocq via opam.
       opam init --disable-sandboxing --yes
       eval "$(opam env)"
-      opam switch create 5.2.0 --yes
-      eval "$(opam env)"
-      opam pin add coq 8.20.1 --yes
+      opam pin add rocq-prover 9.0.0 --yes
 
   install_tools:
-    description: Install the tools needed to verify the Coq proofs.
+    description: Install the tools needed to verify the Rocq proofs.
     dependencies:
-      - install_coq
+      - install_rocq
       - install_tagref
 
   verify:
-    description: Run Coq on the proof scripts.
+    description: Run Rocq on the proof scripts.
     dependencies:
       - install_tools
     input_paths:
       - Makefile
-      - _CoqProject
+      - _RocqProject
       - proofs
     user: user
     command: |
-      # Run Coq on the proof scripts.
+      # Run Rocq on the proof scripts.
       make clean
       make
 
@@ -121,8 +119,8 @@ tasks:
       # [ref:flags]
       ./linters/lint-imports.rb \
         '^\s*Require ' \
-        '^\s*Require (Import )?(Coq|main)\.' \
-        "coqc \
+        '^\s*Require (Import )?(Stdlib|main)\.' \
+        "rocq compile \
           -set 'Default Goal Selector=!' \
           -set 'Loose Hint Behavior=Strict' \
           -set 'Primitive Projections' \
@@ -140,7 +138,7 @@ tasks:
       ./linters/lint-imports.rb \
         '^\s*Import ' \
         '^\s*Import ' \
-        "coqc \
+        "rocq compile \
           -set 'Default Goal Selector=!' \
           -set 'Loose Hint Behavior=Strict' \
           -set 'Primitive Projections' \

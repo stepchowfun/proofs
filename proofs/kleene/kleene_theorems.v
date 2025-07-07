@@ -6,7 +6,7 @@
 (*******************************************************)
 (*******************************************************)
 
-Require Import Coq.micromega.Lia.
+Require Import Stdlib.micromega.Lia.
 Require Import main.kleene.kleene_data.
 Require Import main.tactics.
 

@@ -1,7 +1,1 @@
-# [tag:flags]
--arg "-set 'Default Goal Selector=!'"
--arg "-set 'Loose Hint Behavior=Strict'"
--arg "-set 'Primitive Projections'"
--arg "-set 'Printing Projections'"
--arg "-unset 'Printing Primitive Projection Parameters'"
--Q proofs main
+_RocqProject

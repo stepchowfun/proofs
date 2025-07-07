@@ -8,17 +8,17 @@
 
 (*
   For variety, some the examples in this lesson will use strings. The `string`
-  type is defined in the `Coq.Strings.String` module from the standard library.
-  Loading a compiled module is called "requiring" it. Once required, we can
-  optionally "import" its contents into the current scope so we don't have to
-  use fully qualified names. The following command does both.
+  type is defined in the `Rocq.Strings.String` module from the standard
+  library.  Loading a compiled module is called "requiring" it. Once required,
+  we can optionally "import" its contents into the current scope so we don't
+  have to use fully qualified names. The following command does both.
 *)
 
-Require Import Coq.Strings.String.
+Require Import Stdlib.Strings.String.
 
 (*
-  The Coq parser knows how to parse string literals, but it doesn't
-  automatically know how to represent them. The next line tells Coq to
+  The Rocq parser knows how to parse string literals, but it doesn't
+  automatically know how to represent them. The next line tells Rocq to
   represent them with the `string` type we just imported.
 *)
 
@@ -50,7 +50,7 @@ Compute BoolToType true. (* `nat` *)
 Compute BoolToType false. (* `string` *)
 
 (*
-  Coq considers types *definitionally equal* if they compute to syntactically
+  Rocq considers types *definitionally equal* if they compute to syntactically
   identical types. This notion of equality between types is the one used for
   type checking. For example, we can give the value `42` the following two
   types which are definitionally equal:
@@ -253,7 +253,7 @@ Print head.
     end
   ```
 
-  Coq is smart enough to know the `empty` case is impossible, so it handles it
+  Rocq is smart enough to know the `empty` case is impossible, so it handles it
   automatically with a dummy value (`idProp`). The dummy value doesn't have the
   same type as the `nonempty` case, so this is a dependent pattern match.
 
@@ -313,7 +313,7 @@ Fail Check
   while it is expected to have type "nat".
   ```
 
-  The issue is that Coq doesn't refine the type of `x` based on the knowledge
+  The issue is that Rocq doesn't refine the type of `x` based on the knowledge
   gained about the parity of `n` in each case. To make the example work, we can
   use the *convoy pattern*. First, we use dependent pattern matching to
   construct a function which accepts an arbitrary `BoolToType (Nat.even n)`,

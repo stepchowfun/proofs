@@ -6,8 +6,8 @@
 (*************************************)
 (*************************************)
 
-Require Import Coq.Logic.FunctionalExtensionality.
-Require Import Coq.Logic.ProofIrrelevance.
+Require Import Stdlib.Logic.FunctionalExtensionality.
+Require Import Stdlib.Logic.ProofIrrelevance.
 Require Import main.category_theory.arrow.
 Require Import main.category_theory.category.
 Require Import main.category_theory.functor.

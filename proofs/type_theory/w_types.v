@@ -6,7 +6,7 @@
 (***************************************)
 (***************************************)
 
-Require Import Coq.Logic.FunctionalExtensionality.
+Require Import Stdlib.Logic.FunctionalExtensionality.
 
 (*
   W-types are the types of well-founded trees and generalize inductive types
@@ -149,7 +149,7 @@ Qed.
   2. In the successor case, `f` is not judgmentally equal to
      `fun _ : unit => f tt`, even though they are extensionally equal. This
      would go through if we had η-conversion for the unit type (along with
-     η-conversion on Π types, which we already have in Coq).
+     η-conversion on Π types, which we already have in Rocq).
 
   The issue is that the `f` argument of the `sup` constructor isn't
   sufficiently constrained. For example, here's another definition of zero that
@@ -180,7 +180,7 @@ Qed.
     Leibniz-Zentrum für Informatik (2021)
     https://doi.org/10.4230/LIPIcs.TYPES.2020.8
 
-  Coq has η-conversion for Π types but not for the Σ type defined in the
+  Rocq has η-conversion for Π types but not for the Σ type defined in the
   standard library:
 *)
 

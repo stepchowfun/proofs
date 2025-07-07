@@ -6,8 +6,8 @@
 (**********************************)
 (**********************************)
 
-Require Import Coq.Relations.Operators_Properties.
-Require Import Coq.Relations.Relation_Operators.
+Require Import Stdlib.Relations.Operators_Properties.
+Require Import Stdlib.Relations.Relation_Operators.
 Require Import main.tactics.
 
 #[local] Arguments clos_refl_trans [A] _ _ _.

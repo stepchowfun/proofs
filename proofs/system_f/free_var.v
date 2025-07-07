@@ -6,10 +6,10 @@
 (****************************)
 (****************************)
 
-Require Import Coq.Lists.List.
+Require Import Stdlib.Lists.List.
 Require Import main.system_f.syntax.
 
-Import Coq.Lists.List.ListNotations.
+Import Stdlib.Lists.List.ListNotations.
 
 Fixpoint ee_free_vars e1 :=
   match e1 with

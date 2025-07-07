@@ -6,8 +6,8 @@
 (**************************************)
 (**************************************)
 
-Require Import Coq.Bool.Bool.
-Require Import Coq.Lists.List.
+Require Import Stdlib.Bool.Bool.
+Require Import Stdlib.Lists.List.
 Require Import main.system_f.context.
 Require Import main.system_f.free_var.
 Require Import main.system_f.name.

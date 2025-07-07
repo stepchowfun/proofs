@@ -6,7 +6,7 @@
 (******************************)
 (******************************)
 
-Require Import Coq.Classes.Morphisms.
+Require Import Stdlib.Classes.Morphisms.
 Require Import main.category_theory.category.
 Require Import main.category_theory.initial.
 Require Import main.category_theory.object.

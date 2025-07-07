@@ -6,7 +6,7 @@
 (*******************************************)
 (*******************************************)
 
-Require Import Coq.Logic.FunctionalExtensionality.
+Require Import Stdlib.Logic.FunctionalExtensionality.
 Require Import main.category_theory.examples.set.
 Require Import main.category_theory.functor.
 Require Import main.category_theory.monad.

@@ -6,8 +6,8 @@
 (**************************************)
 (**************************************)
 
-Require Coq.extraction.Extraction. (* For the `Recursive Extraction` command *)
-Require Import Coq.micromega.Lia. (* For the `lia` tactic *)
+Require Import Stdlib.micromega.Lia. (* For the `lia` tactic *)
+Require Stdlib.extraction.Extraction. (* For `Recursive Extraction` *)
 
 (*************************************************)
 (* Information cannot leave the `Prop` universe. *)
@@ -32,11 +32,12 @@ Definition flip_flop (proof : MyProp) : MyProp :=
   end.
 
 (*
-  As we will see in this lesson, Coq code can be "extracted" into code in other
-  languages such that the proofs are erased. But in order for extraction to
-  make sense, it's important that none of the extracted code makes decisions
-  based on the erased proofs. Coq guarantees this with a restriction on pattern
-  matching. The following is rejected because the return type is not in `Prop`:
+  As we will see in this lesson, Rocq code can be "extracted" into code in
+  other languages such that the proofs are erased. But in order for extraction
+  to make sense, it's important that none of the extracted code makes decisions
+  based on the erased proofs. Rocq guarantees this with a restriction on
+  pattern matching. The following is rejected because the return type is not in
+  `Prop`:
 *)
 
 Fail Definition my_prop_to_nat (proof : MyProp) : nat :=
@@ -57,7 +58,7 @@ Fail Definition my_prop_to_nat (proof : MyProp) : nat :=
 
   However, if a proposition has zero constructors or one constructor for which
   the non-parameter arguments are proofs, then pattern matching on it doesn't
-  result in any decisions being made based on the proof. Thus, Coq allows the
+  result in any decisions being made based on the proof. Thus, Rocq allows the
   following:
 *)
 
@@ -126,7 +127,7 @@ Recursive Extraction xor.
 
   This code works, but it would be better if the arguments of `xor` were OCaml
   `bool`s rather than using an extracted copy of `bool`. To address this, we
-  can teach Coq about OCaml `bool`s.
+  can teach Rocq about OCaml `bool`s.
 *)
 
 Extract Inductive bool => "bool" ["true" "false"].
@@ -151,9 +152,9 @@ Recursive Extraction xor.
   Instead of writing code and separately proving theorems about it, we can
   write code which manipulates proofs.
 
-  First, let's teach Coq about OCaml integers. Note that this is not completely
-  correct, because OCaml integers are bounded while Coq's `nat` has no upper
-  bound. We proceed anyway since we want to keep the example simple.
+  First, let's teach Rocq about OCaml integers. Note that this is not
+  completely correct, because OCaml integers are bounded while Rocq's `nat` has
+  no upper bound. We proceed anyway since we want to keep the example simple.
 *)
 
 Extract Inductive nat => "int"
@@ -163,7 +164,7 @@ Extract Inductive nat => "int"
 Extract Constant plus => "( + )".
 
 (*
-  The Coq standard library defines the following:
+  The Rocq standard library defines the following:
 
   ```
   Inductive sig (A : Type) (P : A -> Prop) : Type :=
@@ -213,7 +214,7 @@ Recursive Extraction add_even_nat_1.
     add
   ```
 
-  Coq provides a more convenient way to write this style of code:
+  Rocq provides a more convenient way to write this style of code:
 *)
 
 Program Definition add_even_nat_2 (n m : EvenNat) : EvenNat := n + m.
@@ -254,7 +255,7 @@ Recursive Extraction add_even_nat_2.
 (*************)
 
 (*
-  1. Explain why Coq doesn't generally let us pattern match on a proof to
+  1. Explain why Rocq doesn't generally let us pattern match on a proof to
      produce something which is not a proof. What are the exceptions to this
      rule?
   2. Write a function of type `nat -> nat` which takes a `nat` and doubles it,

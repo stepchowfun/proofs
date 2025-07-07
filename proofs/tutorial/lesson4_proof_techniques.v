@@ -6,12 +6,12 @@
 (******************************)
 (******************************)
 
-Require Import Coq.Arith.Arith. (* For facts in the `arith` hint database *)
-Require Import Coq.Lists.List. (* For the `[x; y; z]` list notation *)
-Require Import Coq.Program.Program. (* For the `Program Fixpoint` command *)
-Require Import Coq.micromega.Lia. (* For the `lia` tactic *)
+Require Import Stdlib.Arith.Arith. (* For facts in the `arith` hint database *)
+Require Import Stdlib.Lists.List. (* For the `[x; y; z]` list notation *)
+Require Import Stdlib.Program.Program. (* For `Program Fixpoint` *)
+Require Import Stdlib.micromega.Lia. (* For the `lia` tactic *)
 
-Import Coq.Lists.List.ListNotations. (* Activate the list notation *)
+Import Stdlib.Lists.List.ListNotations. (* Activate the list notation *)
 
 (****************************)
 (* Equality of applications *)
@@ -165,7 +165,7 @@ Fixpoint n_plus_zero_equals_n n : n + 0 = n :=
   end.
 
 (*
-  To help with doing induction in proof mode, Coq automatically constructs an
+  To help with doing induction in proof mode, Rocq automatically constructs an
   induction principle for every inductive type. For example, here's the
   induction principle for `nat`:
 *)
@@ -227,9 +227,9 @@ Qed.
 (**************************)
 
 (*
-  We can often save time by asking Coq to find proofs automatically. The first
-  step is to create a database of *hints* (e.g., lemmas) that Coq is allowed to
-  use when synthesizing proofs. Let's create one called `my_hint_db`.
+  We can often save time by asking Rocq to find proofs automatically. The first
+  step is to create a database of *hints* (e.g., lemmas) that Rocq is allowed
+  to use when synthesizing proofs. Let's create one called `my_hint_db`.
 *)
 
 Create HintDb my_hint_db.
@@ -249,7 +249,7 @@ Create HintDb my_hint_db.
 
 Goal forall n, n + 42 = n \/ n + 42 = 42 + n.
 Proof.
-  auto with my_hint_db. (* Coq found a proof for us! *)
+  auto with my_hint_db. (* Rocq found a proof for us! *)
 Qed.
 
 (* Without automation, the proof looks like this: *)
@@ -262,10 +262,10 @@ Proof.
 Qed.
 
 (*
-  Coq has a few built-in hint databases. One such database is `core`, which has
-  basic facts about logical connectives, e.g., `forall (A : Type) (x y : A),
-  x <> y -> y <> x`. By default, `auto` uses `core` implicitly, so there's no
-  need to write `with core`.
+  Rocq has a few built-in hint databases. One such database is `core`, which
+  has basic facts about logical connectives, e.g.,
+  `forall (A : Type) (x y : A), x <> y -> y <> x`. By default, `auto` uses
+  `core` implicitly, so there's no need to write `with core`.
 *)
 
 Goal forall (A : Type) (x y : A), x = y -> False \/ (True /\ y = x).
@@ -318,7 +318,7 @@ Qed.
 (***********************)
 
 (*
-  Coq allows recursive definitions, but only if the recursion happens on
+  Rocq allows recursive definitions, but only if the recursion happens on
   structural subterms of the input. Lesson 5 explains the motivation for that
   restriction.
 
@@ -340,7 +340,7 @@ Fail Fixpoint alternator (l : list nat) : list nat :=
 
   Intuitively, `alternator` should always terminate since it recurses on a
   smaller (but not structurally smaller) list than the input list. Eventually,
-  the recursion should bottom out on the empty list. Coq doesn't know that
+  the recursion should bottom out on the empty list. Rocq doesn't know that
   automatically, but it turns out we can persuade it.
 
   In order to express the idea that the list gets smaller as the recursion
@@ -351,7 +351,7 @@ Fail Fixpoint alternator (l : list nat) : list nat :=
 Definition compare_lengths (l1 l2 : list nat) := length l1 < length l2.
 
 (*
-  We need to convince Coq that a list can't keep getting smaller forever;
+  We need to convince Rocq that a list can't keep getting smaller forever;
   eventually we must reach a minimal element. In other words, we need to prove
   that the `compare_lengths` relation is *well-founded*.
 
@@ -523,8 +523,8 @@ Defined.
 Compute alternator'' [1; 2; 3; 4; 5]. (* `[1; 5; 2; 4; 3]` *)
 
 (*
-  Note the use of `measure` in the definition. With that, Coq was able to prove
-  the well-foundedness of the relation automatically without using our
+  Note the use of `measure` in the definition. With that, Rocq was able to
+  prove the well-foundedness of the relation automatically without using our
   `compare_lengths_well_founded` proof from above.
 *)
 

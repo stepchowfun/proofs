@@ -16,12 +16,12 @@
 
 (* One of our proofs will use `Nat.mul_assoc` from this module: *)
 
-Require Import Coq.Arith.PeanoNat.
+Require Import Stdlib.Arith.PeanoNat.
 
 (*
   Consider a mathematical statement, i.e., a *proposition*, that you'd like to
   prove. An example of a proposition is that addition of natural numbers is
-  commutative. In Coq, we'd represent that proposition as a type:
+  commutative. In Rocq, we'd represent that proposition as a type:
 
   ```
   forall x y, x + y = y + x
@@ -30,12 +30,12 @@ Require Import Coq.Arith.PeanoNat.
   This type might seem strange at first. You already know about `forall` and
   `+`, but we haven't seen `=` yet. Fear not! In this lesson, we'll see how
   this notion of equality and other logical constructs like "and" and "or" can
-  be defined as type families in Coq.
+  be defined as type families in Rocq.
 
-  How then can we prove a proposition like that? In Coq, we prove a proposition
-  by constructing an element of the corresponding type. So a proof corresponds
-  to a program, and the proposition it proves corresponds to the type of that
-  program. This idea is called *propositions as types*.
+  How then can we prove a proposition like that? In Rocq, we prove a
+  proposition by constructing an element of the corresponding type. So a proof
+  corresponds to a program, and the proposition it proves corresponds to the
+  type of that program. This idea is called *propositions as types*.
 
   It'll be useful to define a proposition which is trivially true. We'll call
   this proposition `True`, but don't mistake it for a `bool`! As explained
@@ -51,7 +51,7 @@ Inductive True : Prop :=
 
   Note that we put `True` in a universe called `Prop` instead of `Set`. In
   general, propositions will live in `Prop`. This is an easy way to distinguish
-  proofs from programs, and it'll allow Coq to erase all the proofs when
+  proofs from programs, and it'll allow Rocq to erase all the proofs when
   extracting the code to another programming language. See Lesson 5 for details
   about universes and Lesson 6 for details about program extraction.
 
@@ -66,7 +66,7 @@ Inductive False : Prop := .
 
   One of the most familiar logical concepts is *conjunction*, also known as
   "and". To prove "A and B", we need to provide a proof of "A" and a proof of
-  "B". We can define this in Coq as follows:
+  "B". We can define this in Rocq as follows:
 *)
 
 Inductive and (A B : Prop) : Prop :=
@@ -91,13 +91,13 @@ Locate "/\". (* `Notation "A /\ B" := (and A B) : type_scope` *)
 Definition true_and_true_1 : True /\ True := conj I I.
 
 (*
-  Writing proofs by hand can be extremely tedious in practice. Coq has a
+  Writing proofs by hand can be extremely tedious in practice. Rocq has a
   scripting language called *Ltac* to help us construct proofs. We can use Ltac
   in *proof mode*. Below is the same proof as above, but written in Ltac using
   proof mode.
 
   To write proofs using proof mode, it's essential that you're using an IDE
-  that supports Coq, such as CoqIDE or Visual Studio Code with the VsCoq
+  that supports Rocq, such as RocqIDE or Visual Studio Code with the VsRocq
   plugin.
 
   We use `Theorem` when we want to give a name to the proof (e.g., to use it in
@@ -248,7 +248,7 @@ Proof.
     apply H.
 Qed.
 
-(* In Coq, the *negation* "not A" is defined as "A implies False". *)
+(* In Rocq, the *negation* "not A" is defined as "A implies False". *)
 
 Definition not (A : Prop) := A -> False.
 
@@ -264,7 +264,7 @@ Proof.
 Qed.
 
 (*
-  In Lesson 2, we learned that Coq has a built-in notion of equality which is
+  In Lesson 2, we learned that Rocq has a built-in notion of equality which is
   used for type checking: two expressions are considered equal if they compute
   to syntactically identical expressions. This is definitional equality.
 
@@ -414,7 +414,7 @@ Arguments ex_intro [_ _] _ _.
 
 (*
   The notation for existentials is somewhat tricky to specify. If you're
-  curious about the details, consult the Coq reference manual.
+  curious about the details, consult the Rocq reference manual.
 *)
 
 Notation "'exists' x .. y , p" := (ex (fun x => .. (ex (fun y => p)) ..))
