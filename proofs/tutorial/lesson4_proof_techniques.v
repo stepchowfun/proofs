@@ -400,9 +400,22 @@ Proof.
 Defined. (* Not `Qed`, because we'll need to compute with this later *)
 
 (*
-  In order to define the `alternator` function, we can recurse on the structure
-  of the proof that the list is accessible rather than than recursing on the
-  list itself.
+  The `compare_lengths` relation is based on a *measure*: the length of the
+  list. It turns out that the well-foundedness of measure-based relations is
+  automatic as long as the underlying relation (in this case `<` on natural
+  numbers) is itself well-founded. So we could have written the proof like this
+  instead:
+*)
+
+Goal well_founded compare_lengths.
+Proof.
+  exact (measure_wf lt_wf (@length _)).
+Defined.
+
+(*
+  In order to define the `alternator` function, we can recurse on the proof
+  that the input list is accessible rather than than recursing on the list
+  itself.
 
   To recurse on an accessibility proof, we'll need the recursor for `Acc`:
 *)
@@ -422,7 +435,7 @@ Check Acc_rect.
     forall x : A, Acc R x -> P x
   ```
 
-  We can use that to define `alternator`:
+  With that, we now have what we need to define `alternator`:
 *)
 
 Definition alternator : list nat -> list nat.
@@ -509,6 +522,12 @@ Final Obligation.
 Defined.
 
 Compute alternator'' [1; 2; 3; 4; 5]. (* `[1; 5; 2; 4; 3]` *)
+
+(*
+  Note the use of `measure` in the definition. With that, Coq was able to prove
+  the well-foundedness of the relation automatically without using our
+  `compare_lengths_well_founded` proof from above.
+*)
 
 (*************)
 (* Exercises *)
