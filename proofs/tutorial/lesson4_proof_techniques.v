@@ -8,6 +8,7 @@
 
 Require Import Coq.Arith.Arith. (* For facts in the `arith` hint database *)
 Require Import Coq.Lists.List. (* For the `[x; y; z]` list notation *)
+Require Import Coq.Program.Program. (* For the `Program Fixpoint` command *)
 Require Import Coq.micromega.Lia. (* For the `lia` tactic *)
 
 Import Coq.Lists.List.ListNotations. (* Activate the list notation *)
@@ -384,7 +385,7 @@ Print well_founded.
 
 Theorem compare_lengths_well_founded : well_founded compare_lengths.
 Proof.
-  (* The `assert` tactic allows us to introduce a local lemma in a proof. *)
+  (* The `assert` tactic is used to introduce a local lemma in a proof. *)
   assert (forall n l, length l < n -> Acc compare_lengths l).
   - induction n; intros.
     + inversion H.
@@ -396,7 +397,7 @@ Proof.
   - intro.
     apply H with (n := 1 + length a).
     lia.
-Defined. (* Not `Qed`, because we'll use this for recursion below *)
+Defined. (* Not `Qed`, because we'll need to compute with this later *)
 
 (*
   In order to define the `alternator` function, we can recurse on the structure
@@ -426,6 +427,10 @@ Check Acc_rect.
 
 Definition alternator : list nat -> list nat.
 Proof.
+  (*
+    The `refine` tactic allows us to provide a term with holes (identified by
+    underscores) which can be filled in via proof mode.
+  *)
   refine (
     fun l =>
       Acc_rect
@@ -444,7 +449,7 @@ Proof.
   lia.
 Defined.
 
-Compute alternator [1; 2; 3; 4; 5].
+Compute alternator [1; 2; 3; 4; 5]. (* `[1; 5; 2; 4; 3]` *)
 
 (*
   The standard library has a function called `Fix` which is slightly more
@@ -462,9 +467,12 @@ Check Fix.
     (forall x : A, (forall y : A, R y x -> P y) -> P x) ->
     forall x : A, P x
   ```
+
+  We can use `Fix` to define the alternator function with slightly less code
+  than before:
 *)
 
-Definition alternativeAlternator : list nat -> list nat.
+Definition alternator' : list nat -> list nat.
 Proof.
   refine (
     Fix compare_lengths_well_founded
@@ -482,7 +490,25 @@ Proof.
   lia.
 Defined.
 
-Compute alternativeAlternator [1; 2; 3; 4; 5].
+Compute alternator' [1; 2; 3; 4; 5]. (* `[1; 5; 2; 4; 3]` *)
+
+(*
+  The `Program Fixpoint` command allows us to define the alternator function
+  even more simply:
+*)
+
+Program Fixpoint alternator'' (l : list nat) {measure (length l)} :=
+  match l with
+  | [] => []
+  | head :: tail => head :: alternator'' (rev tail)
+  end.
+Final Obligation.
+  rewrite length_rev.
+  cbn.
+  lia.
+Defined.
+
+Compute alternator'' [1; 2; 3; 4; 5]. (* `[1; 5; 2; 4; 3]` *)
 
 (*************)
 (* Exercises *)

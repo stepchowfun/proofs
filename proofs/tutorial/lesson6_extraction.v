@@ -7,6 +7,7 @@
 (**************************************)
 
 Require Coq.extraction.Extraction. (* For the `Recursive Extraction` command *)
+Require Import Coq.micromega.Lia. (* For the `lia` tactic *)
 
 (*************************************************)
 (* Information cannot leave the `Prop` universe. *)
@@ -178,8 +179,6 @@ Definition EvenNat := { n : nat | exists m, n = 2 * m }.
 
 (* We can define addition on `EvenNat`s using proof mode. *)
 
-Require Import Coq.micromega.Lia.
-
 Definition add_even_nat_1 : forall (n m : EvenNat), EvenNat.
 Proof.
   unfold EvenNat.
@@ -218,7 +217,7 @@ Recursive Extraction add_even_nat_1.
 *)
 
 Program Definition add_even_nat_2 (n m : EvenNat) : EvenNat := n + m.
-Next Obligation.
+Final Obligation.
   destruct n.
   destruct m.
   destruct e.
