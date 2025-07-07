@@ -351,7 +351,7 @@ Fail Fixpoint alternator (l : list nat) : list nat :=
 Definition compare_lengths (l1 l2 : list nat) := length l1 < length l2.
 
 (*
-  We need to convince Coq that the list can't keep getting smaller forever;
+  We need to convince Coq that a list can't keep getting smaller forever;
   eventually we must reach a minimal element. In other words, we need to prove
   that the `compare_lengths` relation is *well-founded*.
 
@@ -403,13 +403,12 @@ Defined. (* Not `Qed`, because we'll need to compute with this later *)
   The `compare_lengths` relation is based on a *measure*: the length of the
   list. It turns out that the well-foundedness of measure-based relations is
   automatic as long as the underlying relation (in this case `<` on natural
-  numbers) is itself well-founded. So we could have written the proof like this
-  instead:
+  numbers) is itself well-founded. So we can write the proof like this instead:
 *)
 
 Goal well_founded compare_lengths.
 Proof.
-  exact (measure_wf lt_wf (@length _)).
+  exact (measure_wf lt_wf _).
 Defined.
 
 (*
