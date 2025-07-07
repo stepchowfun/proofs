@@ -19,6 +19,6 @@ To write proofs, you'll want to use an IDE that supports interactive theorem pro
 You'll need the following:
 
 - [Rocq](https://rocq-prover.org/) >= 9.0.0
-  - Make sure to update your [`PATH`](https://en.wikipedia.org/wiki/PATH_\(variable\)) to include the location of the Rocq binaries (`rocq`, `rocqdep`, etc.).
+  - Make sure to update your [`PATH`](https://en.wikipedia.org/wiki/PATH_\(variable\)) to include the location of the `rocq` binary.
 - [GNU Make](https://www.gnu.org/software/make/) >= 3.79.1
   - You also need these common Unix tools: `cp`, `find`, and `rm`. If you have `make`, you probably already have those other programs too.
