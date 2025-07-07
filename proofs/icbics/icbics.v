@@ -19,14 +19,14 @@
       sorting algorithm ever? https://doi.org/10.48550/arXiv.2110.01111
 *)
 
-Require Import Coq.Arith.Compare_dec.
-Require Import Coq.Lists.List.
-Require Import Coq.Sorting.Permutation.
-Require Import Coq.Sorting.Sorted.
+Require Import Stdlib.Arith.Compare_dec.
+Require Import Stdlib.Lists.List.
+Require Import Stdlib.Sorting.Permutation.
+Require Import Stdlib.Sorting.Sorted.
 Require Import main.tactics.
 
-Import Coq.Arith.PeanoNat.Nat.
-Import Coq.Lists.List.ListNotations.
+Import Stdlib.Arith.PeanoNat.Nat.
+Import Stdlib.Lists.List.ListNotations.
 
 (*****************)
 (* The algorithm *)

@@ -17,3 +17,7 @@ When setting up the repository on GitHub, configure the following settings:
   - Under `Rules` → `Branch rules`, check `Require status checks to pass` and configure it as follows before clicking the `Create` button:
     - Enable `Require branches to be up to date before merging`
     - Click the `Add checks` button and add the `Validate` status check (you may need to use the search box to find it).
+
+### Miscellaneous notes
+
+- The `_CoqProject`<!-- [file:_CoqProject] --> symlink exists only because [VsRocq doesn't yet support `_RocqProject`](https://github.com/rocq-prover/vsrocq/issues/1132).

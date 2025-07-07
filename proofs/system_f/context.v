@@ -6,8 +6,8 @@
 (*****************************)
 (*****************************)
 
-Require Import Coq.Bool.Bool.
-Require Import Coq.Lists.List.
+Require Import Stdlib.Bool.Bool.
+Require Import Stdlib.Lists.List.
 Require Import main.system_f.free_var.
 Require Import main.system_f.local_closure.
 Require Import main.system_f.name.
@@ -15,7 +15,7 @@ Require Import main.system_f.substitution.
 Require Import main.system_f.syntax.
 Require Import main.tactics.
 
-Import Coq.Lists.List.ListNotations.
+Import Stdlib.Lists.List.ListNotations.
 
 Inductive Context :=
 | c_empty : Context

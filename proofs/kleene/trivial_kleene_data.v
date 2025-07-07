@@ -40,14 +40,14 @@ Module TrivialKleeneData <: KleeneData.
 
   #[local] Hint Resolve antisymmetry : main.
 
-  (* Coq requires that we copy this verbatim from `ContextGraph`. *)
+  (* Rocq requires that we copy this verbatim from `ContextGraph`. *)
   Definition Supremum P x1 :=
     (forall x2, P x2 -> Leq x2 x1) /\
     forall x3, (forall x2, P x2 -> Leq x2 x3) -> Leq x1 x3.
 
   Hint Unfold Supremum : main.
 
-  (* Coq requires that we copy this verbatim from `ContextGraph`. *)
+  (* Rocq requires that we copy this verbatim from `ContextGraph`. *)
   Definition Directed P :=
     (exists x1, P x1) /\
     forall x1 x2, P x1 -> P x2 -> exists x3, Leq x1 x3 /\ Leq x2 x3 /\ P x3.

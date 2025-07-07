@@ -6,7 +6,7 @@
 (************************)
 (************************)
 
-Require Import Coq.Logic.ProofIrrelevance.
+Require Import Stdlib.Logic.ProofIrrelevance.
 Require Import main.tactics.
 
 #[local] Set Universe Polymorphism.

@@ -6,7 +6,7 @@
 (*************************************)
 (*************************************)
 
-Require Import Coq.micromega.Lia.
+Require Import Stdlib.micromega.Lia.
 
 (* Ensure this hint database exists. *)
 

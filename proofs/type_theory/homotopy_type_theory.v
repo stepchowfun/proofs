@@ -7,7 +7,7 @@
 (****************************************************************)
 (****************************************************************)
 
-Require Import Coq.Program.Basics.
+Require Import Stdlib.Program.Basics.
 
 #[local] Open Scope program_scope.
 #[local] Open Scope type.

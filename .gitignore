@@ -1,8 +1,8 @@
-/.Makefile.coq.d
+/.Makefile.rocq.d
 /.lia.cache
-/Makefile.coq
-/Makefile.coq.conf
-/_CoqProjectFull
+/Makefile.rocq
+/Makefile.rocq.conf
+/_RocqProjectFull
 /proofs/**/*.aux
 /proofs/**/*.glob
 /proofs/**/*.vo

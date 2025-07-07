@@ -7,7 +7,7 @@
 (*****************************)
 
 (*
-  Coq does not eta-contract terms during reduction. Suppose we had the
+  Rocq does not eta-contract terms during reduction. Suppose we had the
   following function:
 *)
 
@@ -39,7 +39,7 @@ Constraint U0 < U1.
 Check fun (x : Type@{U0}) => (fun (y : Type@{U1}) => y) x.
 
 (*
-  The type is `Type@{U0} -> Type@{U1}` (you may need to configure your Coq
+  The type is `Type@{U0} -> Type@{U1}` (you may need to configure your Rocq
   environment to display universe levels in order to see this). Now consider
   the type of its eta-contracted form:
 *)
@@ -47,8 +47,8 @@ Check fun (x : Type@{U0}) => (fun (y : Type@{U1}) => y) x.
 Check fun (y : Type@{U1}) => y.
 
 (*
-  Now the type is `Type@{U1} -> Type@{U1}`. In Coq, neither of those two types
-  is convertible to the other, since Coq does not have contravariance.
+  Now the type is `Type@{U1} -> Type@{U1}`. In Rocq, neither of those two types
+  is convertible to the other, since Rocq does not have contravariance.
 
   What about eta expansion? The problem is that eta expansion is non-
   normalizing.
@@ -99,8 +99,8 @@ Check fun (y : nat) => (fun x => x) y.
   longer a rewriting system, since whether eta expansion is valid would depend
   on the evaluation context. For more on this topic, see [2].
 
-  Coq implements eta conversion for functions, but does not do eta expansion or
-  contraction during reduction. Thus, we have the following in Coq:
+  Rocq implements eta conversion for functions, but does not do eta expansion
+  or contraction during reduction. Thus, we have the following in Rocq:
 *)
 
 Goal
@@ -111,7 +111,7 @@ Proof.
 Qed.
 
 (*
-  However, Coq doesn't have eta conversion for (co)inductive types.
+  However, Rocq doesn't have eta conversion for (co)inductive types.
 
   Eta conversion for identity types implies that propositional equality is
   equivalent to judgmental equality, rendering type checking undecidable [3].
@@ -132,7 +132,7 @@ Proof.
 Qed.
 
 (*
-  The unit type is an exception in Coq; it cannot be defined as a primitive
+  The unit type is an exception in Rocq; it cannot be defined as a primitive
   record since eta conversion for it would require conversion to be typed.
 
   Even though eta-conversion for (co)inductive types is generally absent,

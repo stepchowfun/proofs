@@ -11,23 +11,23 @@
 (***************************)
 
 (*
-  Sometimes it's useful to ask Coq for the type of an expression. We can use
+  Sometimes it's useful to ask Rocq for the type of an expression. We can use
   the `Check` command for that. For example, the type of the expression below
   is `nat`, which stands for "natural number". Natural numbers are unsigned
-  integers, and they're the most common type of number in Coq.
+  integers, and they're the most common type of number in Rocq.
 
   To use these commands interactively, be sure you're using an IDE that
-  supports Coq, such as CoqIDE or Visual Studio Code with the VsCoq plugin.
+  supports Rocq, such as RocqIDE or Visual Studio Code with the VsRocq plugin.
 *)
 
 Check 3 + 4. (* `nat` *)
 
-(* If we want Coq to actually evaluate an expression, we can use `Compute`. *)
+(* If we want Rocq to actually evaluate an expression, we can use `Compute`. *)
 
 Compute 3 + 4. (* `7` *)
 
 (*
-  We can define variables with the `Definition` keyword. Coq is able to infer
+  We can define variables with the `Definition` keyword. Rocq is able to infer
   that the type of this variable is `nat`.
 *)
 
@@ -37,7 +37,7 @@ Check my_variable. (* `nat` *)
 
 (*
   Functions are data too, so we can also use `Definition` to introduce
-  functions. Coq is able to infer that the type of this function is
+  functions. Rocq is able to infer that the type of this function is
   `nat -> nat` based on how `+` is used in the body.
 *)
 
@@ -59,7 +59,7 @@ Check better_double. (* `nat -> nat` *)
 Compute double my_variable. (* `84` *)
 
 (*
-  In Coq, every function takes exactly one argument. However, we can use
+  In Rocq, every function takes exactly one argument. However, we can use
   "currying" to represent functions of multiple arguments as nested functions.
   Suppose we want to define a function of two arguments. We can write it as a
   function which takes only the first argument and returns another function
@@ -74,7 +74,7 @@ Check multiply. (* `nat -> nat -> nat` *)
   Note that `nat -> nat -> nat` should be understood as `nat -> (nat -> nat)`,
   not `(nat -> nat) -> nat`.
 
-  Coq has a more convenient syntax for defining curried functions like this:
+  Rocq has a more convenient syntax for defining curried functions like this:
 *)
 
 Definition better_multiply x y := x * y.
@@ -164,7 +164,7 @@ Check id. (* `forall T : Set, T -> T` *)
 
   It's awkward to have to explicitly provide the type argument whenever we call
   the `id` function. We can declare the argument *implicit* by using square
-  brackets instead of parentheses. Then Coq will try to figure it out
+  brackets instead of parentheses. Then Rocq will try to figure it out
   automatically whenever we use the function.
 *)
 
@@ -175,8 +175,8 @@ Check better_id. (* `forall T : Set, T -> T` *)
 Compute better_id (3 + 4). (* `7` *)
 
 (*
-  If Coq is unable to infer the implicit arguments, we can pass them explicitly
-  by prefixing the function with `@`.
+  If Rocq is unable to infer the implicit arguments, we can pass them
+  explicitly by prefixing the function with `@`.
 *)
 
 Compute @better_id nat (3 + 4). (* `7` *)
@@ -307,8 +307,8 @@ Compute map_option (fun n => true) (some nat 3). (* `some bool true` *)
   The type argument for `some` can be deduced automatically from its other
   argument, so we can make it implicit as shown below. We couldn't do this with
   square brackets in the definition, since this type argument was automatically
-  added by Coq as a consequence of it being a parameter. We could have made the
-  parameter implicit, but that would have affected `none` and `option` too.
+  added by Rocq as a consequence of it being a parameter. We could have made
+  the parameter implicit, but that would have affected `none` and `option` too.
 *)
 
 Arguments some [_] _.

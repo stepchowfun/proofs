@@ -2,41 +2,41 @@
 
 verify:
 	rm -f \
-          .CoqMakefile.d \
+          .RocqMakefile.d \
           .lia.cache \
-          CoqMakefile \
-          CoqMakefile.conf \
-          _CoqProjectFull
-	cp _CoqProject _CoqProjectFull
-	find proofs -type f -name '*.v' >> _CoqProjectFull
-	coq_makefile -f _CoqProjectFull -o CoqMakefile || (rm -f \
-            .CoqMakefile.d \
+          RocqMakefile \
+          RocqMakefile.conf \
+          _RocqProjectFull
+	cp _RocqProject _RocqProjectFull
+	find proofs -type f -name '*.v' >> _RocqProjectFull
+	rocq makefile -f _RocqProjectFull -o RocqMakefile || (rm -f \
+            .RocqMakefile.d \
             .lia.cache \
-            CoqMakefile \
-            CoqMakefile.conf \
-            _CoqProjectFull; \
+            RocqMakefile \
+            RocqMakefile.conf \
+            _RocqProjectFull; \
           exit 1)
-	make -f CoqMakefile || (rm -f \
-            .CoqMakefile.d \
+	make -f RocqMakefile || (rm -f \
+            .RocqMakefile.d \
             .lia.cache \
-            CoqMakefile \
-            CoqMakefile.conf \
-            _CoqProjectFull; \
+            RocqMakefile \
+            RocqMakefile.conf \
+            _RocqProjectFull; \
           exit 1)
 	rm -f \
-          .CoqMakefile.d \
+          .RocqMakefile.d \
           .lia.cache \
-          CoqMakefile \
-          CoqMakefile.conf \
-          _CoqProjectFull
+          RocqMakefile \
+          RocqMakefile.conf \
+          _RocqProjectFull
 
 clean:
 	rm -f \
-          .CoqMakefile.d \
+          .RocqMakefile.d \
           .lia.cache \
-          CoqMakefile \
-          CoqMakefile.conf \
-          _CoqProjectFull \
+          RocqMakefile \
+          RocqMakefile.conf \
+          _RocqProjectFull \
 	  $(shell \
 	    find . -type d \( \
 	      -path ./.git \

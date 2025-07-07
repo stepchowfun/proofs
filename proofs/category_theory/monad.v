@@ -6,7 +6,7 @@
 (********************)
 (********************)
 
-Require Import Coq.Logic.ProofIrrelevance.
+Require Import Stdlib.Logic.ProofIrrelevance.
 Require Import main.category_theory.functor.
 Require Import main.category_theory.natural_transformation.
 

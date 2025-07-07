@@ -50,7 +50,7 @@ Check Odd_ind.
   ```
 *)
 
-(* We can ask Coq to generate stronger ones. *)
+(* We can ask Rocq to generate stronger ones. *)
 
 Scheme Even_mut_ind := Induction for Even Sort Prop
   with Odd_mut_ind := Induction for Odd Sort Prop.

@@ -6,14 +6,14 @@
 (******************************)
 (******************************)
 
-Require Import Coq.Arith.Peano_dec.
-Require Import Coq.Lists.List.
+Require Import Stdlib.Arith.Peano_dec.
+Require Import Stdlib.Lists.List.
 Require Import main.system_f.free_var.
 Require Import main.system_f.local_closure.
 Require Import main.system_f.syntax.
 Require Import main.tactics.
 
-Import Coq.Arith.PeanoNat.Nat.
+Import Stdlib.Arith.PeanoNat.Nat.
 
 Fixpoint ee_open e1 i1 e2 :=
   match e1 with
