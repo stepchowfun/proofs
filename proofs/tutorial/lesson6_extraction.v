@@ -6,6 +6,8 @@
 (**************************************)
 (**************************************)
 
+Require Coq.extraction.Extraction. (* For the `Recursive Extraction` command *)
+
 (*************************************************)
 (* Information cannot leave the `Prop` universe. *)
 (*************************************************)
@@ -102,8 +104,6 @@ Proof.
 Qed.
 
 (* Now let's extract the code to OCaml. *)
-
-Require Coq.extraction.Extraction.
 
 Recursive Extraction xor.
 

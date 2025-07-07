@@ -6,6 +6,12 @@
 (******************************)
 (******************************)
 
+Require Import Coq.Arith.Arith. (* For facts in the `arith` hint database *)
+Require Import Coq.Lists.List. (* For the `[x; y; z]` list notation *)
+Require Import Coq.micromega.Lia. (* For the `lia` tactic *)
+
+Import Coq.Lists.List.ListNotations. (* Activate the list notation *)
+
 (****************************)
 (* Equality of applications *)
 (****************************)
@@ -272,8 +278,6 @@ Qed.
   contains a commutativity theorem just like ours.
 *)
 
-Require Import Coq.Arith.Arith.
-
 Goal forall n, n + 42 = n \/ n + 42 = 42 + n.
 Proof.
   auto with arith.
@@ -303,12 +307,182 @@ Qed.
 
 (* The `lia` tactic can solve many goals that deal with integers. *)
 
-Require Import Coq.micromega.Lia.
-
 Goal forall n1 n2 n3, n1 * (n2 + n3) = n1 * n2 + n1 * n3.
 Proof.
   lia.
 Qed.
+
+(***********************)
+(* Proving termination *)
+(***********************)
+
+(*
+  Coq allows recursive definitions, but only if the recursion happens on
+  structural subterms of the input. Lesson 5 explains the motivation for that
+  restriction.
+
+  The `add` function from Lesson 1 satisfies the restriction, but the following
+  function doesn't:
+*)
+
+Fail Fixpoint alternator (l : list nat) : list nat :=
+  match l with
+  | [] => []
+  | head :: tail => head :: alternator (rev tail)
+  end.
+
+(*
+  ```
+  The command has indeed failed with message:
+  Recursive definition of alternator is ill-formed.
+  ```
+
+  Intuitively, `alternator` should always terminate since it recurses on a
+  smaller (but not structurally smaller) list than the input list. Eventually,
+  the recursion should bottom out on the empty list. Coq doesn't know that
+  automatically, but it turns out we can persuade it.
+
+  In order to express the idea that the list gets smaller as the recursion
+  proceeds, we need a way to compare lists by their length. The following
+  binary relation does just that:
+*)
+
+Definition compare_lengths (l1 l2 : list nat) := length l1 < length l2.
+
+(*
+  We need to convince Coq that the list can't keep getting smaller forever;
+  eventually we must reach a minimal element. In other words, we need to prove
+  that the `compare_lengths` relation is *well-founded*.
+
+  The following *accessibility predicate* expresses the idea that there are no
+  infinite decreasing chains starting from a given element, where "decreasing"
+  is according to some binary relation `R` (`compare_lengths` in our case):
+*)
+
+Print Acc.
+
+(*
+  ```
+  Inductive Acc (A : Type) (R : A -> A -> Prop) (x : A) : Prop :=
+    Acc_intro : (forall y : A, R y x -> Acc R y) -> Acc R x.
+  ```
+
+  If every element is accessible, then the relation is well-founded.
+*)
+
+Print well_founded.
+
+(*
+  ```
+  well_founded
+    = fun (A : Type) (R : A -> A -> Prop) => forall a : A, Acc R a
+    : forall [A : Type], (A -> A -> Prop) -> Prop
+  ```
+
+  Let's prove that `compare_lengths` is well-founded.
+*)
+
+Theorem compare_lengths_well_founded : well_founded compare_lengths.
+Proof.
+  (* The `assert` tactic allows us to introduce a local lemma in a proof. *)
+  assert (forall n l, length l < n -> Acc compare_lengths l).
+  - induction n; intros.
+    + inversion H.
+    + apply Acc_intro.
+      intros.
+      apply IHn.
+      unfold compare_lengths in H0.
+      lia.
+  - intro.
+    apply H with (n := 1 + length a).
+    lia.
+Defined. (* Not `Qed`, because we'll use this for recursion below *)
+
+(*
+  In order to define the `alternator` function, we can recurse on the structure
+  of the proof that the list is accessible rather than than recursing on the
+  list itself.
+
+  To recurse on an accessibility proof, we'll need the recursor for `Acc`:
+*)
+
+Check Acc_rect.
+
+(*
+  ```
+  Acc_rect :
+    forall (A : Type) (R : A -> A -> Prop) (P : A -> Type),
+    (
+      forall x : A,
+      (forall y : A, R y x -> Acc R y) ->
+      (forall y : A, R y x -> P y) ->
+      P x
+    ) ->
+    forall x : A, Acc R x -> P x
+  ```
+
+  We can use that to define `alternator`:
+*)
+
+Definition alternator : list nat -> list nat.
+Proof.
+  refine (
+    fun l =>
+      Acc_rect
+        (fun _ => list nat)
+        (fun l _ =>
+          match l return (forall y : _, compare_lengths y l -> _) -> _ with
+          | [] => fun _ => []
+          | head :: tail => fun recurse => head :: recurse (rev tail) _
+          end
+        )
+        (compare_lengths_well_founded l)
+  ).
+  unfold compare_lengths.
+  rewrite length_rev.
+  cbn.
+  lia.
+Defined.
+
+Compute alternator [1; 2; 3; 4; 5].
+
+(*
+  The standard library has a function called `Fix` which is slightly more
+  convenient to use than `Acc_rect`:
+*)
+
+Check Fix.
+
+(*
+  ```
+  Fix :
+    forall (A : Type) (R : A -> A -> Prop),
+    well_founded R ->
+    forall P : A -> Type,
+    (forall x : A, (forall y : A, R y x -> P y) -> P x) ->
+    forall x : A, P x
+  ```
+*)
+
+Definition alternativeAlternator : list nat -> list nat.
+Proof.
+  refine (
+    Fix compare_lengths_well_founded
+      (fun _ => list nat)
+      (fun l =>
+        match l return (forall y : _, compare_lengths y l -> _) -> _ with
+        | [] => fun _ => []
+        | head :: tail => fun recurse => head :: recurse (rev tail) _
+        end
+      )
+  ).
+  unfold compare_lengths.
+  rewrite length_rev.
+  cbn.
+  lia.
+Defined.
+
+Compute alternativeAlternator [1; 2; 3; 4; 5].
 
 (*************)
 (* Exercises *)
@@ -331,4 +505,5 @@ Qed.
      Hint: Start the proof with `intros`, then use a tactic called `assert` to
      prove a fact involving `P` and `n`. The goal should easily follow from
      that fact.
+  5. Define merge sort.
 *)
