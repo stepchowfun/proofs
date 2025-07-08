@@ -326,19 +326,19 @@ Qed.
   example of one that doesn't:
 *)
 
-Fail Fixpoint alternator (l : list nat) : list nat :=
+Fail Fixpoint alternate (l : list nat) : list nat :=
   match l with
   | [] => []
-  | head :: tail => head :: alternator (rev tail)
+  | head :: tail => head :: alternate (rev tail)
   end.
 
 (*
   ```
   The command has indeed failed with message:
-  Recursive definition of alternator is ill-formed.
+  Recursive definition of alternate is ill-formed.
   ```
 
-  Intuitively, `alternator` should always terminate since it recurses on a
+  Intuitively, `alternate` should always terminate since it recurses on a
   smaller (but not structurally smaller) list than the input list. Eventually,
   the recursion should bottom out on the empty list. Rocq doesn't know that
   automatically, but it turns out we can persuade it.
@@ -409,7 +409,7 @@ Proof.
 Defined.
 
 (*
-  In order to define the `alternator` function, we can recurse on the proof
+  In order to define the `alternate` function, we can recurse on the proof
   that the input list is accessible rather than than recursing on the list
   itself.
 
@@ -431,10 +431,10 @@ Check Acc_rect.
     forall x : A, Acc R x -> P x
   ```
 
-  With that, we now have what we need to define `alternator`:
+  With that, we now have what we need to define `alternate`:
 *)
 
-Definition alternator : list nat -> list nat.
+Definition alternate : list nat -> list nat.
 Proof.
   (*
     The `refine` tactic allows us to provide a term with holes (identified by
@@ -458,7 +458,7 @@ Proof.
   lia.
 Defined.
 
-Compute alternator [1; 2; 3; 4; 5]. (* `[1; 5; 2; 4; 3]` *)
+Compute alternate [1; 2; 3; 4; 5]. (* `[1; 5; 2; 4; 3]` *)
 
 (*
   The standard library has a function called `Fix` which is slightly more
@@ -477,11 +477,11 @@ Check Fix.
     forall x : A, P x
   ```
 
-  We can use `Fix` to define the alternator function with slightly less code
+  We can use `Fix` to define the alternate function with slightly less code
   than before:
 *)
 
-Definition alternator' : list nat -> list nat.
+Definition alternate' : list nat -> list nat.
 Proof.
   refine (
     Fix compare_lengths_well_founded
@@ -499,17 +499,17 @@ Proof.
   lia.
 Defined.
 
-Compute alternator' [1; 2; 3; 4; 5]. (* `[1; 5; 2; 4; 3]` *)
+Compute alternate' [1; 2; 3; 4; 5]. (* `[1; 5; 2; 4; 3]` *)
 
 (*
-  The `Program Fixpoint` command allows us to define the alternator function
+  The `Program Fixpoint` command allows us to define the alternate function
   even more simply:
 *)
 
-Program Fixpoint alternator'' (l : list nat) {measure (length l)} :=
+Program Fixpoint alternate'' (l : list nat) {measure (length l)} :=
   match l with
   | [] => []
-  | head :: tail => head :: alternator'' (rev tail)
+  | head :: tail => head :: alternate'' (rev tail)
   end.
 Final Obligation.
   rewrite length_rev.
@@ -517,7 +517,7 @@ Final Obligation.
   lia.
 Defined.
 
-Compute alternator'' [1; 2; 3; 4; 5]. (* `[1; 5; 2; 4; 3]` *)
+Compute alternate'' [1; 2; 3; 4; 5]. (* `[1; 5; 2; 4; 3]` *)
 
 (*
   Note the use of `measure` in the definition. With that, Rocq was able to
