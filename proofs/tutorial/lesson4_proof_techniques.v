@@ -386,16 +386,13 @@ Print well_founded.
 Theorem compare_lengths_well_founded : well_founded compare_lengths.
 Proof.
   (* The `assert` tactic is used to introduce a local lemma in a proof. *)
-  assert (forall n l, length l < n -> Acc compare_lengths l).
-  - induction n; intros.
-    + inversion H.
-    + apply Acc_intro.
-      intros.
-      apply IHn.
-      unfold compare_lengths in H0.
+  assert (forall n l, length l <= n -> Acc compare_lengths l).
+  - induction n; intros; apply Acc_intro; unfold compare_lengths; intros.
+    + lia.
+    + apply IHn.
       lia.
   - intro.
-    apply H with (n := 1 + length a).
+    apply H with (n := length a).
     lia.
 Defined. (* Not `Qed`, because we'll need to compute with this later *)
 
