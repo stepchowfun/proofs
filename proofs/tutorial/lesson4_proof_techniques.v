@@ -330,5 +330,4 @@ Qed.
      Hint: Start the proof with `intros`, then use a tactic called `assert` to
      prove a fact involving `P` and `n`. The goal should easily follow from
      that fact.
-  5. Define merge sort.
 *)
