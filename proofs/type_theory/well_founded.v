@@ -18,8 +18,9 @@ Import Stdlib.Lists.List.ListNotations.
 
 (*
   Rocq allows recursive definitions, but only if the recursion happens on
-  structural subterms of the input. The motivation for that restriction is
-  explained in [file:proofs/tutorial/lesson5_consistency.v].
+  structural subterms of the input. This restriction ensures that all functions
+  terminate on every input, preventing `False` from being proven with infinite
+  recursion. See [file:proofs/tutorial/lesson5_consistency.v] for more details.
 
   Merge sort and Euclid's algorithm are common examples of recursive functions
   that doesn't satisfy the restriction. We'll consider a simpler example:
