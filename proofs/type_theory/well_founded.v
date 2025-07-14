@@ -65,16 +65,12 @@ Inductive CallTree : list nat -> Prop :=
 
 Theorem terminates : forall l, CallTree l.
 Proof.
-  assert (forall n l, length l <= n -> CallTree l).
-  - induction n; intros.
-    + inversion H.
-      destruct l; search.
-    + destruct l.
-      * search.
-      * apply ct_nonempty.
-        apply IHn.
-        rewrite length_rev.
-        search.
+  assert (forall n l, length l = n -> CallTree l).
+  - induction n; intros; destruct l; search.
+    apply ct_nonempty.
+    apply IHn.
+    rewrite length_rev.
+    search.
   - intros.
     apply H with (n := length l).
     search.
@@ -204,21 +200,20 @@ Inductive CallTree' (l : list nat) : Prop :=
 
 Theorem terminates' : forall l, CallTree' l.
 Proof.
-  assert (forall n l, length l <= n -> CallTree' l).
-  - induction n; intros.
-    + inversion H.
-      destruct l; search.
-    + destruct l.
-      * search.
-      * apply ct.
-        intros.
-        apply IHn.
-        rewrite length_rev.
-        inversion H0.
-        search.
+  assert (forall n l, length l = n -> CallTree' l).
+  - induction n; intros; destruct l.
+    + search.
+    + search.
+    + search.
+    + apply ct.
+      intros.
+      apply IHn.
+      rewrite length_rev.
+      inversion H0.
+      search.
   - intros.
     apply H with (n := length l).
-    search.
+    reflexivity.
 Defined. (* Not `Qed` so we can compute with it *)
 
 (* Now we can define `alternate` with some help from the *convoy pattern*. *)
