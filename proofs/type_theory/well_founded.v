@@ -178,7 +178,7 @@ Qed.
 
 (*
   It turns out that we can define `CallTree` in a different but equivalent way
-  to convince Rocq that call trees can't influence extracted code:
+  to convince Rocq that call trees can be safely erased during extraction:
 *)
 
 Inductive CallTree' (l : list nat) : Prop :=
@@ -389,8 +389,8 @@ Defined.
 Compute alternate'' [1; 2; 3; 4; 5]. (* `[1; 5; 2; 4; 3]` *)
 
 (*
-  The `Program Fixpoint` command allows us to define the alternate function
-  even more simply:
+  The `Program Fixpoint` command allows us to define the function even more
+  simply:
 *)
 
 Program Fixpoint alternate''' (l : list nat) {measure (length l)} :=
@@ -408,7 +408,7 @@ Compute alternate''' [1; 2; 3; 4; 5]. (* `[1; 5; 2; 4; 3]` *)
 
 (*
   Note the use of `measure` in the definition. With that, Rocq was able to
-  prove the well-foundedness of the relation automatically without using our
+  prove the well-foundedness of the relation automatically without using the
   `compare_lengths_well_founded` proof from above.
 
   Unfortunately, it's difficult to prove properties about functions defined via
