@@ -21,14 +21,14 @@ Import Stdlib.Lists.List.ListNotations.
   structural subterms of the input. The motivation for that restriction is
   explained in [file:proofs/tutorial/lesson5_consistency.v].
 
-  Merge sort is a common example of a function that doesn't satisfy the
-  restriction. For pedagogical purposes, we'll consider a simpler example:
+  Merge sort and Euclid's algorithm are common examples of recursive functions
+  that doesn't satisfy the restriction. We'll consider a simpler example:
 *)
 
 Fail Fixpoint alternate (l : list nat) :=
   match l with
   | [] => []
-  | head :: tail => head :: alternate (rev tail)
+  | h :: t => h :: alternate (rev t)
   end.
 
 (*
@@ -45,7 +45,7 @@ Fail Fixpoint alternate (l : list nat) :=
   Our strategy is to define a function that returns a "call tree" on which we
   can do structural recursion. Interpreted logically, a call tree is a proof
   that recursion will terminate on a given input, and the function that
-  computes call trees is a proof that recursion will terminate on all inputs.
+  computes call trees is a proof that recursion terminates on all inputs.
 
   We define the type of call trees to live in the `Prop` universe so that
   proofs can be used when building call trees (and so that call trees get
@@ -54,12 +54,8 @@ Fail Fixpoint alternate (l : list nat) :=
 *)
 
 Inductive CallTree : list nat -> Prop :=
-| ok_empty : CallTree []
-| ok_cons : forall h t, CallTree (rev t) -> CallTree (h :: t).
-
-Check CallTree_ind.
-
-#[local] Hint Constructors CallTree : main.
+| ct_empty : CallTree []
+| ct_nonempty : forall h t, CallTree (rev t) -> CallTree (h :: t).
 
 (*
   Proving that the recursion terminates on all inputs is equivalent to showing
@@ -75,7 +71,7 @@ Proof.
       destruct l; search.
     + destruct l.
       * search.
-      * apply ok_cons.
+      * apply ct_nonempty.
         apply IHn.
         rewrite length_rev.
         search.
@@ -94,8 +90,8 @@ Fail Definition alternate l :=
   (
     fix recurse l (pl : CallTree l) :=
       match pl with
-      | ok_empty => []
-      | ok_cons h t pt => h :: recurse (rev t) pt
+      | ct_empty => []
+      | ct_nonempty h t pt => h :: recurse (rev t) pt
       end
   ) l (terminates l).
 
@@ -110,7 +106,7 @@ Fail Definition alternate l :=
   ```
 
   Rocq generally doesn't allow recursion on proofs to produce non-proofs so
-  that proofs can be erased during extraction, but call trees are considered
+  that proofs can be erased during extraction, and call trees are considered
   proofs by virtue of `CallTree l` being in the `Prop` universe. However,
   `CallTree l` lives in `Prop` for a good reason: so that we could use facts
   about arithmetic to construct call trees in the definition of `terminates`
@@ -121,36 +117,36 @@ Fail Definition alternate l :=
   list are equal). The proof relies on equality of `list nat` being decidable.
 *)
 
-Theorem invert_ok_empty : forall p : CallTree [], p = ok_empty.
+Theorem invert_ct_empty : forall p : CallTree [], p = ct_empty.
 Proof.
   intro.
   refine (
     match p
     in CallTree l
-    return forall q : l = [], eq_rect _ _ p _ q = ok_empty
+    return forall q : l = [], eq_rect _ _ p _ q = ct_empty
     with
-    | ok_empty => _
-    | ok_cons h t pt => _
+    | ct_empty => _
+    | ct_nonempty h t pt => _
     end eq_refl
   ); intros; search.
   rewrite <- (Eqdep_dec.eq_rect_eq_dec (list_eq_dec eq_nat_dec) _ _ q).
   reflexivity.
 Qed.
 
-Theorem invert_ok_cons :
+Theorem invert_ct_nonempty :
   forall h t (pl : CallTree (h :: t)),
   exists pt : CallTree (rev t),
-  pl = ok_cons h t pt.
+  pl = ct_nonempty h t pt.
 Proof.
   intros.
   refine (
     match pl
     in CallTree l
     return
-      forall q : l = h :: t, exists pt, eq_rect _ _ pl _ q = ok_cons h t pt
+      forall q : l = h :: t, exists pt, eq_rect _ _ pl _ q = ct_nonempty h t pt
     with
-    | ok_empty => _
-    | ok_cons h t pt => _
+    | ct_empty => _
+    | ct_nonempty h t pt => _
     end eq_refl
   ); intros; search.
   inversion q.
@@ -166,15 +162,15 @@ Proof.
   - induction n; intros.
     + inversion H.
       destruct l; search.
-      rewrite (invert_ok_empty p1).
-      rewrite (invert_ok_empty p2).
+      rewrite (invert_ct_empty p1).
+      rewrite (invert_ct_empty p2).
       reflexivity.
     + destruct l.
-      * rewrite (invert_ok_empty p1).
-        rewrite (invert_ok_empty p2).
+      * rewrite (invert_ct_empty p1).
+        rewrite (invert_ct_empty p2).
         reflexivity.
-      * destruct (invert_ok_cons _ _ p1).
-        destruct (invert_ok_cons _ _ p2).
+      * destruct (invert_ct_nonempty _ _ p1).
+        destruct (invert_ct_nonempty _ _ p2).
         subst.
         feed (IHn (rev l)).
         rewrite length_rev.
@@ -186,26 +182,24 @@ Qed.
 
 (*
   It turns out that we can define `CallTree` in a different but equivalent way
-  which convinces Rocq that call trees can't influence extracted code:
+  to convince Rocq that call trees can't influence extracted code:
 *)
 
 Inductive CallTree' (l : list nat) : Prop :=
-| ok' : (forall h t, l = h :: t -> CallTree' (rev t)) -> CallTree' l.
-
-#[local] Hint Constructors CallTree' : main.
+| ct : (forall h t, l = h :: t -> CallTree' (rev t)) -> CallTree' l.
 
 (*
-  The two requirements are:
+  The requirements are:
 
   1. There is at most one constructor.
-  2. The arguments to that constructor (if it exists) are proofs.
+  2. The non-parameter arguments to that constructor (if it exists) are proofs.
 
   Crucially, `l` is a non-uniform parameter. If it were a regular parameter, we
   wouldn't be able to instantiate it to `rev t` for the recursive branches. But
   if it were an index, then it would have to be an argument to the constructor,
   which would violate requirement (2).
 
-  We now prove that the revised predicate holds on all possible inputs.
+  Let's prove that the revised predicate holds on all possible inputs.
 *)
 
 Theorem terminates' : forall l, CallTree' l.
@@ -216,7 +210,7 @@ Proof.
       destruct l; search.
     + destruct l.
       * search.
-      * apply ok'.
+      * apply ct.
         intros.
         apply IHn.
         rewrite length_rev.
@@ -236,7 +230,7 @@ Definition alternate (l : list nat) :=
       fun l _ =>
         match l return (forall h t, l = h :: t -> _) -> _ with
         | [] => fun _ => []
-        | head :: tail => fun recurse => head :: recurse head tail eq_refl
+        | h :: t => fun recurse => h :: recurse h t eq_refl
         end
     )
     l
@@ -345,9 +339,9 @@ Proof.
       Acc_rect
         (fun _ => list nat)
         (fun l _ =>
-          match l return (forall y : _, compare_lengths y l -> _) -> _ with
+          match l return (forall l' : _, compare_lengths l' l -> _) -> _ with
           | [] => fun _ => []
-          | head :: tail => fun recurse => head :: recurse (rev tail) _
+          | h :: t => fun recurse => h :: recurse (rev t) _
           end
         )
         (compare_lengths_well_founded l)
@@ -386,9 +380,9 @@ Proof.
     Fix compare_lengths_well_founded
       (fun _ => list nat)
       (fun l =>
-        match l return (forall y : _, compare_lengths y l -> _) -> _ with
+        match l return (forall l' : _, compare_lengths l' l -> _) -> _ with
         | [] => fun _ => []
-        | head :: tail => fun recurse => head :: recurse (rev tail) _
+        | h :: t => fun recurse => h :: recurse (rev t) _
         end
       )
   ).
@@ -407,7 +401,7 @@ Compute alternate'' [1; 2; 3; 4; 5]. (* `[1; 5; 2; 4; 3]` *)
 Program Fixpoint alternate''' (l : list nat) {measure (length l)} :=
   match l with
   | [] => []
-  | head :: tail => head :: alternate''' (rev tail)
+  | h :: t => h :: alternate''' (rev t)
   end.
 Final Obligation.
   intros.
