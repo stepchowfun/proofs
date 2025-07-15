@@ -56,6 +56,12 @@ ARGV.each do |path|
     end
   end
 
+  # If there are multiple lines, check that the first is not blank.
+  if lines.size > 1 && lines.first.empty?
+    STDERR.puts("Error: #{path} starts with a blank line.")
+    failed = true
+  end
+
   # Check for a single blank line at the end of the file.
   if !lines.empty?
     # Check that there is a blank line at the end of the file.
