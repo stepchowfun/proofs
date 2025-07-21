@@ -239,7 +239,7 @@ Compute alternate [1; 2; 3; 4; 5]. (* `[1; 5; 2; 4; 3]` *)
 
 (* Let's prove something about the function. *)
 
-Goal forall l, length l = length (alternate l).
+Goal forall l, length (alternate l) = length l.
 Proof.
   intros.
   unfold alternate.
@@ -251,7 +251,7 @@ Proof.
   cbn.
   destruct l; search.
   cbn.
-  rewrite <- (H0 n l eq_refl (c n l eq_refl)).
+  rewrite (H0 n l eq_refl (c n l eq_refl)).
   rewrite length_rev.
   search.
 Qed.
@@ -388,7 +388,7 @@ Compute alternate' [1; 2; 3; 4; 5]. (* `[1; 5; 2; 4; 3]` *)
 
 (* Let's do the length preservation proof for this version. *)
 
-Goal forall l, length l = length (alternate' l).
+Goal forall l, length (alternate' l) = length l.
 Proof.
   intros.
   unfold alternate'.
@@ -405,7 +405,7 @@ Proof.
   - unfold compare_lengths.
     rewrite length_rev.
     search.
-  - rewrite <- (H (a (rev l) (alternate'_obligation_1 n l))).
+  - rewrite (H (a (rev l) (alternate'_obligation_1 n l))).
     rewrite length_rev.
     search.
 Qed.
@@ -463,9 +463,9 @@ Qed.
 
 Compute alternate'' [1; 2; 3; 4; 5]. (* `[1; 5; 2; 4; 3]` *)
 
-(* Let's do the length preservation proof for this version. *)
+(* The length preservation proof is similar to the previous one. *)
 
-Goal forall l, length l = length (alternate'' l).
+Goal forall l, length (alternate'' l) = length l.
 Proof.
   intros.
   unfold alternate''.
@@ -483,7 +483,7 @@ Proof.
   - unfold compare_lengths.
     rewrite length_rev.
     search.
-  - rewrite <- (H (a (rev l) (alternate''_obligation_1 n l))).
+  - rewrite (H (a (rev l) (alternate''_obligation_1 n l))).
     rewrite length_rev.
     search.
 Qed.
