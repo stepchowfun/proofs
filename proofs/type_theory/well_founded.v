@@ -544,7 +544,6 @@ Extraction alternate'''.
   | Cons (h, t) -> Cons (h, (alternate'''' (rev t))))
   ```
 
-  In my opinion, of the various approaches we've seen, `alternate''` was the
-  best one. It's simple to write and reason about, and it produces good
-  extracted code.
+  Of the various approaches we've seen, I think `alternate''` is the best one.
+  It's simple to write and reason about, and it produces good extracted code.
 *)
