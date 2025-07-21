@@ -233,6 +233,25 @@ Definition alternate (l : list nat) :=
 
 Compute alternate [1; 2; 3; 4; 5]. (* `[1; 5; 2; 4; 3]` *)
 
+(* Let's prove something about the function. *)
+
+Goal forall l, length l = length (alternate l).
+Proof.
+  intros.
+  unfold alternate.
+  set (term := terminates' l).
+  outro term.
+  induction l using (fun P f l => CallTree'_ind P f l (terminates' l)).
+  intros.
+  destruct term.
+  cbn.
+  destruct l; search.
+  cbn.
+  rewrite <- (H0 n l eq_refl (c n l eq_refl)).
+  rewrite length_rev.
+  search.
+Qed.
+
 (*
   Rocq's standard library has a generalization of `CallTree'` called `Acc`,
   which stands for "accessible".
@@ -277,7 +296,7 @@ Print well_founded.
   ```
 *)
 
-Theorem compare_lengths_well_founded : well_founded compare_lengths.
+Goal well_founded compare_lengths.
 Proof.
   assert (forall n l, length l <= n -> Acc compare_lengths l).
   - induction n; intros; apply Acc_intro; unfold compare_lengths; intros.
@@ -287,7 +306,7 @@ Proof.
   - intro.
     apply H with (n := length a).
     lia.
-Defined. (* Not `Qed` so we can compute with it *)
+Qed.
 
 (*
   The `compare_lengths` relation is based on a *measure*: the length of the
@@ -296,10 +315,10 @@ Defined. (* Not `Qed` so we can compute with it *)
   numbers) is itself well-founded. So we can write the proof like this instead:
 *)
 
-Goal well_founded compare_lengths.
+Theorem compare_lengths_well_founded : well_founded compare_lengths.
 Proof.
   exact (measure_wf lt_wf _).
-Defined.
+Defined. (* Not `Qed` so we can compute with it *)
 
 (*
   To define the `alternate` function in terms of the accessibility predicate,
@@ -327,26 +346,49 @@ Check Acc_rect.
   Now let's define our recursive function.
 *)
 
-Definition alternate' : list nat -> list nat.
-Proof.
-  refine (
-    fun l =>
-      Acc_rect
-        (fun _ => list nat)
-        (fun l _ =>
-          match l return (forall l' : _, compare_lengths l' l -> _) -> _ with
-          | [] => fun _ => []
-          | h :: t => fun recurse => h :: recurse (rev t) _
-          end
-        )
-        (compare_lengths_well_founded l)
-  ).
+Program Definition alternate' (l : list nat) :=
+  Acc_rect
+    (fun _ => list nat)
+    (fun l _ =>
+      match l return (forall l' : _, compare_lengths l' l -> _) -> _ with
+      | [] => fun _ => []
+      | h :: t => fun recurse => h :: recurse (rev t) _
+      end
+    )
+    (compare_lengths_well_founded l).
+Final Obligation.
+  intros.
   unfold compare_lengths.
   rewrite length_rev.
   auto.
-Defined.
+Qed.
 
 Compute alternate' [1; 2; 3; 4; 5]. (* `[1; 5; 2; 4; 3]` *)
+
+(* Let's do the length preservation proof for this version. *)
+
+Goal forall l, length l = length (alternate' l).
+Proof.
+  intros.
+  unfold alternate'.
+  set (acc := compare_lengths_well_founded l).
+  outro acc.
+  induction l using (well_founded_induction compare_lengths_well_founded).
+  intros.
+  destruct acc.
+  cbn.
+  destruct l; search.
+  cbn.
+  specialize (H (rev l)).
+  feed H.
+  - unfold compare_lengths.
+    rewrite length_rev.
+    search.
+  - rewrite <- (H (a (rev l) (alternate'_obligation_1 n l))).
+    rewrite length_rev.
+    search.
+Qed.
+
 
 (*
   The standard library has a function called `Fix` which is slightly more
@@ -369,24 +411,48 @@ Check Fix.
   than before:
 *)
 
-Definition alternate'' : list nat -> list nat.
-Proof.
-  refine (
-    Fix compare_lengths_well_founded
-      (fun _ => list nat)
-      (fun l =>
-        match l return (forall l' : _, compare_lengths l' l -> _) -> _ with
-        | [] => fun _ => []
-        | h :: t => fun recurse => h :: recurse (rev t) _
-        end
-      )
-  ).
+Program Definition alternate'' : list nat -> list nat :=
+  Fix compare_lengths_well_founded
+    (fun _ => list nat)
+    (fun l =>
+      match l return (forall l' : _, compare_lengths l' l -> _) -> _ with
+      | [] => fun _ => []
+      | h :: t => fun recurse => h :: recurse (rev t) _
+      end
+    ).
+Final Obligation.
+  intros.
   unfold compare_lengths.
   rewrite length_rev.
   auto.
-Defined.
+Qed.
 
 Compute alternate'' [1; 2; 3; 4; 5]. (* `[1; 5; 2; 4; 3]` *)
+
+(* Let's do the length preservation proof for this version. *)
+
+Goal forall l, length l = length (alternate'' l).
+Proof.
+  intros.
+  unfold alternate''.
+  unfold Fix.
+  set (acc := compare_lengths_well_founded l).
+  outro acc.
+  induction l using (well_founded_induction compare_lengths_well_founded).
+  intros.
+  destruct acc.
+  cbn.
+  destruct l; search.
+  cbn.
+  specialize (H (rev l)).
+  feed H.
+  - unfold compare_lengths.
+    rewrite length_rev.
+    search.
+  - rewrite <- (H (a (rev l) (alternate''_obligation_1 n l))).
+    rewrite length_rev.
+    search.
+Qed.
 
 (*
   The `Program Fixpoint` command allows us to define the function even more
