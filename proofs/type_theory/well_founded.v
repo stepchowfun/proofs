@@ -23,7 +23,7 @@ Import Stdlib.Lists.List.ListNotations.
   recursion. See [file:proofs/tutorial/lesson5_consistency.v] for more details.
 
   Merge sort and Euclid's algorithm are common examples of recursive functions
-  that doesn't satisfy the restriction. We'll consider a simpler example:
+  that don't satisfy the restriction. We'll consider a simpler example:
 *)
 
 Fail Fixpoint alternate (l : list nat) :=
@@ -410,9 +410,7 @@ Proof.
     search.
 Qed.
 
-(*
-  When we extract this function, the resulting code is even better than before:
-*)
+(* The extracted code is even better than before: *)
 
 Extraction alternate'.
 
@@ -544,6 +542,7 @@ Extraction alternate'''.
   | Cons (h, t) -> Cons (h, (alternate'''' (rev t))))
   ```
 
-  Of the various approaches we've seen, I think `alternate''` is the best one.
-  It's simple to write and reason about, and it produces good extracted code.
+  Of the various approaches we've seen, I think `alternate''` is the best one
+  for most purposes. It's simple to write and reason about, and it produces
+  good extracted code.
 *)
