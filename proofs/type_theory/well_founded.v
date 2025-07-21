@@ -10,6 +10,7 @@ Require Import Stdlib.Arith.Peano_dec.
 Require Import Stdlib.Arith.Wf_nat.
 Require Import Stdlib.Lists.List.
 Require Import Stdlib.Program.Program.
+Require Import Stdlib.extraction.Extraction.
 Require Import Stdlib.micromega.Lia.
 Require Import main.tactics.
 
@@ -101,12 +102,15 @@ Fail Definition alternate l :=
   because proofs can be eliminated only to build proofs.
   ```
 
-  Rocq generally doesn't allow recursion on proofs to produce non-proofs so
-  that proofs can be erased during extraction, and call trees are considered
-  proofs by virtue of `CallTree l` being in the `Prop` universe. However,
-  `CallTree l` lives in `Prop` for a good reason: so that we could use facts
-  about arithmetic to construct call trees in the definition of `terminates`
-  above.
+  In other type theories, we might not have this problem. But Rocq generally
+  doesn't allow recursion on proofs (terms whose types are in `Prop`) to
+  produce non-proofs so that proofs can be erased during extraction. See
+  [file:proofs/tutorial/lesson6_extraction.v] for details.
+
+  Despite this restriction on `Prop`, `CallTree l` lives in `Prop` for a good
+  reason: so we could use facts about arithmetic to construct call trees in the
+  definition of `terminates` above. We'll find a way out of this pickle in a
+  moment.
 
   Interestingly, we can prove that `CallTree l` is a *mere proposition* in the
   sense of homotopy type theory (i.e., any two call trees for a given input
@@ -253,6 +257,23 @@ Proof.
 Qed.
 
 (*
+  When we extract this function, the resulting code is straightforward enough,
+  although some vestigial structure from the convoy pattern is visible:
+*)
+
+Extraction alternate.
+
+(*
+  ```
+  (** val alternate : nat list -> nat list **)
+
+  let rec alternate l =
+    let x = fun _ t -> alternate (rev t) in
+  (match l with
+  | Nil -> Nil
+  | Cons (h, t) -> Cons (h, (x h t)))
+  ```
+
   Rocq's standard library has a generalization of `CallTree'` called `Acc`,
   which stands for "accessible".
 *)
@@ -389,8 +410,21 @@ Proof.
     search.
 Qed.
 
+(*
+  When we extract this function, the resulting code is even better than before:
+*)
+
+Extraction alternate'.
 
 (*
+  ```
+  (** val alternate' : nat list -> nat list **)
+
+  let rec alternate' = function
+  | Nil -> Nil
+  | Cons (h, t) -> Cons (h, (alternate' (rev t)))
+  ```
+
   The standard library has a function called `Fix` which is slightly more
   convenient to use than `Acc_rect`:
 *)
@@ -454,7 +488,19 @@ Proof.
     search.
 Qed.
 
+(* Extraction produces the same code as before: *)
+
+Extraction alternate''.
+
 (*
+  ```
+  (** val alternate'' : nat list -> nat list **)
+
+  let rec alternate'' = function
+  | Nil -> Nil
+  | Cons (h, t) -> Cons (h, (alternate'' (rev t)))
+  ```
+
   The `Program Fixpoint` command allows us to define the function even more
   simply:
 *)
@@ -468,7 +514,7 @@ Final Obligation.
   intros.
   rewrite length_rev.
   search.
-Defined.
+Qed.
 
 Compute alternate''' [1; 2; 3; 4; 5]. (* `[1; 5; 2; 4; 3]` *)
 
@@ -482,3 +528,22 @@ Compute alternate''' [1; 2; 3; 4; 5]. (* `[1; 5; 2; 4; 3]` *)
 *)
 
 Print alternate'''. (* Long output *)
+
+(* Extraction produces code that relies on a mysterious `fix_sub` function: *)
+
+Recursive Extraction alternate'''.
+
+(*
+  ```
+  (** val alternate''' : nat list -> nat list **)
+
+  let alternate''' =
+    fix_sub (fun recarg alternate'''' ->
+  match recarg with
+  | Nil -> Nil
+  | Cons (h, t) -> Cons (h, (alternate'''' (rev t))))
+  ```
+
+  In my opinion, of the various approaches we've seen, `alternate''` was the
+  best one.
+*)
