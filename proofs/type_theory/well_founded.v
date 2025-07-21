@@ -531,7 +531,7 @@ Print alternate'''. (* Long output *)
 
 (* Extraction produces code that relies on a mysterious `fix_sub` function: *)
 
-Recursive Extraction alternate'''.
+Extraction alternate'''.
 
 (*
   ```
@@ -545,5 +545,6 @@ Recursive Extraction alternate'''.
   ```
 
   In my opinion, of the various approaches we've seen, `alternate''` was the
-  best one.
+  best one. It's simple to write and reason about, and it produces good
+  extracted code.
 *)
