@@ -43,7 +43,7 @@ Fail Fixpoint alternate (l : list nat) :=
   the recursion should bottom out on the empty list. Rocq doesn't know that
   automatically, but we can persuade it.
 
-  Our strategy is to define a function that returns a "call tree" on which we
+  The strategy is to define a function that returns a "call tree" on which we
   can do structural recursion. Interpreted logically, a call tree is a proof
   that recursion will terminate on a given input, and the function that
   computes call trees is a proof that recursion terminates on all inputs.
@@ -60,8 +60,8 @@ Inductive CallTree : list nat -> Prop :=
 
 (*
   Proving that the recursion terminates on all inputs is equivalent to showing
-  that the predicate holds on all lists. This proof is the function that
-  constructs call trees.
+  that the predicate holds on all lists. The proof is the function that
+  constructs call trees:
 *)
 
 Theorem terminates : forall l, CallTree l.
@@ -83,14 +83,13 @@ Defined. (* Not `Qed` so we can compute with it *)
   problem:
 *)
 
-Fail Definition alternate l :=
-  (
-    fix recurse l (pl : CallTree l) :=
-      match pl with
-      | ct_empty => []
-      | ct_nonempty h t pt => h :: recurse (rev t) pt
-      end
-  ) l (terminates l).
+Fail Definition alternate l := (
+  fix recurse l (pl : CallTree l) :=
+    match pl with
+    | ct_empty => []
+    | ct_nonempty h t pt => h :: recurse (rev t) pt
+    end
+) l (terminates l).
 
 (*
   ```
@@ -275,7 +274,7 @@ Extraction alternate.
   ```
 
   Rocq's standard library has a generalization of `CallTree'` called `Acc`,
-  which stands for "accessible".
+  which is short for "accessible".
 *)
 
 Print Acc.
@@ -295,8 +294,8 @@ Definition R (l1 l2 : list nat) := exists x, x :: rev l1 = l2.
 (*
   But let's do something different. The following relation, which compares the
   lengths of the given lists, more closely reflects the intuition for why
-  `alternate` should terminate: we'll only recurse on lists that are smaller
-  than the input lists.
+  `alternate` should terminate: it only recurses on lists that are smaller than
+  the input lists.
 *)
 
 Definition compare_lengths (l1 l2 : list nat) := length l1 < length l2.
@@ -304,7 +303,7 @@ Definition compare_lengths (l1 l2 : list nat) := length l1 < length l2.
 (*
   Analogous to what we did above, proving termination is equivalent to showing
   that every list is accessible. If we can do that, then the `compare_lengths`
-  relation is *well-founded*.
+  relation is said to be *well-founded*.
 *)
 
 Print well_founded.
@@ -343,10 +342,8 @@ Defined. (* Not `Qed` so we can compute with it *)
 
 (*
   To define the `alternate` function in terms of the accessibility predicate,
-  we will recurse on the proof that the input list is accessible. In other
-  words, we will recurse on the call tree, just as we did earlier.
-
-  To recurse on an accessibility proof, we'll use the recursor for `Acc`:
+  we'll recurse on the proof that the input list is accessible, i.e., the call
+  tree. We can use the recursor for `Acc`:
 *)
 
 Check Acc_rect.
