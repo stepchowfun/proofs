@@ -49,9 +49,9 @@ Fail Fixpoint alternate (l : list nat) :=
   computes call trees is a proof that recursion terminates on all inputs.
 
   We define the type of call trees to live in the `Prop` universe so that
-  proofs can be used when building call trees (and so that call trees get
-  erased during extraction). The type has an argument corresponding to the
-  input list, so from a logical perspective it's a predicate.
+  call trees get erased during extraction. The type has an argument
+  corresponding to the input list, so from a logical perspective it's a
+  predicate.
 *)
 
 Inductive CallTree : list nat -> Prop :=
