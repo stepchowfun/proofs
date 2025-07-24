@@ -35,13 +35,13 @@ Hint Rewrite @f_comp : main.
 
 Definition endofunctor C := Functor C C.
 
-Program Definition id_functor C : endofunctor C := {|
+#[program] Definition id_functor C : endofunctor C := {|
   o_map o := o;
   f_map _ _ f := f;
 |}.
 
-Program Definition comp_functor [C D E] (F : Functor C D) (G : Functor D E) :
-  Functor C E
+#[program] Definition comp_functor [C D E] (F : Functor C D) (G : Functor D E)
+: Functor C E
 := {|
   o_map o := o_map G (o_map F o);
   f_map _ _ f := f_map G (f_map F f);

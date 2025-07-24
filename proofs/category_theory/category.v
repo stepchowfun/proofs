@@ -63,7 +63,7 @@ Hint Rewrite @c_ident_left : main.
 Hint Resolve c_ident_right : main.
 Hint Rewrite @c_ident_right : main.
 
-Program Definition opposite_category C : Category := {|
+#[program] Definition opposite_category C : Category := {|
   Object := Object C;
   Arrow f g := Arrow g f;
   id x := id x;

@@ -56,7 +56,7 @@ Qed.
 
 Hint Resolve eq_natural_transformation : main.
 
-Program Definition left_whisker
+#[program] Definition left_whisker
   [C D E]
   (F : Functor C D)
   [G H : Functor D E]
@@ -66,7 +66,7 @@ Program Definition left_whisker
   eta x := eta Eta (o_map F x);
 |}.
 
-Program Definition right_whisker
+#[program] Definition right_whisker
   [C D E]
   [F G : Functor C D]
   (Eta : NaturalTransformation F G)
@@ -76,7 +76,7 @@ Program Definition right_whisker
   eta x := f_map H (eta Eta x);
 |}.
 
-Program Definition id_natural_transformation
+#[program] Definition id_natural_transformation
   [C D]
   (F : Functor C D) :
   NaturalTransformation F F
@@ -84,7 +84,7 @@ Program Definition id_natural_transformation
   eta x := id (o_map F x);
 |}.
 
-Program Definition vert_comp_natural_transformation
+#[program] Definition vert_comp_natural_transformation
   [C D]
   [F G H : Functor C D]
   (Eta : NaturalTransformation F G)
