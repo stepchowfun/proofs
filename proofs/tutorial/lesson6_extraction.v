@@ -217,7 +217,7 @@ Recursive Extraction add_even_nat_1.
   Rocq provides a more convenient way to write this style of code:
 *)
 
-Program Definition add_even_nat_2 (n m : EvenNat) : EvenNat := n + m.
+#[program] Definition add_even_nat_2 (n m : EvenNat) : EvenNat := n + m.
 Final Obligation.
   destruct n.
   destruct m.

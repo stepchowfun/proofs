@@ -23,7 +23,7 @@ Arguments just [_].
 
 (* `Maybe` is a functor. *)
 
-Program Definition maybe_functor : Functor set_category set_category := {|
+#[program] Definition maybe_functor : Functor set_category set_category := {|
   o_map o := Maybe o;
   f_map _ _ f := fun e =>
     match e with
@@ -44,7 +44,7 @@ Qed.
 
 (* This is the "return" natural transformation for `Maybe`. *)
 
-Program Definition maybe_eta :
+#[program] Definition maybe_eta :
   NaturalTransformation (id_functor set_category) maybe_functor
 := {|
   eta x := @just x;
@@ -52,7 +52,7 @@ Program Definition maybe_eta :
 
 (* This is the "join" natural transformation for `Maybe`. *)
 
-Program Definition maybe_mu :
+#[program] Definition maybe_mu :
   NaturalTransformation
     (comp_functor maybe_functor maybe_functor)
     maybe_functor
@@ -72,7 +72,7 @@ Qed.
 
 (* Now we can show that `Maybe` is a monad. *)
 
-Program Definition maybe_monad : Monad maybe_eta maybe_mu := {|
+#[program] Definition maybe_monad : Monad maybe_eta maybe_mu := {|
   m_assoc := _;
   m_ident1 := _;
   m_ident2 := _;

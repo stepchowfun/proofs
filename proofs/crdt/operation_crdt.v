@@ -289,4 +289,4 @@ Definition counter_data : CrdtData bool Z :=
     Precondition _ _ := True;
   |}.
 
-Program Definition counter : Crdt counter_data := {| commutativity := _ |}.
+#[program] Definition counter : Crdt counter_data := {| commutativity := _ |}.

@@ -364,7 +364,7 @@ Check Acc_rect.
   Now let's define our recursive function.
 *)
 
-Program Definition alternate' (l : list nat) :=
+#[program] Definition alternate' (l : list nat) :=
   Acc_rect
     (fun _ => list nat)
     (fun l _ =>
@@ -440,7 +440,7 @@ Check Fix.
   than before:
 *)
 
-Program Definition alternate'' : list nat -> list nat :=
+#[program] Definition alternate'' : list nat -> list nat :=
   Fix compare_lengths_well_founded
     (fun _ => list nat)
     (fun l =>
@@ -496,11 +496,11 @@ Extraction alternate''.
   | Cons (h, t) -> Cons (h, (alternate'' (rev t)))
   ```
 
-  The `Program Fixpoint` command allows us to define the function even more
+  The `#[program] Fixpoint` command allows us to define the function even more
   simply:
 *)
 
-Program Fixpoint alternate''' (l : list nat) {measure (length l)} :=
+#[program] Fixpoint alternate''' (l : list nat) {measure (length l)} :=
   match l with
   | [] => []
   | h :: t => h :: alternate''' (rev t)
@@ -519,7 +519,7 @@ Compute alternate''' [1; 2; 3; 4; 5]. (* `[1; 5; 2; 4; 3]` *)
   `compare_lengths_well_founded` proof from above.
 
   Unfortunately, it's difficult to prove properties about functions defined via
-  `Program Fixpoint`, since the generated code can be quite complicated.
+  `#[program] Fixpoint`, since the generated code can be quite complicated.
 *)
 
 Print alternate'''. (* Long output *)

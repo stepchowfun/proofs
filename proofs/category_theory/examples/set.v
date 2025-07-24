@@ -16,7 +16,7 @@ Require Import main.tactics.
 
 (* Sets and functions form a category. *)
 
-Program Definition set_category : Category := {|
+#[program] Definition set_category : Category := {|
   Object := Type;
   Arrow x y := x -> y;
   id _ := fun x => x;

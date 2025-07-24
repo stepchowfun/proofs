@@ -297,7 +297,7 @@ Hint Resolve strong_convergence : main.
 
 (* A simple state-based CRDT: a Boolean event flag *)
 
-Program Definition boolean_event_flag : Crdt unit bool :=
+#[program] Definition boolean_event_flag : Crdt unit bool :=
   {|
     State := bool;
     initial := false;
