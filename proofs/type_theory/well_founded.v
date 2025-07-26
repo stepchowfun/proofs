@@ -102,7 +102,7 @@ Fail Definition alternate l := (
   ```
 
   In other type theories, we might not have this problem. But Rocq generally
-  doesn't allow recursion on proofs (terms whose types are in `Prop`) to
+  doesn't allow pattern matching on proofs (terms whose types are in `Prop`) to
   produce non-proofs so that proofs can be erased during extraction. See
   [file:proofs/tutorial/lesson6_extraction.v] for details.
 
