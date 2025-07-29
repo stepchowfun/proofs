@@ -16,6 +16,46 @@ Require Import Stdlib.Program.Basics.
 
 Definition U := Type.
 
+(* Homotopy n-types (starting at 0 rather than the more conventional -2) *)
+
+Fixpoint IsTruncated n (X : U) : U :=
+  match n with
+  | O => { c : X & forall x, c = x }
+  | S p => forall x y : X, IsTruncated p (x = y)
+  end.
+
+(* Contractible types, a.k.a. homotopy (-2)-types or (-2)-truncated spaces *)
+
+Definition IsContr := IsTruncated 0.
+
+(* Mere propositions, a.k.a. homotopy (-1)-types or (-1)-truncated spaces *)
+
+Definition IsProp := IsTruncated 1.
+
+(* Sets, a.k.a. homotopy 0-types or 0-truncated spaces *)
+
+Definition IsSet := IsTruncated 2.
+
+(* `IsTruncated` defines a filtration on the universe. *)
+
+Theorem is_truncated_cumulative :
+  forall n X, IsTruncated n X -> IsTruncated (1 + n) X.
+Proof.
+  induction n.
+  - unfold IsTruncated.
+    cbn.
+    intros.
+    destruct X0.
+    exists (eq_trans (eq_sym (e x)) (e y)).
+    intro.
+    destruct x1, (e x).
+    reflexivity.
+  - cbn in *.
+    intros.
+    apply IHn.
+    apply X0.
+Qed.
+
 (* Transport *)
 
 Definition transport [A] [x y : A] [P : A -> Type] (p : x = y) (px : P x) :=
