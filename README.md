@@ -10,9 +10,9 @@ If you are new to Rocq, the repository contains a tutorial [here](https://github
 
 ## Instructions
 
-Make sure you have the dependencies listed below. Then you can run `make` in this directory to verify all the proofs. If you change anything, run `make` again to incrementally verify the affected proofs. The build artifacts can be removed with `make clean`.
+Make sure you have the dependencies listed below. Then you can run `make` in this directory to verify all the proofs. If you change anything, you can run `make` again to incrementally verify the affected proofs. The build artifacts can be removed with `make clean`.
 
-To write proofs, you'll want to use an IDE that supports interactive theorem proving. My general recommendation is [VsRocq](https://github.com/rocq-prover/vsrocq), which is a plugin for [Visual Studio Code](https://code.visualstudio.com/). However, you may find the built-in [RocqIDE](https://rocq-prover.org/doc/V9.0.0/refman/practical-tools/coqide.html) easier if you're new to interactive theorem proving, since it has buttons you can click on to step through your proofs.
+To write proofs, you'll want to use an IDE that supports interactive theorem proving. My recommendation is [VsRocq](https://github.com/rocq-prover/vsrocq), which is a plugin for [Visual Studio Code](https://code.visualstudio.com/).
 
 ### Dependencies
 
