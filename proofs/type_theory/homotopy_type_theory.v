@@ -16,6 +16,53 @@ Require Import Stdlib.Program.Basics.
 
 Definition U := Type.
 
+(* The groupoid structure of types *)
+
+Definition inv [T : U] [x y : T] (p : x = y) : y = x :=
+  match p in _ = z return z = x with
+  | eq_refl => eq_refl
+  end.
+
+Definition concat [T : U] [x y z : T] (p : x = y) (q : y = z) : x = z :=
+  match q in _ = z return x = z with
+  | eq_refl => p
+  end.
+
+Definition left_id [T : U] [x y : T] (p : x = y) : concat eq_refl p = p :=
+  match p return concat eq_refl p = p with
+  | eq_refl => eq_refl
+  end.
+
+Definition right_id [T : U] [x y : T] (p : x = y) : concat p eq_refl = p :=
+  match p return concat p eq_refl = p with
+  | eq_refl => eq_refl
+  end.
+
+Definition left_inv [T : U] [x y : T] (p : x = y) :
+  concat (inv p) p = eq_refl
+:=
+  match p return concat (inv p) p = eq_refl with
+  | eq_refl => eq_refl
+  end.
+
+Definition right_inv [T : U] [x y : T] (p : x = y) :
+  concat p (inv p) = eq_refl
+:=
+  match p return concat p (inv p) = eq_refl with
+  | eq_refl => eq_refl
+  end.
+
+Definition assoc [T : U] [x y z w : T]
+  (p : x = y) (q : y = z) (r : z = w)
+: concat (concat p q) r = concat p (concat q r)
+:=
+  match r return concat (concat p q) r = concat p (concat q r) with
+  | eq_refl =>
+    match q return concat p q = concat p q with
+    | eq_refl => eq_refl
+    end
+  end.
+
 (* Homotopy n-types (starting at 0 rather than the more conventional -2) *)
 
 Fixpoint IsTruncated n (X : U) : U :=
@@ -54,6 +101,32 @@ Proof.
     intros.
     apply IHn.
     apply X0.
+Qed.
+
+(* An equivalent characterization of being a mere proposition *)
+
+Theorem proof_irrelevance_prop X : (forall x y : X, x = y) -> IsProp X.
+Proof.
+  unfold IsProp, IsTruncated.
+  intros.
+  exists (H x y).
+  destruct x0.
+  assert (forall x y (p : x = y), H x y = concat p (H y y)).
+  - intros.
+    destruct p.
+    rewrite left_id.
+    reflexivity.
+  - specialize (H0 _ _ (H x x)).
+    assert (
+      forall (x y z : X) (p : x = y) (q r : y = z),
+      concat p q = concat p r -> q = r
+    ).
+    + intros.
+      destruct p.
+      do 2 rewrite left_id in H1.
+      assumption.
+    + specialize (H1 _ _ _ (H x x) (H x x) eq_refl).
+      auto.
 Qed.
 
 (* Transport *)
