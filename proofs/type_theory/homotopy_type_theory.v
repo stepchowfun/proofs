@@ -63,6 +63,85 @@ Definition assoc [T : U] [x y z w : T]
     end
   end.
 
+(* Transport *)
+
+Definition transport [A] [x y : A] [P : A -> Type] (p : x = y) (px : P x) :=
+  match p in _ = z return P z with
+  | eq_refl => px
+  end.
+
+(* Homotopy *)
+
+Definition Homotopy [X] [Y : X -> Type] (f g : forall x : X, Y x) :=
+  forall x, f x = g x.
+
+(* Equivalence *)
+
+Definition Equivalence [X Y] (f : X -> Y) :=
+  { g : Y -> X & Homotopy (f ∘ g) id } *
+  { g : Y -> X & Homotopy (g ∘ f) id }.
+
+(* Quasi-inverse *)
+
+Definition QuasiInverse [X Y] (f : X -> Y) :=
+  { g : Y -> X & Homotopy (f ∘ g) id * Homotopy (g ∘ f) id }.
+
+(* Equivalence is logically equivalent to quasi-inverse. *)
+
+Theorem quasi_inverse_to_equivalence :
+  forall X Y (f : X -> Y), QuasiInverse f -> Equivalence f.
+Proof.
+  intros.
+  destruct X0, p.
+  split; exists x; auto.
+Qed.
+
+Theorem equivalence_to_quasi_inverse :
+  forall X Y (f : X -> Y), Equivalence f -> QuasiInverse f.
+Proof.
+  unfold Equivalence, QuasiInverse, Homotopy, compose, id.
+  intros.
+  destruct X0, s, s0.
+  exists (fun y => x0 (f (x y))).
+  split; intros.
+  - rewrite e0.
+    auto.
+  - rewrite e.
+    auto.
+Qed.
+
+(* Paths between maps can be converted to homotopies. *)
+
+Definition path_to_homotopy [X] [Y : X -> Type]
+  (f g : forall x : X, Y x) (p : f = g) :
+  Homotopy f g :=
+  fun x =>
+    match p in _ = h return f x = h x with
+    | eq_refl _ => eq_refl _
+    end.
+
+(* Function extensionality *)
+
+Axiom function_extensionality :
+  forall (X : U) (Y : X -> U) (f g : forall x : X, Y x),
+  Equivalence (path_to_homotopy f g).
+
+(* Paths can be converted to equivalences. *)
+
+Definition path_to_equivalence [X Y] (p : X = Y) :
+  { f : X -> Y & Equivalence f } :=
+  existT (@Equivalence X Y) (transport p)
+    match p with
+    | eq_refl => (
+        existT (fun g => Homotopy g _) _ (@eq_refl _),
+        existT (fun g => Homotopy g _) _ (@eq_refl _)
+      )
+    end.
+
+(* Univalence *)
+
+Axiom univalence : forall (X Y : U), Equivalence (@path_to_equivalence X Y).
+
 (* Homotopy n-types (starting at 0 rather than the more conventional -2) *)
 
 Fixpoint IsTruncated n (X : U) : U :=
@@ -129,84 +208,46 @@ Proof.
       auto.
 Qed.
 
-(* Transport *)
+(* Being truncated is a mere proposition. *)
 
-Definition transport [A] [x y : A] [P : A -> Type] (p : x = y) (px : P x) :=
-  match p in _ = z return P z with
-  | eq_refl => px
-  end.
-
-(* Homotopy *)
-
-Definition Homotopy [X] [Y : X -> Type] (f g : forall x : X, Y x) :=
-  forall x, f x = g x.
-
-(* Quasi-inverse *)
-
-Definition QuasiInverse [X Y] (f : X -> Y) :=
-  { g : Y -> X & Homotopy (f ∘ g) id * Homotopy (g ∘ f) id }.
-
-(* Equivalence *)
-
-Definition Equivalence [X Y] (f : X -> Y) :=
-  { g : Y -> X & Homotopy (f ∘ g) id } *
-  { g : Y -> X & Homotopy (g ∘ f) id }.
-
-(* Equivalence is logically equivalent to quasi-inverse. *)
-
-Theorem quasi_inverse_to_equivalence :
-  forall X Y (f : X -> Y), QuasiInverse f -> Equivalence f.
+Theorem is_truncated_prop : forall n X, IsProp (IsTruncated n X).
 Proof.
-  intros.
-  destruct X0, p.
-  split; exists x; auto.
+  induction n; intros; apply proof_irrelevance_prop; intros.
+  - unfold IsTruncated in *.
+    destruct x, y.
+    pose proof (e0 x).
+    assert (e = transport (P := fun r => forall x : X, r = x) H e0).
+    + destruct H.
+      cbn.
+      assert (IsProp X).
+      * apply proof_irrelevance_prop.
+        intros.
+        rewrite <- (e x).
+        rewrite <- (e y).
+        reflexivity.
+      * destruct (function_extensionality _ _ e e0).
+        destruct s.
+        apply x.
+        unfold Homotopy.
+        intro.
+        pose proof (is_truncated_cumulative 1 X X0).
+        destruct (X1 x0 x1 (e x1) (e0 x1)).
+        auto.
+    + rewrite H0.
+      rewrite <- H.
+      reflexivity.
+  - destruct (function_extensionality _ _ x y).
+    destruct s.
+    apply x0.
+    unfold Homotopy.
+    intro.
+    destruct (function_extensionality _ _ (x x1) (y x1)).
+    destruct s.
+    apply x2.
+    unfold Homotopy.
+    intro.
+    apply IHn.
 Qed.
-
-Theorem equivalence_to_quasi_inverse :
-  forall X Y (f : X -> Y), Equivalence f -> QuasiInverse f.
-Proof.
-  unfold Equivalence, QuasiInverse, Homotopy, compose, id.
-  intros.
-  destruct X0, s, s0.
-  exists (fun y => x0 (f (x y))).
-  split; intros.
-  - rewrite e0.
-    auto.
-  - rewrite e.
-    auto.
-Qed.
-
-(* Paths can be converted to equivalences. *)
-
-Definition path_to_equivalence [X Y] (p : X = Y) :
-  { f : X -> Y & Equivalence f } :=
-  existT (@Equivalence X Y) (transport p)
-    match p with
-    | eq_refl => (
-        existT (fun g => Homotopy g _) _ (@eq_refl _),
-        existT (fun g => Homotopy g _) _ (@eq_refl _)
-      )
-    end.
-
-(* Paths between maps can be converted to homotopies. *)
-
-Definition path_to_homotopy [X] [Y : X -> Type]
-  (f g : forall x : X, Y x) (p : f = g) :
-  Homotopy f g :=
-  fun x =>
-    match p in _ = h return f x = h x with
-    | eq_refl _ => eq_refl _
-    end.
-
-(* Function extensionality *)
-
-Axiom function_extensionality :
-  forall (X : U) (Y : X -> U) (f g : forall x : X, Y x),
-  Equivalence (path_to_homotopy f g).
-
-(* Univalence *)
-
-Axiom univalence : forall (X Y : U), Equivalence (@path_to_equivalence X Y).
 
 (* An example of using univalence *)
 
