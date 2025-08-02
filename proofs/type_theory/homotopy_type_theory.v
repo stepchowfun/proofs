@@ -77,19 +77,19 @@ Definition Homotopy [X] [Y : X -> Type] (f g : forall x : X, Y x) :=
 
 (* Equivalence *)
 
-Definition Equivalence [X Y] (f : X -> Y) :=
+Definition IsEquiv [X Y] (f : X -> Y) :=
   { g : Y -> X & Homotopy (f ∘ g) id } *
   { g : Y -> X & Homotopy (g ∘ f) id }.
 
 (* Quasi-inverse *)
 
-Definition QuasiInverse [X Y] (f : X -> Y) :=
+Definition QuasiInv [X Y] (f : X -> Y) :=
   { g : Y -> X & Homotopy (f ∘ g) id * Homotopy (g ∘ f) id }.
 
 (* Equivalence is logically equivalent to quasi-inverse. *)
 
 Theorem quasi_inverse_to_equivalence :
-  forall X Y (f : X -> Y), QuasiInverse f -> Equivalence f.
+  forall X Y (f : X -> Y), QuasiInv f -> IsEquiv f.
 Proof.
   intros.
   destruct X0, p.
@@ -97,9 +97,9 @@ Proof.
 Qed.
 
 Theorem equivalence_to_quasi_inverse :
-  forall X Y (f : X -> Y), Equivalence f -> QuasiInverse f.
+  forall X Y (f : X -> Y), IsEquiv f -> QuasiInv f.
 Proof.
-  unfold Equivalence, QuasiInverse, Homotopy, compose, id.
+  unfold IsEquiv, QuasiInv, Homotopy, compose, id.
   intros.
   destruct X0, s, s0.
   exists (fun y => x0 (f (x y))).
@@ -124,13 +124,13 @@ Definition path_to_homotopy [X] [Y : X -> Type]
 
 Axiom function_extensionality :
   forall (X : U) (Y : X -> U) (f g : forall x : X, Y x),
-  Equivalence (path_to_homotopy f g).
+  IsEquiv (path_to_homotopy f g).
 
 (* Paths can be converted to equivalences. *)
 
-Definition path_to_equivalence [X Y] (p : X = Y) :
-  { f : X -> Y & Equivalence f } :=
-  existT (@Equivalence X Y) (transport p)
+Definition path_to_equiv [X Y] (p : X = Y) :
+  { f : X -> Y & IsEquiv f } :=
+  existT (@IsEquiv X Y) (transport p)
     match p with
     | eq_refl => (
         existT (fun g => Homotopy g _) _ (@eq_refl _),
@@ -140,35 +140,34 @@ Definition path_to_equivalence [X Y] (p : X = Y) :
 
 (* Univalence *)
 
-Axiom univalence : forall (X Y : U), Equivalence (@path_to_equivalence X Y).
+Axiom univalence : forall (X Y : U), IsEquiv (@path_to_equiv X Y).
 
 (* Homotopy n-types (starting at 0 rather than the more conventional -2) *)
 
-Fixpoint IsTruncated n (X : U) : U :=
+Fixpoint IsTrunc n (X : U) : U :=
   match n with
   | O => { c : X & forall x, c = x }
-  | S p => forall x y : X, IsTruncated p (x = y)
+  | S p => forall x y : X, IsTrunc p (x = y)
   end.
 
 (* Contractible types, a.k.a. homotopy (-2)-types or (-2)-truncated spaces *)
 
-Definition IsContr := IsTruncated 0.
+Definition IsContr := IsTrunc 0.
 
 (* Mere propositions, a.k.a. homotopy (-1)-types or (-1)-truncated spaces *)
 
-Definition IsProp := IsTruncated 1.
+Definition IsProp := IsTrunc 1.
 
 (* Sets, a.k.a. homotopy 0-types or 0-truncated spaces *)
 
-Definition IsSet := IsTruncated 2.
+Definition IsSet := IsTrunc 2.
 
-(* `IsTruncated` defines a filtration on the universe. *)
+(* `IsTrunc` defines a filtration on the universe. *)
 
-Theorem is_truncated_cumulative :
-  forall n X, IsTruncated n X -> IsTruncated (1 + n) X.
+Theorem is_trunc_cumulative : forall n X, IsTrunc n X -> IsTrunc (1 + n) X.
 Proof.
   induction n.
-  - unfold IsTruncated.
+  - unfold IsTrunc.
     cbn.
     intros.
     destruct X0.
@@ -184,9 +183,9 @@ Qed.
 
 (* An equivalent characterization of being a mere proposition *)
 
-Theorem proof_irrelevance_prop X : (forall x y : X, x = y) -> IsProp X.
+Theorem proof_irrelevance_is_prop X : (forall x y : X, x = y) -> IsProp X.
 Proof.
-  unfold IsProp, IsTruncated.
+  unfold IsProp, IsTrunc.
   intros.
   exists (H x y).
   destruct x0.
@@ -210,17 +209,17 @@ Qed.
 
 (* Being truncated is a mere proposition. *)
 
-Theorem is_truncated_prop : forall n X, IsProp (IsTruncated n X).
+Theorem is_truncated_is_prop : forall n X, IsProp (IsTrunc n X).
 Proof.
-  induction n; intros; apply proof_irrelevance_prop; intros.
-  - unfold IsTruncated in *.
+  induction n; intros; apply proof_irrelevance_is_prop; intros.
+  - unfold IsTrunc in *.
     destruct x, y.
     pose proof (e0 x).
     assert (e = transport (P := fun r => forall x : X, r = x) H e0).
     + destruct H.
       cbn.
       assert (IsProp X).
-      * apply proof_irrelevance_prop.
+      * apply proof_irrelevance_is_prop.
         intros.
         rewrite <- (e x).
         rewrite <- (e y).
@@ -230,7 +229,7 @@ Proof.
         apply x.
         unfold Homotopy.
         intro.
-        pose proof (is_truncated_cumulative 1 X X0).
+        pose proof (is_trunc_cumulative 1 X X0).
         destruct (X1 x0 x1 (e x1) (e0 x1)).
         auto.
     + rewrite H0.
@@ -271,7 +270,7 @@ Definition bit_to_weekend x :=
   | One => Sunday
   end.
 
-Definition weekend_bit_equivalence : Equivalence weekend_to_bit := (
+Definition weekend_bit_equiv : IsEquiv weekend_to_bit := (
   existT (fun g => Homotopy (weekend_to_bit ∘ g) id)
     bit_to_weekend
     (
@@ -295,7 +294,7 @@ Definition weekend_bit_equivalence : Equivalence weekend_to_bit := (
 Definition weekend_bit_path : Weekend = Bit :=
   projT1
     (fst (univalence Weekend Bit))
-    (existT _ weekend_to_bit weekend_bit_equivalence).
+    (existT _ weekend_to_bit weekend_bit_equiv).
 
 Definition invert_weekend x :=
   match x with
