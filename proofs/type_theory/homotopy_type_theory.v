@@ -88,7 +88,7 @@ Definition QuasiInv [X Y] (f : X -> Y) :=
 
 (* Equivalence is logically equivalent to quasi-inverse. *)
 
-Theorem quasi_inverse_to_equivalence :
+Theorem quasi_inverse_to_equiv :
   forall X Y (f : X -> Y), QuasiInv f -> IsEquiv f.
 Proof.
   intros.
@@ -96,7 +96,7 @@ Proof.
   split; exists x; auto.
 Qed.
 
-Theorem equivalence_to_quasi_inverse :
+Theorem equiv_to_quasi_inverse :
   forall X Y (f : X -> Y), IsEquiv f -> QuasiInv f.
 Proof.
   unfold IsEquiv, QuasiInv, Homotopy, compose, id.
@@ -214,11 +214,9 @@ Proof.
   induction n; intros; apply proof_irrelevance_is_prop; intros.
   - unfold IsTrunc in *.
     destruct x, y.
-    pose proof (e0 x).
-    assert (e = transport (P := fun r => forall x : X, r = x) H e0).
-    + destruct H.
-      cbn.
-      assert (IsProp X).
+    destruct (e0 x).
+    assert (e = e0).
+    + assert (IsProp X).
       * apply proof_irrelevance_is_prop.
         intros.
         rewrite <- (e x).
@@ -232,8 +230,7 @@ Proof.
         pose proof (is_trunc_cumulative 1 X X0).
         destruct (X1 x0 x1 (e x1) (e0 x1)).
         auto.
-    + rewrite H0.
-      rewrite <- H.
+    + rewrite H.
       reflexivity.
   - destruct (function_extensionality _ _ x y).
     destruct s.
