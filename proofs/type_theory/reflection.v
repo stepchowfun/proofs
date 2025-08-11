@@ -6,99 +6,126 @@
 (*********************************)
 (*********************************)
 
-(*************************************)
-(* General reflection infrastructure *)
-(*************************************)
-
-Inductive Reflect (P : Prop) : bool -> Prop :=
-| reflect_true : P -> Reflect P true
-| reflect_false : ~ P -> Reflect P false.
-
-Theorem reflect_iff : forall P b, (P <-> b = true) <-> Reflect P b.
-Proof.
-  split.
-  - destruct b; constructor.
-    + destruct H. auto.
-    + intro. destruct H. discriminate (H H0).
-  - split; intro; destruct H; auto.
-    + destruct H. auto.
-    + discriminate H0.
-Qed.
-
-Hint Resolve -> reflect_iff : main.
-Hint Resolve <- reflect_iff : main.
-
-Ltac reflect b :=
-  let H1 := fresh "H" in
-  let H2 := fresh "H" in
-  let H3 := fresh "H" in
-  solve [
-    evar (H1 : Prop);
-    assert (H2 : Reflect H1 b); subst H1; [
-      auto with main |
-      inversion H2 as [H3 | H3]; exact H3
-    ]
-  ].
-
-(*********************)
-(* Example: evenness *)
-(*********************)
+Require Import Stdlib.Bool.Bool.
 
 (*
-  Two definitions of evenness:
+  Below are two definitions of evenness:
+
   1. an inductive predicate
   2. a decision procedure
 *)
 
-Inductive Even : nat -> Prop :=
-| even_zero : Even 0
-| even_ss : forall n : nat, Even n -> Even (S (S n)).
-
-Hint Constructors Even : main.
+Inductive IsEven : nat -> Prop :=
+| even_zero : IsEven 0
+| even_ss : forall n, IsEven n -> IsEven (2 + n).
 
 Fixpoint is_even n :=
   match n with
   | O => true
   | S O => false
-  | S (S x) => is_even x
+  | S (S m) => is_even m
   end.
 
-(* A proof that `Even n` is reflected in `is_even n` *)
+(* The two definitions are equivalent. *)
 
-Theorem even_ind :
-  forall P : nat -> Prop,
-  P 0 ->
-  P 1 ->
-  (forall n, P n /\ P (S n) -> P (S (S n))) ->
-  forall n,
-  P n /\ P (S n).
+Theorem unreflect_even : forall n, IsEven n -> is_even n = true.
 Proof.
-  induction n; auto.
-  split; auto.
-  apply IHn.
+  intros.
+  induction H.
+  - reflexivity.
+  - exact IHIsEven.
 Qed.
 
-Theorem even_refl : forall n, Reflect (Even n) (is_even n).
+Theorem reflect_even : forall n, is_even n = true -> IsEven n.
 Proof.
-  intro.
-  apply reflect_iff.
+  assert (
+    forall n,
+    (IsEven n /\ is_even n = true) \/
+    (IsEven (S n) /\ is_even (S n) = true)
+  ).
+  - induction n.
+    + left.
+      split.
+      -- exact even_zero.
+      -- reflexivity.
+    + destruct IHn.
+      * right.
+          destruct H.
+          split.
+          -- apply even_ss.
+             exact H.
+          -- exact H0.
+      * left.
+        destruct H.
+        split; assumption.
+  - intros.
+    specialize (H n).
+    destruct H.
+    + destruct H.
+      exact H.
+    + destruct H.
+      assert (forall n, is_even n = negb (is_even (S n))).
+      * clear n H H0 H1.
+        induction n.
+        -- reflexivity.
+        -- cbn.
+           rewrite IHn.
+           rewrite negb_involutive.
+           reflexivity.
+      * specialize (H2 n).
+        rewrite H1 in H2.
+        rewrite H0 in H2.
+        discriminate.
+Qed.
+
+Theorem reflected_even : forall n, IsEven n <-> is_even n = true.
+Proof.
   split.
-  - intro. induction H; auto.
-  - generalize dependent n.
-    pose (P := fun n => is_even n = true -> Even n).
-    assert (forall n, P n /\ P (S n)).
-    + apply even_ind; unfold P.
-      * constructor.
-      * intro. inversion H.
-      * intros. constructor. assert (is_even n = true); auto. destruct H. auto.
-    + intros. destruct (H n). unfold P in H1. auto.
+  - apply unreflect_even.
+  - apply reflect_even.
 Qed.
 
-Hint Resolve even_refl : main.
+(* The inductive predicate can be more convenient to use in proofs. *)
 
-(* A proof by reflection of `Even 1000` *)
-
-Theorem even_one_thousand : Even 1000.
+Goal forall n, IsEven n -> (exists m, n = 2 + m) \/ n = 0.
 Proof.
-  reflect (is_even 1000).
+  intros.
+  destruct H; eauto.
 Qed.
+
+Goal forall n, is_even n = true -> (exists m, n = 2 + m) \/ n = 0.
+Proof.
+  intros.
+  destruct n.
+  - auto.
+  - destruct n.
+    + discriminate.
+    + left.
+      exists n.
+      reflexivity.
+Qed.
+
+(*
+  However, the proof terms can be quite large and slow to construct with
+  tactics.
+*)
+
+Theorem one_thousand_even_long : IsEven 1000.
+Proof.
+  repeat apply even_ss.
+  exact even_zero.
+Qed.
+
+Print one_thousand_even_long. (* A large proof term *)
+
+(*
+  We can use the decision procedure to construct proof terms more efficiently.
+*)
+
+Theorem one_thousand_even_short : IsEven 1000.
+Proof.
+  apply reflect_even.
+  reflexivity.
+Qed.
+
+Print one_thousand_even_short. (* `reflect_even 1000 eq_refl` *)
