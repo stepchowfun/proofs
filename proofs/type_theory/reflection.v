@@ -87,20 +87,20 @@ Qed.
 
 (* The inductive predicate can be more convenient to use in proofs. *)
 
-Goal forall n, IsEven n -> (exists m, n = 2 + m) \/ n = 0.
+Goal forall n, IsEven n -> n = 0 \/ exists m, n = 2 + m.
 Proof.
   intros.
   destruct H; eauto.
 Qed.
 
-Goal forall n, is_even n = true -> (exists m, n = 2 + m) \/ n = 0.
+Goal forall n, is_even n = true -> n = 0 \/ exists m, n = 2 + m.
 Proof.
   intros.
   destruct n.
   - auto.
   - destruct n.
     + discriminate.
-    + left.
+    + right.
       exists n.
       reflexivity.
 Qed.
