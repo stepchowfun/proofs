@@ -63,7 +63,7 @@ Definition transport [A] [x y : A] [P : A -> Type] (p : x = y) (px : P x) : P y
   | eq_refl => px
   end.
 
-(* Functorial action on paths *)
+(* Action on paths *)
 
 Definition ap [A B] [x y : A] (f : A -> B) (p : x = y) : f x = f y :=
   match p in _ = z return f x = f z with
@@ -101,7 +101,7 @@ Definition ap_id [A] [x y : A] (p : x = y) : ap id p = p
   | eq_refl => eq_refl
   end.
 
-(* Homotopy and naturality *)
+(* Homotopy *)
 
 Definition Homotopy [A] [B : A -> Type] (f g : forall x : A, B x) :=
   forall x, f x = g x.
@@ -126,7 +126,7 @@ Definition IsEquiv [A B] (f : A -> B) := {
   epsilon : Homotopy (f ∘ g) id &
   forall x, ap f (eta x) = epsilon (f x) }}}.
 
-(* Paths between maps can be converted to homotopies. *)
+(* Function extensionality *)
 
 Definition path_to_homotopy [A] [B : A -> Type]
   (f g : forall x : A, B x) (p : f = g) :
@@ -136,13 +136,11 @@ Definition path_to_homotopy [A] [B : A -> Type]
     | eq_refl => eq_refl
     end.
 
-(* Function extensionality *)
-
 Axiom function_extensionality :
   forall (A : U) (B : A -> U) (f g : forall x : A, B x),
   IsEquiv (path_to_homotopy f g).
 
-(* Paths can be converted to equivalences. *)
+(* Univalence *)
 
 Definition path_to_equiv [A B] (p : A = B) :
   { f : A -> B & IsEquiv f } :=
@@ -154,8 +152,6 @@ Definition path_to_equiv [A B] (p : A = B) :
       )
     end.
 
-(* Univalence *)
-
 Axiom univalence : forall A B : U, IsEquiv (@path_to_equiv A B).
 
 (* Homotopy n-types (starting at 0 rather than the more conventional -2) *)
@@ -166,19 +162,9 @@ Fixpoint IsTrunc n (A : Type) :=
   | S p => forall x y : A, IsTrunc p (x = y)
   end.
 
-(* Contractible types, a.k.a. homotopy (-2)-types or (-2)-truncated spaces *)
-
 Definition IsContr := IsTrunc 0.
-
-(* Mere propositions, a.k.a. homotopy (-1)-types or (-1)-truncated spaces *)
-
 Definition IsProp := IsTrunc 1.
-
-(* Sets, a.k.a. homotopy 0-types or 0-truncated spaces *)
-
 Definition IsSet := IsTrunc 2.
-
-(* `IsTrunc` defines a filtration on the universe. *)
 
 Theorem is_trunc_cumulative : forall n A, IsTrunc n A -> IsTrunc (1 + n) A.
 Proof.
@@ -196,8 +182,6 @@ Proof.
     apply IHn.
     apply X.
 Qed.
-
-(* An equivalent characterization of being a mere proposition *)
 
 Theorem proof_irrelevance_is_prop :
   forall A, (forall x y : A, x = y) -> IsProp A.
@@ -223,8 +207,6 @@ Proof.
     + specialize (H1 _ _ _ (H x x) (H x x) eq_refl).
       auto.
 Qed.
-
-(* Being truncated is a mere proposition. *)
 
 Theorem is_truncated_is_prop : forall n A, IsProp (IsTrunc n A).
 Proof.
@@ -266,8 +248,6 @@ Qed.
 
 Definition QuasiInv [A B] (f : A -> B) :=
   { g : B -> A & Homotopy (g ∘ f) id * Homotopy (f ∘ g) id }.
-
-(* Equivalence is logically equivalent to quasi-inverse. *)
 
 Theorem quasi_inverse_to_equiv :
   forall A B (f : A -> B), QuasiInv f -> IsEquiv f.
@@ -324,6 +304,51 @@ Qed.
 
 Definition equiv_to_quasi_inverse A B (f : A -> B) (e : IsEquiv f) : QuasiInv f
 := existT _ (projT1 e) (projT1 (projT2 e), projT1 (projT2 (projT2 e))).
+
+(* The fibers of an equivalence are contractible *)
+
+Definition fiber [A B] (f : A -> B) y := { x & f x = y }.
+
+Theorem fiber_contr :
+  forall A B (f : A -> B) y, IsEquiv f -> IsContr (fiber f y).
+Proof.
+  intros.
+  unfold IsContr, IsTrunc.
+  destruct X.
+  do 2 destruct s.
+  exists (existT _ (x y) (x1 y)).
+  intros.
+  destruct x2.
+  assert (
+    forall A B (f : A -> B) y (f1 f2 : fiber f y) (p : projT1 f1 = projT1 f2),
+    concat (ap f p) (projT2 f2) = projT2 f1 ->
+    f1 = f2
+  ).
+  - intros.
+    destruct f1, f2.
+    cbn in p, H.
+    destruct p.
+    rewrite left_refl in H.
+    rewrite H.
+    reflexivity.
+  - apply H with (p := concat (ap x (inv e0)) (x0 x2)).
+    cbn.
+    rewrite ap_concat.
+    specialize (e x2).
+    unfold id, compose in e.
+    unfold id.
+    rewrite e.
+    rewrite ap_compose.
+    pose proof naturality.
+    specialize H0 with (h := x1) (p := inv e0).
+    unfold id in H0.
+    unfold compose in *.
+    rewrite H0.
+    rewrite assoc.
+    rewrite ap_id.
+    rewrite left_inv.
+    reflexivity.
+Qed.
 
 (* An example of using univalence *)
 
