@@ -28,34 +28,26 @@ Definition concat [A] [x y z : A] (p : x = y) (q : y = z) : x = z :=
   | eq_refl => p
   end.
 
-Definition left_id [A] [x y : A] (p : x = y) : concat eq_refl p = p :=
+Definition left_refl [A] [x y : A] (p : x = y) : concat eq_refl p = p :=
   match p return concat eq_refl p = p with
   | eq_refl => eq_refl
   end.
 
-Definition right_id [A] [x y : A] (p : x = y) : concat p eq_refl = p :=
-  match p return concat p eq_refl = p with
-  | eq_refl => eq_refl
-  end.
+Definition right_refl [A] [x y : A] (p : x = y) : concat p eq_refl = p :=
+  eq_refl.
 
-Definition left_inv [A] [x y : A] (p : x = y) :
-  concat (inv p) p = eq_refl
-:=
+Definition left_inv [A] [x y : A] (p : x = y) : concat (inv p) p = eq_refl :=
   match p return concat (inv p) p = eq_refl with
   | eq_refl => eq_refl
   end.
 
-Definition right_inv [A] [x y : A] (p : x = y) :
-  concat p (inv p) = eq_refl
-:=
+Definition right_inv [A] [x y : A] (p : x = y) : concat p (inv p) = eq_refl :=
   match p return concat p (inv p) = eq_refl with
   | eq_refl => eq_refl
   end.
 
-Definition assoc [A] [x y z w : A]
-  (p : x = y) (q : y = z) (r : z = w)
-: concat (concat p q) r = concat p (concat q r)
-:=
+Definition assoc [A] [x y z w : A] (p : x = y) (q : y = z) (r : z = w) :
+  concat (concat p q) r = concat p (concat q r) :=
   match r return concat (concat p q) r = concat p (concat q r) with
   | eq_refl =>
     match q return concat p q = concat p q with
@@ -65,51 +57,74 @@ Definition assoc [A] [x y z w : A]
 
 (* Transport *)
 
-Definition transport [A] [x y : A] [P : A -> Type] (p : x = y) (px : P x)
+Definition transport [A] [x y : A] [P : A -> Type] (p : x = y) (px : P x) : P y
 :=
   match p in _ = z return P z with
   | eq_refl => px
   end.
 
-(* Homotopy *)
+(* Functorial action on paths *)
+
+Definition ap [A B] [x y : A] (f : A -> B) (p : x = y) : f x = f y :=
+  match p in _ = z return f x = f z with
+  | eq_refl => eq_refl
+  end.
+
+Definition ap_refl [A B] (x : A) (f : A -> B) :
+  ap f eq_refl = @eq_refl _ (f x)
+:= eq_refl.
+
+Definition ap_concat [A B] [x y z : A] (f : A -> B) (p : x = y) (q : y = z) :
+  ap f (concat p q) = concat (ap f p) (ap f q)
+:=
+  match q with
+  | eq_refl => eq_refl
+  end.
+
+Definition ap_inv [A B] [x y : A] (f : A -> B) (p : x = y) :
+  ap f (inv p) = inv (ap f p)
+:=
+  match p with
+  | eq_refl => eq_refl
+  end.
+
+Definition ap_compose [A B C] [x y : A] (f : A -> B) (g : B -> C) (p : x = y) :
+  ap g (ap f p) = ap (g ∘ f) p
+:=
+  match p with
+  | eq_refl => eq_refl
+  end.
+
+Definition ap_id [A] [x y : A] (p : x = y) : ap id p = p
+:=
+  match p with
+  | eq_refl => eq_refl
+  end.
+
+(* Homotopy and naturality *)
 
 Definition Homotopy [A] [B : A -> Type] (f g : forall x : A, B x) :=
   forall x, f x = g x.
 
+Definition naturality
+  [A B]
+  [x y : A]
+  (f g : A -> B)
+  (h : Homotopy f g)
+  (p : x = y)
+: concat (ap f p) (h y) = concat (h x) (ap g p)
+:=
+  match p in _ = z return concat (ap f p) (h z) = concat (h x) (ap g p) with
+  | eq_refl => left_refl _
+  end.
+
 (* Equivalence *)
 
-Definition IsEquiv [A B] (f : A -> B) :=
-  { g : B -> A & Homotopy (f ∘ g) id } *
-  { g : B -> A & Homotopy (g ∘ f) id }.
-
-(* Quasi-inverse *)
-
-Definition QuasiInv [A B] (f : A -> B) :=
-  { g : B -> A & Homotopy (f ∘ g) id * Homotopy (g ∘ f) id }.
-
-(* Equivalence is logically equivalent to quasi-inverse. *)
-
-Theorem quasi_inverse_to_equiv :
-  forall A B (f : A -> B), QuasiInv f -> IsEquiv f.
-Proof.
-  intros.
-  destruct X, p.
-  split; exists x; auto.
-Qed.
-
-Theorem equiv_to_quasi_inverse :
-  forall A B (f : A -> B), IsEquiv f -> QuasiInv f.
-Proof.
-  unfold IsEquiv, QuasiInv, Homotopy, compose, id.
-  intros.
-  destruct X, s, s0.
-  exists (fun y => x0 (f (x y))).
-  split; intros.
-  - rewrite e0.
-    auto.
-  - rewrite e.
-    auto.
-Qed.
+Definition IsEquiv [A B] (f : A -> B) := {
+  g : B -> A & {
+  eta : Homotopy (g ∘ f) id & {
+  epsilon : Homotopy (f ∘ g) id &
+  forall x, ap f (eta x) = epsilon (f x) }}}.
 
 (* Paths between maps can be converted to homotopies. *)
 
@@ -118,7 +133,7 @@ Definition path_to_homotopy [A] [B : A -> Type]
   Homotopy f g :=
   fun x =>
     match p in _ = h return f x = h x with
-    | eq_refl _ => eq_refl _
+    | eq_refl => eq_refl
     end.
 
 (* Function extensionality *)
@@ -133,9 +148,9 @@ Definition path_to_equiv [A B] (p : A = B) :
   { f : A -> B & IsEquiv f } :=
   existT (@IsEquiv A B) (transport p)
     match p with
-    | eq_refl => (
-        existT (fun g => Homotopy g _) _ (@eq_refl _),
-        existT (fun g => Homotopy g _) _ (@eq_refl _)
+    | eq_refl =>
+      existT _ id (
+        existT _ (@eq_refl _) (existT _ (@eq_refl _) (fun _ => eq_refl))
       )
     end.
 
@@ -184,7 +199,8 @@ Qed.
 
 (* An equivalent characterization of being a mere proposition *)
 
-Theorem proof_irrelevance_is_prop A : (forall x y : A, x = y) -> IsProp A.
+Theorem proof_irrelevance_is_prop :
+  forall A, (forall x y : A, x = y) -> IsProp A.
 Proof.
   unfold IsProp, IsTrunc.
   intros.
@@ -193,7 +209,7 @@ Proof.
   assert (forall x y (p : x = y), H x y = concat p (H y y)).
   - intros.
     destruct p.
-    rewrite left_id.
+    rewrite left_refl.
     reflexivity.
   - specialize (H0 _ _ (H x x)).
     assert (
@@ -202,7 +218,7 @@ Proof.
     ).
     + intros.
       destruct p.
-      do 2 rewrite left_id in H1.
+      do 2 rewrite left_refl in H1.
       assumption.
     + specialize (H1 _ _ _ (H x x) (H x x) eq_refl).
       auto.
@@ -229,7 +245,7 @@ Proof.
         unfold Homotopy.
         intro.
         pose proof (is_trunc_cumulative 1 A X).
-        destruct (X0 x0 x1 (e x1) (e0 x1)).
+        destruct (X0 x0 x2 (e x2) (e0 x2)).
         auto.
     + rewrite H.
       reflexivity.
@@ -238,13 +254,76 @@ Proof.
     apply x0.
     unfold Homotopy.
     intro.
-    destruct (function_extensionality _ _ (x x1) (y x1)).
+    destruct (function_extensionality _ _ (x x2) (y x2)).
     destruct s.
-    apply x2.
+    apply x3.
     unfold Homotopy.
     intro.
     apply IHn.
 Qed.
+
+(* Quasi-inverse *)
+
+Definition QuasiInv [A B] (f : A -> B) :=
+  { g : B -> A & Homotopy (g ∘ f) id * Homotopy (f ∘ g) id }.
+
+(* Equivalence is logically equivalent to quasi-inverse. *)
+
+Theorem quasi_inverse_to_equiv :
+  forall A B (f : A -> B), QuasiInv f -> IsEquiv f.
+Proof.
+  intros.
+  destruct X, p.
+  rename x into g.
+  rename h into eta.
+  rename h0 into epsilon.
+  exists g.
+  exists eta.
+  exists (fun y =>
+    concat (inv (epsilon (f (g y)))) (concat (ap f (eta (g y))) (epsilon y))
+  ).
+  intro.
+  replace (eta (g (f x))) with (ap (g ∘ f) (eta x)).
+  - replace (
+      concat
+        (@ap A B ((g ∘ f) (g (f x))) (@id A (g (f x))) f
+          (@ap A A ((g ∘ f) x) (@id A x) (g ∘ f) (eta x)))
+        (epsilon (f x))
+    ) with (concat (epsilon (f (g (f x)))) (ap f (eta x))).
+    + rewrite <- assoc.
+      rewrite left_inv.
+      rewrite left_refl.
+      reflexivity.
+    + pose proof naturality.
+      specialize H with (h := fun x => epsilon (f x)) (p := eta x).
+      unfold id, compose in *.
+      change (ap f (eta x)) with (ap (fun x : A => f x) (eta x)).
+      rewrite <- H.
+      rewrite (ap_compose (fun x0 : A => g (f x0)) f).
+      reflexivity.
+  - change (g (f x)) with ((g ∘ f) x).
+    pose proof naturality.
+    specialize H with (h := eta) (p := eta x).
+    change (eta (id x)) with (eta x) in H.
+    replace (ap id (eta x)) with (eta x) in H.
+    + assert (
+        concat (concat (ap (g ∘ f) (eta x)) (eta x)) (inv (eta x)) =
+        concat (concat (eta ((g ∘ f) x)) (eta x)) (inv (eta x))
+      ).
+      * unfold id.
+        unfold id in H.
+        rewrite H.
+        reflexivity.
+      * do 2 rewrite assoc in H0.
+        do 2 rewrite right_inv in H0.
+        exact H0.
+    + set (p := eta x).
+      destruct p.
+      reflexivity.
+Qed.
+
+Definition equiv_to_quasi_inverse A B (f : A -> B) (e : IsEquiv f) : QuasiInv f
+:= existT _ (projT1 e) (projT1 (projT2 e), projT1 (projT2 (projT2 e))).
 
 (* An example of using univalence *)
 
@@ -276,7 +355,7 @@ Proof.
 Qed.
 
 Definition weekend_bit_path : Weekend = Bit :=
-  projT1 (fst (univalence _ _)) (existT _ _ weekend_bit_equiv).
+  projT1 (univalence _ _) (existT _ _ weekend_bit_equiv).
 
 Definition invert_weekend x :=
   match x with
@@ -297,7 +376,7 @@ Definition invert_weekend_with_theorem :=
 Definition invert_bit_with_theorem :=
   match weekend_bit_path in _ = A
   return { invert : A -> A | forall x, invert (invert x) = x } with
-  | eq_refl _ => invert_weekend_with_theorem
+  | eq_refl => invert_weekend_with_theorem
   end.
 
 Definition invert_bit : Bit -> Bit :=
