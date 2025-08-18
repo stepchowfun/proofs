@@ -249,7 +249,7 @@ Qed.
 Definition QuasiInv [A B] (f : A -> B) :=
   { g : B -> A & Homotopy (g ∘ f) id * Homotopy (f ∘ g) id }.
 
-Theorem quasi_inverse_to_equiv :
+Theorem quasi_inv_is_equiv :
   forall A B (f : A -> B), QuasiInv f -> IsEquiv f.
 Proof.
   intros.
@@ -302,14 +302,74 @@ Proof.
       reflexivity.
 Qed.
 
-Definition equiv_to_quasi_inverse A B (f : A -> B) (e : IsEquiv f) : QuasiInv f
+Definition equiv_is_quasi_inv A B (f : A -> B) (e : IsEquiv f) : QuasiInv f
 := existT _ (projT1 e) (projT1 (projT2 e), projT1 (projT2 (projT2 e))).
+
+(* Sigma types *)
+
+Definition sigma_path [A] [B : A -> Type] (s1 s2 : sigT B) (h : s1 = s2)
+: { p : projT1 s1 = projT1 s2 & transport p (projT2 s1) = projT2 s2 }
+:=
+  match h with
+  | eq_refl => existT _ eq_refl eq_refl
+  end.
+
+Theorem sigma_path_is_equiv :
+  forall A (B : A -> Type) (s1 s2 : sigT B), IsEquiv (sigma_path s1 s2).
+Proof.
+  intros.
+  apply quasi_inv_is_equiv.
+  unfold QuasiInv.
+  exists (
+    match s1
+    return
+      { p : projT1 s1 = projT1 s2 & transport p (projT2 s1) = projT2 s2 } ->
+      s1 = s2
+    with
+    | existT _ s1_1 s1_2 =>
+      match s2
+      return
+        { p : s1_1 = projT1 s2 & transport p s1_2 = projT2 s2 } ->
+        existT _ s1_1 s1_2 = s2
+      with
+      | existT _ s2_1 s2_2 =>
+        fun p =>
+          match projT1 p
+          as q
+          in _ = z
+          return
+            forall s2_2 : B z,
+            transport q s1_2 = projT2 (existT B z s2_2) ->
+            existT _ s1_1 s1_2 = existT _ z s2_2
+          with
+          | eq_refl =>
+            fun s2_2 h =>
+              match h with
+              | eq_refl => eq_refl
+              end
+          end s2_2 (projT2 p)
+      end
+    end
+  ).
+  split.
+  - unfold sigma_path.
+    intro.
+    destruct x, s1.
+    reflexivity.
+  - unfold sigma_path.
+    intro.
+    destruct s1, s2, x.
+    unfold id, compose in *.
+    cbn in *.
+    destruct x, e.
+    reflexivity.
+Qed.
 
 (* The fibers of an equivalence are contractible *)
 
 Definition fiber [A B] (f : A -> B) y := { x & f x = y }.
 
-Theorem fiber_contr :
+Theorem fiber_is_contr :
   forall A B (f : A -> B) y, IsEquiv f -> IsContr (fiber f y).
 Proof.
   intros.
@@ -374,7 +434,7 @@ Definition bit_to_weekend x :=
 
 Theorem weekend_bit_equiv : IsEquiv weekend_to_bit.
 Proof.
-  apply quasi_inverse_to_equiv.
+  apply quasi_inv_is_equiv.
   exists bit_to_weekend.
   split; intro; destruct x; reflexivity.
 Qed.
