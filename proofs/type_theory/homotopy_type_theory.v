@@ -493,6 +493,84 @@ Proof.
   reflexivity.
 Qed.
 
+(* Left and right inverses of equivalnces are contractible *)
+
+Definition linv [A B] (f : A -> B) := { g & g ∘ f = id }.
+
+Definition rinv [A B] (f : A -> B) := { g & f ∘ g = id }.
+
+Theorem precompose_is_equiv :
+  forall A B C (f : B -> C),
+  IsEquiv f ->
+  IsEquiv (fun g : A -> B => f ∘ g).
+Proof.
+  intros.
+  apply quasi_inv_is_equiv.
+  unfold QuasiInv.
+  destruct X.
+  do 2 destruct s.
+  exists (fun h : A -> C => x ∘ h).
+  unfold id, compose in *.
+  split; intro.
+  - destruct (function_extensionality _ _ (fun x3 : A => x (f (x2 x3))) x2).
+    do 2 destruct s.
+    apply x3.
+    intro.
+    rewrite x0.
+    reflexivity.
+  - destruct (function_extensionality _ _ (fun x3 : A => f (x (x2 x3))) x2).
+    do 2 destruct s.
+    apply x3.
+    intro.
+    rewrite x1.
+    reflexivity.
+Qed.
+
+Theorem postcompose_is_equiv :
+  forall A B C (f : A -> B),
+  IsEquiv f ->
+  IsEquiv (fun g : B -> C => g ∘ f).
+Proof.
+  intros.
+  apply quasi_inv_is_equiv.
+  unfold QuasiInv.
+  destruct X.
+  do 2 destruct s.
+  exists (fun h : A -> C => h ∘ x).
+  unfold id, compose in *.
+  split; intro.
+  - destruct (function_extensionality _ _ (fun x3 : B => x2 (f (x x3))) x2).
+    do 2 destruct s.
+    apply x3.
+    intro.
+    rewrite x1.
+    reflexivity.
+  - destruct (function_extensionality _ _ (fun x3 : A => x2 (x (f x3))) x2).
+    do 2 destruct s.
+    apply x3.
+    intro.
+    rewrite x0.
+    reflexivity.
+Qed.
+
+Theorem linv_is_contr : forall A B (f : A -> B), IsEquiv f -> IsContr (linv f).
+Proof.
+  intros.
+  unfold linv.
+  apply fiber_is_contr with (f := fun g : B -> A => g ∘ f) (y := id).
+  apply postcompose_is_equiv.
+  assumption.
+Qed.
+
+Theorem rinv_is_contr : forall A B (f : A -> B), IsEquiv f -> IsContr (rinv f).
+Proof.
+  intros.
+  unfold rinv.
+  apply fiber_is_contr with (f := fun g : B -> A => f ∘ g) (y := id).
+  apply precompose_is_equiv.
+  assumption.
+Qed.
+
 (* An example of using univalence *)
 
 Inductive Bit : U :=
