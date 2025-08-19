@@ -88,7 +88,7 @@ Definition ap_inv [A B] [x y : A] (f : A -> B) (p : x = y) :
   | eq_refl => eq_refl
   end.
 
-Definition ap_compose [A B C] [x y : A] (f : A -> B) (g : B -> C) (p : x = y) :
+Definition ap_comp [A B C] [x y : A] (f : A -> B) (g : B -> C) (p : x = y) :
   ap g (ap f p) = ap (g ∘ f) p
 :=
   match p with
@@ -105,6 +105,14 @@ Definition ap_id [A] [x y : A] (p : x = y) : ap id p = p
 
 Definition Homotopy [A] [B : A -> Type] (f g : forall x : A, B x) :=
   forall x, f x = g x.
+
+Definition path_to_homotopy [A] [B : A -> Type]
+  (f g : forall x : A, B x) (p : f = g) :
+  Homotopy f g :=
+  fun x =>
+    match p in _ = h return f x = h x with
+    | eq_refl => eq_refl
+    end.
 
 Definition naturality
   [A B]
@@ -126,22 +134,6 @@ Definition IsEquiv [A B] (f : A -> B) := {
   epsilon : Homotopy (f ∘ g) id &
   forall x, ap f (eta x) = epsilon (f x) }}}.
 
-(* Function extensionality *)
-
-Definition path_to_homotopy [A] [B : A -> Type]
-  (f g : forall x : A, B x) (p : f = g) :
-  Homotopy f g :=
-  fun x =>
-    match p in _ = h return f x = h x with
-    | eq_refl => eq_refl
-    end.
-
-Axiom function_extensionality :
-  forall (A : U) (B : A -> U) (f g : forall x : A, B x),
-  IsEquiv (path_to_homotopy f g).
-
-(* Univalence *)
-
 Definition path_to_equiv [A B] (p : A = B) :
   { f : A -> B & IsEquiv f } :=
   existT (@IsEquiv A B) (transport p)
@@ -152,7 +144,15 @@ Definition path_to_equiv [A B] (p : A = B) :
       )
     end.
 
+(* Univalence *)
+
 Axiom univalence : forall A B : U, IsEquiv (@path_to_equiv A B).
+
+(* Function extensionality *)
+
+Axiom function_extensionality :
+  forall (A : U) (B : A -> U) (f g : forall x : A, B x),
+  IsEquiv (path_to_homotopy f g).
 
 (* Homotopy n-types (starting at 0 rather than the more conventional -2) *)
 
@@ -279,7 +279,7 @@ Proof.
       unfold id, compose in *.
       change (ap f (eta x)) with (ap (fun x : A => f x) (eta x)).
       rewrite <- H.
-      rewrite (ap_compose (fun x0 : A => g (f x0)) f).
+      rewrite (ap_comp (fun x0 : A => g (f x0)) f).
       reflexivity.
   - change (g (f x)) with ((g ∘ f) x).
     pose proof naturality.
@@ -304,6 +304,40 @@ Qed.
 
 Definition equiv_is_quasi_inv A B (f : A -> B) (e : IsEquiv f) : QuasiInv f
 := existT _ (projT1 e) (projT1 (projT2 e), projT1 (projT2 (projT2 e))).
+
+(* Equivalences form a category *)
+
+Theorem id_is_equiv : forall A, IsEquiv (@id A).
+Proof.
+  intro.
+  unfold IsEquiv.
+  exists id.
+  exists (fun _ => eq_refl).
+  exists (fun _ => eq_refl).
+  reflexivity.
+Qed.
+
+Theorem comp_is_equiv :
+  forall A B C (f : A -> B) (g : B -> C),
+  IsEquiv f ->
+  IsEquiv g ->
+  IsEquiv (g ∘ f).
+Proof.
+  intros.
+  apply quasi_inv_is_equiv.
+  unfold QuasiInv.
+  destruct X, X0.
+  exists (x ∘ x0).
+  do 2 destruct s, s0.
+  unfold id, compose in *.
+  split; intro.
+  - rewrite x2.
+    rewrite x1.
+    reflexivity.
+  - rewrite x3.
+    rewrite x4.
+    reflexivity.
+Qed.
 
 (* Sigma types *)
 
@@ -351,23 +385,80 @@ Proof.
       end
     end
   ).
-  split.
-  - unfold sigma_path.
-    intro.
-    destruct x, s1.
+  split; intro.
+  - destruct x, s1.
     reflexivity.
-  - unfold sigma_path.
-    intro.
-    destruct s1, s2, x.
-    unfold id, compose in *.
-    cbn in *.
+  - destruct x, s1, s2.
+    cbn in x, e.
     destruct x, e.
     reflexivity.
 Qed.
 
-(* The fibers of an equivalence are contractible *)
+(* Homotopy fibers *)
 
 Definition fiber [A B] (f : A -> B) y := { x & f x = y }.
+
+Definition fiber_component_path [A B] [f : A -> B] [y] (f1 f2 : fiber f y)
+  (g : { p : projT1 f1 = projT1 f2 & transport p (projT2 f1) = projT2 f2 })
+: { p : projT1 f1 = projT1 f2 & concat (ap f p) (projT2 f2) = projT2 f1 }
+:=
+  existT _ (projT1 g) (
+    match projT1 g
+    as g1
+    return
+      forall p2_2 (g2 : transport g1 (projT2 f1) = p2_2),
+      concat (ap f g1) p2_2 = projT2 f1
+    with
+    | eq_refl => fun p2_2 g2 => concat (left_refl p2_2) (inv g2)
+    end (projT2 f2) (projT2 g)
+  ).
+
+Theorem fiber_component_path_is_equiv :
+  forall A B (f : A -> B) y (f1 f2 : fiber f y),
+  IsEquiv (fiber_component_path f1 f2).
+Proof.
+  intros.
+  apply quasi_inv_is_equiv.
+  unfold QuasiInv.
+  exists (
+    fun g =>
+      existT _ (projT1 g) (
+        match projT1 g
+        as p
+        in _ = fx_1
+        return
+          forall (q : f fx_1 = y) (g2 : concat (ap f p) q = projT2 f1),
+          transport p (projT2 f1) = q
+        with
+        | eq_refl =>
+          fun f2_2 g2 =>
+            match left_refl f2_2 in _ = z return projT2 f1 = z with
+            | eq_refl => inv g2
+            end
+        end (projT2 f2) (projT2 g)
+      )
+  ).
+  split; intro; destruct x, f1, f2; cbn in x, e.
+  - destruct x, e, e0.
+    reflexivity.
+  - destruct x, e, e1.
+    reflexivity.
+Qed.
+
+Definition fiber_path [A B] [f : A -> B] [y] (f1 f2 : fiber f y)
+: f1 = f2 ->
+  { p : projT1 f1 = projT1 f2 & concat (ap f p) (projT2 f2) = projT2 f1 }
+:= (fiber_component_path f1 f2) ∘ (sigma_path f1 f2).
+
+Theorem fiber_path_is_equiv :
+  forall A B (f : A -> B) y (f1 f2 : fiber f y), IsEquiv (fiber_path f1 f2).
+Proof.
+  intros.
+  unfold fiber_path.
+  apply comp_is_equiv.
+  - apply sigma_path_is_equiv.
+  - apply fiber_component_path_is_equiv.
+Qed.
 
 Theorem fiber_is_contr :
   forall A B (f : A -> B) y, IsEquiv f -> IsContr (fiber f y).
@@ -379,35 +470,27 @@ Proof.
   exists (existT _ (x y) (x1 y)).
   intros.
   destruct x2.
-  assert (
-    forall A B (f : A -> B) y (f1 f2 : fiber f y) (p : projT1 f1 = projT1 f2),
-    concat (ap f p) (projT2 f2) = projT2 f1 ->
-    f1 = f2
-  ).
-  - intros.
-    destruct f1, f2.
-    cbn in p, H.
-    destruct p.
-    rewrite left_refl in H.
-    rewrite H.
-    reflexivity.
-  - apply H with (p := concat (ap x (inv e0)) (x0 x2)).
-    cbn.
-    rewrite ap_concat.
-    specialize (e x2).
-    unfold id, compose in e.
-    unfold id.
-    rewrite e.
-    rewrite ap_compose.
-    pose proof naturality.
-    specialize H0 with (h := x1) (p := inv e0).
-    unfold id in H0.
-    unfold compose in *.
-    rewrite H0.
-    rewrite assoc.
-    rewrite ap_id.
-    rewrite left_inv.
-    reflexivity.
+  pose proof fiber_path_is_equiv.
+  specialize X with
+    (f1 := existT (fun x3 : A => f x3 = y) (x y) (x1 y))
+    (f2 := existT (fun x3 : A => f x3 = y) x2 e0).
+  destruct X.
+  apply x3.
+  exists (concat (ap x (inv e0)) (x0 x2)).
+  cbn.
+  rewrite ap_concat.
+  specialize (e x2).
+  unfold id, compose in *.
+  rewrite e.
+  rewrite ap_comp.
+  pose proof naturality.
+  specialize H with (h := x1) (p := inv e0).
+  unfold id, compose in *.
+  rewrite H.
+  rewrite assoc.
+  rewrite ap_id.
+  rewrite left_inv.
+  reflexivity.
 Qed.
 
 (* An example of using univalence *)
