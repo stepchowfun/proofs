@@ -101,14 +101,14 @@ Definition ap_id [A] [x y : A] (p : x = y) : ap id p = p
   | eq_refl => eq_refl
   end.
 
-(* Homotopy *)
+(* Homotopies *)
 
 Definition Homotopy [A] [B : A -> Type] (f g : forall x : A, B x) :=
   forall x, f x = g x.
 
-Definition path_to_homotopy [A] [B : A -> Type]
-  (f g : forall x : A, B x) (p : f = g) :
-  Homotopy f g :=
+Definition path_to_homotopy [A] [B : A -> Type] [f g : forall x : A, B x]
+  (p : f = g) : Homotopy f g
+:=
   fun x =>
     match p in _ = h return f x = h x with
     | eq_refl => eq_refl
@@ -126,7 +126,7 @@ Definition naturality
   | eq_refl => left_refl _
   end.
 
-(* Equivalence *)
+(* Equivalences *)
 
 Definition IsEquiv [A B] (f : A -> B) := {
   g : B -> A & {
@@ -152,7 +152,7 @@ Axiom univalence : forall A B : U, IsEquiv (@path_to_equiv A B).
 
 Axiom function_extensionality :
   forall (A : U) (B : A -> U) (f g : forall x : A, B x),
-  IsEquiv (path_to_homotopy f g).
+  IsEquiv (@path_to_homotopy _ _ f g).
 
 (* Homotopy n-types (starting at 0 rather than the more conventional -2) *)
 
@@ -244,7 +244,7 @@ Proof.
     apply IHn.
 Qed.
 
-(* Quasi-inverse *)
+(* Quasi-inverses *)
 
 Definition QuasiInv [A B] (f : A -> B) :=
   { g : B -> A & Homotopy (g ∘ f) id * Homotopy (f ∘ g) id }.
@@ -305,7 +305,7 @@ Qed.
 Definition equiv_is_quasi_inv A B (f : A -> B) (e : IsEquiv f) : QuasiInv f
 := existT _ (projT1 e) (projT1 (projT2 e), projT1 (projT2 (projT2 e))).
 
-(* Equivalences form a category *)
+(* Equivalences form a category. *)
 
 Theorem id_is_equiv : forall A, IsEquiv (@id A).
 Proof.
@@ -337,6 +337,18 @@ Proof.
   - rewrite x3.
     rewrite x4.
     reflexivity.
+Qed.
+
+(* Equivalence respect truncation. *)
+
+Theorem equiv_trunc :
+  forall n A B (f : A -> B), IsEquiv f -> IsTrunc n A -> IsTrunc n B.
+Proof.
+  intros.
+  destruct (univalence A B).
+  rewrite <- x; auto.
+  exists f.
+  assumption.
 Qed.
 
 (* Sigma types *)
@@ -493,11 +505,11 @@ Proof.
   reflexivity.
 Qed.
 
-(* Left and right inverses of equivalnces are contractible *)
+(* Left and right inverses of equivalences are contractible. *)
 
-Definition linv [A B] (f : A -> B) := { g & g ∘ f = id }.
+Definition linv [A B] (f : A -> B) := { g & Homotopy (g ∘ f) id }.
 
-Definition rinv [A B] (f : A -> B) := { g & f ∘ g = id }.
+Definition rinv [A B] (f : A -> B) := { g & Homotopy (f ∘ g) id }.
 
 Theorem precompose_is_equiv :
   forall A B C (f : B -> C),
@@ -553,22 +565,134 @@ Proof.
     reflexivity.
 Qed.
 
+Definition to_linv [A B] [f : A -> B] (li : { g : B -> A & g ∘ f = id })
+: linv f
+:=
+  existT
+    (fun g => Homotopy (g ∘ f) id)
+    (projT1 li)
+    (path_to_homotopy (projT2 li)).
+
+Definition to_rinv [A B] [f : A -> B] (ri : { g : B -> A & f ∘ g = id })
+: rinv f
+:=
+  existT
+    (fun g => Homotopy (f ∘ g) id)
+    (projT1 ri)
+    (path_to_homotopy (projT2 ri)).
+
+Theorem to_linv_is_equiv :
+  forall A B (f : A -> B), IsEquiv (@to_linv _ _ f).
+Proof.
+  unfold to_linv.
+  intros.
+  apply quasi_inv_is_equiv.
+  unfold QuasiInv.
+  exists (
+    fun li =>
+      existT
+        (fun g => g ∘ f = id)
+        (projT1 li)
+        (projT1
+          (function_extensionality _ _ ((projT1 li) ∘ f) id) (projT2 li))
+  ).
+  split; intro.
+  - unfold compose, id in *.
+    destruct x.
+    cbn.
+    destruct e.
+    set (fe :=
+      function_extensionality _ _
+        (fun x0 : A => x (f x0))
+        (fun x0 : A => x (f x0))
+    ).
+    destruct fe.
+    do 2 destruct s.
+    cbn.
+    unfold compose in x1.
+    rewrite x1.
+    reflexivity.
+  - unfold compose, id in *.
+    destruct x.
+    cbn.
+    set (fe :=
+      function_extensionality _ _
+        (fun x0 : A => x (f x0))
+        (fun x0 : A => x0)
+    ).
+    destruct fe.
+    do 2 destruct s.
+    cbn.
+    unfold compose in x2.
+    rewrite x2.
+    reflexivity.
+Qed.
+
+Theorem to_rinv_is_equiv :
+  forall A B (f : A -> B), IsEquiv (@to_rinv _ _ f).
+Proof.
+  unfold to_rinv.
+  intros.
+  apply quasi_inv_is_equiv.
+  unfold QuasiInv.
+  exists (
+    fun li =>
+      existT
+        (fun g => f ∘ g = id)
+        (projT1 li)
+        (projT1
+          (function_extensionality _ _ (f ∘ (projT1 li)) id) (projT2 li))
+  ).
+  split; intro.
+  - unfold compose, id in *.
+    destruct x.
+    cbn.
+    destruct e.
+    set (fe :=
+      function_extensionality _ _
+        (fun x0 : B => f (x x0))
+        (fun x0 : B => f (x x0))
+    ).
+    destruct fe.
+    do 2 destruct s.
+    cbn.
+    unfold compose in x1.
+    rewrite x1.
+    reflexivity.
+  - unfold compose, id in *.
+    destruct x.
+    cbn.
+    set (fe :=
+      function_extensionality _ _
+        (fun x0 : B => f (x x0))
+        (fun x0 : B => x0)
+    ).
+    destruct fe.
+    do 2 destruct s.
+    cbn.
+    unfold compose in x2.
+    rewrite x2.
+    reflexivity.
+Qed.
+
 Theorem linv_is_contr : forall A B (f : A -> B), IsEquiv f -> IsContr (linv f).
 Proof.
   intros.
-  unfold linv.
-  apply fiber_is_contr with (f := fun g : B -> A => g ∘ f) (y := id).
-  apply postcompose_is_equiv.
-  assumption.
+  apply equiv_trunc with (f := @to_linv _ _ f); auto.
+  - apply to_linv_is_equiv.
+  - apply fiber_is_contr with (f := fun g : B -> A => g ∘ f) (y := id).
+    apply postcompose_is_equiv.
+    assumption.
 Qed.
 
 Theorem rinv_is_contr : forall A B (f : A -> B), IsEquiv f -> IsContr (rinv f).
 Proof.
   intros.
-  unfold rinv.
-  apply fiber_is_contr with (f := fun g : B -> A => f ∘ g) (y := id).
-  apply precompose_is_equiv.
-  assumption.
+  apply equiv_trunc with (f := @to_rinv _ _ f); auto.
+  - apply to_rinv_is_equiv.
+  - apply fiber_is_contr with (f := fun g : B -> A => f ∘ g) (y := id).
+    apply precompose_is_equiv.
+    assumption.
 Qed.
 
 (* An example of using univalence *)
