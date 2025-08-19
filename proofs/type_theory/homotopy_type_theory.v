@@ -148,20 +148,16 @@ Definition path_to_equiv [A B] (p : A = B) :
 
 Axiom univalence : forall A B : U, IsEquiv (@path_to_equiv A B).
 
-Theorem compute_univalence :
-  forall A B (f : A -> B) (e : IsEquiv f),
-  transport (projT1 (univalence _ _) (existT (@IsEquiv _ _) f e)) = f.
-Proof.
-  intros.
-  destruct (univalence A B).
-  do 2 destruct s.
-  cbn.
-  change (transport (x (existT (@IsEquiv _ _) f e)))
-    with (projT1 (path_to_equiv (x (existT (@IsEquiv _ _) f e)))).
-  unfold compose in x1.
-  rewrite x1.
-  reflexivity.
-Qed.
+Definition compute_univalence [A B] [f : A -> B] (e : IsEquiv f) :
+  transport (projT1 (univalence _ _) (existT (@IsEquiv _ _) f e)) = f
+:=
+  match
+    inv (projT1 (projT2 (projT2 (univalence _ _))) (existT (@IsEquiv _ _) f e))
+  in _ = z
+  return projT1 z = f
+  with
+  | eq_refl => eq_refl
+  end.
 
 (* Function extensionality *)
 
