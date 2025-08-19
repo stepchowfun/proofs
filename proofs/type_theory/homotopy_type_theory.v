@@ -148,6 +148,21 @@ Definition path_to_equiv [A B] (p : A = B) :
 
 Axiom univalence : forall A B : U, IsEquiv (@path_to_equiv A B).
 
+Theorem compute_univalence :
+  forall A B (f : A -> B) (e : IsEquiv f),
+  transport (projT1 (univalence _ _) (existT (@IsEquiv _ _) f e)) = f.
+Proof.
+  intros.
+  destruct (univalence A B).
+  do 2 destruct s.
+  cbn.
+  change (transport (x (existT (@IsEquiv _ _) f e)))
+    with (projT1 (path_to_equiv (x (existT (@IsEquiv _ _) f e)))).
+  unfold compose in x1.
+  rewrite x1.
+  reflexivity.
+Qed.
+
 (* Function extensionality *)
 
 Axiom function_extensionality :
@@ -705,52 +720,31 @@ Inductive Weekend : U :=
 | Saturday
 | Sunday.
 
-Definition weekend_to_bit x :=
-  match x with
-  | Saturday => Zero
-  | Sunday => One
-  end.
-
 Definition bit_to_weekend x :=
   match x with
   | Zero => Saturday
   | One => Sunday
   end.
 
-Theorem weekend_bit_equiv : IsEquiv weekend_to_bit.
+Definition weekend_to_bit x :=
+  match x with
+  | Saturday => Zero
+  | Sunday => One
+  end.
+
+Theorem bit_weekend_equiv : IsEquiv bit_to_weekend.
 Proof.
   apply quasi_inv_is_equiv.
-  exists bit_to_weekend.
+  exists weekend_to_bit.
   split; intro; destruct x; reflexivity.
 Qed.
 
-Definition weekend_bit_path : Weekend = Bit :=
-  projT1 (univalence _ _) (existT _ _ weekend_bit_equiv).
+Definition weekend_bit_path : Bit = Weekend :=
+  projT1 (univalence _ _) (existT _ _ bit_weekend_equiv).
 
-Definition invert_weekend x :=
-  match x with
-  | Saturday => Sunday
-  | Sunday => Saturday
-  end.
-
-Theorem invert_weekend_involution x : invert_weekend (invert_weekend x) = x.
+Goal transport (P := fun A => A) weekend_bit_path Zero = Saturday.
 Proof.
-  destruct x; auto.
+  unfold weekend_bit_path.
+  rewrite compute_univalence.
+  reflexivity.
 Qed.
-
-Definition invert_weekend_with_theorem :=
-  exist (fun invert => forall x, invert (invert x) = x)
-    invert_weekend
-    invert_weekend_involution.
-
-Definition invert_bit_with_theorem :=
-  match weekend_bit_path in _ = A
-  return { invert : A -> A | forall x, invert (invert x) = x } with
-  | eq_refl => invert_weekend_with_theorem
-  end.
-
-Definition invert_bit : Bit -> Bit :=
-  proj1_sig invert_bit_with_theorem.
-
-Definition invert_bit_involution : forall x, invert_bit (invert_bit x) = x :=
-  proj2_sig invert_bit_with_theorem.
