@@ -1,11 +1,10 @@
-(****************************************************************)
-(****************************************************************)
-(****                                                        ****)
-(****   A formalization of the function extensionality and   ****)
-(****   univalence axioms                                    ****)
-(****                                                        ****)
-(****************************************************************)
-(****************************************************************)
+(****************************************************)
+(****************************************************)
+(****                                            ****)
+(****   An exploration of homotopy type theory   ****)
+(****                                            ****)
+(****************************************************)
+(****************************************************)
 
 Require Import Stdlib.Program.Basics.
 
@@ -169,6 +168,16 @@ Definition unique_univalence [A B] (p : A = B) :
 Axiom function_extensionality :
   forall (A : U) (B : A -> U) (f g : forall x : A, B x),
   IsEquiv (@path_to_homotopy _ _ f g).
+
+Definition compute_function_extensionality
+  [A : U] [B : A -> U] (f g : forall x : A, B x) (h : Homotopy f g)
+: path_to_homotopy (projT1 (function_extensionality _ _ f g) h) = h
+:= projT1 (projT2 (projT2 (function_extensionality _ _ f g))) h.
+
+Definition unique_function_extensionality
+  [A : U] [B : A -> U] (f g : forall x : A, B x) (p : f = g)
+: p = projT1 (function_extensionality _ _ f g) (path_to_homotopy p)
+:= inv (projT1 (projT2 (function_extensionality _ _ f g)) p).
 
 (* Homotopy n-types (starting at 0 rather than the more conventional -2) *)
 
