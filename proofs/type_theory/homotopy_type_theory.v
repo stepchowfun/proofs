@@ -153,10 +153,15 @@ Definition compute_univalence [A B] [f : A -> B] (e : IsEquiv f) :
 :=
   match
     inv (projT1 (projT2 (projT2 (univalence _ _))) (existT (@IsEquiv _ _) f e))
-  in _ = z
-  return projT1 z = f
   with
   | eq_refl => eq_refl
+  end.
+
+Definition unique_univalence [A B] (p : A = B) :
+  p = projT1 (univalence _ _) (path_to_equiv p)
+:=
+  match p with
+  | eq_refl => inv (projT1 (projT2 (univalence _ _)) eq_refl)
   end.
 
 (* Function extensionality *)
