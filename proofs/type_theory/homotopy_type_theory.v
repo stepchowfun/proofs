@@ -749,12 +749,12 @@ Proof.
   split; intro; destruct x; reflexivity.
 Qed.
 
-Definition weekend_bit_path : Bit = Weekend :=
+Definition bit_weekend_path : Bit = Weekend :=
   projT1 (univalence _ _) (existT _ _ bit_weekend_equiv).
 
-Goal transport (P := fun A => A) weekend_bit_path Zero = Saturday.
+Goal transport (P := id) bit_weekend_path Zero = Saturday.
 Proof.
-  unfold weekend_bit_path.
+  unfold bit_weekend_path.
   rewrite compute_univalence.
   reflexivity.
 Qed.
