@@ -11,6 +11,8 @@ Require Import Stdlib.Program.Basics.
 #[local] Open Scope program_scope.
 #[local] Open Scope type.
 
+Set Universe Polymorphism.
+
 (* A universe to be univalent *)
 
 Definition U := Type.
@@ -102,10 +104,10 @@ Definition ap_id [A] [x y : A] (p : x = y) : ap id p = p
 
 (* Homotopies *)
 
-Definition Homotopy [A] [B : A -> Type] (f g : forall x : A, B x) :=
+Definition Homotopy [A] [B : A -> Type] (f g : forall x, B x) :=
   forall x, f x = g x.
 
-Definition path_to_homotopy [A] [B : A -> Type] [f g : forall x : A, B x]
+Definition path_to_homotopy [A] [B : A -> Type] [f g : forall x, B x]
   (p : f = g) : Homotopy f g
 :=
   fun x =>
@@ -116,7 +118,7 @@ Definition path_to_homotopy [A] [B : A -> Type] [f g : forall x : A, B x]
 Definition naturality
   [A B]
   [x y : A]
-  (f g : A -> B)
+  [f g : A -> B]
   (h : Homotopy f g)
   (p : x = y)
 : concat (ap f p) (h y) = concat (h x) (ap g p)
@@ -147,16 +149,13 @@ Definition path_to_equiv [A B] (p : A = B) :
 
 Axiom univalence : forall A B : U, IsEquiv (@path_to_equiv A B).
 
-Definition compute_univalence [A B] [f : A -> B] (e : IsEquiv f) :
+Definition univalence_compute [A B] [f : A -> B] (e : IsEquiv f) :
   transport (projT1 (univalence _ _) (existT (@IsEquiv _ _) f e)) = f
-:=
-  match
-    inv (projT1 (projT2 (projT2 (univalence _ _))) (existT (@IsEquiv _ _) f e))
-  with
-  | eq_refl => eq_refl
-  end.
+:= projT1_eq (
+  projT1 (projT2 (projT2 (univalence _ _))) (existT (@IsEquiv _ _) f e)
+).
 
-Definition unique_univalence [A B] (p : A = B) :
+Definition univalence_unique [A B] (p : A = B) :
   p = projT1 (univalence _ _) (path_to_equiv p)
 :=
   match p with
@@ -169,13 +168,13 @@ Axiom function_extensionality :
   forall (A : U) (B : A -> U) (f g : forall x : A, B x),
   IsEquiv (@path_to_homotopy _ _ f g).
 
-Definition compute_function_extensionality
-  [A : U] [B : A -> U] (f g : forall x : A, B x) (h : Homotopy f g)
+Definition function_extensionality_compute
+  [A] [B : A -> Type] (f g : forall x : A, B x) (h : Homotopy f g)
 : path_to_homotopy (projT1 (function_extensionality _ _ f g) h) = h
 := projT1 (projT2 (projT2 (function_extensionality _ _ f g))) h.
 
-Definition unique_function_extensionality
-  [A : U] [B : A -> U] (f g : forall x : A, B x) (p : f = g)
+Definition function_extensionality_unique
+  [A] [B : A -> Type] (f g : forall x : A, B x) (p : f = g)
 : p = projT1 (function_extensionality _ _ f g) (path_to_homotopy p)
 := inv (projT1 (projT2 (function_extensionality _ _ f g)) p).
 
@@ -252,7 +251,7 @@ Proof.
         unfold Homotopy.
         intro.
         pose proof (is_trunc_cumulative 1 A X).
-        destruct (X0 x0 x2 (e x2) (e0 x2)).
+        destruct (H x0 x2 (e x2) (e0 x2)).
         auto.
     + rewrite H.
       reflexivity.
@@ -327,7 +326,8 @@ Proof.
       reflexivity.
 Qed.
 
-Definition equiv_is_quasi_inv A B (f : A -> B) (e : IsEquiv f) : QuasiInv f
+Definition equiv_is_quasi_inv [A B] [f : A -> B] (e : IsEquiv f)
+: QuasiInv f
 := existT _ (projT1 e) (projT1 (projT2 e), projT1 (projT2 (projT2 e))).
 
 (* Equivalences form a category. *)
@@ -378,50 +378,74 @@ Qed.
 
 (* Sigma types *)
 
-Definition sigma_path [A] [B : A -> Type] (s1 s2 : sigT B) (h : s1 = s2)
+Definition sigma_path_intro
+  [A] [B : A -> Type] (s1 s2 : sigT B)
+: { p : projT1 s1 = projT1 s2 & transport p (projT2 s1) = projT2 s2 } ->
+  s1 = s2
+:=
+  match s1
+  return
+    { p : projT1 s1 = projT1 s2 & transport p (projT2 s1) = projT2 s2 } ->
+    s1 = s2
+  with
+  | existT _ s1_1 s1_2 =>
+    match s2
+    return
+      { p : s1_1 = projT1 s2 & transport p s1_2 = projT2 s2 } ->
+      existT _ s1_1 s1_2 = s2
+    with
+    | existT _ s2_1 s2_2 =>
+      fun p =>
+        match projT1 p
+        as q
+        in _ = z
+        return
+          forall s2_2 : B z,
+          transport q s1_2 = projT2 (existT B z s2_2) ->
+          existT _ s1_1 s1_2 = existT _ z s2_2
+        with
+        | eq_refl =>
+          fun s2_2 h =>
+            match h with
+            | eq_refl => eq_refl
+            end
+        end s2_2 (projT2 p)
+    end
+  end.
+
+Definition sigma_path_elim [A] [B : A -> Type] (s1 s2 : sigT B) (h : s1 = s2)
 : { p : projT1 s1 = projT1 s2 & transport p (projT2 s1) = projT2 s2 }
 :=
   match h with
   | eq_refl => existT _ eq_refl eq_refl
   end.
 
-Theorem sigma_path_is_equiv :
-  forall A (B : A -> Type) (s1 s2 : sigT B), IsEquiv (sigma_path s1 s2).
+Theorem sigma_path_intro_is_equiv :
+  forall A (B : A -> Type) (s1 s2 : sigT B), IsEquiv (sigma_path_intro s1 s2).
 Proof.
   intros.
   apply quasi_inv_is_equiv.
   unfold QuasiInv.
-  exists (
-    match s1
-    return
-      { p : projT1 s1 = projT1 s2 & transport p (projT2 s1) = projT2 s2 } ->
-      s1 = s2
-    with
-    | existT _ s1_1 s1_2 =>
-      match s2
-      return
-        { p : s1_1 = projT1 s2 & transport p s1_2 = projT2 s2 } ->
-        existT _ s1_1 s1_2 = s2
-      with
-      | existT _ s2_1 s2_2 =>
-        fun p =>
-          match projT1 p
-          as q
-          in _ = z
-          return
-            forall s2_2 : B z,
-            transport q s1_2 = projT2 (existT B z s2_2) ->
-            existT _ s1_1 s1_2 = existT _ z s2_2
-          with
-          | eq_refl =>
-            fun s2_2 h =>
-              match h with
-              | eq_refl => eq_refl
-              end
-          end s2_2 (projT2 p)
-      end
-    end
-  ).
+  exists (sigma_path_elim s1 s2).
+  split; intro.
+  - destruct x, s1, s2.
+    cbn in x.
+    destruct x.
+    cbn in e.
+    destruct e.
+    reflexivity.
+  - destruct x.
+    destruct s1.
+    reflexivity.
+Qed.
+
+Theorem sigma_path_elim_is_equiv :
+  forall A (B : A -> Type) (s1 s2 : sigT B), IsEquiv (sigma_path_elim s1 s2).
+Proof.
+  intros.
+  apply quasi_inv_is_equiv.
+  unfold QuasiInv.
+  exists (sigma_path_intro s1 s2).
   split; intro.
   - destruct x, s1.
     reflexivity.
@@ -435,7 +459,35 @@ Qed.
 
 Definition fiber [A B] (f : A -> B) y := { x & f x = y }.
 
-Definition fiber_component_path [A B] [f : A -> B] [y] (f1 f2 : fiber f y)
+Definition fiber_component_path_intro
+  [A B]
+  [f : A -> B]
+  [y]
+  (f1 f2 : fiber f y)
+  (g : { p : projT1 f1 = projT1 f2 & concat (ap f p) (projT2 f2) = projT2 f1 })
+: { p : projT1 f1 = projT1 f2 & transport p (projT2 f1) = projT2 f2 }
+:=
+  existT _ (projT1 g) (
+    match projT1 g
+    as p
+    in _ = fx_1
+    return
+      forall (q : f fx_1 = y) (g2 : concat (ap f p) q = projT2 f1),
+      transport p (projT2 f1) = q
+    with
+    | eq_refl =>
+      fun f2_2 g2 =>
+        match left_refl f2_2 in _ = z return projT2 f1 = z with
+        | eq_refl => inv g2
+        end
+    end (projT2 f2) (projT2 g)
+  ).
+
+Definition fiber_component_path_elim
+  [A B]
+  [f : A -> B]
+  [y]
+  (f1 f2 : fiber f y)
   (g : { p : projT1 f1 = projT1 f2 & transport p (projT2 f1) = projT2 f2 })
 : { p : projT1 f1 = projT1 f2 & concat (ap f p) (projT2 f2) = projT2 f1 }
 :=
@@ -450,31 +502,14 @@ Definition fiber_component_path [A B] [f : A -> B] [y] (f1 f2 : fiber f y)
     end (projT2 f2) (projT2 g)
   ).
 
-Theorem fiber_component_path_is_equiv :
+Theorem fiber_component_path_elim_is_equiv :
   forall A B (f : A -> B) y (f1 f2 : fiber f y),
-  IsEquiv (fiber_component_path f1 f2).
+  IsEquiv (fiber_component_path_elim f1 f2).
 Proof.
   intros.
   apply quasi_inv_is_equiv.
   unfold QuasiInv.
-  exists (
-    fun g =>
-      existT _ (projT1 g) (
-        match projT1 g
-        as p
-        in _ = fx_1
-        return
-          forall (q : f fx_1 = y) (g2 : concat (ap f p) q = projT2 f1),
-          transport p (projT2 f1) = q
-        with
-        | eq_refl =>
-          fun f2_2 g2 =>
-            match left_refl f2_2 in _ = z return projT2 f1 = z with
-            | eq_refl => inv g2
-            end
-        end (projT2 f2) (projT2 g)
-      )
-  ).
+  exists (fiber_component_path_intro f1 f2).
   split; intro; destruct x, f1, f2; cbn in x, e.
   - destruct x, e, e0.
     reflexivity.
@@ -482,19 +517,20 @@ Proof.
     reflexivity.
 Qed.
 
-Definition fiber_path [A B] [f : A -> B] [y] (f1 f2 : fiber f y)
+Definition fiber_path_intro [A B] [f : A -> B] [y] (f1 f2 : fiber f y)
 : f1 = f2 ->
   { p : projT1 f1 = projT1 f2 & concat (ap f p) (projT2 f2) = projT2 f1 }
-:= (fiber_component_path f1 f2) ∘ (sigma_path f1 f2).
+:= fiber_component_path_elim f1 f2 ∘ sigma_path_elim f1 f2.
 
 Theorem fiber_path_is_equiv :
-  forall A B (f : A -> B) y (f1 f2 : fiber f y), IsEquiv (fiber_path f1 f2).
+  forall A B (f : A -> B) y (f1 f2 : fiber f y),
+  IsEquiv (fiber_path_intro f1 f2).
 Proof.
   intros.
-  unfold fiber_path.
+  unfold fiber_path_intro.
   apply comp_is_equiv.
-  - apply sigma_path_is_equiv.
-  - apply fiber_component_path_is_equiv.
+  - apply sigma_path_elim_is_equiv.
+  - apply fiber_component_path_elim_is_equiv.
 Qed.
 
 Theorem fiber_is_contr :
@@ -532,14 +568,12 @@ Qed.
 
 (* Left and right inverses of equivalences are contractible. *)
 
-Definition linv [A B] (f : A -> B) := { g & Homotopy (g ∘ f) id }.
+Definition linv [A B] (f : A -> B) := { g : B -> A & Homotopy (g ∘ f) id }.
 
-Definition rinv [A B] (f : A -> B) := { g & Homotopy (f ∘ g) id }.
+Definition rinv [A B] (f : A -> B) := { g : B -> A & Homotopy (f ∘ g) id }.
 
 Theorem precompose_is_equiv :
-  forall A B C (f : B -> C),
-  IsEquiv f ->
-  IsEquiv (fun g : A -> B => f ∘ g).
+  forall A B C (f : B -> C), IsEquiv f -> IsEquiv (fun g : A -> B => f ∘ g).
 Proof.
   intros.
   apply quasi_inv_is_equiv.
@@ -564,9 +598,7 @@ Proof.
 Qed.
 
 Theorem postcompose_is_equiv :
-  forall A B C (f : A -> B),
-  IsEquiv f ->
-  IsEquiv (fun g : B -> C => g ∘ f).
+  forall A B C (f : A -> B), IsEquiv f -> IsEquiv (fun g : B -> C => g ∘ f).
 Proof.
   intros.
   apply quasi_inv_is_equiv.
@@ -594,7 +626,7 @@ Definition to_linv [A B] [f : A -> B] (li : { g : B -> A & g ∘ f = id })
 : linv f
 :=
   existT
-    (fun g => Homotopy (g ∘ f) id)
+    (fun g : B -> A => Homotopy (g ∘ f) id)
     (projT1 li)
     (path_to_homotopy (projT2 li)).
 
@@ -602,12 +634,11 @@ Definition to_rinv [A B] [f : A -> B] (ri : { g : B -> A & f ∘ g = id })
 : rinv f
 :=
   existT
-    (fun g => Homotopy (f ∘ g) id)
+    (fun g : B -> A => Homotopy (f ∘ g) id)
     (projT1 ri)
     (path_to_homotopy (projT2 ri)).
 
-Theorem to_linv_is_equiv :
-  forall A B (f : A -> B), IsEquiv (@to_linv _ _ f).
+Theorem to_linv_is_equiv : forall A B (f : A -> B), IsEquiv (@to_linv _ _ f).
 Proof.
   unfold to_linv.
   intros.
@@ -653,8 +684,7 @@ Proof.
     reflexivity.
 Qed.
 
-Theorem to_rinv_is_equiv :
-  forall A B (f : A -> B), IsEquiv (@to_rinv _ _ f).
+Theorem to_rinv_is_equiv : forall A B (f : A -> B), IsEquiv (@to_rinv _ _ f).
 Proof.
   unfold to_rinv.
   intros.
@@ -752,9 +782,18 @@ Qed.
 Definition bit_weekend_path : Bit = Weekend :=
   projT1 (univalence _ _) (existT _ _ bit_weekend_equiv).
 
-Goal transport (P := id) bit_weekend_path Zero = Saturday.
+Theorem zero_saturday :
+  transport (P := @id U) bit_weekend_path Zero = Saturday.
 Proof.
   unfold bit_weekend_path.
-  rewrite compute_univalence.
+  rewrite univalence_compute.
+  reflexivity.
+Qed.
+
+Theorem one_sunday :
+  transport (P := @id U) bit_weekend_path One = Sunday.
+Proof.
+  unfold bit_weekend_path.
+  rewrite univalence_compute.
   reflexivity.
 Qed.
