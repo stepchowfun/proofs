@@ -149,10 +149,10 @@ Definition path_to_equiv [A B] (p : A = B) :
 
 Axiom univalence : forall A B : U, IsEquiv (@path_to_equiv A B).
 
-Definition univalence_compute [A B] [f : A -> B] (e : IsEquiv f) :
-  transport (projT1 (univalence _ _) (existT (@IsEquiv _ _) f e)) = f
+Definition univalence_compute [A B] [f : A -> B] (h : IsEquiv f) :
+  transport (projT1 (univalence _ _) (existT (@IsEquiv _ _) f h)) = f
 := projT1_eq (
-  projT1 (projT2 (projT2 (univalence _ _))) (existT (@IsEquiv _ _) f e)
+  projT1 (projT2 (projT2 (univalence _ _))) (existT (@IsEquiv _ _) f h)
 ).
 
 Definition univalence_unique [A B] (p : A = B) :
@@ -364,7 +364,7 @@ Proof.
     reflexivity.
 Qed.
 
-(* Equivalence respect truncation. *)
+(* Equivalence respects truncation. *)
 
 Theorem equiv_trunc :
   forall n A B (f : A -> B), IsEquiv f -> IsTrunc n A -> IsTrunc n B.
@@ -420,23 +420,38 @@ Definition sigma_path_elim [A] [B : A -> Type] (s1 s2 : sigT B) (h : s1 = s2)
   | eq_refl => existT _ eq_refl eq_refl
   end.
 
+Theorem sigma_path_compute :
+  forall [A] [B : A -> Type] (s1 s2 : sigT B)
+    (h : { p : projT1 s1 = projT1 s2 & transport p (projT2 s1) = projT2 s2 }),
+  sigma_path_elim s1 s2 (sigma_path_intro s1 s2 h) = h.
+Proof.
+  intros.
+  destruct h, s1, s2.
+  cbn in x.
+  destruct x.
+  cbn in e.
+  destruct e.
+  reflexivity.
+Qed.
+
+Theorem sigma_path_unique :
+  forall [A] [B : A -> Type] (s1 s2 : sigT B) (p : s1 = s2),
+  p = sigma_path_intro s1 s2 (sigma_path_elim s1 s2 p).
+Proof.
+  intros.
+  destruct p, s1.
+  reflexivity.
+Qed.
+
 Theorem sigma_path_intro_is_equiv :
   forall A (B : A -> Type) (s1 s2 : sigT B), IsEquiv (sigma_path_intro s1 s2).
 Proof.
   intros.
   apply quasi_inv_is_equiv.
-  unfold QuasiInv.
   exists (sigma_path_elim s1 s2).
   split; intro.
-  - destruct x, s1, s2.
-    cbn in x.
-    destruct x.
-    cbn in e.
-    destruct e.
-    reflexivity.
-  - destruct x.
-    destruct s1.
-    reflexivity.
+  - exact (sigma_path_compute s1 s2 x).
+  - exact (inv (sigma_path_unique s1 s2 x)).
 Qed.
 
 Theorem sigma_path_elim_is_equiv :
@@ -444,15 +459,10 @@ Theorem sigma_path_elim_is_equiv :
 Proof.
   intros.
   apply quasi_inv_is_equiv.
-  unfold QuasiInv.
   exists (sigma_path_intro s1 s2).
   split; intro.
-  - destruct x, s1.
-    reflexivity.
-  - destruct x, s1, s2.
-    cbn in x, e.
-    destruct x, e.
-    reflexivity.
+  - exact (inv (sigma_path_unique s1 s2 x)).
+  - exact (sigma_path_compute s1 s2 x).
 Qed.
 
 (* Homotopy fibers *)
