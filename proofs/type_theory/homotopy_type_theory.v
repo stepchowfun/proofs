@@ -20,17 +20,17 @@ Definition U := Type.
 (* The groupoid structure of types *)
 
 Definition inv [A] [x y : A] (p : x = y) : y = x :=
-  match p in _ = z return z = x with
+  match p with
   | eq_refl => eq_refl
   end.
 
 Definition concat [A] [x y z : A] (p : x = y) (q : y = z) : x = z :=
-  match q in _ = z return x = z with
+  match q with
   | eq_refl => p
   end.
 
 Definition left_refl [A] [x y : A] (p : x = y) : concat eq_refl p = p :=
-  match p return concat eq_refl p = p with
+  match p with
   | eq_refl => eq_refl
   end.
 
@@ -38,20 +38,20 @@ Definition right_refl [A] [x y : A] (p : x = y) : concat p eq_refl = p :=
   eq_refl.
 
 Definition left_inv [A] [x y : A] (p : x = y) : concat (inv p) p = eq_refl :=
-  match p return concat (inv p) p = eq_refl with
+  match p with
   | eq_refl => eq_refl
   end.
 
 Definition right_inv [A] [x y : A] (p : x = y) : concat p (inv p) = eq_refl :=
-  match p return concat p (inv p) = eq_refl with
+  match p with
   | eq_refl => eq_refl
   end.
 
 Definition assoc [A] [x y z w : A] (p : x = y) (q : y = z) (r : z = w) :
   concat (concat p q) r = concat p (concat q r) :=
-  match r return concat (concat p q) r = concat p (concat q r) with
+  match r with
   | eq_refl =>
-    match q return concat p q = concat p q with
+    match q with
     | eq_refl => eq_refl
     end
   end.
@@ -60,14 +60,14 @@ Definition assoc [A] [x y z w : A] (p : x = y) (q : y = z) (r : z = w) :
 
 Definition transport [A] [x y : A] [P : A -> Type] (p : x = y) (px : P x) : P y
 :=
-  match p in _ = z return P z with
+  match p with
   | eq_refl => px
   end.
 
 (* Action on paths *)
 
 Definition ap [A B] [x y : A] (f : A -> B) (p : x = y) : f x = f y :=
-  match p in _ = z return f x = f z with
+  match p with
   | eq_refl => eq_refl
   end.
 
@@ -115,7 +115,7 @@ Definition naturality
   (p : x = y)
 : concat (ap f p) (h y) = concat (h x) (ap g p)
 :=
-  match p in _ = z return concat (ap f p) (h z) = concat (h x) (ap g p) with
+  match p with
   | eq_refl => left_refl _
   end.
 
@@ -161,7 +161,7 @@ Definition path_to_homotopy [A] [B : A -> Type] [f g : forall x, B x]
   (p : f = g) : Homotopy f g
 :=
   fun x =>
-    match p in _ = h return f x = h x with
+    match p with
     | eq_refl => eq_refl
     end.
 
@@ -373,37 +373,29 @@ Qed.
 (* Sigma types *)
 
 Definition sigma_path_intro
-  [A] [B : A -> Type] [s1 s2 : sigT B]
+  [A] [B : A -> Type] (s1 s2 : sigT B)
 : { p : projT1 s1 = projT1 s2 & transport p (projT2 s1) = projT2 s2 } ->
   s1 = s2
 :=
-  match s1
-  return
-    { p : projT1 s1 = projT1 s2 & transport p (projT2 s1) = projT2 s2 } ->
-    s1 = s2
-  with
+  match s1 with
   | existT _ s1_1 s1_2 =>
-    match s2
-    return
-      { p : s1_1 = projT1 s2 & transport p s1_2 = projT2 s2 } ->
-      existT _ s1_1 s1_2 = s2
-    with
+    match s2 with
     | existT _ s2_1 s2_2 =>
-      fun p =>
-        match projT1 p
+      fun h =>
+        match projT1 h
         as q
         in _ = z
         return
           forall s2_2 : B z,
-          transport q s1_2 = projT2 (existT B z s2_2) ->
+          transport q s1_2 = s2_2 ->
           existT _ s1_1 s1_2 = existT _ z s2_2
         with
         | eq_refl =>
-          fun s2_2 h =>
-            match h with
+          fun _ i =>
+            match i with
             | eq_refl => eq_refl
             end
-        end s2_2 (projT2 p)
+        end s2_2 (projT2 h)
     end
   end.
 
@@ -414,38 +406,59 @@ Definition sigma_path_elim [A] [B : A -> Type] [s1 s2 : sigT B] (h : s1 = s2)
   | eq_refl => existT _ eq_refl eq_refl
   end.
 
-Theorem sigma_path_compute :
-  forall [A] [B : A -> Type] [s1 s2 : sigT B]
-    (h : { p : projT1 s1 = projT1 s2 & transport p (projT2 s1) = projT2 s2 }),
-  sigma_path_elim (sigma_path_intro h) = h.
-Proof.
-  intros.
-  destruct h, s1, s2.
-  cbn in x.
-  destruct x.
-  cbn in e.
-  destruct e.
-  reflexivity.
-Qed.
+Definition sigma_path_compute [A] [B : A -> Type] (s1 s2 : sigT B)
+: forall h :
+    { p : projT1 s1 = projT1 s2 & transport p (projT2 s1) = projT2 s2 },
+  sigma_path_elim (sigma_path_intro s1 s2 h) = h
+:=
+  match s1 with
+  | existT _ s1_1 s1_2 =>
+    match s2 with
+    | existT _ s2_1 s2_2 =>
+      fun h =>
+        match h with
+        | existT _ h1 h2 =>
+          match h1
+          in _ = z
+          return
+            forall (s2_2 : B z) (h2 : transport h1 s1_2 = s2_2),
+            sigma_path_elim (
+              sigma_path_intro
+                (existT _ s1_1 s1_2)
+                (existT _ z s2_2)
+                (existT _ h1 h2)
+            ) = existT _ h1 h2
+          with
+          | eq_refl =>
+            fun _ h2 =>
+              match h2 with
+              | eq_refl => eq_refl
+              end
+          end s2_2 h2
+        end
+    end
+  end.
 
-Theorem sigma_path_unique :
-  forall [A] [B : A -> Type] [s1 s2 : sigT B] (p : s1 = s2),
-  p = sigma_path_intro (sigma_path_elim p).
-Proof.
-  intros.
-  destruct p, s1.
-  reflexivity.
-Qed.
+Definition sigma_path_unique
+  [A] [B : A -> Type] [s1 s2 : sigT B] (p : s1 = s2)
+: p = sigma_path_intro _ _ (sigma_path_elim p)
+:=
+  match p with
+  | eq_refl =>
+    match s1 with
+    | existT _ _ _ => eq_refl
+    end
+  end.
 
 Theorem sigma_path_intro_is_equiv :
   forall A (B : A -> Type) (s1 s2 : sigT B),
-  IsEquiv (@sigma_path_intro _ _ s1 s2).
+  IsEquiv (sigma_path_intro s1 s2).
 Proof.
   intros.
   apply quasi_inv_is_equiv.
   exists (@sigma_path_elim _ _ s1 s2).
   split; intro.
-  - exact (sigma_path_compute x).
+  - exact (sigma_path_compute _ _ x).
   - exact (inv (sigma_path_unique x)).
 Qed.
 
@@ -455,10 +468,10 @@ Theorem sigma_path_elim_is_equiv :
 Proof.
   intros.
   apply quasi_inv_is_equiv.
-  exists (@sigma_path_intro _ _ s1 s2).
+  exists (sigma_path_intro s1 s2).
   split; intro.
   - exact (inv (sigma_path_unique x)).
-  - exact (sigma_path_compute x).
+  - exact (sigma_path_compute _ _ x).
 Qed.
 
 (* Homotopy fibers *)
@@ -483,7 +496,7 @@ Definition fiber_component_path_intro
     with
     | eq_refl =>
       fun f2_2 g2 =>
-        match left_refl f2_2 in _ = z return projT2 f1 = z with
+        match left_refl f2_2 with
         | eq_refl => inv g2
         end
     end (projT2 f2) (projT2 g)
