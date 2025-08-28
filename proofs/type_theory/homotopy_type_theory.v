@@ -129,7 +129,7 @@ Definition IsEquiv [A B] (f : A -> B) := {
 
 (* Univalence *)
 
-Definition path_to_equiv [A B] (p : A = B) :
+Definition type_path_elim [A B] (p : A = B) :
   { f : A -> B & IsEquiv f } :=
   existT (@IsEquiv A B) (transport p)
     match p with
@@ -139,25 +139,29 @@ Definition path_to_equiv [A B] (p : A = B) :
       )
     end.
 
-Axiom univalence : forall A B : U, IsEquiv (@path_to_equiv A B).
+Axiom univalence : forall A B : U, IsEquiv (@type_path_elim A B).
 
-Definition equiv_to_path [A B] (h : { f : A -> B & IsEquiv f }) : A = B
+Definition type_path_intro [A B] (h : { f : A -> B & IsEquiv f }) : A = B
 := projT1 (univalence _ _) h.
 
-Definition univalence_compute [A B] (h : { f : A -> B & IsEquiv f }) :
-  transport (equiv_to_path h) = projT1 h
-:= projT1_eq (projT1 (projT2 (projT2 (univalence _ _))) h).
+Definition type_path_compute [A B] (h : { f : A -> B & IsEquiv f }) :
+  type_path_elim (type_path_intro h) = h
+:= projT1 (projT2 (projT2 (univalence _ _))) h.
 
-Definition univalence_unique [A B] (p : A = B) :
-  p = equiv_to_path (path_to_equiv p)
+Definition type_path_unique [A B] (p : A = B) :
+  p = type_path_intro (type_path_elim p)
 :=
   match p with
   | eq_refl => inv (projT1 (projT2 (univalence _ _)) eq_refl)
   end.
 
+Definition type_transport [A B] (h : { f : A -> B & IsEquiv f }) :
+  transport (type_path_intro h) = projT1 h
+:= projT1_eq (type_path_compute h).
+
 (* Function extensionality *)
 
-Definition path_to_homotopy [A] [B : A -> Type] [f g : forall x, B x]
+Definition function_path_elim [A] [B : A -> Type] [f g : forall x, B x]
   (p : f = g) : Homotopy f g
 :=
   fun x =>
@@ -167,20 +171,20 @@ Definition path_to_homotopy [A] [B : A -> Type] [f g : forall x, B x]
 
 Axiom function_extensionality :
   forall (A : U) (B : A -> U) (f g : forall x : A, B x),
-  IsEquiv (@path_to_homotopy _ _ f g).
+  IsEquiv (@function_path_elim _ _ f g).
 
-Definition homotopy_to_path [A] [B : A -> Type] (f g : forall x, B x)
+Definition function_path_intro [A] [B : A -> Type] (f g : forall x, B x)
   (h : Homotopy f g) : f = g
 := projT1 (function_extensionality _ _ f g) h.
 
-Definition function_extensionality_compute
+Definition function_path_compute
   [A] [B : A -> Type] (f g : forall x : A, B x) (h : Homotopy f g)
-: path_to_homotopy (homotopy_to_path _ _ h) = h
+: function_path_elim (function_path_intro _ _ h) = h
 := projT1 (projT2 (projT2 (function_extensionality _ _ f g))) h.
 
-Definition function_extensionality_unique
+Definition function_path_unique
   [A] [B : A -> Type] [f g : forall x : A, B x] (p : f = g)
-: p = homotopy_to_path _ _ (path_to_homotopy p)
+: p = function_path_intro _ _ (function_path_elim p)
 := inv (projT1 (projT2 (function_extensionality _ _ f g)) p).
 
 (* Homotopy n-types (starting at 0 rather than the more conventional -2) *)
@@ -250,16 +254,16 @@ Proof.
         rewrite <- (e x).
         rewrite <- (e y).
         reflexivity.
-      * apply homotopy_to_path.
+      * apply function_path_intro.
         intro.
         pose proof (is_trunc_cumulative 1 A X).
         destruct (H x0 x (e x) (e0 x)).
         auto.
     + rewrite H.
       reflexivity.
-  - apply homotopy_to_path.
+  - apply function_path_intro.
     intro.
-    apply homotopy_to_path.
+    apply function_path_intro.
     intro.
     apply IHn.
 Qed.
@@ -365,7 +369,7 @@ Theorem equiv_trunc :
   forall n A B (f : A -> B), IsEquiv f -> IsTrunc n A -> IsTrunc n B.
 Proof.
   intros.
-  rewrite <- equiv_to_path with (A := A); auto.
+  rewrite <- type_path_intro with (A := A); auto.
   exists f.
   assumption.
 Qed.
@@ -602,11 +606,11 @@ Proof.
   exists (fun h : A -> C => x ∘ h).
   unfold id, compose in *.
   split; intro.
-  - apply homotopy_to_path.
+  - apply function_path_intro.
     intro.
     rewrite x0.
     reflexivity.
-  - apply homotopy_to_path.
+  - apply function_path_intro.
     intro.
     rewrite x1.
     reflexivity.
@@ -622,7 +626,7 @@ Proof.
   do 2 destruct s.
   exists (fun h : A -> C => h ∘ x).
   unfold id, compose in *.
-  split; intro; apply homotopy_to_path; intro.
+  split; intro; apply function_path_intro; intro.
   - rewrite x1.
     reflexivity.
   - rewrite x0.
@@ -635,7 +639,7 @@ Definition to_linv [A B] [f : A -> B] (li : { g : B -> A & g ∘ f = id })
   existT
     (fun g : B -> A => Homotopy (g ∘ f) id)
     (projT1 li)
-    (path_to_homotopy (projT2 li)).
+    (function_path_elim (projT2 li)).
 
 Definition to_rinv [A B] [f : A -> B] (ri : { g : B -> A & f ∘ g = id })
 : rinv f
@@ -643,7 +647,7 @@ Definition to_rinv [A B] [f : A -> B] (ri : { g : B -> A & f ∘ g = id })
   existT
     (fun g : B -> A => Homotopy (f ∘ g) id)
     (projT1 ri)
-    (path_to_homotopy (projT2 ri)).
+    (function_path_elim (projT2 ri)).
 
 Theorem to_linv_is_equiv : forall A B (f : A -> B), IsEquiv (@to_linv _ _ f).
 Proof.
@@ -656,20 +660,20 @@ Proof.
       existT
         (fun g => g ∘ f = id)
         (projT1 li)
-        (homotopy_to_path ((projT1 li) ∘ f) id (projT2 li))
+        (function_path_intro ((projT1 li) ∘ f) id (projT2 li))
   ).
   split; intro.
   - unfold compose, id in *.
     destruct x.
     cbn.
     destruct e.
-    rewrite <- function_extensionality_unique.
+    rewrite <- function_path_unique.
     reflexivity.
   - unfold compose, id in *.
     destruct x.
     cbn.
     rewrite (
-      function_extensionality_compute
+      function_path_compute
         (fun x0 : A => x (f x0))
         (fun x0 : A => x0)
     ).
@@ -687,20 +691,20 @@ Proof.
       existT
         (fun g => f ∘ g = id)
         (projT1 li)
-        (homotopy_to_path (f ∘ (projT1 li)) id (projT2 li))
+        (function_path_intro (f ∘ (projT1 li)) id (projT2 li))
   ).
   split; intro.
   - unfold compose, id in *.
     destruct x.
     cbn.
     destruct e.
-    rewrite <- function_extensionality_unique.
+    rewrite <- function_path_unique.
     reflexivity.
   - unfold compose, id in *.
     destruct x.
     cbn.
     rewrite (
-      function_extensionality_compute
+      function_path_compute
         (fun x0 : B => f (x x0))
         (fun x0 : B => x0)
     ).
@@ -757,13 +761,13 @@ Proof.
 Qed.
 
 Definition bit_weekend_path : Bit = Weekend :=
-  equiv_to_path (existT _ _ bit_weekend_equiv).
+  type_path_intro (existT _ _ bit_weekend_equiv).
 
 Theorem zero_saturday :
   transport (P := @id U) bit_weekend_path Zero = Saturday.
 Proof.
   unfold bit_weekend_path.
-  rewrite univalence_compute.
+  rewrite type_transport.
   reflexivity.
 Qed.
 
@@ -771,6 +775,6 @@ Theorem one_sunday :
   transport (P := @id U) bit_weekend_path One = Sunday.
 Proof.
   unfold bit_weekend_path.
-  rewrite univalence_compute.
+  rewrite type_transport.
   reflexivity.
 Qed.
