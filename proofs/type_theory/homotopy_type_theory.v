@@ -487,11 +487,11 @@ Definition fiber_component_path_intro
   [f : A -> B]
   [y]
   (f1 f2 : fiber f y)
-  (g : { p : projT1 f1 = projT1 f2 & concat (ap f p) (projT2 f2) = projT2 f1 })
+  (h : { p : projT1 f1 = projT1 f2 & concat (ap f p) (projT2 f2) = projT2 f1 })
 : { p : projT1 f1 = projT1 f2 & transport p (projT2 f1) = projT2 f2 }
 :=
-  existT _ (projT1 g) (
-    match projT1 g
+  existT _ (projT1 h) (
+    match projT1 h
     as p
     in _ = fx_1
     return
@@ -503,7 +503,7 @@ Definition fiber_component_path_intro
         match left_refl f2_2 with
         | eq_refl => inv g2
         end
-    end (projT2 f2) (projT2 g)
+    end (projT2 f2) (projT2 h)
   ).
 
 Definition fiber_component_path_elim
@@ -511,19 +511,34 @@ Definition fiber_component_path_elim
   [f : A -> B]
   [y]
   (f1 f2 : fiber f y)
-  (g : { p : projT1 f1 = projT1 f2 & transport p (projT2 f1) = projT2 f2 })
+  (h : { p : projT1 f1 = projT1 f2 & transport p (projT2 f1) = projT2 f2 })
 : { p : projT1 f1 = projT1 f2 & concat (ap f p) (projT2 f2) = projT2 f1 }
 :=
-  existT _ (projT1 g) (
-    match projT1 g
+  existT _ (projT1 h) (
+    match projT1 h
     as g1
     return
       forall p2_2 (g2 : transport g1 (projT2 f1) = p2_2),
       concat (ap f g1) p2_2 = projT2 f1
     with
     | eq_refl => fun p2_2 g2 => concat (left_refl p2_2) (inv g2)
-    end (projT2 f2) (projT2 g)
+    end (projT2 f2) (projT2 h)
   ).
+
+Theorem fiber_component_path_intro_is_equiv :
+  forall A B (f : A -> B) y (f1 f2 : fiber f y),
+  IsEquiv (fiber_component_path_intro f1 f2).
+Proof.
+  intros.
+  apply quasi_inv_is_equiv.
+  unfold QuasiInv.
+  exists (fiber_component_path_elim f1 f2).
+  split; intro; destruct x, f1, f2; cbn in x, e; destruct x, e.
+  - destruct e1.
+    reflexivity.
+  - destruct e0.
+    reflexivity.
+Qed.
 
 Theorem fiber_component_path_elim_is_equiv :
   forall A B (f : A -> B) y (f1 f2 : fiber f y),
@@ -541,16 +556,32 @@ Proof.
 Qed.
 
 Definition fiber_path_intro [A B] [f : A -> B] [y] (f1 f2 : fiber f y)
+: { p : projT1 f1 = projT1 f2 & concat (ap f p) (projT2 f2) = projT2 f1 } ->
+  f1 = f2
+:= sigma_path_intro _ _ ∘ fiber_component_path_intro f1 f2.
+
+Definition fiber_path_elim [A B] [f : A -> B] [y] (f1 f2 : fiber f y)
 : f1 = f2 ->
   { p : projT1 f1 = projT1 f2 & concat (ap f p) (projT2 f2) = projT2 f1 }
-:= fiber_component_path_elim f1 f2 ∘ @sigma_path_elim _ _ f1 f2.
+:= fiber_component_path_elim _ _ ∘ @sigma_path_elim _ _ _ _.
 
-Theorem fiber_path_is_equiv :
+Theorem fiber_path_intro_is_equiv :
   forall A B (f : A -> B) y (f1 f2 : fiber f y),
   IsEquiv (fiber_path_intro f1 f2).
 Proof.
   intros.
   unfold fiber_path_intro.
+  apply comp_is_equiv.
+  - apply fiber_component_path_intro_is_equiv.
+  - apply sigma_path_intro_is_equiv.
+Qed.
+
+Theorem fiber_path_elim_is_equiv :
+  forall A B (f : A -> B) y (f1 f2 : fiber f y),
+  IsEquiv (fiber_path_elim f1 f2).
+Proof.
+  intros.
+  unfold fiber_path_elim.
   apply comp_is_equiv.
   - apply sigma_path_elim_is_equiv.
   - apply fiber_component_path_elim_is_equiv.
@@ -566,7 +597,7 @@ Proof.
   exists (existT _ (x y) (x1 y)).
   intros.
   destruct x2.
-  pose proof fiber_path_is_equiv.
+  pose proof fiber_path_elim_is_equiv.
   specialize X with
     (f1 := existT (fun x3 : A => f x3 = y) (x y) (x1 y))
     (f2 := existT (fun x3 : A => f x3 = y) x2 e0).
