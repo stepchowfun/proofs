@@ -89,14 +89,14 @@ Definition ap_inv [A B] [x y : A] (f : A -> B) (p : x = y) :
   | eq_refl => eq_refl
   end.
 
-Definition ap_comp [A B C] [x y : A] (f : A -> B) (g : B -> C) (p : x = y) :
-  ap g (ap f p) = ap (g ∘ f) p
+Definition ap_id [A] [x y : A] (p : x = y) : ap id p = p
 :=
   match p with
   | eq_refl => eq_refl
   end.
 
-Definition ap_id [A] [x y : A] (p : x = y) : ap id p = p
+Definition ap_comp [A B C] [x y : A] (f : A -> B) (g : B -> C) (p : x = y) :
+  ap g (ap f p) = ap (g ∘ f) p
 :=
   match p with
   | eq_refl => eq_refl
@@ -329,7 +329,7 @@ Qed.
 Definition equiv_is_quasi_inv [A B] [f : A -> B] (e : IsEquiv f) : QuasiInv f
 := existT _ (projT1 e) (projT1 (projT2 e), projT1 (projT2 (projT2 e))).
 
-(* Equivalences form a category. *)
+(* Equivalences form a groupoid. *)
 
 Theorem id_is_equiv : forall A, IsEquiv (@id A).
 Proof.
@@ -361,6 +361,19 @@ Proof.
   - rewrite x3.
     rewrite x4.
     reflexivity.
+Qed.
+
+Theorem inv_is_equiv :
+  forall A B (f : A -> B) (e : IsEquiv f), IsEquiv (projT1 e).
+Proof.
+  intros.
+  destruct e.
+  cbn.
+  apply quasi_inv_is_equiv.
+  unfold QuasiInv.
+  exists f.
+  do 2 destruct s.
+  auto.
 Qed.
 
 (* Equivalence respects truncation. *)
