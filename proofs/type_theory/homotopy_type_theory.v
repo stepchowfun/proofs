@@ -525,6 +525,179 @@ Definition fiber_component_path_elim
     end (projT2 f2) (projT2 h)
   ).
 
+Definition fiber_component_path_compute
+  [A B]
+  [f : A -> B]
+  [y]
+  (f1 f2 : fiber f y)
+  (h : { p : projT1 f1 = projT1 f2 & concat (ap f p) (projT2 f2) = projT2 f1 })
+: fiber_component_path_elim _ _ (fiber_component_path_intro _ _ h) = h
+:=
+  match f1
+  return
+    forall h : {
+      p : projT1 f1 = projT1 f2 &
+      concat (ap f p) (projT2 f2) = projT2 f1
+    },
+    fiber_component_path_elim f1 f2
+      (fiber_component_path_intro f1 f2 h) = h
+  with
+  | existT _ f1_1 f1_2 =>
+    match f2
+    return
+      forall h : { p : f1_1 = projT1 f2 & concat (ap f p) (projT2 f2) = f1_2 },
+      fiber_component_path_elim (existT _ f1_1 f1_2) f2
+        (fiber_component_path_intro (existT _ f1_1 f1_2) f2 h) = h
+    with
+    | existT _ f2_1 f2_2 =>
+      fun h =>
+      match h
+      return
+        fiber_component_path_elim
+          (existT _ f1_1 f1_2)
+          (existT _ f2_1 f2_2)
+          (fiber_component_path_intro
+            (existT _ f1_1 f1_2)
+            (existT _ f2_1 f2_2)
+            h)
+        = h
+      with
+      | existT _ h1 h2 =>
+        match h1
+        in _ = z
+        return
+          forall (f2_2 : f z = y) (h2 : concat (ap f h1) f2_2 = f1_2),
+          fiber_component_path_elim
+            (existT _ f1_1 f1_2)
+            (existT _ z f2_2)
+            (fiber_component_path_intro
+              (existT _ f1_1 f1_2)
+              (existT _ z f2_2)
+              (existT _ h1 h2))
+          = existT _ h1 h2
+        with
+        | eq_refl =>
+          match f1_2
+          in _ = z
+          return
+            forall
+              (f2_2 : f f1_1 = z)
+              (h2 : concat (ap f eq_refl) f2_2 = f1_2),
+            fiber_component_path_elim
+              (existT _ f1_1 f1_2)
+              (existT _ f1_1 f2_2)
+              (fiber_component_path_intro
+                (existT _ f1_1 f1_2)
+                (existT _ f1_1 f2_2)
+                (existT _ eq_refl h2))
+            = existT _ eq_refl h2
+          with
+          | eq_refl =>
+            fun
+              (f2_2 : f f1_1 = f f1_1)
+              (h2 : concat (ap f eq_refl) f2_2 = eq_refl) =>
+            match h2
+            in _ = z
+            return
+              fiber_component_path_elim
+                (existT _ f1_1 z)
+                (existT _ f1_1 f2_2)
+                (fiber_component_path_intro
+                  (existT _ f1_1 z)
+                  (existT _ f1_1 f2_2)
+                  (existT _ eq_refl h2))
+              = existT _ eq_refl h2
+            with
+            | eq_refl =>
+              match f2_2 with
+              | eq_refl => eq_refl
+              end
+            end
+          end
+        end f2_2 h2
+      end
+    end
+  end h.
+
+Definition fiber_component_path_unique
+  [A B]
+  [f : A -> B]
+  [y]
+  (f1 f2 : fiber f y)
+  (h : { p : projT1 f1 = projT1 f2 & transport p (projT2 f1) = projT2 f2 })
+: fiber_component_path_intro _ _ (fiber_component_path_elim _ _ h) = h
+:=
+  match f1
+  return
+    forall h : {
+      p : projT1 f1 = projT1 f2 &
+      transport p (projT2 f1) = projT2 f2
+    },
+    fiber_component_path_intro f1 f2
+      (fiber_component_path_elim f1 f2 h) = h
+  with
+  | existT _ f1_1 f1_2 =>
+    match f2
+    return
+      forall h : {
+        p : f1_1 = projT1 f2 &
+        transport p f1_2 = projT2 f2
+      },
+      fiber_component_path_intro (existT _ f1_1 f1_2) f2
+        (fiber_component_path_elim (existT _ f1_1 f1_2) f2 h) = h
+    with
+    | existT _ f2_1 f2_2 =>
+      fun h =>
+      match h
+      return
+        fiber_component_path_intro
+          (existT _ f1_1 f1_2)
+          (existT _ f2_1 f2_2)
+          (fiber_component_path_elim
+            (existT _ f1_1 f1_2)
+            (existT _ f2_1 f2_2)
+            h)
+        = h
+      with
+      | existT _ h1 h2 =>
+        match h1
+        in _ = z
+        return
+          forall (f2_2 : f z = y) (h2 : transport h1 f1_2 = f2_2),
+          fiber_component_path_intro
+            (existT _ f1_1 f1_2)
+            (existT _ z f2_2)
+            (fiber_component_path_elim
+              (existT _ f1_1 f1_2)
+              (existT _ z f2_2)
+              (existT _ h1 h2))
+          = existT _ h1 h2
+        with
+        | eq_refl =>
+          match f1_2
+          in _ = z
+          return
+            forall (f2_2 : f f1_1 = z) (h2 : transport eq_refl f1_2 = f2_2),
+            fiber_component_path_intro
+              (existT _ f1_1 f1_2)
+              (existT _ f1_1 f2_2)
+              (fiber_component_path_elim
+                (existT _ f1_1 f1_2)
+                (existT _ f1_1 f2_2)
+                (existT _ eq_refl h2))
+            = existT _ eq_refl h2
+          with
+          | eq_refl =>
+            fun (f2_2 : f f1_1 = f f1_1) (h2 : eq_refl = f2_2) =>
+            match h2 with
+            | eq_refl => eq_refl
+            end
+          end
+        end f2_2 h2
+      end
+    end
+  end h.
+
 Theorem fiber_component_path_intro_is_equiv :
   forall A B (f : A -> B) y (f1 f2 : fiber f y),
   IsEquiv (fiber_component_path_intro f1 f2).
@@ -533,11 +706,9 @@ Proof.
   apply quasi_inv_is_equiv.
   unfold QuasiInv.
   exists (fiber_component_path_elim f1 f2).
-  split; intro; destruct x, f1, f2; cbn in x, e; destruct x, e.
-  - destruct e1.
-    reflexivity.
-  - destruct e0.
-    reflexivity.
+  split; intro.
+  - apply fiber_component_path_compute.
+  - apply fiber_component_path_unique.
 Qed.
 
 Theorem fiber_component_path_elim_is_equiv :
@@ -548,11 +719,9 @@ Proof.
   apply quasi_inv_is_equiv.
   unfold QuasiInv.
   exists (fiber_component_path_intro f1 f2).
-  split; intro; destruct x, f1, f2; cbn in x, e.
-  - destruct x, e, e0.
-    reflexivity.
-  - destruct x, e, e1.
-    reflexivity.
+  split; intro.
+  - apply fiber_component_path_unique.
+  - apply fiber_component_path_compute.
 Qed.
 
 Definition fiber_path_intro [A B] [f : A -> B] [y] (f1 f2 : fiber f y)
@@ -565,15 +734,42 @@ Definition fiber_path_elim [A B] [f : A -> B] [y] (f1 f2 : fiber f y)
   { p : projT1 f1 = projT1 f2 & concat (ap f p) (projT2 f2) = projT2 f1 }
 := fiber_component_path_elim _ _ ∘ @sigma_path_elim _ _ _ _.
 
+Definition fiber_path_compute
+  [A B]
+  [f : A -> B]
+  [y]
+  (f1 f2 : fiber f y)
+  (h : { p : projT1 f1 = projT1 f2 & concat (ap f p) (projT2 f2) = projT2 f1 })
+: fiber_path_elim _ _ (fiber_path_intro _ _ h) = h
+:=
+  transport
+    (P := fun x => fiber_component_path_elim _ _ x = h)
+    (inv (sigma_path_compute _ _ (fiber_component_path_intro f1 f2 h)))
+    (fiber_component_path_compute _ _ h).
+
+Definition fiber_path_unique
+  [A B]
+  [f : A -> B]
+  [y]
+  (f1 f2 : fiber f y)
+  (h : f1 = f2)
+: fiber_path_intro _ _ (fiber_path_elim _ _ h) = h
+:= transport
+  (P := fun x => sigma_path_intro f1 f2 x = h)
+  (inv (fiber_component_path_unique _ _ (sigma_path_elim h)))
+  (inv (sigma_path_unique h)).
+
 Theorem fiber_path_intro_is_equiv :
   forall A B (f : A -> B) y (f1 f2 : fiber f y),
   IsEquiv (fiber_path_intro f1 f2).
 Proof.
   intros.
-  unfold fiber_path_intro.
-  apply comp_is_equiv.
-  - apply fiber_component_path_intro_is_equiv.
-  - apply sigma_path_intro_is_equiv.
+  apply quasi_inv_is_equiv.
+  unfold QuasiInv.
+  exists (fiber_path_elim f1 f2).
+  split; intro.
+  - apply fiber_path_compute.
+  - apply fiber_path_unique.
 Qed.
 
 Theorem fiber_path_elim_is_equiv :
@@ -581,10 +777,12 @@ Theorem fiber_path_elim_is_equiv :
   IsEquiv (fiber_path_elim f1 f2).
 Proof.
   intros.
-  unfold fiber_path_elim.
-  apply comp_is_equiv.
-  - apply sigma_path_elim_is_equiv.
-  - apply fiber_component_path_elim_is_equiv.
+  apply quasi_inv_is_equiv.
+  unfold QuasiInv.
+  exists (fiber_path_intro f1 f2).
+  split; intro.
+  - apply fiber_path_unique.
+  - apply fiber_path_compute.
 Qed.
 
 Theorem fiber_is_contr :
