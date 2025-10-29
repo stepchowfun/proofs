@@ -171,8 +171,7 @@ Proof.
         concat (concat (ap (g ∘ f) (eta x)) (eta x)) (inv (eta x)) =
         concat (concat (eta ((g ∘ f) x)) (eta x)) (inv (eta x))
       ).
-      * unfold id.
-        unfold id in H.
+      * unfold id in *.
         rewrite H.
         reflexivity.
       * do 2 rewrite assoc in H0.
@@ -1074,21 +1073,22 @@ Definition rcoh_alternate [A B] [f : A -> B] (ri : rinv f) := forall x, {
       & ap f eta = projT2 ri (f x)
 }.
 
-Definition rcoh_to_rcoh_alternate [A B] [f : A -> B]
-  (ri : rinv f) (rc : rcoh ri) : rcoh_alternate ri
+Definition rcoh_to_rcoh_alternate [A B] [f : A -> B] [ri : rinv f]
+  (rc : rcoh ri) : rcoh_alternate ri
 := fun x => existT _ (projT1 rc x) (projT2 rc x).
 
-Definition rcoh_alternate_to_rcoh [A B] [f : A -> B]
-  (ri : rinv f) (rc : rcoh_alternate ri) : rcoh ri
+Definition rcoh_alternate_to_rcoh [A B] [f : A -> B] [ri : rinv f]
+  (rc : rcoh_alternate ri) : rcoh ri
 := existT _ (fun x => projT1 (rc x)) (fun x => projT2 (rc x)).
 
 Theorem rcoh_to_rcoh_alternate_is_equiv :
-  forall A B (f : A -> B) (ri : rinv f), IsEquiv (rcoh_to_rcoh_alternate ri).
+  forall A B (f : A -> B) (ri : rinv f),
+  IsEquiv (@rcoh_to_rcoh_alternate _ _ _ ri).
 Proof.
   intros.
   apply quasi_inv_is_equiv.
   unfold QuasiInv.
-  exists (rcoh_alternate_to_rcoh ri).
+  exists (@rcoh_alternate_to_rcoh _ _ _ ri).
   split; intro; unfold
     compose, id, rcoh_to_rcoh_alternate, rcoh_alternate_to_rcoh.
   - destruct x.
@@ -1101,12 +1101,13 @@ Proof.
 Qed.
 
 Theorem rcoh_alternate_to_rcoh_is_equiv :
-  forall A B (f : A -> B) (ri : rinv f), IsEquiv (rcoh_alternate_to_rcoh ri).
+  forall A B (f : A -> B) (ri : rinv f),
+  IsEquiv (@rcoh_alternate_to_rcoh _ _ _ ri).
 Proof.
   intros.
   apply quasi_inv_is_equiv.
   unfold QuasiInv.
-  exists (rcoh_to_rcoh_alternate ri).
+  exists (@rcoh_to_rcoh_alternate _ _ _ ri).
   split; intro; unfold
     compose, id, rcoh_to_rcoh_alternate, rcoh_alternate_to_rcoh.
   - cbn.
@@ -1118,21 +1119,22 @@ Proof.
     reflexivity.
 Qed.
 
-Definition lcoh_to_lcoh_alternate [A B] [f : A -> B]
-  (li : linv f) (lc : lcoh li) : lcoh_alternate li
+Definition lcoh_to_lcoh_alternate [A B] [f : A -> B] [li : linv f]
+  (lc : lcoh li) : lcoh_alternate li
 := fun x => existT _ (projT1 lc x) (projT2 lc x).
 
-Definition lcoh_alternate_to_lcoh [A B] [f : A -> B]
-  (li : linv f) (lc : lcoh_alternate li) : lcoh li
+Definition lcoh_alternate_to_lcoh [A B] [f : A -> B] [li : linv f]
+  (lc : lcoh_alternate li) : lcoh li
 := existT _ (fun x => projT1 (lc x)) (fun x => projT2 (lc x)).
 
 Theorem lcoh_to_lcoh_alternate_is_equiv :
-  forall A B (f : A -> B) (li : linv f), IsEquiv (lcoh_to_lcoh_alternate li).
+  forall A B (f : A -> B) (li : linv f),
+  IsEquiv (@lcoh_to_lcoh_alternate _ _ _ li).
 Proof.
   intros.
   apply quasi_inv_is_equiv.
   unfold QuasiInv.
-  exists (lcoh_alternate_to_lcoh li).
+  exists (@lcoh_alternate_to_lcoh _ _ _ li).
   split; intro; unfold
     compose, id, lcoh_to_lcoh_alternate, lcoh_alternate_to_lcoh.
   - destruct x.
@@ -1145,12 +1147,13 @@ Proof.
 Qed.
 
 Theorem lcoh_alternate_to_lcoh_is_equiv :
-  forall A B (f : A -> B) (li : linv f), IsEquiv (lcoh_alternate_to_lcoh li).
+  forall A B (f : A -> B) (li : linv f),
+  IsEquiv (@lcoh_alternate_to_lcoh _ _ _ li).
 Proof.
   intros.
   apply quasi_inv_is_equiv.
   unfold QuasiInv.
-  exists (lcoh_to_lcoh_alternate li).
+  exists (@lcoh_to_lcoh_alternate _ _ _ li).
   split; intro; unfold
     compose, id, lcoh_to_lcoh_alternate, lcoh_alternate_to_lcoh.
   - cbn.
@@ -1250,8 +1253,7 @@ Proof.
     reflexivity.
 Qed.
 
-Definition lcoh_alternate_to_fiber
-  [A B] [f : A -> B] [li : linv f]
+Definition lcoh_alternate_to_fiber [A B] [f : A -> B] [li : linv f]
   (lc : lcoh_alternate li)
 : forall y1,
     existT (fun y2 => projT1 li y2 = projT1 li y1)
@@ -1273,9 +1275,7 @@ Definition lcoh_alternate_to_fiber
           eq_refl
       ) (existT _ (projT1 (lc y1)) (projT2 (lc y1))).
 
-Definition fiber_to_lcoh_alternate
-  [A B]
-  [f : A -> B]
+Definition fiber_to_lcoh_alternate [A B] [f : A -> B]
   (li : linv f)
   (h :
     forall y1,
@@ -1344,7 +1344,7 @@ Definition rcoh_to_fiber [A B] [f : A -> B] [ri : rinv f]
   forall x1,
     existT (fun x2 => f x2 = f x1) (projT1 ri (f x1)) (projT2 ri (f x1)) =
     existT (fun x2 => f x2 = f x1) x1 eq_refl
-:= @rcoh_alternate_to_fiber _ _ _ ri ∘ rcoh_to_rcoh_alternate ri.
+:= @rcoh_alternate_to_fiber _ _ _ ri ∘ @rcoh_to_rcoh_alternate _ _ _ ri.
 
 Definition fiber_to_rcoh [A B] [f : A -> B] [ri : rinv f]
 : (forall x1,
@@ -1380,9 +1380,9 @@ Definition lcoh_to_fiber [A B] [f : A -> B] [li : linv f]
     existT (fun y2 => projT1 li y2 = projT1 li y1)
       y1
       eq_refl
-:= @lcoh_alternate_to_fiber _ _ _ li ∘ lcoh_to_lcoh_alternate li.
+:= @lcoh_alternate_to_fiber _ _ _ li ∘ @lcoh_to_lcoh_alternate _ _ _ li.
 
-Definition fiber_to_lcoh [A B] [f : A -> B] [li : linv f]
+Definition fiber_to_lcoh [A B] [f : A -> B] (li : linv f)
 : (forall y1,
     existT (fun y2 => projT1 li y2 = projT1 li y1)
       (f (projT1 li y1))
@@ -1540,7 +1540,7 @@ Definition is_equiv_to_rinv_rcoh [A B] [f : A -> B]
     (existT _ (projT1 e) (projT1 (projT2 (projT2 e))))
     (existT _ (projT1 (projT2 e)) (projT2 (projT2 (projT2 e)))).
 
-Definition rinv_rcoh_to_is_equiv [A B] [f : A -> B]
+Definition rinv_rcoh_to_is_equiv [A B] (f : A -> B)
   (e : { ri : rinv f & rcoh ri }) : IsEquiv f
 :=
   existT _
@@ -1588,7 +1588,7 @@ Proof.
     intros.
     apply sigma_path_intro.
     assert (projT1 x = projT1 y).
-    + pose proof (rinv_is_contr _ _ f (rinv_rcoh_to_is_equiv x)).
+    + pose proof (rinv_is_contr _ _ f (rinv_rcoh_to_is_equiv _ x)).
       destruct X.
       rewrite <- (e (projT1 x)).
       rewrite <- (e (projT1 y)).
@@ -1599,7 +1599,7 @@ Proof.
       exists eq_refl.
       cbn.
       pose proof (
-        rcoh_is_contr _ _ f x0 (rinv_rcoh_to_is_equiv (existT _ x0 r))
+        rcoh_is_contr _ _ f x0 (rinv_rcoh_to_is_equiv _ (existT _ x0 r))
       ).
       destruct H.
       rewrite <- (e r).
