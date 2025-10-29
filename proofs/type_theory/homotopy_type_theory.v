@@ -64,15 +64,14 @@ Definition transport [A] [x y : A] [P : A -> Type] (p : x = y) (px : P x) : P y
   | eq_refl => px
   end.
 
-(* Action on paths *)
+(* Functorial action on paths *)
 
 Definition ap [A B] [x y : A] (f : A -> B) (p : x = y) : f x = f y :=
   match p with
   | eq_refl => eq_refl
   end.
 
-Definition ap_refl [A B] (x : A) (f : A -> B) :
-  ap f eq_refl = @eq_refl _ (f x)
+Definition ap_refl [A B] (x : A) (f : A -> B) : ap f eq_refl = @eq_refl _ (f x)
 := eq_refl.
 
 Definition ap_concat [A B] [x y z : A] (f : A -> B) (p : x = y) (q : y = z) :
@@ -89,8 +88,7 @@ Definition ap_inv [A B] [x y : A] (f : A -> B) (p : x = y) :
   | eq_refl => eq_refl
   end.
 
-Definition ap_id [A] [x y : A] (p : x = y) : ap id p = p
-:=
+Definition ap_id [A] [x y : A] (p : x = y) : ap id p = p :=
   match p with
   | eq_refl => eq_refl
   end.
@@ -188,23 +186,23 @@ Qed.
 Definition equiv_is_quasi_inv [A B] [f : A -> B] (e : IsEquiv f) : QuasiInv f
 := existT _ (projT1 e) (projT1 (projT2 e), projT1 (projT2 (projT2 e))).
 
-(* Equivalences form a groupoid. *)
+(*
+  The groupoid structure of equivalences implies that type equivalence is an
+  equivalence relation on the universe.
+*)
 
 Theorem id_is_equiv : forall A, IsEquiv (@id A).
 Proof.
   intro.
   unfold IsEquiv.
   exists id.
-  exists (fun _ => eq_refl).
-  exists (fun _ => eq_refl).
+  do 2 exists (fun _ => eq_refl).
   reflexivity.
 Qed.
 
 Theorem comp_is_equiv :
   forall A B C (f : A -> B) (g : B -> C),
-  IsEquiv f ->
-  IsEquiv g ->
-  IsEquiv (g ∘ f).
+  IsEquiv f -> IsEquiv g -> IsEquiv (g ∘ f).
 Proof.
   intros.
   apply quasi_inv_is_equiv.
@@ -504,6 +502,72 @@ Proof.
   split; intro.
   - exact (inv (sigma_path_unique x)).
   - exact (sigma_path_compute _ _ x).
+Qed.
+
+Definition sigma_universal_property_forward
+  A (B : A -> Type) (C : forall x : A, B x -> Type) :
+  (forall x, sigT (fun y : B x => C x y)) ->
+  sigT (fun f : (forall x, B x) => forall x, C x (f x))
+:= fun g => existT _ (fun x => projT1 (g x)) (fun x => projT2 (g x)).
+
+Definition sigma_universal_property_backward
+  A (B : A -> Type) (C : forall x : A, B x -> Type) :
+  sigT (fun f : (forall x, B x) => forall x, C x (f x)) ->
+  (forall x, sigT (fun y : B x => C x y))
+:= fun p x => existT _ (projT1 p x) (projT2 p x).
+
+Theorem sigma_universal_property_forward_is_equiv :
+  forall A (B : A -> Type) (C : forall x : A, B x -> Type),
+  IsEquiv (sigma_universal_property_forward A B C).
+Proof.
+  intros.
+  apply quasi_inv_is_equiv.
+  exists (sigma_universal_property_backward A B C).
+  split; intro.
+  - apply function_path_intro.
+    intro.
+    unfold
+      compose,
+      id,
+      sigma_universal_property_forward,
+      sigma_universal_property_backward.
+    cbn.
+    rewrite <- sigT_eta.
+    reflexivity.
+  - unfold
+      compose,
+      id,
+      sigma_universal_property_forward,
+      sigma_universal_property_backward.
+    destruct x.
+    reflexivity.
+Qed.
+
+Theorem sigma_universal_property_backward_is_equiv :
+  forall A (B : A -> Type) (C : forall x : A, B x -> Type),
+  IsEquiv (sigma_universal_property_backward A B C).
+Proof.
+  intros.
+  apply quasi_inv_is_equiv.
+  exists (sigma_universal_property_forward A B C).
+  split; intro.
+  - unfold
+      compose,
+      id,
+      sigma_universal_property_forward,
+      sigma_universal_property_backward.
+    destruct x.
+    reflexivity.
+  - apply function_path_intro.
+    intro.
+    unfold
+      compose,
+      id,
+      sigma_universal_property_forward,
+      sigma_universal_property_backward.
+    cbn.
+    rewrite <- sigT_eta.
+    reflexivity.
 Qed.
 
 (* Homotopy fibers *)
@@ -986,6 +1050,561 @@ Proof.
   - apply fiber_is_contr with (f := fun g : B -> A => f ∘ g) (y := id).
     apply precompose_is_equiv.
     assumption.
+Qed.
+
+(* Being an equivalence is a mere proposition. *)
+
+Definition lcoh [A B] [f : A -> B] (li : linv f) := {
+  epsilon : Homotopy (f ∘ projT1 li) id
+          & forall y, ap (projT1 li) (epsilon y) = projT2 li (projT1 li y)
+}.
+
+Definition rcoh [A B] [f : A -> B] (ri : rinv f) := {
+  eta : Homotopy (projT1 ri ∘ f) id
+      & forall x, ap f (eta x) = projT2 ri (f x)
+}.
+
+Definition lcoh_alternate [A B] [f : A -> B] (li : linv f) := forall y, {
+  epsilon : f (projT1 li y) = y
+          & ap (projT1 li) epsilon = projT2 li (projT1 li y)
+}.
+
+Definition rcoh_alternate [A B] [f : A -> B] (ri : rinv f) := forall x, {
+  eta : projT1 ri (f x) = x
+      & ap f eta = projT2 ri (f x)
+}.
+
+Definition rcoh_to_rcoh_alternate [A B] [f : A -> B]
+  (ri : rinv f) (rc : rcoh ri) : rcoh_alternate ri
+:= fun x => existT _ (projT1 rc x) (projT2 rc x).
+
+Definition rcoh_alternate_to_rcoh [A B] [f : A -> B]
+  (ri : rinv f) (rc : rcoh_alternate ri) : rcoh ri
+:= existT _ (fun x => projT1 (rc x)) (fun x => projT2 (rc x)).
+
+Theorem rcoh_to_rcoh_alternate_is_equiv :
+  forall A B (f : A -> B) (ri : rinv f), IsEquiv (rcoh_to_rcoh_alternate ri).
+Proof.
+  intros.
+  apply quasi_inv_is_equiv.
+  unfold QuasiInv.
+  exists (rcoh_alternate_to_rcoh ri).
+  split; intro; unfold
+    compose, id, rcoh_to_rcoh_alternate, rcoh_alternate_to_rcoh.
+  - destruct x.
+    reflexivity.
+  - cbn.
+    apply function_path_intro.
+    intro.
+    rewrite <- sigT_eta.
+    reflexivity.
+Qed.
+
+Theorem rcoh_alternate_to_rcoh_is_equiv :
+  forall A B (f : A -> B) (ri : rinv f), IsEquiv (rcoh_alternate_to_rcoh ri).
+Proof.
+  intros.
+  apply quasi_inv_is_equiv.
+  unfold QuasiInv.
+  exists (rcoh_to_rcoh_alternate ri).
+  split; intro; unfold
+    compose, id, rcoh_to_rcoh_alternate, rcoh_alternate_to_rcoh.
+  - cbn.
+    apply function_path_intro.
+    intro.
+    rewrite <- sigT_eta.
+    reflexivity.
+  - destruct x.
+    reflexivity.
+Qed.
+
+Definition lcoh_to_lcoh_alternate [A B] [f : A -> B]
+  (li : linv f) (lc : lcoh li) : lcoh_alternate li
+:= fun x => existT _ (projT1 lc x) (projT2 lc x).
+
+Definition lcoh_alternate_to_lcoh [A B] [f : A -> B]
+  (li : linv f) (lc : lcoh_alternate li) : lcoh li
+:= existT _ (fun x => projT1 (lc x)) (fun x => projT2 (lc x)).
+
+Theorem lcoh_to_lcoh_alternate_is_equiv :
+  forall A B (f : A -> B) (li : linv f), IsEquiv (lcoh_to_lcoh_alternate li).
+Proof.
+  intros.
+  apply quasi_inv_is_equiv.
+  unfold QuasiInv.
+  exists (lcoh_alternate_to_lcoh li).
+  split; intro; unfold
+    compose, id, lcoh_to_lcoh_alternate, lcoh_alternate_to_lcoh.
+  - destruct x.
+    reflexivity.
+  - cbn.
+    apply function_path_intro.
+    intro.
+    rewrite <- sigT_eta.
+    reflexivity.
+Qed.
+
+Theorem lcoh_alternate_to_lcoh_is_equiv :
+  forall A B (f : A -> B) (li : linv f), IsEquiv (lcoh_alternate_to_lcoh li).
+Proof.
+  intros.
+  apply quasi_inv_is_equiv.
+  unfold QuasiInv.
+  exists (lcoh_to_lcoh_alternate li).
+  split; intro; unfold
+    compose, id, lcoh_to_lcoh_alternate, lcoh_alternate_to_lcoh.
+  - cbn.
+    apply function_path_intro.
+    intro.
+    rewrite <- sigT_eta.
+    reflexivity.
+  - destruct x.
+    reflexivity.
+Qed.
+
+Definition rcoh_alternate_to_fiber
+  [A B] [f : A -> B] [ri : rinv f]
+  (rc : rcoh_alternate ri)
+: forall x1,
+    existT (fun x2 => f x2 = f x1)
+      (projT1 ri (f x1))
+      (projT2 ri (f x1)) =
+    existT (fun x2 => f x2 = f x1)
+      x1
+      eq_refl
+:= fun x1 =>
+  @fiber_path_intro _ _ f (f x1)
+  (
+    existT (fun x2 => f x2 = f x1)
+      (projT1 ri (f x1))
+      (projT2 ri (f x1))
+  ) (
+    existT (fun x2 => f x2 = f x1)
+      x1
+      eq_refl
+  ) (existT _ (projT1 (rc x1)) (projT2 (rc x1))).
+
+Definition fiber_to_rcoh_alternate
+  [A B]
+  [f : A -> B]
+  (ri : rinv f)
+  (h :
+    forall x1,
+      existT (fun x2 => f x2 = f x1)
+        (projT1 ri (f x1))
+        (projT2 ri (f x1)) =
+      existT (fun x2 => f x2 = f x1)
+        x1
+        eq_refl
+  ) : rcoh_alternate ri
+:= fun x1 =>
+  existT _
+    (projT1 (fiber_path_elim _ _ (h x1)))
+    (projT2 (fiber_path_elim _ _ (h x1))).
+
+Theorem rcoh_alternate_to_fiber_is_equiv :
+  forall A B (f : A -> B) (ri : rinv f),
+  IsEquiv (@rcoh_alternate_to_fiber _ _ _ ri).
+Proof.
+  intros.
+  apply quasi_inv_is_equiv.
+  unfold QuasiInv.
+  exists (@fiber_to_rcoh_alternate _ _ _ ri).
+  split; intro; unfold
+    compose, id, rcoh_alternate_to_fiber, fiber_to_rcoh_alternate.
+  - apply function_path_intro.
+    intro.
+    rewrite <- sigT_eta.
+    rewrite fiber_path_compute.
+    rewrite <- sigT_eta.
+    reflexivity.
+  - apply function_path_intro.
+    intro.
+    rewrite <- sigT_eta.
+    rewrite <- sigT_eta.
+    rewrite fiber_path_unique.
+    reflexivity.
+Qed.
+
+Theorem fiber_to_rcoh_alternate_is_equiv :
+  forall A B (f : A -> B) (ri : rinv f),
+  IsEquiv (@fiber_to_rcoh_alternate _ _ _ ri).
+Proof.
+  intros.
+  apply quasi_inv_is_equiv.
+  unfold QuasiInv.
+  exists (@rcoh_alternate_to_fiber _ _ _ ri).
+  split; intro; unfold
+    compose, id, rcoh_alternate_to_fiber, fiber_to_rcoh_alternate.
+  - apply function_path_intro.
+    intro.
+    rewrite <- sigT_eta.
+    rewrite <- sigT_eta.
+    rewrite fiber_path_unique.
+    reflexivity.
+  - apply function_path_intro.
+    intro.
+    rewrite <- sigT_eta.
+    rewrite fiber_path_compute.
+    rewrite <- sigT_eta.
+    reflexivity.
+Qed.
+
+Definition lcoh_alternate_to_fiber
+  [A B] [f : A -> B] [li : linv f]
+  (lc : lcoh_alternate li)
+: forall y1,
+    existT (fun y2 => projT1 li y2 = projT1 li y1)
+      (f (projT1 li y1))
+      (projT2 li (projT1 li y1)) =
+    existT (fun y2 => projT1 li y2 = projT1 li y1)
+      y1
+      eq_refl
+:=
+  fun y1 =>
+    @fiber_path_intro _ _ (projT1 li) (projT1 li y1)
+      (
+        existT (fun y2 => projT1 li y2 = projT1 li y1)
+          (f (projT1 li y1))
+          (projT2 li (projT1 li y1))
+      ) (
+        existT (fun y2 => projT1 li y2 = projT1 li y1)
+          y1
+          eq_refl
+      ) (existT _ (projT1 (lc y1)) (projT2 (lc y1))).
+
+Definition fiber_to_lcoh_alternate
+  [A B]
+  [f : A -> B]
+  (li : linv f)
+  (h :
+    forall y1,
+      existT (fun y2 => projT1 li y2 = projT1 li y1)
+        (f (projT1 li y1))
+        (projT2 li (projT1 li y1)) =
+      existT (fun y2 => projT1 li y2 = projT1 li y1)
+        y1
+        eq_refl
+  ) : lcoh_alternate li
+:= fun x1 =>
+  existT _
+    (projT1 (fiber_path_elim _ _ (h x1)))
+    (projT2 (fiber_path_elim _ _ (h x1))).
+
+Theorem lcoh_alternate_to_fiber_is_equiv :
+  forall A B (f : A -> B) (li : linv f),
+  IsEquiv (@lcoh_alternate_to_fiber _ _ _ li).
+Proof.
+  intros.
+  apply quasi_inv_is_equiv.
+  unfold QuasiInv.
+  exists (@fiber_to_lcoh_alternate _ _ _ li).
+  split; intro; unfold
+    compose, id, lcoh_alternate_to_fiber, fiber_to_lcoh_alternate.
+  - apply function_path_intro.
+    intro.
+    rewrite <- sigT_eta.
+    rewrite fiber_path_compute.
+    rewrite <- sigT_eta.
+    reflexivity.
+  - apply function_path_intro.
+    intro.
+    rewrite <- sigT_eta.
+    rewrite <- sigT_eta.
+    rewrite fiber_path_unique.
+    reflexivity.
+Qed.
+
+Theorem fiber_to_lcoh_alternate_is_equiv :
+  forall A B (f : A -> B) (li : linv f),
+  IsEquiv (@fiber_to_lcoh_alternate _ _ _ li).
+Proof.
+  intros.
+  apply quasi_inv_is_equiv.
+  unfold QuasiInv.
+  exists (@lcoh_alternate_to_fiber _ _ _ li).
+  split; intro; unfold
+    compose, id, lcoh_alternate_to_fiber, fiber_to_lcoh_alternate.
+  - apply function_path_intro.
+    intro.
+    rewrite <- sigT_eta.
+    rewrite <- sigT_eta.
+    rewrite fiber_path_unique.
+    reflexivity.
+  - apply function_path_intro.
+    intro.
+    rewrite <- sigT_eta.
+    rewrite fiber_path_compute.
+    rewrite <- sigT_eta.
+    reflexivity.
+Qed.
+
+Definition rcoh_to_fiber [A B] [f : A -> B] [ri : rinv f]
+: rcoh ri ->
+  forall x1,
+    existT (fun x2 => f x2 = f x1) (projT1 ri (f x1)) (projT2 ri (f x1)) =
+    existT (fun x2 => f x2 = f x1) x1 eq_refl
+:= @rcoh_alternate_to_fiber _ _ _ ri ∘ rcoh_to_rcoh_alternate ri.
+
+Definition fiber_to_rcoh [A B] [f : A -> B] [ri : rinv f]
+: (forall x1,
+    existT (fun x2 => f x2 = f x1) (projT1 ri (f x1)) (projT2 ri (f x1)) =
+    existT (fun x2 => f x2 = f x1) x1 eq_refl) ->
+  rcoh ri
+:= @rcoh_alternate_to_rcoh _ _ _ ri ∘ fiber_to_rcoh_alternate ri.
+
+Theorem rcoh_to_fiber_is_equiv :
+  forall A B (f : A -> B) (ri : rinv f), IsEquiv (@rcoh_to_fiber _ _ _ ri).
+Proof.
+  intros.
+  apply comp_is_equiv.
+  - apply rcoh_to_rcoh_alternate_is_equiv.
+  - apply rcoh_alternate_to_fiber_is_equiv.
+Qed.
+
+Theorem fiber_to_rcoh_is_equiv :
+  forall A B (f : A -> B) (ri : rinv f), IsEquiv (@fiber_to_rcoh _ _ _ ri).
+Proof.
+  intros.
+  apply comp_is_equiv.
+  - apply fiber_to_rcoh_alternate_is_equiv.
+  - apply rcoh_alternate_to_rcoh_is_equiv.
+Qed.
+
+Definition lcoh_to_fiber [A B] [f : A -> B] [li : linv f]
+: lcoh li ->
+  forall y1,
+    existT (fun y2 => projT1 li y2 = projT1 li y1)
+      (f (projT1 li y1))
+      (projT2 li (projT1 li y1)) =
+    existT (fun y2 => projT1 li y2 = projT1 li y1)
+      y1
+      eq_refl
+:= @lcoh_alternate_to_fiber _ _ _ li ∘ lcoh_to_lcoh_alternate li.
+
+Definition fiber_to_lcoh [A B] [f : A -> B] [li : linv f]
+: (forall y1,
+    existT (fun y2 => projT1 li y2 = projT1 li y1)
+      (f (projT1 li y1))
+      (projT2 li (projT1 li y1)) =
+    existT (fun y2 => projT1 li y2 = projT1 li y1)
+      y1
+      eq_refl) ->
+  lcoh li
+:= @lcoh_alternate_to_lcoh _ _ _ li ∘ fiber_to_lcoh_alternate li.
+
+Theorem lcoh_to_fiber_is_equiv :
+  forall A B (f : A -> B) (li : linv f), IsEquiv (@lcoh_to_fiber _ _ _ li).
+Proof.
+  intros.
+  apply comp_is_equiv.
+  - apply lcoh_to_lcoh_alternate_is_equiv.
+  - apply lcoh_alternate_to_fiber_is_equiv.
+Qed.
+
+Theorem fiber_to_lcoh_is_equiv :
+  forall A B (f : A -> B) (li : linv f), IsEquiv (@fiber_to_lcoh _ _ _ li).
+Proof.
+  intros.
+  apply comp_is_equiv.
+  - apply fiber_to_lcoh_alternate_is_equiv.
+  - apply lcoh_alternate_to_lcoh_is_equiv.
+Qed.
+
+Theorem lcoh_is_contr :
+  forall A B (f : A -> B) (li : linv f), IsEquiv f -> IsContr (lcoh li).
+Proof.
+  intros.
+  apply equiv_trunc with (f := @fiber_to_lcoh _ _ _ li).
+  - apply fiber_to_lcoh_is_equiv.
+  - assert (
+      forall y1 : B, IsContr (
+        existT (fun y2 : B => projT1 li y2 = projT1 li y1)
+          (f (projT1 li y1)) (projT2 li (projT1 li y1)) =
+        existT (fun y2 : B => projT1 li y2 = projT1 li y1) y1 eq_refl
+      )
+    ).
+    + intro.
+      assert (IsEquiv (projT1 li)).
+      * pose proof (linv_is_contr _ _ f X).
+        destruct X0.
+        apply quasi_inv_is_equiv.
+        unfold QuasiInv.
+        destruct X, s, s.
+        pose proof (e (existT _ x0 x1)).
+        pose proof (e li).
+        subst x.
+        exists f.
+        destruct li.
+        cbn in *.
+        destruct (sigma_path_elim H0).
+        cbn in *.
+        subst x0.
+        split; assumption.
+      * pose proof (fiber_is_contr _ _ (projT1 li) (projT1 li y1) X0).
+        pose proof (
+          is_trunc_cumulative 0 (fiber (projT1 li) (projT1 li y1)) X1
+        ).
+        clear X0 X1.
+        cbn in *.
+        specialize (
+          H
+            (
+              existT (fun y2 : B => projT1 li y2 = projT1 li y1)
+                (f (projT1 li y1))
+                (projT2 li (projT1 li y1))
+            )
+            (
+              existT (fun y2 : B => projT1 li y2 = projT1 li y1)
+                y1
+                eq_refl
+            )
+        ).
+        destruct H.
+        exists x.
+        exact e.
+    + exists (fun y1 => projT1 (X0 y1)).
+      intros.
+      apply function_path_intro.
+      intro.
+      pose proof (X0 x0).
+      destruct X1.
+      rewrite <- (e (x x0)).
+      rewrite <- (e (projT1 (X0 x0))).
+      reflexivity.
+(*
+  At this point, all goals have been discharged. `Qed` succeeds interactively,
+  but batch compilation fails in Rocq 9.0.1 with this error:
+
+  ```
+  Error:
+  Anomaly
+  "File "kernel/constant_typing.ml", line 272, characters 7-13:
+    Assertion failed."
+  Please report at http://rocq-prover.org/bugs/.
+  ```
+
+  So, for now, we abandon this proof. Fortunately, nothing below depend on it.
+*)
+Abort.
+
+Theorem rcoh_is_contr :
+  forall A B (f : A -> B) (ri : rinv f), IsEquiv f -> IsContr (rcoh ri).
+Proof.
+  intros.
+  apply equiv_trunc with (f := @fiber_to_rcoh _ _ _ ri).
+  - apply fiber_to_rcoh_is_equiv.
+  - assert (
+      forall x1 : A, IsContr (
+        existT (fun x2 : A => f x2 = f x1)
+          (projT1 ri (f x1)) (projT2 ri (f x1)) =
+        existT (fun x2 : A => f x2 = f x1) x1 eq_refl
+      )
+    ).
+    + intro.
+      pose proof (fiber_is_contr _ _ f (f x1) X).
+      pose proof (is_trunc_cumulative 0 (fiber f (f x1)) X0).
+      clear X0.
+      cbn in *.
+      specialize (
+        H
+          (
+            existT (fun x2 : A => f x2 = f x1)
+            (projT1 ri (f x1))
+            (projT2 ri (f x1))
+          )
+          (
+            existT (fun x2 : A => f x2 = f x1)
+            x1
+            eq_refl
+          )
+      ).
+      destruct H.
+      exists x.
+      exact e.
+    + exists (fun x1 => projT1 (X0 x1)).
+      intros.
+      apply function_path_intro.
+      intro.
+      pose proof (X0 x0).
+      destruct X1.
+      rewrite <- (e (x x0)).
+      rewrite <- (e (projT1 (X0 x0))).
+      reflexivity.
+Qed.
+
+Definition is_equiv_to_rinv_rcoh [A B] [f : A -> B]
+  (e : IsEquiv f) : { ri : rinv f & rcoh ri }
+:=
+  existT _
+    (existT _ (projT1 e) (projT1 (projT2 (projT2 e))))
+    (existT _ (projT1 (projT2 e)) (projT2 (projT2 (projT2 e)))).
+
+Definition rinv_rcoh_to_is_equiv [A B] [f : A -> B]
+  (e : { ri : rinv f & rcoh ri }) : IsEquiv f
+:=
+  existT _
+    (projT1 (projT1 e))
+    (
+      existT _
+        (projT1 (projT2 e))
+        (existT _ (projT2 (projT1 e)) (projT2 (projT2 e)))
+    ).
+
+Theorem is_equiv_to_rinv_rcoh_is_equiv :
+  forall A B (f : A -> B), IsEquiv (@is_equiv_to_rinv_rcoh _ _ f).
+Proof.
+  intros.
+  apply quasi_inv_is_equiv.
+  unfold QuasiInv.
+  exists (@rinv_rcoh_to_is_equiv _ _ f).
+  split; intro; unfold compose, id.
+  - destruct x, s, s.
+    reflexivity.
+  - destruct x, x, r.
+    reflexivity.
+Qed.
+
+Theorem is_equiv_rinv_rcoh_to_is_equiv :
+  forall A B (f : A -> B), IsEquiv (@rinv_rcoh_to_is_equiv _ _ f).
+Proof.
+  intros.
+  apply quasi_inv_is_equiv.
+  unfold QuasiInv.
+  exists (@is_equiv_to_rinv_rcoh _ _ f).
+  split; intro; unfold compose, id.
+  - destruct x, x, r.
+    reflexivity.
+  - destruct x, s, s.
+    reflexivity.
+Qed.
+
+Theorem is_equiv_is_prop : forall A B (f : A -> B), IsProp (IsEquiv f).
+Proof.
+  intros.
+  apply equiv_trunc with (f := @rinv_rcoh_to_is_equiv _ _ f).
+  - apply is_equiv_rinv_rcoh_to_is_equiv.
+  - apply proof_irrelevance_is_prop.
+    intros.
+    apply sigma_path_intro.
+    assert (projT1 x = projT1 y).
+    + pose proof (rinv_is_contr _ _ f (rinv_rcoh_to_is_equiv x)).
+      destruct X.
+      rewrite <- (e (projT1 x)).
+      rewrite <- (e (projT1 y)).
+      reflexivity.
+    + destruct x, y.
+      cbn in *.
+      subst x.
+      exists eq_refl.
+      cbn.
+      pose proof (
+        rcoh_is_contr _ _ f x0 (rinv_rcoh_to_is_equiv (existT _ x0 r))
+      ).
+      destruct H.
+      rewrite <- (e r).
+      rewrite <- (e r0).
+      reflexivity.
 Qed.
 
 (* An example of using univalence *)
