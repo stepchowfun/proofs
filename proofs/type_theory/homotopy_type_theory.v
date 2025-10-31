@@ -503,6 +503,29 @@ Proof.
   - exact (sigma_path_compute _ _ x).
 Qed.
 
+Definition sigma_transport
+  [A] (P : A -> Type) (Q : sigT P -> Type)
+  [x y : A] (p : x = y)
+  (uz : { u : P x & Q (existT P x u) })
+: transport (P := fun x => { u : P x & Q (existT P x u) }) p uz =
+  existT (fun py => Q (existT P y py))
+    (transport (P := P) p (projT1 uz))
+    (transport (P := Q)
+      (sigma_path_intro
+        (existT P x (projT1 uz))
+        (existT P y (transport p (projT1 uz)))
+        (existT _ p eq_refl)
+      )
+      (projT2 uz)
+    )
+:=
+  match p with
+  | eq_refl =>
+    match uz with
+    | existT _ u v => eq_refl
+    end
+  end.
+
 Definition sigma_universal_property_forward
   A (B : A -> Type) (C : forall x : A, B x -> Type) :
   (forall x, sigT (fun y : B x => C x y)) ->
