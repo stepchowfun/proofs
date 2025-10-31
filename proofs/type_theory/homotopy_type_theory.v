@@ -267,9 +267,13 @@ Definition type_path_unique [A B] (p : A = B) :
   | eq_refl => inv (projT1 (projT2 (univalence _ _)) eq_refl)
   end.
 
-Definition type_transport [A B] (h : { f : A -> B & IsEquiv f }) :
-  transport (type_path_intro h) = projT1 h
-:= projT1_eq (type_path_compute h).
+Definition type_transport
+  [A] (B : A -> Type) [x y : A] (p : x = y) (u : B x)
+: transport p u = projT1 (type_path_elim (ap B p)) u
+:=
+  match p with
+  | eq_refl => eq_refl
+  end.
 
 (* Function extensionality *)
 
@@ -1667,6 +1671,8 @@ Theorem zero_saturday :
 Proof.
   unfold bit_weekend_path.
   rewrite type_transport.
+  rewrite ap_id.
+  rewrite type_path_compute.
   reflexivity.
 Qed.
 
@@ -1675,5 +1681,7 @@ Theorem one_sunday :
 Proof.
   unfold bit_weekend_path.
   rewrite type_transport.
+  rewrite ap_id.
+  rewrite type_path_compute.
   reflexivity.
 Qed.
