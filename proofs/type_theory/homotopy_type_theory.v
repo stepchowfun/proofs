@@ -277,7 +277,7 @@ Definition type_transport
 
 (* Function extensionality *)
 
-Definition function_path_elim [A] [B : A -> Type] [f g : forall x, B x]
+Definition pi_path_elim [A] [B : A -> Type] [f g : forall x, B x]
   (p : f = g) : Homotopy f g
 :=
   fun x =>
@@ -287,28 +287,28 @@ Definition function_path_elim [A] [B : A -> Type] [f g : forall x, B x]
 
 Axiom function_extensionality :
   forall (A : U) (B : A -> U) (f g : forall x : A, B x),
-  IsEquiv (@function_path_elim _ _ f g).
+  IsEquiv (@pi_path_elim _ _ f g).
 
-Definition function_path_intro [A] [B : A -> Type] (f g : forall x, B x)
+Definition pi_path_intro [A] [B : A -> Type] (f g : forall x, B x)
   (h : Homotopy f g) : f = g
 := projT1 (function_extensionality _ _ f g) h.
 
-Theorem function_path_intro_is_equiv :
+Theorem pi_path_intro_is_equiv :
   forall (A : U) (B : A -> U) (f g : forall x : A, B x),
-  IsEquiv (@function_path_intro _ _ f g).
+  IsEquiv (@pi_path_intro _ _ f g).
 Proof.
   intros.
   apply inv_is_equiv.
 Qed.
 
-Definition function_path_compute
+Definition pi_path_compute
   [A] [B : A -> Type] (f g : forall x : A, B x) (h : Homotopy f g)
-: function_path_elim (function_path_intro _ _ h) = h
+: pi_path_elim (pi_path_intro _ _ h) = h
 := projT1 (projT2 (projT2 (function_extensionality _ _ f g))) h.
 
-Definition function_path_unique
+Definition pi_path_unique
   [A] [B : A -> Type] [f g : forall x : A, B x] (p : f = g)
-: p = function_path_intro _ _ (function_path_elim p)
+: p = pi_path_intro _ _ (pi_path_elim p)
 := inv (projT1 (projT2 (function_extensionality _ _ f g)) p).
 
 (* Homotopy n-types (starting at 0 rather than the more conventional -2) *)
@@ -378,16 +378,16 @@ Proof.
         rewrite <- (e x).
         rewrite <- (e y).
         reflexivity.
-      * apply function_path_intro.
+      * apply pi_path_intro.
         intro.
         pose proof (is_trunc_cumulative 1 A X).
         destruct (H x0 x (e x) (e0 x)).
         auto.
     + rewrite H.
       reflexivity.
-  - apply function_path_intro.
+  - apply pi_path_intro.
     intro.
-    apply function_path_intro.
+    apply pi_path_intro.
     intro.
     apply IHn.
 Qed.
@@ -550,7 +550,7 @@ Proof.
   apply quasi_inv_is_equiv.
   exists (sigma_universal_property_backward A B C).
   split; intro.
-  - apply function_path_intro.
+  - apply pi_path_intro.
     intro.
     unfold
       compose,
@@ -584,7 +584,7 @@ Proof.
       sigma_universal_property_backward.
     destruct x.
     reflexivity.
-  - apply function_path_intro.
+  - apply pi_path_intro.
     intro.
     unfold
       compose,
@@ -953,11 +953,11 @@ Proof.
   exists (fun h : A -> C => x ∘ h).
   unfold id, compose in *.
   split; intro.
-  - apply function_path_intro.
+  - apply pi_path_intro.
     intro.
     rewrite x0.
     reflexivity.
-  - apply function_path_intro.
+  - apply pi_path_intro.
     intro.
     rewrite x1.
     reflexivity.
@@ -973,7 +973,7 @@ Proof.
   do 2 destruct s.
   exists (fun h : A -> C => h ∘ x).
   unfold id, compose in *.
-  split; intro; apply function_path_intro; intro.
+  split; intro; apply pi_path_intro; intro.
   - rewrite x1.
     reflexivity.
   - rewrite x0.
@@ -986,7 +986,7 @@ Definition to_linv [A B] [f : A -> B] (li : { g : B -> A & g ∘ f = id })
   existT
     (fun g : B -> A => Homotopy (g ∘ f) id)
     (projT1 li)
-    (function_path_elim (projT2 li)).
+    (pi_path_elim (projT2 li)).
 
 Definition to_rinv [A B] [f : A -> B] (ri : { g : B -> A & f ∘ g = id })
 : rinv f
@@ -994,7 +994,7 @@ Definition to_rinv [A B] [f : A -> B] (ri : { g : B -> A & f ∘ g = id })
   existT
     (fun g : B -> A => Homotopy (f ∘ g) id)
     (projT1 ri)
-    (function_path_elim (projT2 ri)).
+    (pi_path_elim (projT2 ri)).
 
 Theorem to_linv_is_equiv : forall A B (f : A -> B), IsEquiv (@to_linv _ _ f).
 Proof.
@@ -1007,20 +1007,20 @@ Proof.
       existT
         (fun g => g ∘ f = id)
         (projT1 li)
-        (function_path_intro ((projT1 li) ∘ f) id (projT2 li))
+        (pi_path_intro ((projT1 li) ∘ f) id (projT2 li))
   ).
   split; intro.
   - unfold compose, id in *.
     destruct x.
     cbn.
     destruct e.
-    rewrite <- function_path_unique.
+    rewrite <- pi_path_unique.
     reflexivity.
   - unfold compose, id in *.
     destruct x.
     cbn.
     rewrite (
-      function_path_compute
+      pi_path_compute
         (fun x0 : A => x (f x0))
         (fun x0 : A => x0)
     ).
@@ -1038,20 +1038,20 @@ Proof.
       existT
         (fun g => f ∘ g = id)
         (projT1 li)
-        (function_path_intro (f ∘ (projT1 li)) id (projT2 li))
+        (pi_path_intro (f ∘ (projT1 li)) id (projT2 li))
   ).
   split; intro.
   - unfold compose, id in *.
     destruct x.
     cbn.
     destruct e.
-    rewrite <- function_path_unique.
+    rewrite <- pi_path_unique.
     reflexivity.
   - unfold compose, id in *.
     destruct x.
     cbn.
     rewrite (
-      function_path_compute
+      pi_path_compute
         (fun x0 : B => f (x x0))
         (fun x0 : B => x0)
     ).
@@ -1121,7 +1121,7 @@ Proof.
   - destruct x.
     reflexivity.
   - cbn.
-    apply function_path_intro.
+    apply pi_path_intro.
     intro.
     rewrite <- sigT_eta.
     reflexivity.
@@ -1138,7 +1138,7 @@ Proof.
   split; intro; unfold
     compose, id, rcoh_to_rcoh_alternate, rcoh_alternate_to_rcoh.
   - cbn.
-    apply function_path_intro.
+    apply pi_path_intro.
     intro.
     rewrite <- sigT_eta.
     reflexivity.
@@ -1167,7 +1167,7 @@ Proof.
   - destruct x.
     reflexivity.
   - cbn.
-    apply function_path_intro.
+    apply pi_path_intro.
     intro.
     rewrite <- sigT_eta.
     reflexivity.
@@ -1184,7 +1184,7 @@ Proof.
   split; intro; unfold
     compose, id, lcoh_to_lcoh_alternate, lcoh_alternate_to_lcoh.
   - cbn.
-    apply function_path_intro.
+    apply pi_path_intro.
     intro.
     rewrite <- sigT_eta.
     reflexivity.
@@ -1242,13 +1242,13 @@ Proof.
   exists (@fiber_to_rcoh_alternate _ _ _ ri).
   split; intro; unfold
     compose, id, rcoh_alternate_to_fiber, fiber_to_rcoh_alternate.
-  - apply function_path_intro.
+  - apply pi_path_intro.
     intro.
     rewrite <- sigT_eta.
     rewrite fiber_path_compute.
     rewrite <- sigT_eta.
     reflexivity.
-  - apply function_path_intro.
+  - apply pi_path_intro.
     intro.
     rewrite <- sigT_eta.
     rewrite <- sigT_eta.
@@ -1266,13 +1266,13 @@ Proof.
   exists (@rcoh_alternate_to_fiber _ _ _ ri).
   split; intro; unfold
     compose, id, rcoh_alternate_to_fiber, fiber_to_rcoh_alternate.
-  - apply function_path_intro.
+  - apply pi_path_intro.
     intro.
     rewrite <- sigT_eta.
     rewrite <- sigT_eta.
     rewrite fiber_path_unique.
     reflexivity.
-  - apply function_path_intro.
+  - apply pi_path_intro.
     intro.
     rewrite <- sigT_eta.
     rewrite fiber_path_compute.
@@ -1328,13 +1328,13 @@ Proof.
   exists (@fiber_to_lcoh_alternate _ _ _ li).
   split; intro; unfold
     compose, id, lcoh_alternate_to_fiber, fiber_to_lcoh_alternate.
-  - apply function_path_intro.
+  - apply pi_path_intro.
     intro.
     rewrite <- sigT_eta.
     rewrite fiber_path_compute.
     rewrite <- sigT_eta.
     reflexivity.
-  - apply function_path_intro.
+  - apply pi_path_intro.
     intro.
     rewrite <- sigT_eta.
     rewrite <- sigT_eta.
@@ -1352,13 +1352,13 @@ Proof.
   exists (@lcoh_alternate_to_fiber _ _ _ li).
   split; intro; unfold
     compose, id, lcoh_alternate_to_fiber, fiber_to_lcoh_alternate.
-  - apply function_path_intro.
+  - apply pi_path_intro.
     intro.
     rewrite <- sigT_eta.
     rewrite <- sigT_eta.
     rewrite fiber_path_unique.
     reflexivity.
-  - apply function_path_intro.
+  - apply pi_path_intro.
     intro.
     rewrite <- sigT_eta.
     rewrite fiber_path_compute.
@@ -1492,7 +1492,7 @@ Proof.
         exact e.
     + exists (fun y1 => projT1 (X0 y1)).
       intros.
-      apply function_path_intro.
+      apply pi_path_intro.
       intro.
       pose proof (X0 x0).
       destruct X1.
@@ -1551,7 +1551,7 @@ Proof.
       exact e.
     + exists (fun x1 => projT1 (X0 x1)).
       intros.
-      apply function_path_intro.
+      apply pi_path_intro.
       intro.
       pose proof (X0 x0).
       destruct X1.
@@ -1669,9 +1669,9 @@ Definition bit_weekend_path : Bit = Weekend :=
 Theorem zero_saturday :
   transport (P := @id U) bit_weekend_path Zero = Saturday.
 Proof.
-  unfold bit_weekend_path.
   rewrite type_transport.
   rewrite ap_id.
+  unfold bit_weekend_path.
   rewrite type_path_compute.
   reflexivity.
 Qed.
@@ -1679,9 +1679,9 @@ Qed.
 Theorem one_sunday :
   transport (P := @id U) bit_weekend_path One = Sunday.
 Proof.
-  unfold bit_weekend_path.
   rewrite type_transport.
   rewrite ap_id.
+  unfold bit_weekend_path.
   rewrite type_path_compute.
   reflexivity.
 Qed.
