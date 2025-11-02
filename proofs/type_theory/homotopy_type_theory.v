@@ -403,6 +403,68 @@ Proof.
   assumption.
 Qed.
 
+(* The unit type *)
+
+Definition unit_path_intro (x y : unit) : unit -> x = y :=
+  fun _ =>
+    match x with
+    | tt =>
+      match y with
+      | tt => eq_refl
+      end
+    end.
+
+Definition unit_path_elim [x y : unit] : x = y -> unit :=
+  fun _ => tt.
+
+Definition unit_path_compute (x y : unit)
+: forall z, unit_path_elim (unit_path_intro x y z) = z
+:=
+  fun z =>
+    match z with
+    | tt => eq_refl
+    end.
+
+Definition unit_path_unique (x y : unit)
+: forall p, unit_path_intro x y (unit_path_elim p) = p
+:=
+  fun p =>
+    match p with
+    | eq_refl =>
+      match x with
+      | tt => eq_refl
+      end
+    end.
+
+Theorem unit_path_intro_is_equiv :
+  forall x y : unit, IsEquiv (unit_path_intro x y).
+Proof.
+  intros.
+  apply quasi_inv_is_equiv.
+  exists (@unit_path_elim x y).
+  split; intro.
+  - exact (unit_path_compute _ _ x0).
+  - exact (unit_path_unique _ _ x0).
+Qed.
+
+Theorem unit_path_elim_is_equiv :
+  forall x y : unit, IsEquiv (@unit_path_elim x y).
+Proof.
+  intros.
+  apply quasi_inv_is_equiv.
+  exists (@unit_path_intro x y).
+  split; intro.
+  - exact (unit_path_unique _ _ x0).
+  - exact (unit_path_compute _ _ x0).
+Qed.
+
+Definition unit_transport [A] [x y : A] (p : x = y) (u : unit)
+: transport (P := fun x => unit) p u = u
+:=
+  match p with
+  | eq_refl => eq_refl
+  end.
+
 (* Sigma types *)
 
 Definition sigma_path_intro
