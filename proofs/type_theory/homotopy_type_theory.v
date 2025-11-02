@@ -232,177 +232,6 @@ Proof.
   auto.
 Qed.
 
-(* Univalence *)
-
-Definition type_path_elim [A B] (p : A = B) :
-  { f : A -> B & IsEquiv f } :=
-  existT (@IsEquiv A B) (transport p)
-    match p with
-    | eq_refl =>
-      existT _ id (
-        existT _ (@eq_refl _) (existT _ (@eq_refl _) (fun _ => eq_refl))
-      )
-    end.
-
-Axiom univalence : forall A B : U, IsEquiv (@type_path_elim A B).
-
-Definition type_path_intro [A B] (h : { f : A -> B & IsEquiv f }) : A = B
-:= projT1 (univalence _ _) h.
-
-Theorem type_path_intro_is_equiv :
-  forall A B : U, IsEquiv (@type_path_intro A B).
-Proof.
-  intros.
-  apply inv_is_equiv.
-Qed.
-
-Definition type_path_compute [A B] (h : { f : A -> B & IsEquiv f }) :
-  type_path_elim (type_path_intro h) = h
-:= projT1 (projT2 (projT2 (univalence _ _))) h.
-
-Definition type_path_unique [A B] (p : A = B) :
-  p = type_path_intro (type_path_elim p)
-:=
-  match p with
-  | eq_refl => inv (projT1 (projT2 (univalence _ _)) eq_refl)
-  end.
-
-Definition type_transport
-  [A] (B : A -> Type) [x y : A] (p : x = y) (u : B x)
-: transport p u = projT1 (type_path_elim (ap B p)) u
-:=
-  match p with
-  | eq_refl => eq_refl
-  end.
-
-(* Function extensionality *)
-
-Definition pi_path_elim [A] [B : A -> Type] [f g : forall x, B x]
-  (p : f = g) : Homotopy f g
-:=
-  fun x =>
-    match p with
-    | eq_refl => eq_refl
-    end.
-
-Axiom function_extensionality :
-  forall (A : U) (B : A -> U) (f g : forall x : A, B x),
-  IsEquiv (@pi_path_elim _ _ f g).
-
-Definition pi_path_intro [A] [B : A -> Type] (f g : forall x, B x)
-  (h : Homotopy f g) : f = g
-:= projT1 (function_extensionality _ _ f g) h.
-
-Theorem pi_path_intro_is_equiv :
-  forall (A : U) (B : A -> U) (f g : forall x : A, B x),
-  IsEquiv (@pi_path_intro _ _ f g).
-Proof.
-  intros.
-  apply inv_is_equiv.
-Qed.
-
-Definition pi_path_compute
-  [A] [B : A -> Type] (f g : forall x : A, B x) (h : Homotopy f g)
-: pi_path_elim (pi_path_intro _ _ h) = h
-:= projT1 (projT2 (projT2 (function_extensionality _ _ f g))) h.
-
-Definition pi_path_unique
-  [A] [B : A -> Type] [f g : forall x : A, B x] (p : f = g)
-: p = pi_path_intro _ _ (pi_path_elim p)
-:= inv (projT1 (projT2 (function_extensionality _ _ f g)) p).
-
-(* Homotopy n-types (starting at 0 rather than the more conventional -2) *)
-
-Fixpoint IsTrunc n (A : Type) :=
-  match n with
-  | O => { c : A & forall x, c = x }
-  | S p => forall x y : A, IsTrunc p (x = y)
-  end.
-
-Definition IsContr := IsTrunc 0.
-Definition IsProp := IsTrunc 1.
-Definition IsSet := IsTrunc 2.
-
-Theorem is_trunc_cumulative : forall n A, IsTrunc n A -> IsTrunc (1 + n) A.
-Proof.
-  induction n.
-  - unfold IsTrunc.
-    cbn.
-    intros.
-    destruct X.
-    exists (eq_trans (eq_sym (e x)) (e y)).
-    intro.
-    destruct x1, (e x).
-    reflexivity.
-  - cbn in *.
-    intros.
-    apply IHn.
-    apply X.
-Qed.
-
-Theorem proof_irrelevance_is_prop :
-  forall A, (forall x y : A, x = y) -> IsProp A.
-Proof.
-  unfold IsProp, IsTrunc.
-  intros.
-  exists (H x y).
-  destruct x0.
-  assert (forall x y (p : x = y), H x y = concat p (H y y)).
-  - intros.
-    destruct p.
-    rewrite left_refl.
-    reflexivity.
-  - specialize (H0 _ _ (H x x)).
-    assert (
-      forall (x y z : A) (p : x = y) (q r : y = z),
-      concat p q = concat p r -> q = r
-    ).
-    + intros.
-      destruct p.
-      do 2 rewrite left_refl in H1.
-      assumption.
-    + specialize (H1 _ _ _ (H x x) (H x x) eq_refl).
-      auto.
-Qed.
-
-Theorem is_truncated_is_prop : forall n A, IsProp (IsTrunc n A).
-Proof.
-  induction n; intros; apply proof_irrelevance_is_prop; intros.
-  - unfold IsTrunc in *.
-    destruct x, y.
-    destruct (e0 x).
-    assert (e = e0).
-    + assert (IsProp A).
-      * apply proof_irrelevance_is_prop.
-        intros.
-        rewrite <- (e x).
-        rewrite <- (e y).
-        reflexivity.
-      * apply pi_path_intro.
-        intro.
-        pose proof (is_trunc_cumulative 1 A X).
-        destruct (H x0 x (e x) (e0 x)).
-        auto.
-    + rewrite H.
-      reflexivity.
-  - apply pi_path_intro.
-    intro.
-    apply pi_path_intro.
-    intro.
-    apply IHn.
-Qed.
-
-(* Equivalence respects truncation. *)
-
-Theorem equiv_trunc :
-  forall n A B (f : A -> B), IsEquiv f -> IsTrunc n A -> IsTrunc n B.
-Proof.
-  intros.
-  rewrite <- type_path_intro with (A := A); auto.
-  exists f.
-  assumption.
-Qed.
-
 (* The unit type *)
 
 Definition unit_path_intro (x y : unit) : unit -> x = y :=
@@ -459,7 +288,7 @@ Proof.
 Qed.
 
 Definition unit_transport [A] [x y : A] (p : x = y) (u : unit)
-: transport (P := fun x => unit) p u = u
+: transport (P := fun _ => unit) p u = u
 :=
   match p with
   | eq_refl => eq_refl
@@ -570,47 +399,164 @@ Proof.
 Qed.
 
 Definition sigma_transport
-  [A] (P : A -> Type) (Q : sigT P -> Type)
-  [x y : A] (p : x = y)
-  (uz : { u : P x & Q (existT P x u) })
-: transport (P := fun x => { u : P x & Q (existT P x u) }) p uz =
-  existT (fun py => Q (existT P y py))
-    (transport (P := P) p (projT1 uz))
-    (transport (P := Q)
+  [C] (A : C -> Type) (B : sigT A -> Type)
+  [x y : C] (p : x = y)
+  (ab : { ax : A x & B (existT A x ax) })
+: transport (P := fun x => { ax : A x & B (existT A x ax) }) p ab =
+  existT (fun py => B (existT A y py))
+    (transport (P := A) p (projT1 ab))
+    (transport (P := B)
       (sigma_path_intro
-        (existT P x (projT1 uz))
-        (existT P y (transport p (projT1 uz)))
+        (existT A x (projT1 ab))
+        (existT A y (transport p (projT1 ab)))
         (existT _ p eq_refl)
       )
-      (projT2 uz)
+      (projT2 ab)
     )
 :=
   match p with
   | eq_refl =>
-    match uz with
-    | existT _ u v => eq_refl
+    match ab with
+    | existT _ _ _ => eq_refl
     end
   end.
 
 Definition sigma_universal_property_forward
-  A (B : A -> Type) (C : forall x : A, B x -> Type) :
-  (forall x, sigT (fun y : B x => C x y)) ->
-  sigT (fun f : (forall x, B x) => forall x, C x (f x))
+  C (A : C -> Type) (B : forall x : C, A x -> Type) :
+  (forall x, sigT (fun y : A x => B x y)) ->
+  sigT (fun f : (forall x, A x) => forall x, B x (f x))
 := fun g => existT _ (fun x => projT1 (g x)) (fun x => projT2 (g x)).
 
 Definition sigma_universal_property_backward
-  A (B : A -> Type) (C : forall x : A, B x -> Type) :
-  sigT (fun f : (forall x, B x) => forall x, C x (f x)) ->
-  (forall x, sigT (fun y : B x => C x y))
+  C (A : C -> Type) (B : forall x : C, A x -> Type) :
+  sigT (fun f : (forall x, A x) => forall x, B x (f x)) ->
+  (forall x, sigT (fun y : A x => B x y))
 := fun p x => existT _ (projT1 p x) (projT2 p x).
 
+(* Function extensionality *)
+
+Definition pi_path_elim [A] [B : A -> Type] [f g : forall x, B x]
+  (p : f = g) : Homotopy f g
+:=
+  fun x =>
+    match p with
+    | eq_refl => eq_refl
+    end.
+
+Axiom function_extensionality :
+  forall (A : U) (B : A -> U) (f g : forall x : A, B x),
+  IsEquiv (@pi_path_elim _ _ f g).
+
+Definition pi_path_intro [A] [B : A -> Type] (f g : forall x, B x)
+  (h : Homotopy f g) : f = g
+:= projT1 (function_extensionality _ _ f g) h.
+
+Theorem pi_path_intro_is_equiv :
+  forall (A : U) (B : A -> U) (f g : forall x : A, B x),
+  IsEquiv (@pi_path_intro _ _ f g).
+Proof.
+  intros.
+  apply inv_is_equiv.
+Qed.
+
+Definition pi_path_compute
+  [A] [B : A -> Type] (f g : forall x : A, B x) (h : Homotopy f g)
+: pi_path_elim (pi_path_intro _ _ h) = h
+:= projT1 (projT2 (projT2 (function_extensionality _ _ f g))) h.
+
+Definition pi_path_unique
+  [A] [B : A -> Type] [f g : forall x : A, B x] (p : f = g)
+: p = pi_path_intro _ _ (pi_path_elim p)
+:= inv (projT1 (projT2 (function_extensionality _ _ f g)) p).
+
+Definition pi_transport
+  [C] (A : C -> Type) (B : forall x, A x -> Type)
+  [x y : C] (p : x = y)
+  (f : forall z : A x, B x z)
+  (ay : A y)
+: transport (P := fun x => forall z : A x, B x z) p f ay =
+  transport (P := fun w => B (projT1 w) (projT2 w))
+    (
+      inv (
+        sigma_path_intro
+          (existT A y _)
+          (existT A x _)
+          (existT _ (inv p) eq_refl)
+      )
+    )
+    (f (transport (P := A) (inv p) ay))
+:=
+  match p
+  in _ = z
+  return
+    forall az : A z,
+    transport (P := fun x => forall z : A x, B x z) p f az =
+    transport (P := fun w => B (projT1 w) (projT2 w))
+      (
+        inv (
+          sigma_path_intro
+            (existT A z _)
+            (existT A x _)
+            (existT _ (inv p) eq_refl)
+        )
+      )
+      (f (transport (P := A) (inv p) az))
+  with
+  | eq_refl => fun _ => eq_refl
+  end ay.
+
+(* Univalence *)
+
+Definition type_path_elim [A B] (p : A = B) :
+  { f : A -> B & IsEquiv f } :=
+  existT (@IsEquiv A B) (transport p)
+    match p with
+    | eq_refl =>
+      existT _ id (
+        existT _ (@eq_refl _) (existT _ (@eq_refl _) (fun _ => eq_refl))
+      )
+    end.
+
+Axiom univalence : forall A B : U, IsEquiv (@type_path_elim A B).
+
+Definition type_path_intro [A B] (h : { f : A -> B & IsEquiv f }) : A = B
+:= projT1 (univalence _ _) h.
+
+Theorem type_path_intro_is_equiv :
+  forall A B : U, IsEquiv (@type_path_intro A B).
+Proof.
+  intros.
+  apply inv_is_equiv.
+Qed.
+
+Definition type_path_compute [A B] (h : { f : A -> B & IsEquiv f }) :
+  type_path_elim (type_path_intro h) = h
+:= projT1 (projT2 (projT2 (univalence _ _))) h.
+
+Definition type_path_unique [A B] (p : A = B) :
+  p = type_path_intro (type_path_elim p)
+:=
+  match p with
+  | eq_refl => inv (projT1 (projT2 (univalence _ _)) eq_refl)
+  end.
+
+Definition type_transport
+  [A] (B : A -> Type) [x y : A] (p : x = y) (u : B x)
+: transport p u = projT1 (type_path_elim (ap B p)) u
+:=
+  match p with
+  | eq_refl => eq_refl
+  end.
+
+(* Now that we have function extensionality, we can prove more about sigmas. *)
+
 Theorem sigma_universal_property_forward_is_equiv :
-  forall A (B : A -> Type) (C : forall x : A, B x -> Type),
-  IsEquiv (sigma_universal_property_forward A B C).
+  forall C (A : C -> Type) (B : forall x : C, A x -> Type),
+  IsEquiv (sigma_universal_property_forward C A B).
 Proof.
   intros.
   apply quasi_inv_is_equiv.
-  exists (sigma_universal_property_backward A B C).
+  exists (sigma_universal_property_backward C A B).
   split; intro.
   - apply pi_path_intro.
     intro.
@@ -632,12 +578,12 @@ Proof.
 Qed.
 
 Theorem sigma_universal_property_backward_is_equiv :
-  forall A (B : A -> Type) (C : forall x : A, B x -> Type),
-  IsEquiv (sigma_universal_property_backward A B C).
+  forall C (A : C -> Type) (B : forall x : C, A x -> Type),
+  IsEquiv (sigma_universal_property_backward C A B).
 Proof.
   intros.
   apply quasi_inv_is_equiv.
-  exists (sigma_universal_property_forward A B C).
+  exists (sigma_universal_property_forward C A B).
   split; intro.
   - unfold
       compose,
@@ -656,6 +602,98 @@ Proof.
     cbn.
     rewrite <- sigT_eta.
     reflexivity.
+Qed.
+
+(* Homotopy n-types (starting at 0 rather than the more conventional -2) *)
+
+Fixpoint IsTrunc n (A : Type) :=
+  match n with
+  | O => { c : A & forall x, c = x }
+  | S p => forall x y : A, IsTrunc p (x = y)
+  end.
+
+Definition IsContr := IsTrunc 0.
+Definition IsProp := IsTrunc 1.
+Definition IsSet := IsTrunc 2.
+
+Theorem is_trunc_cumulative : forall n A, IsTrunc n A -> IsTrunc (1 + n) A.
+Proof.
+  induction n.
+  - unfold IsTrunc.
+    cbn.
+    intros.
+    destruct X.
+    exists (eq_trans (eq_sym (e x)) (e y)).
+    intro.
+    destruct x1, (e x).
+    reflexivity.
+  - cbn in *.
+    intros.
+    apply IHn.
+    apply X.
+Qed.
+
+Theorem proof_irrelevance_is_prop :
+  forall A, (forall x y : A, x = y) -> IsProp A.
+Proof.
+  unfold IsProp, IsTrunc.
+  intros.
+  exists (H x y).
+  destruct x0.
+  assert (forall x y (p : x = y), H x y = concat p (H y y)).
+  - intros.
+    destruct p.
+    rewrite left_refl.
+    reflexivity.
+  - specialize (H0 _ _ (H x x)).
+    assert (
+      forall (x y z : A) (p : x = y) (q r : y = z),
+      concat p q = concat p r -> q = r
+    ).
+    + intros.
+      destruct p.
+      do 2 rewrite left_refl in H1.
+      assumption.
+    + specialize (H1 _ _ _ (H x x) (H x x) eq_refl).
+      auto.
+Qed.
+
+Theorem is_truncated_is_prop : forall n A, IsProp (IsTrunc n A).
+Proof.
+  induction n; intros; apply proof_irrelevance_is_prop; intros.
+  - unfold IsTrunc in *.
+    destruct x, y.
+    destruct (e0 x).
+    assert (e = e0).
+    + assert (IsProp A).
+      * apply proof_irrelevance_is_prop.
+        intros.
+        rewrite <- (e x).
+        rewrite <- (e y).
+        reflexivity.
+      * apply pi_path_intro.
+        intro.
+        pose proof (is_trunc_cumulative 1 A X).
+        destruct (H x0 x (e x) (e0 x)).
+        auto.
+    + rewrite H.
+      reflexivity.
+  - apply pi_path_intro.
+    intro.
+    apply pi_path_intro.
+    intro.
+    apply IHn.
+Qed.
+
+(* Equivalence respects truncation. *)
+
+Theorem equiv_trunc :
+  forall n A B (f : A -> B), IsEquiv f -> IsTrunc n A -> IsTrunc n B.
+Proof.
+  intros.
+  rewrite <- type_path_intro with (A := A); auto.
+  exists f.
+  assumption.
 Qed.
 
 (* Homotopy fibers *)
