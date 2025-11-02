@@ -56,14 +56,6 @@ Definition assoc [A] [x y z w : A] (p : x = y) (q : y = z) (r : z = w) :
     end
   end.
 
-(* Transport *)
-
-Definition transport [A] [x y : A] [P : A -> Type] (p : x = y) (px : P x) : P y
-:=
-  match p with
-  | eq_refl => px
-  end.
-
 (* Functorial action on paths *)
 
 Definition ap [A B] [x y : A] (f : A -> B) (p : x = y) : f x = f y :=
@@ -95,6 +87,37 @@ Definition ap_id [A] [x y : A] (p : x = y) : ap id p = p :=
 
 Definition ap_comp [A B C] [x y : A] (f : A -> B) (g : B -> C) (p : x = y) :
   ap g (ap f p) = ap (g ∘ f) p
+:=
+  match p with
+  | eq_refl => eq_refl
+  end.
+
+(* Transport *)
+
+Definition transport [A] [x y : A] [P : A -> Type] (p : x = y) (px : P x) : P y
+:=
+  match p with
+  | eq_refl => px
+  end.
+
+Definition transport_const [A B] [x y : A] (p : x = y) (z : B)
+: transport p z = z
+:=
+  match p with
+  | eq_refl => eq_refl
+  end.
+
+Definition transport_concat
+  [A] [P : A -> Type] [x y z : A] (p : x = y) (q : y = z) (u : P x)
+: transport q (transport p u) = transport (concat p q) u
+:=
+  match q with
+  | eq_refl => eq_refl
+  end.
+
+Definition transport_compose
+  [A B] (f : A -> B) [P : B -> Type] [x y : A] (p : x = y) (u : P (f x))
+: transport (P := compose P f) p u = transport (ap f p) u
 :=
   match p with
   | eq_refl => eq_refl
@@ -288,11 +311,8 @@ Proof.
 Qed.
 
 Definition unit_transport [A] [x y : A] (p : x = y) (u : unit)
-: transport (P := fun _ => unit) p u = u
-:=
-  match p with
-  | eq_refl => eq_refl
-  end.
+: transport p u = u
+:= transport_const p u.
 
 (* Sigma types *)
 
@@ -543,10 +563,7 @@ Definition type_path_unique [A B] (p : A = B) :
 Definition type_transport
   [A] (B : A -> Type) [x y : A] (p : x = y) (u : B x)
 : transport p u = projT1 (type_path_elim (ap B p)) u
-:=
-  match p with
-  | eq_refl => eq_refl
-  end.
+:= transport_compose B p u.
 
 (* Now that we have function extensionality, we can prove more about sigmas. *)
 
