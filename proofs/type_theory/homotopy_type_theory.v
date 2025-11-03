@@ -116,8 +116,17 @@ Definition transport_concat
   end.
 
 Definition transport_compose
-  [A B] (f : A -> B) [P : B -> Type] [x y : A] (p : x = y) (u : P (f x))
+  [A B] [P : B -> Type] [x y : A] (p : x = y) (f : A -> B) (u : P (f x))
 : transport (P := compose P f) p u = transport (ap f p) u
+:=
+  match p with
+  | eq_refl => eq_refl
+  end.
+
+Definition transport_function
+  [A] [B C : A -> Type] [x y : A]
+  (p : x = y) (f : forall x, B x -> C x) (u : B x)
+: transport p (f x u) = f y (transport p u)
 :=
   match p with
   | eq_refl => eq_refl
@@ -563,7 +572,7 @@ Definition type_path_unique [A B] (p : A = B) :
 Definition type_transport
   [A] (B : A -> Type) [x y : A] (p : x = y) (u : B x)
 : transport p u = projT1 (type_path_elim (ap B p)) u
-:= transport_compose B p u.
+:= transport_compose p B u.
 
 (* Now that we have function extensionality, we can prove more about sigmas. *)
 
