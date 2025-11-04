@@ -450,6 +450,22 @@ Definition sigma_transport
     end
   end.
 
+Definition pair_transport
+  [C] (A : C -> Type) (B : C -> Type)
+  [x y : C] (p : x = y)
+  (ab : { _ : A x & B x })
+: transport (P := fun x => { _ : A x & B x }) p ab =
+  existT (fun py => B y)
+    (transport (P := A) p (projT1 ab))
+    (transport (P := B) p (projT2 ab))
+:=
+  match p with
+  | eq_refl =>
+    match ab with
+    | existT _ _ _ => eq_refl
+    end
+  end.
+
 Definition sigma_universal_property_forward
   C (A : C -> Type) (B : forall x : C, A x -> Type) :
   (forall x, sigT (fun y : A x => B x y)) ->
@@ -530,6 +546,24 @@ Definition pi_transport
         )
       )
       (f (transport (P := A) (inv p) az))
+  with
+  | eq_refl => fun _ => eq_refl
+  end ay.
+
+Definition function_transport
+  [C] (A : C -> Type) (B : C -> Type)
+  [x y : C] (p : x = y)
+  (f : A x -> B x)
+  (ay : A y)
+: transport (P := fun x => A x -> B x) p f ay =
+  transport (P := B) p (f (transport (P := A) (inv p) ay))
+:=
+  match p
+  in _ = z
+  return
+    forall az : A z,
+    transport (P := fun x => A x -> B x) p f az =
+    transport (P := B) p (f (transport (P := A) (inv p) az))
   with
   | eq_refl => fun _ => eq_refl
   end ay.
@@ -1793,7 +1827,7 @@ Definition bit_weekend_path : Bit = Weekend :=
   type_path_intro (existT _ _ bit_weekend_equiv).
 
 Theorem zero_saturday :
-  transport (P := @id U) bit_weekend_path Zero = Saturday.
+  transport (P := id) bit_weekend_path Zero = Saturday.
 Proof.
   rewrite type_transport.
   rewrite ap_id.
@@ -1803,11 +1837,25 @@ Proof.
 Qed.
 
 Theorem one_sunday :
-  transport (P := @id U) bit_weekend_path One = Sunday.
+  transport (P := id) bit_weekend_path One = Sunday.
 Proof.
   rewrite type_transport.
   rewrite ap_id.
   unfold bit_weekend_path.
   rewrite type_path_compute.
   reflexivity.
+Qed.
+
+Theorem bits_weekends :
+  transport (P := fun (T : U) => sigT (fun _ : T => T)) bit_weekend_path
+    (existT _ Zero One) =
+  existT _ Saturday Sunday.
+Proof.
+  rewrite pair_transport.
+  cbn.
+  apply sigma_path_intro.
+  cbn.
+  exists zero_saturday.
+  rewrite transport_const.
+  exact one_sunday.
 Qed.
