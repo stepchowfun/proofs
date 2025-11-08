@@ -100,18 +100,22 @@ Definition transport [A] [x y : A] [P : A -> Type] (p : x = y) (px : P x) : P y
   | eq_refl => px
   end.
 
-Definition transport_const [A B] [x y : A] (p : x = y) (z : B)
-: transport p z = z
-:=
-  match p with
-  | eq_refl => eq_refl
-  end.
+Definition transport_refl [A] [P : A -> Type] [x : A] (u : P x)
+: transport eq_refl u = u
+:= eq_refl.
 
 Definition transport_concat
   [A] [P : A -> Type] [x y z : A] (p : x = y) (q : y = z) (u : P x)
 : transport q (transport p u) = transport (concat p q) u
 :=
   match q with
+  | eq_refl => eq_refl
+  end.
+
+Definition transport_const [A B] [x y : A] (p : x = y) (z : B)
+: transport p z = z
+:=
+  match p with
   | eq_refl => eq_refl
   end.
 
@@ -582,22 +586,31 @@ Definition type_path_elim [A B] (p : A = B) :
 
 Axiom univalence : forall A B : U, IsEquiv (@type_path_elim A B).
 
-Definition type_path_intro [A B] (h : { f : A -> B & IsEquiv f }) : A = B
-:= projT1 (univalence _ _) h.
+Definition type_path_intro [A B] [f : A -> B] (f_equiv : IsEquiv f) : A = B
+:= projT1 (univalence _ _) (existT _ f f_equiv).
 
 Theorem type_path_intro_is_equiv :
-  forall A B : U, IsEquiv (@type_path_intro A B).
+  forall A B, IsEquiv (
+    fun s : { f : A -> B & IsEquiv f } => type_path_intro (projT2 s)
+  ).
 Proof.
   intros.
-  apply inv_is_equiv.
+  replace (fun s : { f : A -> B & IsEquiv f } => type_path_intro (projT2 s))
+    with (projT1 (univalence A B)).
+  - apply inv_is_equiv.
+  - apply pi_path_intro.
+    intro.
+    unfold type_path_intro.
+    rewrite <- sigT_eta.
+    reflexivity.
 Qed.
 
-Definition type_path_compute [A B] (h : { f : A -> B & IsEquiv f }) :
-  type_path_elim (type_path_intro h) = h
-:= projT1 (projT2 (projT2 (univalence _ _))) h.
+Definition type_path_compute [A B] [f : A -> B] (f_equiv : IsEquiv f) :
+  type_path_elim (type_path_intro f_equiv) = existT _ f f_equiv
+:= projT1 (projT2 (projT2 (univalence _ _))) (existT _ f f_equiv).
 
 Definition type_path_unique [A B] (p : A = B) :
-  p = type_path_intro (type_path_elim p)
+  p = type_path_intro (projT2 (type_path_elim p))
 :=
   match p with
   | eq_refl => inv (projT1 (projT2 (univalence _ _)) eq_refl)
@@ -751,8 +764,7 @@ Theorem equiv_trunc :
   forall n A B (f : A -> B), IsEquiv f -> IsTrunc n A -> IsTrunc n B.
 Proof.
   intros.
-  rewrite <- type_path_intro with (A := A); auto.
-  exists f.
+  rewrite <- (type_path_intro X).
   assumption.
 Qed.
 
@@ -1824,7 +1836,7 @@ Proof.
 Qed.
 
 Definition bit_weekend_path : Bit = Weekend :=
-  type_path_intro (existT _ _ bit_weekend_equiv).
+  type_path_intro bit_weekend_equiv.
 
 Theorem zero_saturday :
   transport (P := id) bit_weekend_path Zero = Saturday.
