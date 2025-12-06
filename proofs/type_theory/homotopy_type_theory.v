@@ -323,42 +323,34 @@ Proof.
   - exact (unit_path_compute _ _ x0).
 Qed.
 
-Definition unit_path_refl x y : eq_refl = unit_path_intro x x y
-:= inv (unit_path_unique x x eq_refl).
+Theorem unit_path_refl : forall x y, eq_refl = unit_path_intro x x y.
+Proof.
+  symmetry.
+  apply unit_path_unique.
+Qed.
 
-Definition unit_path_compose x y z t u v
-: concat (unit_path_intro x y t) (unit_path_intro y z u) =
-    (unit_path_intro x z v)
-:=
-  match unit_path_intro y z u
-  as q
-  in _ = b
-  return concat (unit_path_intro x y t) q = unit_path_intro x b v
-  with
-  | eq_refl =>
-    match unit_path_intro x y t
-    as p
-    in _ = a
-    return concat p eq_refl = unit_path_intro x a v
-    with
-    | eq_refl => inv (unit_path_unique x x eq_refl)
-    end
-  end.
+Theorem unit_path_compose :
+  forall x y z t u v,
+  concat (unit_path_intro x y t) (unit_path_intro y z u) =
+    unit_path_intro x z v.
+Proof.
+  symmetry.
+  apply unit_path_unique.
+Qed.
 
-Definition unit_path_inv x y t
-: inv (unit_path_intro x y t) = unit_path_intro y x t
-:=
-  match unit_path_intro x y t
-  as p
-  in _ = z
-  return inv p = unit_path_intro z x t
-  with
-  | eq_refl => inv (unit_path_unique x x eq_refl)
-  end.
+Theorem unit_path_inv :
+  forall x y t, inv (unit_path_intro x y t) = unit_path_intro y x t.
+Proof.
+  symmetry.
+  apply unit_path_unique.
+Qed.
 
-Definition unit_transport [A] [x y : A] (p : x = y) (u : unit)
-: transport p u = u
-:= transport_const p u.
+Theorem unit_transport :
+  forall A (x y : A) (p : x = y) (u : unit), transport p u = u.
+Proof.
+  intros.
+  apply transport_const.
+Qed.
 
 (* Sigma types *)
 
@@ -464,11 +456,12 @@ Proof.
   - exact (sigma_path_compute _ _ x).
 Qed.
 
-Definition sigma_transport
-  [C] (A : C -> Type) (B : sigT A -> Type)
-  [x y : C] (p : x = y)
-  (ab : { ax : A x & B (existT A x ax) })
-: transport (P := fun x => { ax : A x & B (existT A x ax) }) p ab =
+Theorem sigma_transport :
+  forall
+    C (A : C -> Type) (B : sigT A -> Type)
+    (x y : C) (p : x = y)
+    (ab : { ax : A x & B (existT A x ax) }),
+  transport (P := fun x => { ax : A x & B (existT A x ax) }) p ab =
   existT (fun py => B (existT A y py))
     (transport (P := A) p (projT1 ab))
     (transport (P := B)
@@ -478,30 +471,25 @@ Definition sigma_transport
         (existT _ p eq_refl)
       )
       (projT2 ab)
-    )
-:=
-  match p with
-  | eq_refl =>
-    match ab with
-    | existT _ _ _ => eq_refl
-    end
-  end.
+    ).
+Proof.
+  destruct p, ab.
+  reflexivity.
+Qed.
 
-Definition pair_transport
-  [C] (A : C -> Type) (B : C -> Type)
-  [x y : C] (p : x = y)
-  (ab : { _ : A x & B x })
-: transport (P := fun x => { _ : A x & B x }) p ab =
+Theorem pair_transport :
+  forall
+    C (A : C -> Type) (B : C -> Type)
+    (x y : C) (p : x = y)
+    (ab : { _ : A x & B x }),
+  transport (P := fun x => { _ : A x & B x }) p ab =
   existT (fun py => B y)
     (transport (P := A) p (projT1 ab))
-    (transport (P := B) p (projT2 ab))
-:=
-  match p with
-  | eq_refl =>
-    match ab with
-    | existT _ _ _ => eq_refl
-    end
-  end.
+    (transport (P := B) p (projT2 ab)).
+Proof.
+  destruct p, ab.
+  reflexivity.
+Qed.
 
 Definition sigma_universal_property_forward
   C (A : C -> Type) (B : forall x : C, A x -> Type) :
@@ -551,12 +539,13 @@ Definition pi_path_unique
 : p = pi_path_intro _ _ (pi_path_elim p)
 := inv (projT1 (projT2 (function_extensionality _ _ f g)) p).
 
-Definition pi_transport
-  [C] (A : C -> Type) (B : forall x, A x -> Type)
-  [x y : C] (p : x = y)
-  (f : forall z : A x, B x z)
-  (ay : A y)
-: transport (P := fun x => forall z : A x, B x z) p f ay =
+Theorem pi_transport :
+  forall
+    C (A : C -> Type) (B : forall x, A x -> Type)
+    (x y : C) (p : x = y)
+    (f : forall z : A x, B x z)
+    (ay : A y),
+  transport (P := fun x => forall z : A x, B x z) p f ay =
   transport (P := fun w => B (projT1 w) (projT2 w))
     (
       inv (
@@ -566,44 +555,24 @@ Definition pi_transport
           (existT _ (inv p) eq_refl)
       )
     )
-    (f (transport (P := A) (inv p) ay))
-:=
-  match p
-  in _ = z
-  return
-    forall az : A z,
-    transport (P := fun x => forall z : A x, B x z) p f az =
-    transport (P := fun w => B (projT1 w) (projT2 w))
-      (
-        inv (
-          sigma_path_intro
-            (existT A z _)
-            (existT A x _)
-            (existT _ (inv p) eq_refl)
-        )
-      )
-      (f (transport (P := A) (inv p) az))
-  with
-  | eq_refl => fun _ => eq_refl
-  end ay.
+    (f (transport (P := A) (inv p) ay)).
+Proof.
+  destruct p.
+  reflexivity.
+Qed.
 
-Definition function_transport
-  [C] (A : C -> Type) (B : C -> Type)
-  [x y : C] (p : x = y)
-  (f : A x -> B x)
-  (ay : A y)
-: transport (P := fun x => A x -> B x) p f ay =
-  transport (P := B) p (f (transport (P := A) (inv p) ay))
-:=
-  match p
-  in _ = z
-  return
-    forall az : A z,
-    transport (P := fun x => A x -> B x) p f az =
-    transport (P := B) p (f (transport (P := A) (inv p) az))
-  with
-  | eq_refl => fun _ => eq_refl
-  end ay.
+Theorem function_transport :
+  forall
+    C (A : C -> Type) (B : C -> Type)
+    (x y : C) (p : x = y)
+    (f : A x -> B x)
+    (ay : A y),
+  transport (P := fun x => A x -> B x) p f ay =
+  transport (P := B) p (f (transport (P := A) (inv p) ay)).
+Proof.
+  destruct p.
+  reflexivity.
+Qed.
 
 (* Univalence *)
 
@@ -646,10 +615,12 @@ Definition type_path_unique [A B] (p : A = B) :
   | eq_refl => inv (projT1 (projT2 (univalence _ _)) eq_refl)
   end.
 
-Definition type_transport
-  [A] (B : A -> Type) [x y : A] (p : x = y) (u : B x)
-: transport p u = projT1 (type_path_elim (ap B p)) u
-:= transport_compose p B u.
+Theorem type_transport
+  A (B : A -> Type) (x y : A) (p : x = y) (u : B x)
+: transport p u = projT1 (type_path_elim (ap B p)) u.
+Proof.
+  exact (transport_compose p B u).
+Qed.
 
 (* Now that we have function extensionality, we can prove more about sigmas. *)
 
@@ -1841,13 +1812,17 @@ Qed.
   prove more about equalities in the universe.
 *)
 
-Definition type_path_refl A : eq_refl = type_path_intro (id_is_equiv A)
-:= type_path_unique eq_refl.
-
-Definition type_path_inv [A B] [f : A -> B] (f_equiv : IsEquiv f)
-: inv (type_path_intro f_equiv) =
-  type_path_intro (inv_is_equiv _ _ _ f_equiv).
+Theorem type_path_refl : forall A, eq_refl = type_path_intro (id_is_equiv A).
 Proof.
+  intro.
+  apply type_path_unique.
+Qed.
+
+Theorem type_path_inv :
+  forall A B (f : A -> B) (f_equiv : IsEquiv f),
+  inv (type_path_intro f_equiv) = type_path_intro (inv_is_equiv _ _ _ f_equiv).
+Proof.
+  intros.
   set (f_pair := existT _ f f_equiv).
   change f with (projT1 f_pair).
   change f_equiv with (projT2 f_pair).
@@ -1887,11 +1862,15 @@ Proof.
     reflexivity.
 Qed.
 
-Definition type_path_compose
-  [A B C] [f : A -> B] [g : B -> C] (f_equiv : IsEquiv f) (g_equiv : IsEquiv g)
-: concat (type_path_intro f_equiv) (type_path_intro g_equiv) =
+Theorem type_path_compose :
+  forall
+    A B C
+    (f : A -> B) (g : B -> C)
+    (f_equiv : IsEquiv f) (g_equiv : IsEquiv g),
+  concat (type_path_intro f_equiv) (type_path_intro g_equiv) =
   type_path_intro (comp_is_equiv _ _ _ _ _ f_equiv g_equiv).
 Proof.
+  intros.
   set (f_pair := existT _ f f_equiv).
   set (g_pair := existT _ g g_equiv).
   change f with (projT1 f_pair).
