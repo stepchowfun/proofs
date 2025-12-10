@@ -6,6 +6,7 @@
 (****************************************************)
 (****************************************************)
 
+Require Import Stdlib.Bool.Bool.
 Require Import Stdlib.Program.Basics.
 
 #[local] Open Scope program_scope.
@@ -268,6 +269,70 @@ Proof.
   auto.
 Qed.
 
+(* The empty type *)
+
+Definition empty_path_intro (x y : Empty_set) : Empty_set -> x = y :=
+  match x with end.
+
+Definition empty_path_elim [x y : Empty_set] : x = y -> Empty_set :=
+  match x with end.
+
+Definition empty_path_compute (x y : Empty_set)
+: forall c, empty_path_elim (empty_path_intro x y c) = c
+:= match x with end.
+
+Definition empty_path_unique (x y : Empty_set)
+: forall p, empty_path_intro x y (empty_path_elim p) = p
+:= match x with end.
+
+Theorem empty_path_intro_is_equiv :
+  forall x y : Empty_set, IsEquiv (empty_path_intro x y).
+Proof.
+  intros.
+  apply quasi_inv_is_equiv.
+  exists (@empty_path_elim x y).
+  split; intro.
+  - exact (empty_path_compute _ _ x0).
+  - exact (empty_path_unique _ _ x0).
+Qed.
+
+Theorem empty_path_elim_is_equiv :
+  forall x y : Empty_set, IsEquiv (@empty_path_elim x y).
+Proof.
+  intros.
+  apply quasi_inv_is_equiv.
+  exists (@empty_path_intro x y).
+  split; intro.
+  - exact (empty_path_unique _ _ x0).
+  - exact (empty_path_compute _ _ x0).
+Qed.
+
+Theorem empty_path_refl : forall x c, eq_refl = empty_path_intro x x c.
+Proof.
+  destruct x.
+Qed.
+
+Theorem empty_path_compose :
+  forall x y z c d e,
+  concat (empty_path_intro x y c) (empty_path_intro y z d) =
+    empty_path_intro x z e.
+Proof.
+  destruct x.
+Qed.
+
+Theorem empty_path_inv :
+  forall x y c d, inv (empty_path_intro x y c) = empty_path_intro y x d.
+Proof.
+  destruct x.
+Qed.
+
+Theorem empty_transport :
+  forall A (x y : A) (p : x = y) (u : Empty_set), transport p u = u.
+Proof.
+  intros.
+  apply transport_const.
+Qed.
+
 (* The unit type *)
 
 Definition unit_path_intro (x y : unit) : unit -> x = y :=
@@ -283,10 +348,10 @@ Definition unit_path_elim [x y : unit] : x = y -> unit :=
   fun _ => tt.
 
 Definition unit_path_compute (x y : unit)
-: forall z, unit_path_elim (unit_path_intro x y z) = z
+: forall c, unit_path_elim (unit_path_intro x y c) = c
 :=
-  fun z =>
-    match z with
+  fun c =>
+    match c with
     | tt => eq_refl
     end.
 
@@ -301,8 +366,7 @@ Definition unit_path_unique (x y : unit)
       end
     end.
 
-Theorem unit_path_intro_is_equiv :
-  forall x y : unit, IsEquiv (unit_path_intro x y).
+Theorem unit_path_intro_is_equiv : forall x y, IsEquiv (unit_path_intro x y).
 Proof.
   intros.
   apply quasi_inv_is_equiv.
@@ -312,8 +376,7 @@ Proof.
   - exact (unit_path_unique _ _ x0).
 Qed.
 
-Theorem unit_path_elim_is_equiv :
-  forall x y : unit, IsEquiv (@unit_path_elim x y).
+Theorem unit_path_elim_is_equiv : forall x y, IsEquiv (@unit_path_elim x y).
 Proof.
   intros.
   apply quasi_inv_is_equiv.
@@ -323,30 +386,131 @@ Proof.
   - exact (unit_path_compute _ _ x0).
 Qed.
 
-Theorem unit_path_refl : forall x y, eq_refl = unit_path_intro x x y.
+Theorem unit_path_refl : forall x c, eq_refl = unit_path_intro x x c.
 Proof.
-  symmetry.
-  apply unit_path_unique.
+  destruct x; reflexivity.
 Qed.
 
 Theorem unit_path_compose :
-  forall x y z t u v,
-  concat (unit_path_intro x y t) (unit_path_intro y z u) =
-    unit_path_intro x z v.
+  forall x y z c d e,
+  concat (unit_path_intro x y c) (unit_path_intro y z d) =
+    unit_path_intro x z e.
 Proof.
-  symmetry.
-  apply unit_path_unique.
+  destruct x, y, z; reflexivity.
 Qed.
 
 Theorem unit_path_inv :
-  forall x y t, inv (unit_path_intro x y t) = unit_path_intro y x t.
+  forall x y c d, inv (unit_path_intro x y c) = unit_path_intro y x d.
 Proof.
-  symmetry.
-  apply unit_path_unique.
+  destruct x, y; reflexivity.
 Qed.
 
 Theorem unit_transport :
   forall A (x y : A) (p : x = y) (u : unit), transport p u = u.
+Proof.
+  intros.
+  apply transport_const.
+Qed.
+
+(* The Boolean type *)
+
+Definition bool_code x y := if eqb x y then unit else Empty_set.
+
+Definition bool_path_intro (x y : bool) : bool_code x y -> x = y :=
+  match x return bool_code x y -> x = y with
+  | true =>
+    match y return bool_code true y -> true = y with
+    | true => fun c => eq_refl
+    | false => fun c => match c with end
+    end
+  | false =>
+    match y return bool_code false y -> false = y with
+    | true => fun c => match c with end
+    | false => fun c => eq_refl
+    end
+  end.
+
+Definition bool_path_elim [x y : bool] : x = y -> bool_code x y :=
+  fun p =>
+    match p with
+    | eq_refl =>
+      match x with
+      | true => tt
+      | false => tt
+      end
+    end.
+
+Definition bool_path_compute (x y : bool)
+: forall c, bool_path_elim (bool_path_intro x y c) = c
+:=
+  match x with
+  | true =>
+    match y with
+    | true => fun c => match c with tt => eq_refl end
+    | false => fun c => match c with end
+    end
+  | false =>
+    match y with
+    | true => fun c => match c with end
+    | false => fun c => match c with tt => eq_refl end
+    end
+  end.
+
+Definition bool_path_unique (x y : bool)
+: forall p, bool_path_intro x y (bool_path_elim p) = p
+:=
+  fun p =>
+    match p with
+    | eq_refl =>
+      match x with
+      | true => eq_refl
+      | false => eq_refl
+      end
+    end.
+
+Theorem bool_path_intro_is_equiv :
+  forall x y : bool, IsEquiv (bool_path_intro x y).
+Proof.
+  intros.
+  apply quasi_inv_is_equiv.
+  exists (@bool_path_elim x y).
+  split; intro.
+  - exact (bool_path_compute _ _ x0).
+  - exact (bool_path_unique _ _ x0).
+Qed.
+
+Theorem bool_path_elim_is_equiv :
+  forall x y : bool, IsEquiv (@bool_path_elim x y).
+Proof.
+  intros.
+  apply quasi_inv_is_equiv.
+  exists (@bool_path_intro x y).
+  split; intro.
+  - exact (bool_path_unique _ _ x0).
+  - exact (bool_path_compute _ _ x0).
+Qed.
+
+Theorem bool_path_refl : forall x c, eq_refl = bool_path_intro x x c.
+Proof.
+  destruct x; reflexivity.
+Qed.
+
+Theorem bool_path_compose :
+  forall x y z c d e,
+  concat (bool_path_intro x y c) (bool_path_intro y z d) =
+    bool_path_intro x z e.
+Proof.
+  destruct x, y, z, c, d; reflexivity.
+Qed.
+
+Theorem bool_path_inv :
+  forall x y c d, inv (bool_path_intro x y c) = bool_path_intro y x d.
+Proof.
+  destruct x, y, c; reflexivity.
+Qed.
+
+Theorem bool_transport :
+  forall A (x y : A) (p : x = y) (u : bool), transport p u = u.
 Proof.
   intros.
   apply transport_const.
