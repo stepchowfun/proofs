@@ -2008,88 +2008,51 @@ Proof.
 Qed.
 
 Theorem type_path_inv :
-  forall A B (f : A -> B) (f_equiv : IsEquiv f),
-  inv (type_path_intro f_equiv) = type_path_intro (inv_is_equiv _ _ _ f_equiv).
+  forall A B (p : A = B),
+  inv p = type_path_intro (inv_is_equiv _ _ _ (projT2 (type_path_elim p))).
 Proof.
   intros.
-  set (f_pair := existT _ f f_equiv).
-  change f with (projT1 f_pair).
-  change f_equiv with (projT2 f_pair).
-  clearbody f_pair.
-  clear f f_equiv.
-  set (f_path := type_path_intro (projT2 f_pair)).
-  replace f_pair with (type_path_elim f_path).
-  - clearbody f_path.
-    clear f_pair.
-    destruct f_path.
-    cbn.
-    change (transport eq_refl) with (@id A).
-    replace (id_is_equiv A) with (
-      existT
-        (
-          fun g : A -> A =>
-            {eta : Homotopy (g ∘ id) id &
-            {epsilon : Homotopy (id ∘ g) id &
-            forall x : A, ap id (eta x) = epsilon (id x)}}
-        )
-        (@id A)
-        (
-          existT
-            _
-            (fun _ => eq_refl)
-            (existT _ (fun _ => eq_refl) (fun _ => eq_refl))
-        )
-    ).
-    + cbn.
-      rewrite type_path_refl.
-      f_equal.
-      apply is_equiv_is_prop.
-    + apply is_equiv_is_prop.
-  - unfold f_path.
-    rewrite type_path_compute.
-    rewrite <- sigT_eta.
-    reflexivity.
+  destruct p.
+  change (projT1 (type_path_elim eq_refl)) with (@id A).
+  replace (projT2 (type_path_elim eq_refl)) with (
+    existT
+      (
+        fun g : A -> A =>
+          {eta : Homotopy (g ∘ id) id &
+          {epsilon : Homotopy (id ∘ g) id &
+          forall x : A, ap id (eta x) = epsilon (id x)}}
+      )
+      (@id A)
+      (
+        existT
+          _
+          (fun _ => eq_refl)
+          (existT _ (fun _ => eq_refl) (fun _ => eq_refl))
+      )
+  ).
+  + cbn.
+    rewrite type_path_refl.
+    f_equal.
+    apply is_equiv_is_prop.
+  + apply is_equiv_is_prop.
 Qed.
 
 Theorem type_path_compose :
-  forall
-    A B C
-    (f : A -> B) (g : B -> C)
-    (f_equiv : IsEquiv f) (g_equiv : IsEquiv g),
-  concat (type_path_intro f_equiv) (type_path_intro g_equiv) =
-  type_path_intro (comp_is_equiv _ _ _ _ _ f_equiv g_equiv).
+  forall A B C (p : A = B) (q : B = C),
+  concat p q =
+  type_path_intro (
+    comp_is_equiv _ _ _ _ _
+      (projT2 (type_path_elim p))
+      (projT2 (type_path_elim q))
+  ).
 Proof.
   intros.
-  set (f_pair := existT _ f f_equiv).
-  set (g_pair := existT _ g g_equiv).
-  change f with (projT1 f_pair).
-  change g with (projT1 g_pair).
-  change f_equiv with (projT2 f_pair).
-  change g_equiv with (projT2 g_pair).
-  clearbody f_pair g_pair.
-  clear f g f_equiv g_equiv.
-  set (f_path := type_path_intro (projT2 f_pair)).
-  set (g_path := type_path_intro (projT2 g_pair)).
-  replace f_pair with (type_path_elim f_path).
-  - replace g_pair with (type_path_elim g_path).
-    + clearbody f_path g_path.
-      clear f_pair g_pair.
-      destruct f_path.
-      destruct g_path.
-      cbn.
-      change (transport eq_refl) with (@id A).
-      change (@id A ∘ @id A) with (@id A).
-      rewrite type_path_refl.
-      f_equal.
-      apply is_equiv_is_prop.
-    + unfold g_path.
-      rewrite type_path_compute.
-      rewrite <- sigT_eta.
-      reflexivity.
-  - unfold f_path.
-    rewrite type_path_compute.
-    rewrite <- sigT_eta.
-    reflexivity.
+  destruct p, q.
+  change (projT1 (type_path_elim eq_refl)) with (@id A).
+  cbn.
+  rewrite type_path_refl.
+  f_equal.
+  apply is_equiv_is_prop.
 Qed.
 
 (* An example of using univalence *)
