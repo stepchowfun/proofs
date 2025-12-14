@@ -86,7 +86,7 @@ Definition ap_id [A] [x y : A] (p : x = y) : ap id p = p :=
   | eq_refl => eq_refl
   end.
 
-Definition ap_comp [A B C] [x y : A] (f : A -> B) (g : B -> C) (p : x = y) :
+Definition ap_compose [A B C] [x y : A] (f : A -> B) (g : B -> C) (p : x = y) :
   ap g (ap f p) = ap (g ∘ f) p
 :=
   match p with
@@ -197,7 +197,7 @@ Proof.
       unfold id, compose in *.
       change (ap f (eta x)) with (ap (fun x : A => f x) (eta x)).
       rewrite <- H.
-      rewrite (ap_comp (fun x0 : A => g (f x0)) f).
+      rewrite (ap_compose (fun x0 : A => g (f x0)) f).
       reflexivity.
   - change (g (f x)) with ((g ∘ f) x).
     pose proof naturality.
@@ -313,15 +313,13 @@ Proof.
 Qed.
 
 Theorem empty_path_compose :
-  forall x y z c d e,
-  concat (empty_path_intro x y c) (empty_path_intro y z d) =
-    empty_path_intro x z e.
+  forall x y z c (p : x = y) (q : y = z), concat p q = empty_path_intro x z c.
 Proof.
   destruct x.
 Qed.
 
 Theorem empty_path_inv :
-  forall x y c d, inv (empty_path_intro x y c) = empty_path_intro y x d.
+  forall x y c (p : x = y), inv p = empty_path_intro y x c.
 Proof.
   destruct x.
 Qed.
@@ -388,21 +386,22 @@ Qed.
 
 Theorem unit_path_refl : forall x c, eq_refl = unit_path_intro x x c.
 Proof.
-  destruct x; reflexivity.
+  destruct x.
+  reflexivity.
 Qed.
 
 Theorem unit_path_compose :
-  forall x y z c d e,
-  concat (unit_path_intro x y c) (unit_path_intro y z d) =
-    unit_path_intro x z e.
+  forall x y z c (p : x = y) (q : y = z), concat p q = unit_path_intro x z c.
 Proof.
-  destruct x, y, z; reflexivity.
+  destruct p, q, x.
+  reflexivity.
 Qed.
 
 Theorem unit_path_inv :
-  forall x y c d, inv (unit_path_intro x y c) = unit_path_intro y x d.
+  forall x y c (p : x = y), inv p = unit_path_intro y x c.
 Proof.
-  destruct x, y; reflexivity.
+  destruct p, x.
+  reflexivity.
 Qed.
 
 Theorem unit_transport :
@@ -496,17 +495,15 @@ Proof.
 Qed.
 
 Theorem bool_path_compose :
-  forall x y z c d e,
-  concat (bool_path_intro x y c) (bool_path_intro y z d) =
-    bool_path_intro x z e.
+  forall x y z c (p : x = y) (q : y = z), concat p q = bool_path_intro x z c.
 Proof.
-  destruct x, y, z, c, d; reflexivity.
+  destruct p, q, x; reflexivity.
 Qed.
 
 Theorem bool_path_inv :
-  forall x y c d, inv (bool_path_intro x y c) = bool_path_intro y x d.
+  forall x y c (p : x = y), inv p = bool_path_intro y x c.
 Proof.
-  destruct x, y, c; reflexivity.
+  destruct p, x; reflexivity.
 Qed.
 
 Theorem bool_transport :
@@ -723,6 +720,34 @@ Theorem pi_transport :
 Proof.
   destruct p.
   reflexivity.
+Qed.
+
+Theorem pi_path_refl :
+  forall (A : U) (B : A -> U) (f : forall x : A, B x),
+  eq_refl = pi_path_intro f f (fun x => eq_refl).
+Proof.
+  intros.
+  apply pi_path_unique.
+Qed.
+
+Theorem pi_path_compose :
+  forall
+    (A : U) (B : A -> U) (f g h : forall x : A, B x) (p : f = g) (q : g = h),
+  concat p q = pi_path_intro f h (
+    fun x => concat (pi_path_elim p x) (pi_path_elim q x)
+  ).
+Proof.
+  destruct p, q.
+  apply pi_path_unique.
+Qed.
+
+Theorem pi_path_inv :
+  forall
+    (A : U) (B : A -> U) (f g : forall x : A, B x) (p : f = g),
+  inv p = pi_path_intro g f (fun x => inv (pi_path_elim p x)).
+Proof.
+  destruct p.
+  apply pi_path_unique.
 Qed.
 
 Theorem function_transport :
@@ -1262,7 +1287,7 @@ Proof.
   specialize (e x2).
   unfold id, compose in *.
   rewrite e.
-  rewrite ap_comp.
+  rewrite ap_compose.
   pose proof naturality.
   specialize H with (h := x1) (p := inv e0).
   unfold id, compose in *.
