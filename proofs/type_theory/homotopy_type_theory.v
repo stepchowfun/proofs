@@ -269,7 +269,7 @@ Proof.
   auto.
 Qed.
 
-(* The empty type *)
+(* The path space of the empty type *)
 
 Definition empty_path_intro (x y : Empty_set) : Empty_set -> x = y :=
   match x with end.
@@ -331,7 +331,7 @@ Proof.
   apply transport_const.
 Qed.
 
-(* The unit type *)
+(* The path space of the unit type *)
 
 Definition unit_path_intro (x y : unit) : unit -> x = y :=
   fun _ =>
@@ -411,7 +411,7 @@ Proof.
   apply transport_const.
 Qed.
 
-(* The Boolean type *)
+(* The path space of the Boolean type *)
 
 Definition bool_code x y := if eqb x y then unit else Empty_set.
 
@@ -513,7 +513,7 @@ Proof.
   apply transport_const.
 Qed.
 
-(* Sigma types *)
+(* The path spaces of sigma types *)
 
 Definition sigma_path_intro
   [A] [B : A -> Type] (s1 s2 : sigT B)
@@ -617,6 +617,95 @@ Proof.
   - exact (sigma_path_compute _ _ x).
 Qed.
 
+Theorem sigma_path_refl :
+  forall (A : U) (B : A -> U) (s : sigT B),
+  eq_refl = sigma_path_intro s s (existT _ eq_refl eq_refl).
+Proof.
+  intros.
+  apply sigma_path_unique.
+Qed.
+
+Theorem sigma_path_compose :
+  forall (A : U) (B : A -> U) (s1 s2 s3 : sigT B) (p : s1 = s2) (q : s2 = s3),
+  concat p q =
+  sigma_path_intro s1 s3 (
+    existT _
+      (concat (projT1 (sigma_path_elim p)) (projT1 (sigma_path_elim q)))
+      (
+        transport
+          (P := fun r =>
+            transport (
+              concat (projT1 (sigma_path_elim p)) (projT1 (sigma_path_elim q))
+            ) (projT2 s1) = r
+          )
+          (projT2 (sigma_path_elim q))
+          (
+            transport
+              (P := fun r =>
+                transport (
+                  concat
+                    (projT1 (sigma_path_elim p))
+                    (projT1 (sigma_path_elim q))
+                ) (projT2 s1) = transport (projT1 (sigma_path_elim q)) r
+              )
+              (projT2 (sigma_path_elim p))
+              (
+                inv (
+                  transport_concat
+                    (projT1 (sigma_path_elim p))
+                    (projT1 (sigma_path_elim q))
+                    (projT2 s1)
+                )
+              )
+          )
+      )
+  ).
+Proof.
+  destruct p, q.
+  apply sigma_path_unique.
+Qed.
+
+Theorem sigma_path_inv :
+  forall (A : U) (B : A -> U) (s1 s2 : sigT B) (p : s1 = s2),
+  inv p = sigma_path_intro s2 s1 (
+    existT _
+      (inv (projT1 (sigma_path_elim p)))
+      (
+        transport
+          (
+            P := fun q =>
+              transport (inv (projT1 (sigma_path_elim p))) (projT2 s2) =
+              transport q (projT2 s1)
+          )
+          (right_inv (projT1 (sigma_path_elim p)))
+          (
+            transport
+              (
+                P := fun q =>
+                  transport (inv (projT1 (sigma_path_elim p))) q =
+                  transport
+                    (
+                      concat
+                        (projT1 (sigma_path_elim p))
+                        (inv (projT1 (sigma_path_elim p)))
+                    )
+                    (projT2 s1)
+              )
+              (projT2 (sigma_path_elim p))
+              (
+                transport_concat
+                  (projT1 (sigma_path_elim p))
+                  (inv (projT1 (sigma_path_elim p)))
+                  (projT2 s1)
+              )
+          )
+      )
+  ).
+Proof.
+  destruct p.
+  apply sigma_path_unique.
+Qed.
+
 Theorem sigma_transport :
   forall
     C (A : C -> Type) (B : sigT A -> Type)
@@ -664,7 +753,7 @@ Definition sigma_universal_property_backward
   (forall x, sigT (fun y : A x => B x y))
 := fun p x => existT _ (projT1 p x) (projT2 p x).
 
-(* Function extensionality *)
+(* The path spaces of pi types *)
 
 Definition pi_path_elim [A] [B : A -> Type] [f g : forall x, B x]
   (p : f = g) : Homotopy f g
@@ -763,7 +852,7 @@ Proof.
   reflexivity.
 Qed.
 
-(* Univalence *)
+(* The path space of the universe *)
 
 Definition type_path_elim [A B] (p : A = B) :
   { f : A -> B & IsEquiv f } :=
