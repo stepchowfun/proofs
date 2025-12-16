@@ -741,18 +741,6 @@ Proof.
   reflexivity.
 Qed.
 
-Definition sigma_universal_property_forward
-  C (A : C -> Type) (B : forall x : C, A x -> Type) :
-  (forall x, sigT (fun y : A x => B x y)) ->
-  sigT (fun f : (forall x, A x) => forall x, B x (f x))
-:= fun g => existT _ (fun x => projT1 (g x)) (fun x => projT2 (g x)).
-
-Definition sigma_universal_property_backward
-  C (A : C -> Type) (B : forall x : C, A x -> Type) :
-  sigT (fun f : (forall x, A x) => forall x, B x (f x)) ->
-  (forall x, sigT (fun y : A x => B x y))
-:= fun p x => existT _ (projT1 p x) (projT2 p x).
-
 (* The path spaces of pi types *)
 
 Definition pi_path_elim [A] [B : A -> Type] [f g : forall x, B x]
@@ -789,28 +777,6 @@ Definition pi_path_unique
 : p = pi_path_intro _ _ (pi_path_elim p)
 := inv (projT1 (projT2 (function_extensionality _ _ f g)) p).
 
-Theorem pi_transport :
-  forall
-    C (A : C -> Type) (B : forall x, A x -> Type)
-    (x y : C) (p : x = y)
-    (f : forall z : A x, B x z)
-    (ay : A y),
-  transport (P := fun x => forall z : A x, B x z) p f ay =
-  transport (P := fun w => B (projT1 w) (projT2 w))
-    (
-      inv (
-        sigma_path_intro
-          (existT A y _)
-          (existT A x _)
-          (existT _ (inv p) eq_refl)
-      )
-    )
-    (f (transport (P := A) (inv p) ay)).
-Proof.
-  destruct p.
-  reflexivity.
-Qed.
-
 Theorem pi_path_refl :
   forall (A : U) (B : A -> U) (f : forall x : A, B x),
   eq_refl = pi_path_intro f f (fun x => eq_refl).
@@ -837,6 +803,28 @@ Theorem pi_path_inv :
 Proof.
   destruct p.
   apply pi_path_unique.
+Qed.
+
+Theorem pi_transport :
+  forall
+    C (A : C -> Type) (B : forall x, A x -> Type)
+    (x y : C) (p : x = y)
+    (f : forall z : A x, B x z)
+    (ay : A y),
+  transport (P := fun x => forall z : A x, B x z) p f ay =
+  transport (P := fun w => B (projT1 w) (projT2 w))
+    (
+      inv (
+        sigma_path_intro
+          (existT A y _)
+          (existT A x _)
+          (existT _ (inv p) eq_refl)
+      )
+    )
+    (f (transport (P := A) (inv p) ay)).
+Proof.
+  destruct p.
+  reflexivity.
 Qed.
 
 Theorem function_transport :
@@ -900,7 +888,22 @@ Proof.
   exact (transport_compose p B u).
 Qed.
 
-(* Now that we have function extensionality, we can prove more about sigmas. *)
+(*
+  Now that we have function extensionality, we can demonstrate the universal
+  property for sigmas.
+*)
+
+Definition sigma_universal_property_forward
+  C (A : C -> Type) (B : forall x : C, A x -> Type) :
+  (forall x, sigT (fun y : A x => B x y)) ->
+  sigT (fun f : (forall x, A x) => forall x, B x (f x))
+:= fun g => existT _ (fun x => projT1 (g x)) (fun x => projT2 (g x)).
+
+Definition sigma_universal_property_backward
+  C (A : C -> Type) (B : forall x : C, A x -> Type) :
+  sigT (fun f : (forall x, A x) => forall x, B x (f x)) ->
+  (forall x, sigT (fun y : A x => B x y))
+:= fun p x => existT _ (projT1 p x) (projT2 p x).
 
 Theorem sigma_universal_property_forward_is_equiv :
   forall C (A : C -> Type) (B : forall x : C, A x -> Type),
