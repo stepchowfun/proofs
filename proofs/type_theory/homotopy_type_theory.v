@@ -618,7 +618,7 @@ Proof.
 Qed.
 
 Theorem sigma_path_refl :
-  forall (A : U) (B : A -> U) (s : sigT B),
+  forall A (B : A -> Type) (s : sigT B),
   eq_refl = sigma_path_intro s s (existT _ eq_refl eq_refl).
 Proof.
   intros.
@@ -626,7 +626,7 @@ Proof.
 Qed.
 
 Theorem sigma_path_compose :
-  forall (A : U) (B : A -> U) (s1 s2 s3 : sigT B) (p : s1 = s2) (q : s2 = s3),
+  forall A (B : A -> Type) (s1 s2 s3 : sigT B) (p : s1 = s2) (q : s2 = s3),
   concat p q =
   sigma_path_intro s1 s3 (
     existT _
@@ -666,7 +666,7 @@ Proof.
 Qed.
 
 Theorem sigma_path_inv :
-  forall (A : U) (B : A -> U) (s1 s2 : sigT B) (p : s1 = s2),
+  forall A (B : A -> Type) (s1 s2 : sigT B) (p : s1 = s2),
   inv p = sigma_path_intro s2 s1 (
     existT _
       (inv (projT1 (sigma_path_elim p)))
@@ -727,12 +727,139 @@ Proof.
   reflexivity.
 Qed.
 
+(* The path spaces of pair types *)
+
+Definition pair A B := sigT (fun _ : A => B).
+
+Definition pair_path_intro [A B] (s1 s2 : pair A B)
+: pair (projT1 s1 = projT1 s2) (projT2 s1 = projT2 s2) -> s1 = s2
+:=
+  match s1 with
+  | existT _ s1_1 s1_2 =>
+    match s2 with
+    | existT _ s2_1 s2_2 =>
+      fun h =>
+        match projT1 h
+        in _ = z
+        return
+          existT _ s1_1 s1_2 = existT _ z s2_2
+        with
+        | eq_refl =>
+          match projT2 h with
+          | eq_refl => eq_refl
+          end
+        end
+    end
+  end.
+
+Definition pair_path_elim [A B] [s1 s2 : pair A B] (h : s1 = s2)
+: pair (projT1 s1 = projT1 s2) (projT2 s1 = projT2 s2)
+:=
+  match h with
+  | eq_refl => existT _ eq_refl eq_refl
+  end.
+
+Definition pair_path_compute [A B] (s1 s2 : pair A B)
+: forall h : pair (projT1 s1 = projT1 s2) (projT2 s1 = projT2 s2),
+  pair_path_elim (pair_path_intro s1 s2 h) = h
+:=
+  match s1 with
+  | existT _ s1_1 s1_2 =>
+    match s2 with
+    | existT _ s2_1 s2_2 =>
+      fun h =>
+        match h with
+        | existT _ h1 h2 =>
+          match h1
+          in _ = z
+          return
+            pair_path_elim (
+              pair_path_intro
+                (existT _ s1_1 s1_2)
+                (existT _ z s2_2)
+                (existT _ h1 h2)
+            ) = existT _ h1 h2
+          with
+          | eq_refl =>
+            match h2 with
+            | eq_refl => eq_refl
+            end
+          end
+        end
+    end
+  end.
+
+Definition pair_path_unique [A B] [s1 s2 : pair A B] (p : s1 = s2)
+: p = pair_path_intro _ _ (pair_path_elim p)
+:=
+  match p with
+  | eq_refl =>
+    match s1 with
+    | existT _ _ _ => eq_refl
+    end
+  end.
+
+Theorem pair_path_intro_is_equiv :
+  forall A B (s1 s2 : pair A B), IsEquiv (pair_path_intro s1 s2).
+Proof.
+  intros.
+  apply quasi_inv_is_equiv.
+  exists (@pair_path_elim _ _ s1 s2).
+  split; intro.
+  - exact (pair_path_compute _ _ x).
+  - exact (inv (pair_path_unique x)).
+Qed.
+
+Theorem pair_path_elim_is_equiv :
+  forall A B (s1 s2 : pair A B), IsEquiv (@pair_path_elim _ _ s1 s2).
+Proof.
+  intros.
+  apply quasi_inv_is_equiv.
+  exists (pair_path_intro s1 s2).
+  split; intro.
+  - exact (inv (pair_path_unique x)).
+  - exact (pair_path_compute _ _ x).
+Qed.
+
+Theorem pair_path_refl :
+  forall A B (s : pair A B),
+  eq_refl = pair_path_intro s s (existT _ eq_refl eq_refl).
+Proof.
+  intros.
+  apply pair_path_unique.
+Qed.
+
+Theorem pair_path_compose :
+  forall A B (s1 s2 s3 : pair A B) (p : s1 = s2) (q : s2 = s3),
+  concat p q =
+  pair_path_intro s1 s3 (
+    existT _
+      (concat (projT1 (pair_path_elim p)) (projT1 (pair_path_elim q)))
+      (concat (projT2 (pair_path_elim p)) (projT2 (pair_path_elim q)))
+  ).
+Proof.
+  destruct p, q.
+  apply pair_path_unique.
+Qed.
+
+Theorem pair_path_inv :
+  forall A B (s1 s2 : pair A B) (p : s1 = s2),
+  inv p = pair_path_intro s2 s1 (
+    existT _
+      (inv (projT1 (pair_path_elim p)))
+      (inv (projT2 (pair_path_elim p)))
+  ).
+Proof.
+  destruct p.
+  apply pair_path_unique.
+Qed.
+
 Theorem pair_transport :
   forall
     C (A : C -> Type) (B : C -> Type)
     (x y : C) (p : x = y)
-    (ab : { _ : A x & B x }),
-  transport (P := fun x => { _ : A x & B x }) p ab =
+    (ab : pair (A x) (B x)),
+  transport (P := fun x => pair (A x) (B x)) p ab =
   existT (fun py => B y)
     (transport (P := A) p (projT1 ab))
     (transport (P := B) p (projT2 ab)).
@@ -760,7 +887,7 @@ Definition pi_path_intro [A] [B : A -> Type] (f g : forall x, B x)
 := projT1 (function_extensionality _ _ f g) h.
 
 Theorem pi_path_intro_is_equiv :
-  forall (A : U) (B : A -> U) (f g : forall x : A, B x),
+  forall A (B : A -> Type) (f g : forall x : A, B x),
   IsEquiv (@pi_path_intro _ _ f g).
 Proof.
   intros.
@@ -778,7 +905,7 @@ Definition pi_path_unique
 := inv (projT1 (projT2 (function_extensionality _ _ f g)) p).
 
 Theorem pi_path_refl :
-  forall (A : U) (B : A -> U) (f : forall x : A, B x),
+  forall A (B : A -> Type) (f : forall x : A, B x),
   eq_refl = pi_path_intro f f (fun x => eq_refl).
 Proof.
   intros.
@@ -786,8 +913,7 @@ Proof.
 Qed.
 
 Theorem pi_path_compose :
-  forall
-    (A : U) (B : A -> U) (f g h : forall x : A, B x) (p : f = g) (q : g = h),
+  forall A (B : A -> Type) (f g h : forall x : A, B x) (p : f = g) (q : g = h),
   concat p q = pi_path_intro f h (
     fun x => concat (pi_path_elim p x) (pi_path_elim q x)
   ).
@@ -797,8 +923,7 @@ Proof.
 Qed.
 
 Theorem pi_path_inv :
-  forall
-    (A : U) (B : A -> U) (f g : forall x : A, B x) (p : f = g),
+  forall A (B : A -> Type) (f g : forall x : A, B x) (p : f = g),
   inv p = pi_path_intro g f (fun x => inv (pi_path_elim p x)).
 Proof.
   destruct p.
@@ -825,6 +950,56 @@ Theorem pi_transport :
 Proof.
   destruct p.
   reflexivity.
+Qed.
+
+(* The path spaces of function types *)
+
+Definition function_path_elim [A B] [f g : A -> B] (p : f = g) : Homotopy f g
+:= pi_path_elim p.
+
+Definition function_path_intro [A B] (f g : A -> B) (h : Homotopy f g) : f = g
+:= pi_path_intro f g h.
+
+Theorem function_path_intro_is_equiv :
+  forall A B (f g : A -> B), IsEquiv (@function_path_intro _ _ f g).
+Proof.
+  intros.
+  exact (pi_path_intro_is_equiv _ _ _ _).
+Qed.
+
+Definition function_path_compute [A B] (f g : A -> B) (h : Homotopy f g)
+: function_path_elim (function_path_intro _ _ h) = h
+:= pi_path_compute f g h.
+
+Definition function_path_unique
+  [A B] [f g : A -> B] (p : f = g)
+: p = function_path_intro _ _ (function_path_elim p)
+:= pi_path_unique p.
+
+Theorem function_path_refl :
+  forall A B (f : A -> B),
+  eq_refl = function_path_intro f f (fun x => eq_refl).
+Proof.
+  intros.
+  exact (pi_path_refl _ _ _).
+Qed.
+
+Theorem function_path_compose :
+  forall A B (f g h : A -> B) (p : f = g) (q : g = h),
+  concat p q = function_path_intro f h (
+    fun x => concat (function_path_elim p x) (function_path_elim q x)
+  ).
+Proof.
+  intros.
+  exact (pi_path_compose _ _ _ _ _ _ _).
+Qed.
+
+Theorem function_path_inv :
+  forall A B (f g : A -> B) (p : f = g),
+  inv p = function_path_intro g f (fun x => inv (function_path_elim p x)).
+Proof.
+  intros.
+  exact (pi_path_inv _ _ _ _ _).
 Qed.
 
 Theorem function_transport :
@@ -2179,7 +2354,7 @@ Qed.
 Definition bit_weekend_path : Bit = Weekend :=
   type_path_intro bit_weekend_equiv.
 
-Theorem zero_saturday :
+Theorem zero_saturday_path :
   transport (P := id) bit_weekend_path Zero = Saturday.
 Proof.
   rewrite type_transport.
@@ -2189,7 +2364,7 @@ Proof.
   reflexivity.
 Qed.
 
-Theorem one_sunday :
+Theorem one_sunday_path :
   transport (P := id) bit_weekend_path One = Sunday.
 Proof.
   rewrite type_transport.
@@ -2199,16 +2374,15 @@ Proof.
   reflexivity.
 Qed.
 
-Theorem bits_weekends :
-  transport (P := fun (T : U) => sigT (fun _ : T => T)) bit_weekend_path
+Theorem bits_weekends_path :
+  transport (P := fun T : U => pair T T) bit_weekend_path
     (existT _ Zero One) =
   existT _ Saturday Sunday.
 Proof.
   rewrite pair_transport.
   cbn.
-  apply sigma_path_intro.
+  apply pair_path_intro.
   cbn.
-  exists zero_saturday.
-  rewrite transport_const.
-  exact one_sunday.
+  exists zero_saturday_path.
+  exact one_sunday_path.
 Qed.
