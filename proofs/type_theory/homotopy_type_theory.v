@@ -2354,9 +2354,10 @@ Qed.
 Definition bit_weekend_path : Bit = Weekend :=
   type_path_intro bit_weekend_equiv.
 
-Theorem zero_saturday_path :
-  transport (P := id) bit_weekend_path Zero = Saturday.
+Theorem bit_weekend_transport :
+  forall x, transport (P := id) bit_weekend_path x = bit_to_weekend x.
 Proof.
+  intros.
   rewrite type_transport.
   rewrite ap_id.
   unfold bit_weekend_path.
@@ -2364,14 +2365,41 @@ Proof.
   reflexivity.
 Qed.
 
-Theorem one_sunday_path :
-  transport (P := id) bit_weekend_path One = Sunday.
+Theorem weekend_bit_transport :
+  forall x, transport (P := id) (inv bit_weekend_path) x = weekend_to_bit x.
 Proof.
+  intros.
   rewrite type_transport.
   rewrite ap_id.
   unfold bit_weekend_path.
-  rewrite type_path_compute.
-  reflexivity.
+  rewrite type_path_inv.
+  Opaque inv_is_equiv.
+  repeat rewrite type_path_compute.
+  cbn.
+  set (eta :=
+    (fun x => match x with Zero => eq_refl | One => eq_refl end)
+    : Homotopy (weekend_to_bit ∘ bit_to_weekend) id
+  ).
+  set (epsilon :=
+    (fun x => match x with Saturday => eq_refl | Sunday => eq_refl end)
+    : Homotopy (bit_to_weekend ∘ weekend_to_bit) id
+  ).
+  assert (forall x, ap bit_to_weekend (eta x) = epsilon (bit_to_weekend x)).
+  - destruct x0; reflexivity.
+  - replace bit_weekend_equiv with (
+      existT
+        (
+          fun g : Weekend -> Bit => {
+            eta : Homotopy (g ∘ bit_to_weekend) id & {
+            epsilon : Homotopy (bit_to_weekend ∘ g) id &
+            forall x : Bit,
+              ap bit_to_weekend (eta x) = epsilon (bit_to_weekend x) }}
+        )
+        weekend_to_bit
+        (existT _ eta (existT _ epsilon H))
+    ).
+    + reflexivity.
+    + apply is_equiv_is_prop.
 Qed.
 
 Theorem bits_weekends_path :
@@ -2383,6 +2411,31 @@ Proof.
   cbn.
   apply pair_path_intro.
   cbn.
-  exists zero_saturday_path.
-  exact one_sunday_path.
+  exists (bit_weekend_transport Zero).
+  exact (bit_weekend_transport One).
+Qed.
+
+Definition invert_bit x :=
+  match x with
+  | Zero => One
+  | One => Zero
+  end.
+
+Definition invert_weekend x :=
+  match x with
+  | Saturday => Sunday
+  | Sunday => Saturday
+  end.
+
+Theorem invert_invert_path :
+  transport (P := fun T : U => T -> T) bit_weekend_path
+    invert_bit =
+  invert_weekend.
+Proof.
+  apply function_path_intro.
+  intro.
+  rewrite function_transport.
+  rewrite weekend_bit_transport.
+  rewrite bit_weekend_transport.
+  destruct x; reflexivity.
 Qed.
