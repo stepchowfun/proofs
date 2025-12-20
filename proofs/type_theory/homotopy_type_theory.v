@@ -2322,7 +2322,7 @@ Proof.
   apply is_equiv_is_prop.
 Qed.
 
-(* An example of using univalence *)
+(* An example of using homotopy type theory *)
 
 Inductive Bit : U :=
 | Zero
@@ -2438,4 +2438,26 @@ Proof.
   rewrite weekend_bit_transport.
   rewrite bit_weekend_transport.
   destruct x; reflexivity.
+Qed.
+
+Theorem invert_bit_involution :
+  forall x, invert_bit (invert_bit x) = x.
+Proof.
+  destruct x; reflexivity.
+Qed.
+
+Theorem invert_weekend_involution :
+  forall x, invert_weekend (invert_weekend x) = x.
+Proof.
+  intros.
+  rewrite <- invert_invert_path.
+  repeat rewrite function_transport.
+  rewrite transport_concat.
+  rewrite right_inv.
+  rewrite transport_refl.
+  rewrite invert_bit_involution.
+  rewrite transport_concat.
+  rewrite left_inv.
+  rewrite transport_refl.
+  reflexivity.
 Qed.
