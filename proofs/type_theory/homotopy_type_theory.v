@@ -737,7 +737,7 @@ Qed.
 
 (* The path spaces of pair types *)
 
-Definition pair A B := sigT (fun _ : A => B).
+Definition pair A B := { _ : A & B }.
 
 Definition pair_path_intro [A B] (s1 s2 : pair A B)
 : pair (projT1 s1 = projT1 s2) (projT2 s1 = projT2 s2) -> s1 = s2
@@ -2382,14 +2382,71 @@ Proof.
   destruct x; reflexivity.
 Qed.
 
+(*
+  We'll prove a simple theorem for the bits domain, then transport it to
+  weekends domain.
+*)
+
 Theorem invert_bit_involution :
   forall x, invert_bit (invert_bit x) = x.
 Proof.
   destruct x; reflexivity.
 Qed.
 
+Definition Invertible (T : U) := {
+  invert : T -> T &
+  forall x, invert (invert x) = x
+}.
+
+Definition bit_invertible : Invertible Bit :=
+  existT _ invert_bit invert_bit_involution.
+
+Definition weekend_invertible : Invertible Weekend :=
+  transport bit_weekend_path bit_invertible.
+
+Goal bit_invertible = transport (inv bit_weekend_path) weekend_invertible.
+Proof.
+  unfold weekend_invertible.
+  rewrite transport_concat.
+  rewrite right_inv.
+  rewrite transport_refl.
+  reflexivity.
+Qed.
+
+Theorem weekend_invertible_invert : projT1 weekend_invertible = invert_weekend.
+Proof.
+  unfold weekend_invertible.
+  pose proof sigma_transport
+    _
+    (fun T : U => T -> T)
+    (fun TT => forall x, projT2 TT (projT2 TT x) = x)
+    _
+    _
+    bit_weekend_path
+    bit_invertible.
+  cbn in H.
+  change (fun x : U => {ax : x -> x & forall x0 : x, ax (ax x0) = x0})
+    with Invertible in H.
+  rewrite H.
+  cbn.
+  rewrite transport_invert_bit.
+  reflexivity.
+Qed.
+
 Theorem invert_weekend_involution :
   forall x, invert_weekend (invert_weekend x) = x.
+Proof.
+  pose proof (projT2 weekend_invertible).
+  rewrite weekend_invertible_invert in H.
+  assumption.
+Qed.
+
+(*
+  We could transport that simple theorem in a more manual way, but doing so
+  could be unwieldy for more complicated theorems.
+*)
+
+Goal forall x, invert_weekend (invert_weekend x) = x.
 Proof.
   intros.
   rewrite <- transport_invert_bit.
