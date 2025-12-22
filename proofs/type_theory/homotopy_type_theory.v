@@ -25,6 +25,14 @@ Definition inv [A] [x y : A] (p : x = y) : y = x :=
   | eq_refl => eq_refl
   end.
 
+Definition inv_refl [A] (x : A) : inv (@eq_refl A x) = @eq_refl A x :=
+  eq_refl.
+
+Definition inv_inv [A] [x y : A] (p : x = y) : inv (inv p) = p :=
+  match p with
+  | eq_refl => eq_refl
+  end.
+
 Definition concat [A] [x y z : A] (p : x = y) (q : y = z) : x = z :=
   match q with
   | eq_refl => p
@@ -121,8 +129,8 @@ Definition transport_const [A B] [x y : A] (p : x = y) (z : B)
   end.
 
 Definition transport_compose
-  [A B] [P : B -> Type] [x y : A] (p : x = y) (f : A -> B) (u : P (f x))
-: transport (P := compose P f) p u = transport (ap f p) u
+  [A B] [P : B -> Type] [x y : A] (p : x = y) (f : A -> B)
+: transport (P := compose P f) p = transport (ap f p)
 :=
   match p with
   | eq_refl => eq_refl
@@ -934,19 +942,19 @@ Theorem pi_transport :
   forall
     C (A : C -> Type) (B : forall x, A x -> Type)
     (x y : C) (p : x = y)
-    (f : forall z : A x, B x z)
-    (ay : A y),
-  transport (P := fun x => forall z : A x, B x z) p f ay =
-  transport (P := fun w => B (projT1 w) (projT2 w))
-    (
-      inv (
-        sigma_path_intro
-          (existT A y _)
-          (existT A x _)
-          (existT _ (inv p) eq_refl)
+    (f : forall z : A x, B x z),
+  transport (P := fun x => forall z : A x, B x z) p f =
+  fun ay : A y =>
+    transport (P := fun w => B (projT1 w) (projT2 w))
+      (
+        inv (
+          sigma_path_intro
+            (existT A y _)
+            (existT A x _)
+            (existT _ (inv p) eq_refl)
+        )
       )
-    )
-    (f (transport (P := A) (inv p) ay)).
+      (f (transport (P := A) (inv p) ay)).
 Proof.
   destruct p.
   reflexivity.
@@ -1006,10 +1014,9 @@ Theorem function_transport :
   forall
     C (A : C -> Type) (B : C -> Type)
     (x y : C) (p : x = y)
-    (f : A x -> B x)
-    (ay : A y),
-  transport (P := fun x => A x -> B x) p f ay =
-  transport (P := B) p (f (transport (P := A) (inv p) ay)).
+    (f : A x -> B x),
+  transport (P := fun x => A x -> B x) p f =
+  fun ay : A y => transport (P := B) p (f (transport (P := A) (inv p) ay)).
 Proof.
   destruct p.
   reflexivity.
@@ -1056,82 +1063,10 @@ Definition type_path_unique [A B] (p : A = B) :
   | eq_refl => inv (projT1 (projT2 (univalence _ _)) eq_refl)
   end.
 
-Theorem type_transport
-  A (B : A -> Type) (x y : A) (p : x = y) (u : B x)
-: transport p u = projT1 (type_path_elim (ap B p)) u.
+Theorem type_transport A (B : A -> Type) (x y : A) (p : x = y)
+: transport (P := B) p = projT1 (type_path_elim (ap B p)).
 Proof.
-  exact (transport_compose p B u).
-Qed.
-
-(*
-  Now that we have function extensionality, we can demonstrate the universal
-  property for sigmas.
-*)
-
-Definition sigma_universal_property_forward
-  C (A : C -> Type) (B : forall x : C, A x -> Type) :
-  (forall x, sigT (fun y : A x => B x y)) ->
-  sigT (fun f : (forall x, A x) => forall x, B x (f x))
-:= fun g => existT _ (fun x => projT1 (g x)) (fun x => projT2 (g x)).
-
-Definition sigma_universal_property_backward
-  C (A : C -> Type) (B : forall x : C, A x -> Type) :
-  sigT (fun f : (forall x, A x) => forall x, B x (f x)) ->
-  (forall x, sigT (fun y : A x => B x y))
-:= fun p x => existT _ (projT1 p x) (projT2 p x).
-
-Theorem sigma_universal_property_forward_is_equiv :
-  forall C (A : C -> Type) (B : forall x : C, A x -> Type),
-  IsEquiv (sigma_universal_property_forward C A B).
-Proof.
-  intros.
-  apply quasi_inv_is_equiv.
-  exists (sigma_universal_property_backward C A B).
-  split; intro.
-  - apply pi_path_intro.
-    intro.
-    unfold
-      compose,
-      id,
-      sigma_universal_property_forward,
-      sigma_universal_property_backward.
-    cbn.
-    rewrite <- sigT_eta.
-    reflexivity.
-  - unfold
-      compose,
-      id,
-      sigma_universal_property_forward,
-      sigma_universal_property_backward.
-    destruct x.
-    reflexivity.
-Qed.
-
-Theorem sigma_universal_property_backward_is_equiv :
-  forall C (A : C -> Type) (B : forall x : C, A x -> Type),
-  IsEquiv (sigma_universal_property_backward C A B).
-Proof.
-  intros.
-  apply quasi_inv_is_equiv.
-  exists (sigma_universal_property_forward C A B).
-  split; intro.
-  - unfold
-      compose,
-      id,
-      sigma_universal_property_forward,
-      sigma_universal_property_backward.
-    destruct x.
-    reflexivity.
-  - apply pi_path_intro.
-    intro.
-    unfold
-      compose,
-      id,
-      sigma_universal_property_forward,
-      sigma_universal_property_backward.
-    cbn.
-    rewrite <- sigT_eta.
-    reflexivity.
+  exact (transport_compose p B).
 Qed.
 
 (* Homotopy n-types (starting at 0 rather than the more conventional -2) *)
@@ -2354,10 +2289,9 @@ Qed.
 Definition bit_weekend_path : Bit = Weekend :=
   type_path_intro bit_weekend_equiv.
 
-Theorem bit_weekend_transport :
-  forall x, transport (P := id) bit_weekend_path x = bit_to_weekend x.
+Theorem transport_bit :
+  transport (P := @id U) bit_weekend_path = bit_to_weekend.
 Proof.
-  intros.
   rewrite type_transport.
   rewrite ap_id.
   unfold bit_weekend_path.
@@ -2365,54 +2299,48 @@ Proof.
   reflexivity.
 Qed.
 
-Theorem weekend_bit_transport :
-  forall x, transport (P := id) (inv bit_weekend_path) x = weekend_to_bit x.
+Theorem transport_weekend :
+  transport (P := @id U) (inv bit_weekend_path) = weekend_to_bit.
 Proof.
-  intros.
   rewrite type_transport.
   rewrite ap_id.
   unfold bit_weekend_path.
   rewrite type_path_inv.
-  Opaque inv_is_equiv.
   repeat rewrite type_path_compute.
   cbn.
-  set (eta :=
-    (fun x => match x with Zero => eq_refl | One => eq_refl end)
-    : Homotopy (weekend_to_bit ∘ bit_to_weekend) id
-  ).
-  set (epsilon :=
-    (fun x => match x with Saturday => eq_refl | Sunday => eq_refl end)
-    : Homotopy (bit_to_weekend ∘ weekend_to_bit) id
-  ).
-  assert (forall x, ap bit_to_weekend (eta x) = epsilon (bit_to_weekend x)).
-  - destruct x0; reflexivity.
-  - replace bit_weekend_equiv with (
-      existT
-        (
-          fun g : Weekend -> Bit => {
-            eta : Homotopy (g ∘ bit_to_weekend) id & {
-            epsilon : Homotopy (bit_to_weekend ∘ g) id &
-            forall x : Bit,
-              ap bit_to_weekend (eta x) = epsilon (bit_to_weekend x) }}
-        )
-        weekend_to_bit
-        (existT _ eta (existT _ epsilon H))
-    ).
-    + reflexivity.
-    + apply is_equiv_is_prop.
+  apply function_path_intro.
+  intro.
+  destruct bit_weekend_equiv.
+  destruct s, s.
+  cbn.
+  unfold Homotopy, compose, id in *.
+  rewrite <- (x2 x).
+  rewrite x1.
+  destruct (x0 x); reflexivity.
 Qed.
 
-Theorem bits_weekends_path :
+Theorem transport_bits :
   transport (P := fun T : U => pair T T) bit_weekend_path
     (existT _ Zero One) =
   existT _ Saturday Sunday.
 Proof.
   rewrite pair_transport.
   cbn.
-  apply pair_path_intro.
+  change (fun x : U => x) with (@id U).
+  rewrite transport_bit.
+  reflexivity.
+Qed.
+
+Theorem transport_weekends :
+  transport (P := fun T : U => pair T T) (inv bit_weekend_path)
+    (existT _ Saturday Sunday) =
+  (existT _ Zero One).
+Proof.
+  rewrite pair_transport.
   cbn.
-  exists (bit_weekend_transport Zero).
-  exact (bit_weekend_transport One).
+  change (fun x : U => x) with (@id U).
+  rewrite transport_weekend.
+  reflexivity.
 Qed.
 
 Definition invert_bit x :=
@@ -2427,16 +2355,30 @@ Definition invert_weekend x :=
   | Sunday => Saturday
   end.
 
-Theorem invert_invert_path :
+Theorem transport_invert_bit :
   transport (P := fun T : U => T -> T) bit_weekend_path
     invert_bit =
   invert_weekend.
 Proof.
+  rewrite function_transport.
+  change (fun x : U => x) with (@id U).
+  rewrite transport_bit, transport_weekend.
   apply function_path_intro.
   intro.
+  destruct x; reflexivity.
+Qed.
+
+Theorem transport_invert_weekend :
+  transport (P := fun T : U => T -> T) (inv bit_weekend_path)
+    invert_weekend =
+  invert_bit.
+Proof.
   rewrite function_transport.
-  rewrite weekend_bit_transport.
-  rewrite bit_weekend_transport.
+  change (fun x : U => x) with (@id U).
+  rewrite inv_inv.
+  rewrite transport_bit, transport_weekend.
+  apply function_path_intro.
+  intro.
   destruct x; reflexivity.
 Qed.
 
@@ -2450,7 +2392,7 @@ Theorem invert_weekend_involution :
   forall x, invert_weekend (invert_weekend x) = x.
 Proof.
   intros.
-  rewrite <- invert_invert_path.
+  rewrite <- transport_invert_bit.
   repeat rewrite function_transport.
   rewrite transport_concat.
   rewrite right_inv.
