@@ -2257,7 +2257,7 @@ Proof.
   apply is_equiv_is_prop.
 Qed.
 
-(* An example of using homotopy type theory *)
+(* An example of using homotopy type theory to relate two equivalent domains *)
 
 Inductive Bit : U :=
 | Zero
@@ -2457,6 +2457,56 @@ Proof.
   rewrite invert_bit_involution.
   rewrite transport_concat.
   rewrite left_inv.
+  rewrite transport_refl.
+  reflexivity.
+Qed.
+
+(*
+  What does it mean for two invertibles to be equal? One thing we can show is
+  that there must be an equivalence on the carrier type that commutes with the
+  invert operation.
+*)
+
+Theorem equal_invertibles_equivalence_commutes_with_invert :
+  forall (i1 i2 : sigT Invertible) (p : i1 = i2),
+  let f := projT1 (type_path_elim (projT1 (sigma_path_elim p))) in
+  let invert1 := projT1 (projT2 i1) in
+  let invert2 := projT1 (projT2 i2) in
+  forall x, f (invert1 x) = invert2 (f x).
+Proof.
+  intros.
+  destruct i1, i2.
+  cbn in *.
+  clear f.
+  destruct (sigma_path_elim p).
+  cbn in *.
+  clear p.
+  rename x0 into A.
+  rename x1 into B.
+  rename i into iA.
+  rename i0 into iB.
+  rename x2 into H0.
+  rename e into H1.
+  pose proof sigma_transport
+    _
+    (fun T : U => T -> T)
+    (fun TT => forall x, projT2 TT (projT2 TT x) = x)
+    _
+    _
+    H0
+    iA.
+  change (fun x : U => {ax : _ & _ }) with Invertible in H.
+  rewrite H1 in H.
+  destruct (sigma_path_elim H).
+  clear H e.
+  rename x0 into H2.
+  cbn in H2.
+  change (projT1 iA) with invert1 in H2.
+  change (projT1 iB) with invert2 in H2.
+  rewrite H2.
+  rewrite function_transport.
+  rewrite transport_concat.
+  rewrite right_inv.
   rewrite transport_refl.
   reflexivity.
 Qed.
