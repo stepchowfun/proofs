@@ -2442,8 +2442,8 @@ Proof.
 Qed.
 
 (*
-  We could transport that simple theorem in a more manual way, but doing so
-  could be unwieldy for more complicated theorems.
+  We can transport that simple theorem in a more manual way, but doing so for
+  more complicated theorems could be unwieldy.
 *)
 
 Goal forall x, invert_weekend (invert_weekend x) = x.
