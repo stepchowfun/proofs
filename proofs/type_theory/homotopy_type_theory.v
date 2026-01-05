@@ -1450,8 +1450,7 @@ Theorem fiber_is_contr :
 Proof.
   intros.
   unfold IsContr, IsTrunc.
-  destruct X.
-  destruct a, s.
+  destruct X, a, s.
   exists (existT _ (x y) (x1 y)).
   intros.
   destruct x2.
@@ -1970,7 +1969,8 @@ Proof.
   Please report at http://rocq-prover.org/bugs/.
   ```
 
-  So, for now, we abandon this proof. Fortunately, nothing below depend on it.
+  The bug was reported here: https://github.com/rocq-prover/rocq/issues/21466.
+  For now, we abandon this proof. Fortunately, nothing below depend on it.
 *)
 Abort.
 
