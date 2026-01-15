@@ -88,7 +88,7 @@ Check better_multiply. (* `nat -> nat -> nat` *)
 
 Compute multiply 3 4. (* `12` *)
 
-(* Currying works with any positive integer number of arguments. *)
+(* Currying works with any number of arguments. *)
 
 Definition add_and_multiply x y z := x + y * z.
 
