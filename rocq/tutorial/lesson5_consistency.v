@@ -48,7 +48,7 @@ Fail Fixpoint f (n : nat) : False := f n.
   One might guess that `Type` is its own type, i.e., `Type : Type`. However, in
   a rather convoluted way, this would allow one to define a nonterminating
   function and prove `False`. This is called Girard's paradox, and you can find
-  it in this repo at [file:proofs/type_theory/girard.v].
+  it in this repo at [file:rocq/type_theory/girard.v].
 
   So, instead of having `Type : Type`, we have an infinite hierarchy of
   universes `Type_i` for all `i` >= 0. For convenience, universes are

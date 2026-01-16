@@ -20,7 +20,7 @@ Import Stdlib.Lists.List.ListNotations.
   Rocq allows recursive definitions, but only if the recursion happens on
   structural subterms of the input. This restriction ensures that all functions
   terminate on every input, preventing `False` from being proven with infinite
-  recursion. See [file:proofs/tutorial/lesson5_consistency.v] for more details.
+  recursion. See [file:rocq/tutorial/lesson5_consistency.v] for more details.
 
   Merge sort and Euclid's algorithm are common examples of recursive functions
   that don't satisfy the restriction. We'll consider a simpler example:
@@ -104,7 +104,7 @@ Fail Definition alternate l := (
   In other type theories, we might not have this problem. But Rocq generally
   doesn't allow pattern matching on proofs (terms whose types are in `Prop`) to
   produce non-proofs so that proofs can be erased during extraction. See
-  [file:proofs/tutorial/lesson6_extraction.v] for details.
+  [file:rocq/tutorial/lesson6_extraction.v] for details.
 
   Despite this restriction on `Prop`, `CallTree l` lives in `Prop` for a good
   reason: so we could use facts about arithmetic to construct call trees in the

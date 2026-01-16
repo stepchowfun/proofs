@@ -8,7 +8,7 @@ verify:
           RocqMakefile.conf \
           _RocqProjectFull
 	cp _RocqProject _RocqProjectFull
-	find proofs -type f -name '*.v' >> _RocqProjectFull
+	find rocq -type f -name '*.v' >> _RocqProjectFull
 	rocq makefile -f _RocqProjectFull -o RocqMakefile || (rm -f \
             .RocqMakefile.d \
             .lia.cache \

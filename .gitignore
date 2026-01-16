@@ -3,8 +3,8 @@
 /Makefile.rocq
 /Makefile.rocq.conf
 /_RocqProjectFull
-/proofs/**/*.aux
-/proofs/**/*.glob
-/proofs/**/*.vo
-/proofs/**/*.vok
-/proofs/**/*.vos
+/rocq/**/*.aux
+/rocq/**/*.glob
+/rocq/**/*.vo
+/rocq/**/*.vok
+/rocq/**/*.vos

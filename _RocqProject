@@ -4,4 +4,4 @@
 -arg "-set 'Primitive Projections'"
 -arg "-set 'Printing Projections'"
 -arg "-unset 'Printing Primitive Projection Parameters'"
--Q proofs main
+-Q rocq main
