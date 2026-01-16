@@ -8,7 +8,7 @@ verify:
           RocqMakefile.conf \
           _RocqProjectFull
 	cp _RocqProject _RocqProjectFull
-	find rocq -type f -name '*.v' >> _RocqProjectFull
+	find proofs_rocq -type f -name '*.v' >> _RocqProjectFull
 	rocq makefile -f _RocqProjectFull -o RocqMakefile || (rm -f \
             .RocqMakefile.d \
             .lia.cache \
@@ -39,7 +39,8 @@ clean:
           _RocqProjectFull \
 	  $(shell \
 	    find . -type d \( \
-	      -path ./.git \
+	      -path ./.git -o \
+	      -path ./.lake \
 	    \) -prune -o \( \
 	      -name '*.aux' -o \
 	      -name '*.glob' -o \

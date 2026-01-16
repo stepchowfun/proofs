@@ -1,10 +1,11 @@
 /.Makefile.rocq.d
+/.lake
 /.lia.cache
 /Makefile.rocq
 /Makefile.rocq.conf
 /_RocqProjectFull
-/rocq/**/*.aux
-/rocq/**/*.glob
-/rocq/**/*.vo
-/rocq/**/*.vok
-/rocq/**/*.vos
+/proofs_rocq/**/*.aux
+/proofs_rocq/**/*.glob
+/proofs_rocq/**/*.vo
+/proofs_rocq/**/*.vok
+/proofs_rocq/**/*.vos
