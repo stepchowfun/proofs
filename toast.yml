@@ -10,6 +10,11 @@ command_prefix: |
     eval "$(opam env)"
   fi
 
+  # Load the elan environment, if it exists.
+  if [ -f "$HOME/.elan/env" ]; then
+    source "$HOME/.elan/env"
+  fi
+
   # Make Bash log commands.
   set -x
 tasks:
@@ -20,7 +25,8 @@ tasks:
       # Install the following packages:
       #
       # - build-essential - Used by opam to build Rocq
-      # - curl            - Used for installing Tagref
+      # - curl            - Used for installing Lean and Tagref
+      # - git             - Used for installing Lean dependencies
       # - libgmp3-dev     - Used by opam to build Rocq
       # - opam            - Used to install OCaml and Rocq
       # - pkg-config      - Used by opam to build Rocq
@@ -56,6 +62,23 @@ tasks:
       # Without this, Ruby will assume files are encoded as ASCII.
       echo 'export LANG="C.UTF-8"' >> /home/user/.profile
 
+  install_lean:
+    description: Install Lean.
+    dependencies:
+      - create_user
+      - install_packages
+    input_paths:
+      - lake-manifest.json
+      - lakefile.toml
+      - lean-toolchain
+    user: user
+    command: |
+      # Install Lean via the Lean version manager.
+      curl https://elan.lean-lang.org/elan-init.sh -sSf | sh -s -- -y
+      source "$HOME/.elan/env"
+      lake update
+      lake exe cache get
+
   install_rocq:
     description: Install Rocq.
     dependencies:
@@ -71,19 +94,24 @@ tasks:
   install_tools:
     description: Install the tools needed to verify the Rocq proofs.
     dependencies:
+      - install_lean
       - install_rocq
       - install_tagref
 
   verify:
-    description: Run Rocq on the proof scripts.
+    description: Run Lean and Rocq on the proof scripts.
     dependencies:
       - install_tools
     input_paths:
       - Makefile
       - _RocqProject
-      - proofs
+      - proofs_lean
+      - proofs_rocq
     user: user
     command: |
+      # Run Lean on the proof scripts.
+      lake build
+
       # Run Rocq on the proof scripts.
       make clean
       make
@@ -98,7 +126,7 @@ tasks:
     user: user
     command: |
       # Make sure the `LANG` environment variable is set for Ruby.
-      source ~/.profile
+      source "$HOME/.profile"
 
       # Check references with Tagref.
       tagref
@@ -106,8 +134,10 @@ tasks:
       # Run the linters.
       ./linters/lint-general.rb $(
         find . -type d \( \
-          -path ./.git \
+          -path ./.git -o \
+          -path ./.lake \
         \) -prune -o \( \
+          -name '*.lean' -o \
           -name '*.rb' -o \
           -name '*.sh' -o \
           -name '*.v' -o \
@@ -116,6 +146,18 @@ tasks:
           -name 'Makefile' \
         \) -print
       )
+      ./linters/lint-imports.rb \
+        '^\s*import ' \
+        '^\s*import ' \
+        "lake env lean ?" \
+        $(
+          find . -type d \( \
+            -path ./.git -o \
+            -path ./.lake \
+          \) -prune -o \( \
+            -name '*.lean' \
+          \) -print
+        )
       # [ref:flags]
       ./linters/lint-imports.rb \
         '^\s*Require ' \
@@ -126,10 +168,11 @@ tasks:
           -set 'Primitive Projections' \
           -set 'Printing Projections' \
           -unset 'Printing Primitive Projection Parameters' \
-          -Q proofs main ?" \
+          -Q proofs_rocq main ?" \
         $(
           find . -type d \( \
-            -path ./.git \
+            -path ./.git -o \
+            -path ./.lake \
           \) -prune -o \( \
             -name '*.v' \
           \) -print
@@ -144,10 +187,11 @@ tasks:
           -set 'Primitive Projections' \
           -set 'Printing Projections' \
           -unset 'Printing Primitive Projection Parameters' \
-          -Q proofs main ?" \
+          -Q proofs_rocq main ?" \
         $(
           find . -type d \( \
-            -path ./.git \
+            -path ./.git -o \
+            -path ./.lake \
           \) -prune -o \( \
             -name '*.v' \
           \) -print
