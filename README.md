@@ -2,11 +2,11 @@
 
 [![Build status](https://github.com/stepchowfun/proofs/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/stepchowfun/proofs/actions?query=branch%3Amain)
 
-This is my personal repository of formally verified mathematics, including results from category theory, type theory, domain theory, etc., and some original research. All the proofs are verified using the [Lean theorem prover](https://lean-lang.org/) or the [Rocq proof assistant](https://rocq-prover.org/).
+This is my personal repository of formally verified mathematics, including results from category theory, type theory, domain theory, etc., and some original research. All the proofs are verified using the [Lean theorem prover](https://lean-lang.org/) or the [Rocq proof assistant](https://rocq-prover.org/). Currently, most of the proofs are written in Rocq.
 
 If you want to set up your own repository of formally verified mathematics, you can simply fork this repository and replace the contents of the [`proofs_lean`](https://github.com/stepchowfun/proofs/tree/main/proofs_lean)<!-- [dir:proofs_lean] --> or the [`proofs_rocq`](https://github.com/stepchowfun/proofs/tree/main/proofs_rocq)<!-- [dir:proofs_rocq] --> directories with your own proofs. Setting up a Rocq project from scratch isn't particularly straightforward, so this scaffolding can save you time.
 
-If you're new to Lean, there are good educational resources available [here](https://lean-lang.org/learn/).
+If you're new to Lean, there are good educational resources available [here](https://lean-lang.org/learn/). I'm writing a tutorial [here](https://github.com/stepchowfun/proofs/tree/main/proofs_lean/tutorial)<!-- [dir:proofs_lean/tutorial] -->, but it's currently incomplete.
 
 If you're new to Rocq, start with the tutorial [here](https://github.com/stepchowfun/proofs/tree/main/proofs_rocq/tutorial)<!-- [dir:proofs_rocq/tutorial] -->. I recommend [Software Foundations](https://softwarefoundations.cis.upenn.edu/) and [Certified Programming with Dependent Types](http://adam.chlipala.net/cpdt/) for further learning.
 
