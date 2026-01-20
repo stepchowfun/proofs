@@ -371,8 +371,8 @@ def map_option.{u, v} {α : Type u} {β : Type v}
   | some x => some (f x)
 
 /-
-  It's possible to explicitly bind implicit arguments using `@`, except for
-  parameters like `α`. A placeholder `_` must be used for parameters:
+  Implicit arguments can be bound to variables using `@`. Parameters such as
+  `α`, however, must be bound to inaccessible variables (`_`).
 
   ```
   def map_option.{u, v} {α : Type u} {β : Type v}
@@ -441,8 +441,7 @@ def add (n m : Nat) :=
 
 /-
   1. Define the concept of lists as an inductive data type which is
-     parameterized by the element type. Which arguments would you make
-     implicit, if any?
+     parameterized by the element type.
   2. Define a function which computes the length of a list as defined in the
      previous question.
   3. Define a `map` function for lists as defined in the first question,
@@ -450,6 +449,6 @@ def add (n m : Nat) :=
   4. Define a function which compares two natural numbers for equality.
   5. Define multiplication of natural numbers.
   6. Define subtraction of natural numbers. The function should return an
-     `OptionNat` (or `Option Nat`) to account for the fact that negative
-     results can't be represented as natural numbers.
+     `Option Nat` to account for the fact that negative results can't be
+     represented as natural numbers.
 -/
