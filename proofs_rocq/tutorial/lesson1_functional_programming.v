@@ -17,7 +17,8 @@
   integers, and they're the most common type of number in Rocq.
 
   To use these commands interactively, be sure you're using an IDE that
-  supports Rocq, such as RocqIDE or Visual Studio Code with the VsRocq plugin.
+  supports Rocq, such as RocqIDE or Visual Studio Code with the VsRocq
+  extension.
 *)
 
 Check 3 + 4. (* `nat` *)
@@ -38,25 +39,25 @@ Check my_variable. (* `nat` *)
 (*
   Functions are data too, so we can also use `Definition` to introduce
   functions. Rocq is able to infer that the type of this function is
-  `nat -> nat` based on how `+` is used in the body.
+  `nat -> nat` based on how `*` is used in the body.
 *)
 
-Definition double := fun x => x + x.
+Definition parabola := fun x => 2 * x * x.
 
-Check double. (* `nat -> nat` *)
+Check parabola. (* `nat -> nat` *)
 
-(* Here's a more convenient syntax that does the same thing. *)
+(* Here's a more convenient syntax that does the same thing: *)
 
-Definition better_double x := x + x.
+Definition better_parabola x := 2 * x * x.
 
-Check better_double. (* `nat -> nat` *)
+Check better_parabola. (* `nat -> nat` *)
 
 (*
-  To call a function `f` on some input `x`, we simply write `f x`. Note that
-  we don't need parentheses, unlike in other languages.
+  To call a function `f` on some input `x`, we simply write `f x`. Note that we
+  don't need parentheses, unlike in other languages.
 *)
 
-Compute double my_variable. (* `84` *)
+Compute parabola my_variable. (* `3528` *)
 
 (*
   In Rocq, every function takes exactly one argument. However, we can use
@@ -66,9 +67,9 @@ Compute double my_variable. (* `84` *)
   which takes the second argument to the final result.
 *)
 
-Definition multiply := fun x => fun y => x * y.
+Definition paraboloid := fun x => fun y => 2 * (x * x + y * y).
 
-Check multiply. (* `nat -> nat -> nat` *)
+Check paraboloid. (* `nat -> nat -> nat` *)
 
 (*
   Note that `nat -> nat -> nat` should be understood as `nat -> (nat -> nat)`,
@@ -77,24 +78,24 @@ Check multiply. (* `nat -> nat -> nat` *)
   Rocq has a more convenient syntax for defining curried functions like this:
 *)
 
-Definition better_multiply x y := x * y.
+Definition better_paraboloid x y := 2 * (x * x + y * y).
 
-Check better_multiply. (* `nat -> nat -> nat` *)
+Check better_paraboloid. (* `nat -> nat -> nat` *)
 
 (*
   To call a curried function `f` with two arguments `x` and `y`, write `f x y`.
   This should be understood as `(f x) y`, not `f (x y)`.
 *)
 
-Compute multiply 3 4. (* `12` *)
+Compute paraboloid 3 4. (* `50` *)
 
 (* Currying works with any number of arguments. *)
 
-Definition add_and_multiply x y z := x + y * z.
+Definition density x y z := 2 * x + y * z.
 
-Check add_and_multiply. (* `nat -> nat -> nat -> nat` *)
+Check density. (* `nat -> nat -> nat -> nat` *)
 
-Compute add_and_multiply 3 4 5. (* `23` *)
+Compute density 3 4 5. (* `26` *)
 
 (*
   Sometimes, the type of a function's argument can't be inferred automatically.
@@ -144,15 +145,16 @@ Compute id nat (3 + 4). (* `7` *)
   What's the type of `id`? `id` is a curried function of two arguments, but the
   type of the second argument isn't fixed; it *depends* on the first argument,
   which isn't known here since it's provided by the caller. Thus, in the type
-  of `id`, we need to give a name to the first argument so we can refer to it
-  in the type of the second argument. The `forall` keyword does exactly that.
+  of `id`, we need to give a name to the first argument (in this case, `T`) so
+  we can refer to it in the type of the second argument. The `forall` keyword
+  does exactly that.
 *)
 
 Check id. (* `forall T : Set, T -> T` *)
 
 (*
-  `A -> B` is actually just shorthand for `forall x : A, B`, as long as `B`
-  doesn't refer to `x`. We can write the type of `id` in any of the following
+  `A -> B` is actually just shorthand for `forall _ : A -> B`, where `_` is an
+  inaccessible variable. We can write the type of `id` in any of the following
   equivalent ways:
 
   - `forall T : Set, T -> T`
@@ -180,6 +182,10 @@ Compute better_id (3 + 4). (* `7` *)
 *)
 
 Compute @better_id nat (3 + 4). (* `7` *)
+
+(* We can also do this: *)
+
+Compute better_id (T := nat) (3 + 4). (* `7` *)
 
 (*******************************)
 (* Simple inductive data types *)
@@ -229,6 +235,16 @@ Inductive OptionNat :=
 | no_nat : OptionNat
 | some_nat : nat -> OptionNat.
 
+(*
+  We could also write it like this:
+
+  ```
+  Inductive OptionNat :=
+  | no_nat
+  | some_nat (x : nat).
+  ```
+*)
+
 Check no_nat. (* `OptionNat` *)
 
 Check some_nat. (* `nat -> OptionNat` *)
@@ -239,7 +255,7 @@ Check OptionNat. (* `Set` *)
 
 (*
   When pattern matching on an `OptionNat`, we get access to the `nat` in the
-  `some` case. Here is a function which will transform the `nat`, if it exists,
+  `some` case. Here's a function which will transform the `nat`, if it exists,
   by a user-provided function.
 *)
 
@@ -251,9 +267,9 @@ Definition map_option_nat f o :=
 
 Check map_option_nat. (* `(nat -> nat) -> OptionNat -> OptionNat` *)
 
-Compute map_option_nat double (some_nat 3). (* `some_nat 6` *)
+Compute map_option_nat parabola (some_nat 3). (* `some_nat 18` *)
 
-Compute map_option_nat double no_nat. (* `no_nat` *)
+Compute map_option_nat parabola no_nat. (* `no_nat` *)
 
 (*
   `OptionNat` only works with `nat`s. We can add a type *parameter* to make it
@@ -295,13 +311,9 @@ Definition map_option [T U] f (o : option T) :=
 
 Check map_option. (* `forall T U : Set, (T -> U) -> option T -> option U` *)
 
-Compute map_option (fun n => n + 1) (none nat). (* `none nat` *)
-
-Compute map_option (fun n => n + 1) (some nat 3). (* `some nat 4` *)
+Compute map_option negb (none bool). (* `none bool` *)
 
 Compute map_option negb (some bool false). (* `some bool true` *)
-
-Compute map_option (fun n => true) (some nat 3). (* `some bool true` *)
 
 (*
   The type argument for `some` can be deduced automatically from its other

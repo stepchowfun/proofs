@@ -4,6 +4,7 @@ keywords = ["math"]
 defaultTargets = ["proofs_lean"]
 
 [leanOptions]
+autoImplicit = false # I added this option; the rest were auto-generated.
 pp.unicode.fun = true # pretty-prints `fun a ↦ b`
 relaxedAutoImplicit = false
 weak.linter.mathlibStandardSet = true
