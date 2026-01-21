@@ -58,7 +58,7 @@ Compute BoolToType false. (* `string` *)
 
 Definition age1 : nat := 42.
 
-Definition age2 : BoolToType true := 42.
+Definition age2 : BoolToType true := age1.
 
 (*
   Using `BoolToType`, we can construct a function for which the return type
@@ -70,7 +70,7 @@ Definition age2 : BoolToType true := 42.
 
 Definition weird x :=
   match x return BoolToType x with
-  | true => 42
+  | true => age1
   | false => "hello"
   end.
 
