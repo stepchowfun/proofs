@@ -332,6 +332,17 @@ Compute map_option (fun n => n + 1) (some 3). (* `some 4` *)
 Compute map_option negb (some false). (* `some true` *)
 
 (*
+  When pattern matching, implicit arguments to the constructors aren't bound by
+  default.
+*)
+
+Definition map_option_implicit_param_in_the_some_case [T U] f (o : option T) :=
+  match o with
+  | none _ => none U
+  | some x => some (f x) (* No explicit argument for the type parameter *)
+  end.
+
+(*
   Inductive data types can be recursive. For example, below is how natural
   numbers are defined in the standard library. Note that the name of the first
   constructor is the letter "O", which was chosen due to its resemblance to the

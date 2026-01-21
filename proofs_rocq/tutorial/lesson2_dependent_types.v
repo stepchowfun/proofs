@@ -58,19 +58,19 @@ Compute BoolToType false. (* `string` *)
 
 Definition age1 : nat := 42.
 
-Definition age2 : BoolToType true := 42.
+Definition age2 : BoolToType true := age1.
 
 (*
   Using `BoolToType`, we can construct a function for which the return type
   depends on the argument. Note the use of the `return` keyword to specify how
-  the type of the `match` expression depends on the value being matched on. In
-  general, such an annotation is needed when the branches of a pattern match
-  don't all have the same type.
+  the type of the `match` expression depends on the value being matched on.
+  Such an annotation is often needed when the branches of a pattern match don't
+  all have the same type.
 *)
 
 Definition weird x :=
   match x return BoolToType x with
-  | true => 42
+  | true => age1
   | false => "hello"
   end.
 
@@ -103,35 +103,19 @@ Compute weirder false. (* `42` *)
 
 (*
   We saw in Lesson 1 that inductive data types can have *parameters*.
-  Parameters give us another way to define type families.
+  Parameters give us a second way to define type families.
 *)
 
-Inductive Option (T : Set) :=
-| none : Option T
-| some : T -> Option T.
+Inductive option (T : Set) :=
+| none : option T
+| some : T -> option T.
 
-Check Option. (* `Set -> Set` *)
-
-(* Each constructor automatically takes the parameters as extra arguments. *)
-
-Check none. (* `forall T : Set, Option T` *)
-
-Check some. (* `forall T : Set, T -> Option T` *)
-
-(* When pattern matching, ignore parameter arguments with `_`. *)
-
-Definition unwrap (o : Option nat) :=
-  match o with
-  | none _ => 0
-  | some _ x => x
-  end.
-
-Check unwrap. (* `Option nat -> nat` *)
+Check option. (* `Set -> Set` *)
 
 (*
   A third way to define type families is to use *indices*. Indices are like
-  parameters, but they unlock a new power: each constructor specifies a value
-  for the index. Consider the following example:
+  parameters, but they unlock a new power: each constructor specifies a
+  particular value for the index. Consider this example:
 *)
 
 Inductive BoolOrNat : Set -> Set :=
@@ -163,7 +147,7 @@ Check pluck. (* `forall T : Set, BoolOrNat T -> T` *)
 Compute pluck (some_nat 42). (* `42` *)
 
 (*
-  The terminology is somewhat confusing. `Option` is called a *family of
+  The terminology is somewhat confusing. `option` is called a *family of
   inductive types*. `BoolOrNat` is called an *inductively defined family*, or
   *inductive family* for short. Families of inductive types, inductive
   families, and functions which return types are all called *type families*.
