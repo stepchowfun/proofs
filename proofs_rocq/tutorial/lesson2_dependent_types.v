@@ -144,7 +144,9 @@ Definition pluck [T : Set] (x : BoolOrNat T) :=
 
 Check pluck. (* `forall T : Set, BoolOrNat T -> T` *)
 
-Compute pluck (some_nat 42). (* `42` *)
+Compute pluck (some_bool true). (* `true` *)
+
+Compute pluck (some_nat 3). (* `3` *)
 
 (*
   The terminology is somewhat confusing. `option` is called a *family of

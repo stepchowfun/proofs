@@ -101,7 +101,7 @@ inductive BoolOrNat : Type → Type where
 #check BoolOrNat.some_nat /- `Nat → BoolOrNat Nat` -/
 
 /-
-  When pattern matching, the return type can depend on the indices (in this
+  When pattern matching, the result type can depend on the indices (in this
   case, `T`) as well as the value being matched on (in this case, `x`).
 -/
 
@@ -111,6 +111,8 @@ def pluck {T : Type} (x : BoolOrNat T) : T :=
   | _, .some_nat n => n
 
 #eval pluck (BoolOrNat.some_bool true) -- `true`
+
+#eval pluck (BoolOrNat.some_nat 3) -- `3`
 
 /-
   As before, Lean refines the expected type in each branch. In the first
@@ -129,8 +131,6 @@ def simpler_pluck {T : Type} (x : BoolOrNat T) : T :=
 -- Let's see what Lean did with that definition:
 
 #print simpler_pluck
-
-#eval simpler_pluck (BoolOrNat.some_bool true) -- `true`
 
 /-
   ```
