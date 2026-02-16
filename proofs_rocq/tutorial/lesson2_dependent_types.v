@@ -238,8 +238,9 @@ Print head.
   ```
 
   Rocq is smart enough to know the `empty` case is impossible, so it handles it
-  automatically with a dummy value (`idProp`). The dummy value doesn't have the
-  same type as the `nonempty` case, so this is a dependent pattern match.
+  automatically with a dummy value (`idProp`). Note the `return` annotation
+  which tells Rocq that the expected type for the empty case (`IDProp`) is
+  different than that for nonempty case (`T`).
 
   Let's try it out on a simple example.
 *)
