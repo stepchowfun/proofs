@@ -61,9 +61,9 @@ def weird x : BoolToType x :=
 #eval weird false -- `"hello"`
 
 /-
-  When pattern matching on `x`, Lean replaces `x` with `true` in the expected
+  When pattern matching on `x`, Lean replaces `x` with `true` in the result
   type of the first branch (so the expected type is `BoolToType true`, i.e.,
-  `Nat`) and with `false` in the expected type of the second branch (so the
+  `Nat`) and with `false` in the result type of the second branch (so the
   expected type is `BoolToType false`, i.e., `String`).
 -/
 
@@ -113,8 +113,7 @@ def pluck {T : Type} (x : BoolOrNat T) : T :=
 #eval pluck (BoolOrNat.some_bool true) -- `true`
 
 /-
-  As before, Lean replaces any occurrences of the expressions being matched on
-  in the expected type with the appropriate values in each branch. In the first
+  As before, Lean refines the expected type in each branch. In the first
   branch, the expected type `T` becomes `Bool`, and it becomes `Nat` in the
   second branch.
 
@@ -142,11 +141,12 @@ def simpler_pluck {T : Type} (x : BoolOrNat T) : T :=
       | .(Nat), BoolOrNat.some_nat n => n
   ```
 
-  Lean's pattern matching is a bit magical. It replaces *all* occurrences of
-  the expressions being matched in the expected type, but in some situations
-  you may want more control over which occurrences are replaced. To be fully
-  explicit, we can use the *recursor* for the type instead of pattern matching
-  syntax.
+  Lean's pattern matching is a bit magical. It refines the result type by
+  replacing *all* occurrences of the expressions being matched, but in some
+  situations we may need more control over which occurrences are replaced. To
+  be fully explicit, we can use the *recursor* for the type instead of pattern
+  matching syntax. The recursor takes an argument called `motive` which
+  specifies how the result type varies depending on the inputs being matched.
 -/
 
 #check BoolOrNat.rec
@@ -164,7 +164,8 @@ def simpler_pluck {T : Type} (x : BoolOrNat T) : T :=
 
   When we use a recursor, Lean requires that we mark the definition as
   `noncomputable` since the code generator doesn't know what to do with the
-  recursor.
+  recursor. We also need to use `#reduce` instead of `#eval` for the same
+  reason.
 -/
 
 noncomputable def pluck_the_explicit_way {T : Type} (x : BoolOrNat T) : T :=
@@ -230,8 +231,8 @@ def concatenate
   | .nonempty x v3 => Vec.nonempty x (concatenate v3 v2)
 
 /-
-  Here's a function which returns the first element of a `Vector`. It's a type
-  error to call this function on an empty `Vector`.
+  Here's a function which returns the first element of a `Vec`. It's a type
+  error to call this function on an empty `Vec`.
 -/
 
 def head {T n} (v : Vec T (Nat.succ n)) : T :=
@@ -259,13 +260,25 @@ def head {T n} (v : Vec T (Nat.succ n)) : T :=
   ```
 
   Lean is smart enough to know the `empty` case is impossible, so it handles it
-  automatically with a dummy value . The dummy value doesn't have the same type
-  as the `nonempty` case, so this is a dependent pattern match.
-
-  Let's try it out on a simple example.
+  automatically for us. As we can see, the way Lean does it is a bit
+  complicated, but we can show how to do it in a simpler way:
 -/
 
+def head_explicit {T n} (v : Vec T (Nat.succ n)) : T
+:= (
+  match Nat.succ n, v with
+  | _, .empty => Unit.unit
+  | _, .nonempty x _ => x
+  : match Nat.succ n with
+    | .zero => Unit
+    | .succ _ => T
+)
+
+-- Let's try it out on a simple example.
+
 #eval head (Vec.nonempty true Vec.empty) -- `true`
+
+#eval head_explicit (Vec.nonempty true Vec.empty) -- `true`
 
 /-
   By design, we can't take the `head` of an empty vector. If we try this:
