@@ -47,8 +47,8 @@ def parabola := fun x => 2 * x * x
 
 /-
   Even though the `#check` command above produced `parabola (x : Nat) : Nat`,
-  the type of the function is `Nat → Nat`. Lean printed some extra
-  information that isn't part of the type, like the name of the function.
+  the actual type of the function is just `Nat → Nat`. Lean printed some
+  extra information that isn't part of the type, like the name of the function.
 
   Here's a more convenient syntax for defining a function:
 -/
@@ -417,9 +417,9 @@ def map_option.{u, v} {α : Type u} {β : Type v}
 -- Addition can be defined recursively.
 
 def add (n m : Nat) :=
-  match n with
-  | .zero => m
-  | .succ p => .succ (add p m)
+  match m with
+  | .zero => n
+  | .succ p => .succ (add n p)
 
 /-
   Let's compute 1 + 1. In Lean, we can use numeric literals like `2` rather
