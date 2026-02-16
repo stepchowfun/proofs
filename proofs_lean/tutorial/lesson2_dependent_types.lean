@@ -145,7 +145,7 @@ def simpler_pluck {T : Type} (x : BoolOrNat T) : T :=
   replacing *all* occurrences of the expressions being matched, but in some
   situations we may need more control over which occurrences are replaced. We
   can specify how the result type varies depending on the inputs being matched
-  by providing an explicit `motive`:
+  by providing an explicit *motive*:
 -/
 
 def pluck_with_motive {T : Type} (x : BoolOrNat T) : T :=

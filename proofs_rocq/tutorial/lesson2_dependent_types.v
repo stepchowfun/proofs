@@ -9,7 +9,7 @@
 (*
   For variety, some the examples in this lesson will use strings. The `string`
   type is defined in the `Rocq.Strings.String` module from the standard
-  library.  Loading a compiled module is called "requiring" it. Once required,
+  library. Loading a compiled module is called "requiring" it. Once required,
   we can optionally "import" its contents into the current scope so we don't
   have to use fully qualified names. The following command does both.
 *)
