@@ -280,7 +280,7 @@ Parameter x : BoolToType (Nat.even n).
   Suppose we want to do something with `x`. Since the type of `x` depends on
   whether `n` is even or odd, we should expect to handle those two cases
   separately. For example, if `n` is even, we might want to do some arithmetic
-  with `x`, since it's a `nat` in that case. Otherwise, `x` is a string, and
+  with `x`, since it's a `nat` in that case. Otherwise, `x` is a `string`, and
   perhaps we wish to compute its length. Unfortunately, we can't do that by
   naively pattern matching on the parity of `n`:
 *)
@@ -303,7 +303,7 @@ Fail Check
   use the *convoy pattern*. First, we use dependent pattern matching to
   construct a function which accepts an arbitrary `BoolToType (Nat.even n)`,
   then we immediately call that function on `x`. Dependent pattern matching
-  specializes the type of the result on each case, so each branch only needs to
+  refines the type of the result on each case, so each branch only needs to
   consider the specific value of `Nat.even n` (`true` or `false`) corresponding
   to that case.
 *)
@@ -326,4 +326,5 @@ Check
   3. Define a `tail` function which takes a `Vec` and returns a new `Vec`
      with the contents of the original `Vec` but without the head. It should
      work with any `Vec` as its input, including the empty `Vec`.
+  4. What is the convoy pattern, and when is it needed?
 *)

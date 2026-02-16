@@ -143,10 +143,33 @@ def simpler_pluck {T : Type} (x : BoolOrNat T) : T :=
 
   Lean's pattern matching is a bit magical. It refines the result type by
   replacing *all* occurrences of the expressions being matched, but in some
-  situations we may need more control over which occurrences are replaced. To
-  be fully explicit, we can use the *recursor* for the type instead of pattern
-  matching syntax. The recursor takes an argument called `motive` which
-  specifies how the result type varies depending on the inputs being matched.
+  situations we may need more control over which occurrences are replaced. We
+  can specify how the result type varies depending on the inputs being matched
+  by providing an explicit `motive`:
+-/
+
+def pluck_with_motive {T : Type} (x : BoolOrNat T) : T :=
+  match (motive := (T : Type) -> (x : BoolOrNat T) -> T) T, x with
+  | _, .some_bool b => b
+  | _, .some_nat n => n
+
+/-
+  There's another way in which Lean's pattern matching is magical. If the
+  expression being matched is a variable, Lean also refines the types of any
+  variables in the context. Lean calls that "generalization", and it can be
+  disabled as follows:
+-/
+
+def pluck_without_generalization {T : Type} (x : BoolOrNat T) : T :=
+  match (generalizing := false) T, x with
+  | _, .some_bool b => b
+  | _, .some_nat n => n
+
+/-
+  To be fully explicit, we can also use the *recursor* for the type instead of
+  pattern matching syntax. The recursor takes an argument called `motive` which
+  is like the motive described above, except it's a type family rather than a
+  dependent function type.
 -/
 
 #check BoolOrNat.rec
@@ -301,6 +324,78 @@ def head_explicit {T n} (v : Vec T (Nat.succ n)) : T
   ```
 -/
 
+/-====================-/
+/- The convoy pattern -/
+/-====================-/
+
+-- Suppose we have a number `n`.
+
+axiom n : Nat
+
+/-
+  The following variable `x` has an interesting type. When `n` is even, `x` is
+  a `Nat`. Conversely, when `n` is odd, `x` is a `String`. However, the parity
+  of `n` is unknown here, so `x` seems to have some kind of superposition of
+  types.
+-/
+
+axiom x : BoolToType (n % 2 == 0)
+
+/-
+  Suppose we want to do something with `x`. Since the type of `x` depends on
+  whether `n` is even or odd, we should expect to handle those two cases
+  separately. For example, if `n` is even, we might want to do some arithmetic
+  with `x`, since it's a `Nat` in that case. Otherwise, `x` is a `String`, and
+  perhaps we wish to compute its length. Unfortunately, we can't do that by
+  naively pattern matching on the parity of `n`. If we try this:
+
+  ```
+  #check
+    match n % 2 == 0 with
+    | true => x + 1
+    | false => x.length
+  ```
+
+  Lean gives this error for the first case:
+
+  ```
+  failed to synthesize
+  HAdd (BoolToType (n % 2 == 0)) Nat ?m.12
+  ```
+
+  And this error for the second:
+
+  ```
+  Invalid field `length`: The environment does not contain
+  `BoolToType.match_1.length`
+    x
+  has type
+    match n % 2 == 0 with
+    | true => Nat
+    | false => String
+  ```
+
+  The issue is that Lean doesn't refine the type of `x` based on the knowledge
+  gained about the parity of `n` in each case. To make the example work, we can
+  use the *convoy pattern*. First, we use dependent pattern matching to
+  construct a function which accepts an arbitrary `BoolToType (n % 2 == 0)`,
+  then we immediately call that function on `x`. Dependent pattern matching
+  refines the type of the result on each case, so each branch only needs to
+  consider the specific value of `n % 2 == 0` (`true` or `false`) corresponding
+  to that case.
+-/
+
+#check
+  (
+    match n % 2 == 0 with
+    -- `@id Nat` forces Lean to reduce the type of `y` from `BoolToType true`
+    -- to `Nat`, which is needed for type class instance resolution for `+` to
+    -- work.
+    | true => fun y => @id Nat y + 1
+    | false => fun y => y.length
+    : BoolToType (n % 2 == 0) -> Nat
+  ) x
+
 /-===========-/
 /- Exercises -/
 /-===========-/
@@ -313,4 +408,5 @@ def head_explicit {T n} (v : Vec T (Nat.succ n)) : T
   3. Define a `tail` function which takes a `Vec` and returns a new `Vec` with
      the contents of the original `Vec` but without the head. It should work
      with any `Vec` as its input, including the empty `Vec`.
+  4. What is the convoy pattern, and when is it needed?
 -/
