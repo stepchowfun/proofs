@@ -168,11 +168,12 @@ def polymorphic_id (α : Type) (x : α) := x
   the following equivalent ways:
 
   - `(α : Type) → α → α`
+  - `∀ (α : Type), α → α`
   - `(α : Type) → (_ : α) → α`
   - `∀ (α : Type) (_ : α), α`
 
-  The first way is best, since it makes it clear that the return type doesn't
-  depend on the value of the second argument.
+  For this type, the first or second styles are best, since they makes it clear
+  that the return type doesn't depend on the value of the second argument.
 
   This identity function only works on types in the universe `Type` (i.e.,
   `Sort 1`), but there are other universes such as `Prop` (i.e., `Sort 0`),

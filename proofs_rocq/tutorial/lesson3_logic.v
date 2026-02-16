@@ -64,6 +64,22 @@ Inductive False : Prop := .
 (*
   Note that `False` has no constructors and therefore no proofs!
 
+  We don't need to define *implication*, since "A implies B" is just `A -> B`.
+  In other words, a proof of "A implies B" is a function which transforms a
+  proof of "A" into a proof of "B".
+*)
+
+Definition modus_ponens (A B : Prop) : (A -> B) -> A -> B :=
+  fun h1 h2 => h1 h2.
+
+Goal forall A B : Prop, (A -> B) -> A -> B.
+Proof.
+  intros. (* `intros` moves the premises of the goal into the context. *)
+  apply H.
+  assumption. (* `assumption` looks for a proof of the goal in the context. *)
+Qed.
+
+(*
   One of the most familiar logical concepts is *conjunction*, also known as
   "and". To prove "A and B", we need to provide a proof of "A" and a proof of
   "B". We can define this in Rocq as follows:
@@ -134,22 +150,6 @@ Proof.
   - (* We're stuck here! *)
 Abort.
 
-(*
-  We don't need to define *implication*, since "A implies B" is just `A -> B`.
-  In other words, a proof of "A implies B" is a function which transforms a
-  proof of "A" into a proof of "B".
-*)
-
-Definition modus_ponens (A B : Prop) : (A -> B) -> A -> B :=
-  fun h1 h2 => h1 h2.
-
-Goal forall A B : Prop, (A -> B) -> A -> B.
-Proof.
-  intros. (* `intros` moves the premises of the goal into the context. *)
-  apply H.
-  assumption. (* `assumption` looks for a proof of the goal in the context. *)
-Qed.
-
 Definition conjunction_symmetric A B : A /\ B -> B /\ A :=
   fun h1 =>
     match h1 with
@@ -167,46 +167,6 @@ Proof.
   destruct H.
 
   (* The rest is familiar. *)
-  split; assumption.
-Qed.
-
-Definition explosion (A : Prop) : False -> A :=
-  fun h =>
-    match h with
-    (* No cases to worry about! *)
-    end.
-
-Check explosion. (* `forall A : Prop, False -> A` *)
-
-Goal forall A : Prop, False -> A.
-Proof.
-  (* You know the drill. *)
-  intros.
-
-  (* We can `destruct` a proof of `False` to prove anything! *)
-  destruct H.
-Qed.
-
-(*
-  To prove the *equivalence* "A if and only if B", we have to prove "A" and "B"
-  imply each other.
-*)
-
-Definition iff (A B : Prop) := (A -> B) /\ (B -> A).
-
-Notation "A <-> B" := (iff A B) : type_scope.
-
-Definition iff_symmetric A B : (A <-> B) -> (B <-> A) :=
-  fun h1 =>
-    match h1 with
-    | conj h2 h3 => conj h3 h2
-    end.
-
-Goal forall A B, (A <-> B) -> (B <-> A).
-Proof.
-  unfold iff. (* `unfold` replaces a name with its definition. *)
-  intros.
-  destruct H.
   split; assumption.
 Qed.
 
@@ -236,9 +196,32 @@ Proof.
   intros.
   destruct H. (* `destruct` does case analysis on a disjunctive hypothesis. *)
   - right. (* Equivalent to `apply or_intror.` *)
-    apply H.
+    assumption.
   - left. (* Equivalent to `apply or_introl.` *)
-    apply H.
+    assumption.
+Qed.
+
+(*
+  To prove the *equivalence* "A if and only if B", we have to prove "A" and "B"
+  imply each other.
+*)
+
+Definition iff (A B : Prop) := (A -> B) /\ (B -> A).
+
+Notation "A <-> B" := (iff A B) : type_scope.
+
+Definition iff_symmetric A B : (A <-> B) -> (B <-> A) :=
+  fun h1 =>
+    match h1 with
+    | conj h2 h3 => conj h3 h2
+    end.
+
+Goal forall A B, (A <-> B) -> (B <-> A).
+Proof.
+  unfold iff. (* `unfold` replaces a name with its definition. *)
+  intros.
+  destruct H.
+  split; assumption.
 Qed.
 
 (* In Rocq, the *negation* "not A" is defined as "A implies False". *)
@@ -254,6 +237,23 @@ Proof.
   unfold not.
   intros.
   assumption.
+Qed.
+
+Definition explosion (A : Prop) : False -> A :=
+  fun h =>
+    match h with
+    (* No cases to worry about! *)
+    end.
+
+Check explosion. (* `forall A : Prop, False -> A` *)
+
+Goal forall A : Prop, False -> A.
+Proof.
+  (* You know the drill. *)
+  intros.
+
+  (* We can `destruct` a proof of `False` to prove anything! *)
+  destruct H.
 Qed.
 
 (*
@@ -310,14 +310,14 @@ Goal forall A (x y : A), x = y -> y = x.
 Proof.
   intros.
   symmetry. (* Turn `y = x` into `x = y` in the goal. *)
-  apply H.
+  assumption.
 Qed.
 
 Goal forall A (x y : A), x = y -> y = x.
 Proof.
   intros.
   symmetry in H. (* Turn `x = y` into `y = x` in hypothesis `H`. *)
-  apply H.
+  assumption.
 Qed.
 
 Definition eq_transitive A (x y z : A) : x = y -> y = z -> x = z :=
@@ -346,7 +346,7 @@ Goal forall A (x y z : A), x = y -> y = z -> x = z.
 Proof.
   intros.
   rewrite H0 in H. (* Replace `y` with `z` in hypothesis `H`. *)
-  apply H.
+  assumption.
 Qed.
 
 Goal forall A (x y z : A), x = y -> y = z -> x = z.
@@ -376,24 +376,20 @@ Proof.
 Qed.
 
 Definition weird f :
-  (forall x, f (f x) = 1 + x) ->
-  forall y, f (f (f (f y))) = 2 + y
+  (forall x, f x = 1 + x) ->
+  forall x, 1 + f x = 2 + x
 :=
-  fun h1 y =>
-    match h1 (1 + y) in _ = z return f (f (f (f y))) = z with
-    | eq_refl _ =>
-      match h1 y in _ = z return f (f (f (f y))) = f (f z) with
-      | eq_refl _ => eq_refl (f (f (f (f y))))
-      end
+  fun h1 x =>
+    match h1 x in _ = z return 1 + f x = 1 + z with
+    | eq_refl _ => eq_refl _
     end.
 
 Goal
   forall f,
-  (forall x, f (f x) = 1 + x) ->
-  forall y, f (f (f (f y))) = 2 + y.
+  (forall x, f x = 1 + x) ->
+  forall x, 1 + f x = 2 + x.
 Proof.
   intros.
-  rewrite H.
   rewrite H.
   reflexivity.
 Qed.
@@ -413,8 +409,7 @@ Arguments ex_intro [_ _] _ _.
 Notation "'exists' x .. y , p" := (ex (fun x => .. (ex (fun y => p)) ..))
   (at level 200, x binder, right associativity) : type_scope.
 
-Definition half_of_6_exists : exists x, 2 * x = 6 :=
-  ex_intro 3 (eq_refl 6).
+Definition half_of_6_exists : exists x, 2 * x = 6 := ex_intro 3 (eq_refl 6).
 
 Goal exists x, 2 * x = 6.
 Proof.
@@ -442,7 +437,7 @@ Proof.
   destruct H. (* What is `y`? *)
   exists (2 * x0).
   rewrite Nat.mul_assoc.
-  apply H.
+  assumption.
 Qed.
 
 (*************)
