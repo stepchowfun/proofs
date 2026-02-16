@@ -164,9 +164,9 @@ Compute pluck (some_nat 42). (* `42` *)
   which feature their length in their type are called *vectors*:
 *)
 
-Inductive Vector (T : Set) : nat -> Set :=
-| empty : Vector T O
-| nonempty : forall n, T -> Vector T n -> Vector T (S n).
+Inductive Vec (T : Set) : nat -> Set :=
+| empty : Vec T O
+| nonempty : forall n, T -> Vec T n -> Vec T (S n).
 
 (*
   Make the `T` and `n` arguments implicit in `nonempty`, since they can be
@@ -175,13 +175,13 @@ Inductive Vector (T : Set) : nat -> Set :=
 
 Arguments nonempty [_ _] _ _.
 
-(* Let's construct some `Vector`s. *)
+(* Let's construct some `Vec`s. *)
 
-Check empty bool. (* `Vector bool 0` *)
-Check nonempty true (empty bool). (* `Vector bool 1` *)
-Check nonempty false (nonempty true (empty bool)). (* `Vector bool 2` *)
+Check empty bool. (* `Vec bool 0` *)
+Check nonempty true (empty bool). (* `Vec bool 1` *)
+Check nonempty false (nonempty true (empty bool)). (* `Vec bool 2` *)
 
-(* Here's a function which produces a `Vector` of zeros of a given length. *)
+(* Here's a function which produces a `Vec` of zeros of a given length. *)
 
 Fixpoint zeroes n1 :=
   match n1 with
@@ -189,28 +189,28 @@ Fixpoint zeroes n1 :=
   | S n2 => nonempty 0 (zeroes n2)
   end.
 
-Check zeroes. (* `forall n1 : nat, Vector nat n1` *)
+Check zeroes. (* `forall n1 : nat, Vec nat n1` *)
 
 Compute zeroes 3. (* `nonempty 0 (nonempty 0 (nonempty 0 (empty nat)))` *)
 
-(* Here's a function which concatenates two `Vector`s. *)
+(* Here's a function which concatenates two `Vec`s. *)
 
 Fixpoint concatenate
            [T n1 n2]
-           (v1 : Vector T n1)
-           (v2 : Vector T n2) :
-           Vector T (n1 + n2) :=
-  match v1 in Vector _ n3 return Vector T (n3 + n2) with
+           (v1 : Vec T n1)
+           (v2 : Vec T n2) :
+           Vec T (n1 + n2) :=
+  match v1 in Vec _ n3 return Vec T (n3 + n2) with
   | empty _ => v2
   | nonempty x v3 => nonempty x (concatenate v3 v2)
   end.
 
 (*
-  Here's a function which returns the first element of a `Vector`. It's a type
-  error to call this function on an empty `Vector`.
+  Here's a function which returns the first element of a `Vec`. It's a type
+  error to call this function on an empty `Vec`.
 *)
 
-Definition head [T n] (v : Vector T (S n)) : T :=
+Definition head [T n] (v : Vec T (S n)) : T :=
   match v with
   | nonempty x _ => x
   end.
@@ -224,9 +224,9 @@ Print head.
 
 (*
   ```
-  fun (T : Set) (n : nat) (v : Vector T (S n)) =>
+  fun (T : Set) (n : nat) (v : Vec T (S n)) =>
     match v
-    in (Vector _ n0)
+    in (Vec _ n0)
     return match n0 with
            | 0 => IDProp
            | S _ => T
@@ -254,8 +254,8 @@ Fail Compute head (empty bool).
 (*
   ```
   The command has indeed failed with message:
-  The term "empty bool" has type "Vector bool 0"
-  while it is expected to have type "Vector bool (S ?n)".
+  The term "empty bool" has type "Vec bool 0"
+  while it is expected to have type "Vec bool (S ?n)".
   ```
 *)
 
@@ -323,7 +323,7 @@ Check
      use one over the other?
   2. When pattern matching, what does `return` do? What does `as` do? What does
      `in` do?
-  3. Define a `tail` function which takes a `Vector` and returns a new `Vector`
-     with the contents of the original `Vector` but without the head. It should
-     work with any `Vector` as its input, including the empty `Vector`.
+  3. Define a `tail` function which takes a `Vec` and returns a new `Vec`
+     with the contents of the original `Vec` but without the head. It should
+     work with any `Vec` as its input, including the empty `Vec`.
 *)
