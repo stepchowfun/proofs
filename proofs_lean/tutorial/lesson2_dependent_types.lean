@@ -149,7 +149,7 @@ def simpler_pluck {T : Type} (x : BoolOrNat T) : T :=
 -/
 
 def pluck_with_motive {T : Type} (x : BoolOrNat T) : T :=
-  match (motive := (T : Type) -> (x : BoolOrNat T) -> T) T, x with
+  match (motive := (T : Type) → (x : BoolOrNat T) → T) T, x with
   | _, .some_bool b => b
   | _, .some_nat n => n
 
@@ -393,7 +393,7 @@ axiom x : BoolToType (n % 2 == 0)
     -- work.
     | true => fun y => @id Nat y + 1
     | false => fun y => y.length
-    : BoolToType (n % 2 == 0) -> Nat
+    : BoolToType (n % 2 == 0) → Nat
   ) x
 
 /-===========-/

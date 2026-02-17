@@ -46,7 +46,7 @@ Inductive True : Prop :=
 | I : True.
 
 (*
-  So `True` is a proposition, and `I` is its proof. This is a bit abstract, but
+  So `True` is a proposition, and `I` is its proof. That's a bit abstract, but
   it'll become more clear once we define a few other logical concepts.
 
   Note that we put `True` in a universe called `Prop` instead of `Set`. In
@@ -98,7 +98,7 @@ Definition true_and_true_1 : True /\ True := conj I I.
 
   To write proofs using proof mode, it's essential that you're using an IDE
   that supports Rocq, such as RocqIDE or Visual Studio Code with the VsRocq
-  plugin.
+  extension.
 
   We use `Theorem` when we want to give a name to the proof (e.g., to use it in
   a later proof) and `Goal` if the proof doesn't need a name.
@@ -106,17 +106,9 @@ Definition true_and_true_1 : True /\ True := conj I I.
 
 Theorem true_and_true_2 : True /\ True.
 Proof.
-  (*
-    Use `split` to prove each half of a conjunction individually. Equivalently,
-    we could use `apply conj`.
-  *)
-  split.
-
-  (* Use `apply` to prove the goal via some known fact. *)
-  - apply I.
-
-  (* Déjà vu! *)
-  - apply I.
+  split. (* Use `split` to prove each half of a conjunction individually. *)
+  - apply I. (* Use `apply` to prove the goal via some known fact. *)
+  - apply I. (* Déjà vu! *)
 Qed.
 
 Print true_and_true_2. (* `conj I I` *)
@@ -149,24 +141,23 @@ Abort.
 *)
 
 Definition modus_ponens (A B : Prop) : (A -> B) -> A -> B :=
-  fun H1 H2 => H1 H2.
+  fun h1 h2 => h1 h2.
 
 Goal forall A B : Prop, (A -> B) -> A -> B.
 Proof.
-  intros.
+  intros. (* `intros` moves the premises of the goal into the context. *)
   apply H.
-  apply H0.
+  assumption. (* `assumption` looks for a proof of the goal in the context. *)
 Qed.
 
 Definition conjunction_symmetric A B : A /\ B -> B /\ A :=
-  fun H1 =>
-    match H1 with
-    | conj H2 H3 => conj H3 H2
+  fun h1 =>
+    match h1 with
+    | conj h2 h3 => conj h3 h2
     end.
 
 Goal forall A B, A /\ B -> B /\ A.
 Proof.
-  (* `intros` moves the premises of the goal into the context. *)
   intros.
 
   (*
@@ -176,14 +167,12 @@ Proof.
   destruct H.
 
   (* The rest is familiar. *)
-  split.
-  - apply H0.
-  - apply H.
+  split; assumption.
 Qed.
 
 Definition explosion (A : Prop) : False -> A :=
-  fun H =>
-    match H with
+  fun h =>
+    match h with
     (* No cases to worry about! *)
     end.
 
@@ -207,14 +196,18 @@ Definition iff (A B : Prop) := (A -> B) /\ (B -> A).
 
 Notation "A <-> B" := (iff A B) : type_scope.
 
-Definition A_iff_A A : A <-> A :=
-  conj (fun H => H) (fun H => H).
+Definition iff_symmetric A B : (A <-> B) -> (B <-> A) :=
+  fun h1 =>
+    match h1 with
+    | conj h2 h3 => conj h3 h2
+    end.
 
-Goal forall A, A <-> A.
+Goal forall A B, (A <-> B) -> (B <-> A).
 Proof.
-  intros.
   unfold iff. (* `unfold` replaces a name with its definition. *)
-  split; intros; apply H.
+  intros.
+  destruct H.
+  split; assumption.
 Qed.
 
 (*
@@ -232,10 +225,10 @@ Arguments or_intror [_ _] _.
 Notation "A \/ B" := (or A B) : type_scope.
 
 Definition disjunction_symmetric A B : (A \/ B) -> (B \/ A) :=
-  fun H1 =>
-    match H1 with
-    | or_introl H2 => or_intror H2
-    | or_intror H2 => or_introl H2
+  fun h1 =>
+    match h1 with
+    | or_introl h2 => or_intror h2
+    | or_intror h2 => or_introl h2
     end.
 
 Goal forall A B, (A \/ B) -> (B \/ A).
@@ -254,13 +247,13 @@ Definition not (A : Prop) := A -> False.
 
 Notation "~ A" := (not A) : type_scope.
 
-Definition not_false : ~False := fun H => H.
+Definition not_false : ~False := fun h => h.
 
 Goal ~False.
 Proof.
   unfold not.
   intros.
-  apply H.
+  assumption.
 Qed.
 
 (*
@@ -294,8 +287,8 @@ Proof.
 Qed.
 
 Definition eq_symmetric A (x y : A) : x = y -> y = x :=
-  fun H =>
-    match H in _ = z return z = x with
+  fun h =>
+    match h in _ = z return z = x with
     | eq_refl _ => eq_refl x
     end.
 
@@ -328,9 +321,9 @@ Proof.
 Qed.
 
 Definition eq_transitive A (x y z : A) : x = y -> y = z -> x = z :=
-  fun H1 H2 =>
-    match H2 in _ = v return x = v with
-    | eq_refl _ => H1
+  fun h1 h2 =>
+    match h2 in _ = v return x = v with
+    | eq_refl _ => h1
     end.
 
 Goal forall A (x y z : A), x = y -> y = z -> x = z.
@@ -386,10 +379,10 @@ Definition weird f :
   (forall x, f (f x) = 1 + x) ->
   forall y, f (f (f (f y))) = 2 + y
 :=
-  fun H1 y =>
-    match H1 (1 + y) in _ = z return f (f (f (f y))) = z with
+  fun h1 y =>
+    match h1 (1 + y) in _ = z return f (f (f (f y))) = z with
     | eq_refl _ =>
-      match H1 y in _ = z return f (f (f (f y))) = f (f z) with
+      match h1 y in _ = z return f (f (f (f y))) = f (f z) with
       | eq_refl _ => eq_refl (f (f (f (f y))))
       end
     end.
@@ -433,13 +426,13 @@ Definition divisible_by_4_implies_even x :
   (exists y, 4 * y = x) ->
   (exists z, 2 * z = x)
 :=
-  fun H1 =>
-    match H1 with
-    | ex_intro y H2 =>
+  fun h1 =>
+    match h1 with
+    | ex_intro y h2 =>
       ex_intro
         (2 * y)
         match eq_sym (Nat.mul_assoc 2 2 y) in Logic.eq _ z return z = x with
-        | Logic.eq_refl _ => H2
+        | Logic.eq_refl _ => h2
         end
     end.
 

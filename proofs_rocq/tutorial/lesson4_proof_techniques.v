@@ -19,8 +19,8 @@ Require Import Stdlib.micromega.Lia. (* For the `lia` tactic *)
 *)
 
 Definition successors_equal n1 n2 : n1 = n2 -> S n1 = S n2 :=
-  fun H =>
-    match H in _ = x return S n1 = S x with
+  fun h =>
+    match h in _ = x return S n1 = S x with
     | eq_refl => eq_refl (S n1)
     end.
 
@@ -52,8 +52,8 @@ Qed.
 *)
 
 Definition successor_injective n1 n2 : S n1 = S n2 -> n1 = n2 :=
-  fun H =>
-    match H in _ = x return pred (S n1) = pred x with
+  fun h =>
+    match h in _ = x return pred (S n1) = pred x with
     | eq_refl => eq_refl (pred (S n1))
     end.
 
@@ -78,8 +78,8 @@ Qed.
 *)
 
 Definition true_neq_false : true <> false :=
-  fun H =>
-    match H
+  fun h =>
+    match h
     in _ = x
     return
       match x with
