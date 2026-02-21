@@ -39,10 +39,10 @@ ARGV.each do |path|
     end
 
     # Check the line length.
-    if line.bytesize > 79
+    if line.grapheme_clusters.count > 79
       STDERR.puts(
-        "Error: Line #{index + 1} of #{path} has #{line.bytesize} bytes, " \
-          "which is more than 79."
+        "Error: Line #{index + 1} of #{path} has #{line.bytesize} grapheme " \
+          "clusters, which is more than 79."
       )
       failed = true
     end
