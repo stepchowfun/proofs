@@ -152,7 +152,7 @@ Print "+".
 *)
 
 Fixpoint n_plus_zero_equals_n n : n + 0 = n :=
-  match n return n + 0 = n with
+  match n with
   | O => eq_refl 0
   | S p =>
     match n_plus_zero_equals_n p in _ = x return S p + 0 = S x with
@@ -324,7 +324,7 @@ Qed.
      ```
      forall P : nat -> Prop,
      (forall n1, (forall n2, n2 < n1 -> P n2) -> P n1) ->
-     forall n, P n.
+     forall n, P n
      ```
 
      Hint: Start the proof with `intros`, then use a tactic called `assert` to
