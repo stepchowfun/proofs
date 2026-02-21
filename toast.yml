@@ -196,7 +196,15 @@ tasks:
             -name '*.v' \
           \) -print
         )
-      if grep --recursive --line-number --include '*.v' Admitted proofs; then
+      # [dir:proofs_rocq]
+      if grep --recursive --line-number --include '*.v' Admitted proofs_rocq
+      then
         echo "Error: 'Admitted' found in proofs." 1>&2
+        exit 1
+      fi
+      # [dir:proofs_lean]
+      if grep --recursive --line-number --include '*.lean' sorry proofs_lean
+      then
+        echo "Error: 'sorry' found in proofs." 1>&2
         exit 1
       fi
