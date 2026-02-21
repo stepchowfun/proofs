@@ -47,8 +47,8 @@ def parabola := fun x => 2 * x * x
 
 /-
   Even though the `#check` command above produced `parabola (x : Nat) : Nat`,
-  the actual type of the function is just `Nat → Nat`. Lean printed some
-  extra information that isn't part of the type, like the name of the function.
+  the actual type of the function is just `Nat → Nat`. Lean printed some extra
+  information that isn't part of the type, like the name of the function.
 
   Here's a more convenient syntax for defining a function:
 -/
@@ -78,8 +78,8 @@ def paraboloid := fun x => fun y => 2 * (x * x + y * y)
 
 /-
   As before, Lean is not printing the function's type per se, but something
-  slightly more informative. The type itself is `Nat → Nat → Nat`, which
-  should be understood as `Nat → (Nat → Nat)`, not `(Nat → Nat) → Nat`.
+  slightly more informative. The type itself is `Nat → Nat → Nat`, which should
+  be understood as `Nat → (Nat → Nat)`, not `(Nat → Nat) → Nat`.
 
   Lean has a more convenient syntax for defining curried functions like this:
 -/
@@ -95,7 +95,7 @@ def better_paraboloid x y := 2 * (x * x + y * y)
 
 #eval paraboloid 3 4 -- `50`
 
-/- Currying works with any number of arguments. -/
+-- Currying works with any number of arguments.
 
 def density x y z := 2 * x + y * z
 
@@ -138,8 +138,8 @@ def id_bool (x : Bool) := x
   function that works on all types? It turns out that types are data, just like
   numbers and functions. So all we need to do is take the type as an extra
   argument. The type of that argument will be `Type`, which is the type of
-  types like `Nat`, `Bool`, `Nat → Bool`, and so on. A type which has types
-  as members is called a *universe*. Lesson 5 discusses universes in depth.
+  types like `Nat`, `Bool`, `Nat → Bool`, and so on. A type which has types as
+  members is called a *universe*. Lesson 5 discusses universes in depth.
 
   The idea of parameterizing a definition by a type is known as "generics" in
   many languages, e.g., Java and Rust.
@@ -169,7 +169,7 @@ def polymorphic_id (α : Type) (x : α) := x
 
   - `(α : Type) → α → α`
   - `(α : Type) → (_ : α) → α`
-  - `forall (α : Type) (_ : α), α`
+  - `∀ (α : Type) (_ : α), α`
 
   The first way is best, since it makes it clear that the return type doesn't
   depend on the value of the second argument.
@@ -247,8 +247,8 @@ def better_id.{u} {α : Sort u} (x : α) := x
 /-
   Constructors of an inductive type are namespaced by default, so ordinarily
   we'd have to write `Bool.true` and `Bool.false` instead of `true` and
-  `false`, respectively. We can bring them into the current namespace with
-  the `open` command.
+  `false`, respectively. We can bring them into the current namespace with the
+  `open` command.
 -/
 
 open Bool
@@ -315,8 +315,8 @@ inductive OptionNat where
   When pattern matching on an `OptionNat`, we get access to the `Nat` in the
   `some` case. Here's a function which will transform the `Nat`, if it exists,
   by a user-provided function. Note that instead of `OptionNat.no_nat` and
-  `OptionNat.some_nat`, we can simply write `.no_nat` and `.some_nat` since
-  the type annotations already tell Lean that these are from `OptionNat`.
+  `OptionNat.some_nat`, we can simply write `.no_nat` and `.some_nat` since the
+  type annotations already tell Lean that these are from `OptionNat`.
 -/
 
 def map_option_nat (f : Nat → Nat) (o : OptionNat) : OptionNat :=
@@ -334,8 +334,8 @@ def map_option_nat (f : Nat → Nat) (o : OptionNat) : OptionNat :=
 /-
   `OptionNat` only works with `Nat`s. We can add a type *parameter* to make it
   work for any type. This results in a family of inductive data types, one for
-  every choice of `α`. Note that each constructor returns an `Option α`,
-  rather than just an `Option`.
+  every choice of `α`. Note that each constructor returns an `Option α`, rather
+  than just an `Option`.
 
   ```
   inductive Option.{u} (α : Type u) where

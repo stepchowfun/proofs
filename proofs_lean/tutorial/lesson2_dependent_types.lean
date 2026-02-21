@@ -216,7 +216,7 @@ noncomputable def pluck_the_explicit_way {T : Type} (x : BoolOrNat T) : T :=
 
 inductive Vec (T : Type) : Nat → Type where
 | empty : Vec T 0
-| nonempty : forall {n}, T → Vec T n → Vec T (n + 1)
+| nonempty : ∀ {n}, T → Vec T n → Vec T (n + 1)
 
 /- Let's construct some `Vec`s. -/
 
