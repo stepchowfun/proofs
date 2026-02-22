@@ -102,11 +102,11 @@ inductive BoolOrNat : Type → Type where
 
 /-
   When pattern matching, the result type can depend on the indices (in this
-  case, `T`) as well as the value being matched on (in this case, `x`).
+  case, `α`) as well as the value being matched on (in this case, `x`).
 -/
 
-def pluck {T : Type} (x : BoolOrNat T) : T :=
-  match T, x with
+def pluck {α : Type} (x : BoolOrNat α) : α :=
+  match α, x with
   | _, .some_bool b => b
   | _, .some_nat n => n
 
@@ -116,14 +116,14 @@ def pluck {T : Type} (x : BoolOrNat T) : T :=
 
 /-
   As before, Lean refines the expected type in each branch. In the first
-  branch, the expected type `T` becomes `Bool`, and it becomes `Nat` in the
+  branch, the expected type `α` becomes `Bool`, and it becomes `Nat` in the
   second branch.
 
-  If we don't explicitly match on the index `T`, Lean will automatically do it
+  If we don't explicitly match on the index `α`, Lean will automatically do it
   for us.
 -/
 
-def simpler_pluck {T : Type} (x : BoolOrNat T) : T :=
+def simpler_pluck {α : Type} (x : BoolOrNat α) : α :=
   match x with
   | .some_bool b => b
   | .some_nat n => n
@@ -134,9 +134,9 @@ def simpler_pluck {T : Type} (x : BoolOrNat T) : T :=
 
 /-
   ```
-  def simpler_pluck : {T : Type} → BoolOrNat T → T :=
-    fun {T} x ↦
-      match T, x with
+  def simpler_pluck : {α : Type} → BoolOrNat α → α :=
+    fun {α} x ↦
+      match α, x with
       | .(Bool), BoolOrNat.some_bool b => b
       | .(Nat), BoolOrNat.some_nat n => n
   ```
@@ -148,8 +148,8 @@ def simpler_pluck {T : Type} (x : BoolOrNat T) : T :=
   by providing an explicit *motive*:
 -/
 
-def pluck_with_motive {T : Type} (x : BoolOrNat T) : T :=
-  match (motive := (T : Type) → (x : BoolOrNat T) → T) T, x with
+def pluck_with_motive {α : Type} (x : BoolOrNat α) : α :=
+  match (motive := (α : Type) → (x : BoolOrNat α) → α) α, x with
   | _, .some_bool b => b
   | _, .some_nat n => n
 
@@ -160,8 +160,8 @@ def pluck_with_motive {T : Type} (x : BoolOrNat T) : T :=
   disabled as follows:
 -/
 
-def pluck_without_generalization {T : Type} (x : BoolOrNat T) : T :=
-  match (generalizing := false) T, x with
+def pluck_without_generalization {α : Type} (x : BoolOrNat α) : α :=
+  match (generalizing := false) α, x with
   | _, .some_bool b => b
   | _, .some_nat n => n
 
@@ -191,8 +191,8 @@ def pluck_without_generalization {T : Type} (x : BoolOrNat T) : T :=
   reason.
 -/
 
-noncomputable def pluck_the_explicit_way {T : Type} (x : BoolOrNat T) : T :=
-  @BoolOrNat.rec (fun T _ => T) (fun b => b) (fun n => n) T x
+noncomputable def pluck_the_explicit_way {α : Type} (x : BoolOrNat α) : α :=
+  @BoolOrNat.rec (fun α _ => α) (fun b => b) (fun n => n) α x
 
 #reduce pluck_the_explicit_way (BoolOrNat.some_bool true) -- `true`
 
@@ -214,9 +214,9 @@ noncomputable def pluck_the_explicit_way {T : Type} (x : BoolOrNat T) : T :=
   which feature their length in their type are called *vectors*:
 -/
 
-inductive Vec (T : Type) : Nat → Type where
-| empty : Vec T 0
-| nonempty : ∀ {n}, T → Vec T n → Vec T (n + 1)
+inductive Vec (α : Type) : Nat → Type where
+| empty : Vec α 0
+| nonempty : ∀ {n}, α → Vec α n → Vec α (n + 1)
 
 /- Let's construct some `Vec`s. -/
 
@@ -245,10 +245,10 @@ def zeroes n1 :=
 -- Here's a function which concatenates two `Vec`s.
 
 def concatenate
-           {T n1 n2}
-           (v1 : Vec T n1)
-           (v2 : Vec T n2) :
-           Vec T (n2 + n1) :=
+           {α n1 n2}
+           (v1 : Vec α n1)
+           (v2 : Vec α n2) :
+           Vec α (n2 + n1) :=
   match v1 with
   | .empty => v2
   | .nonempty x v3 => Vec.nonempty x (concatenate v3 v2)
@@ -258,7 +258,7 @@ def concatenate
   error to call this function on an empty `Vec`.
 -/
 
-def head {T n} (v : Vec T (Nat.succ n)) : T :=
+def head {α n} (v : Vec α (Nat.succ n)) : α :=
   match v with
   | .nonempty x _ => x
 
@@ -287,14 +287,14 @@ def head {T n} (v : Vec T (Nat.succ n)) : T :=
   complicated, but we can show how to do it in a simpler way:
 -/
 
-def head_explicit {T n} (v : Vec T (Nat.succ n)) : T
+def head_explicit {α n} (v : Vec α (Nat.succ n)) : α
 := (
   match Nat.succ n, v with
   | _, .empty => Unit.unit
   | _, .nonempty x _ => x
   : match Nat.succ n with
     | .zero => Unit
-    | .succ _ => T
+    | .succ _ => α
 )
 
 -- Let's try it out on a simple example.

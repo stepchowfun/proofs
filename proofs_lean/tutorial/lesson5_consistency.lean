@@ -61,20 +61,20 @@
   explained below. `Prop`, however, is an "impredicative" universe.
 -/
 
--- If `A, B : Type i`, then `A → B : Type i`. This is called *predicativity*.
+-- If `α, β : Type i`, then `α → β : Type i`. This is called *predicativity*.
 
 #check Bool → Nat -- `Type` (a.k.a. `Type 0` a.k.a. `Sort 1`)
 #check Type → Type -- `Type 1` (a.k.a. `Sort 2`)
 #check Prop → Type -- `Type 1` (a.k.a. `Sort 2`)
 
 /-
-  If `A` and `B` are in different universes, the function type lives in the
+  If `α` and `β` are in different universes, the function type lives in the
   higher universe.
 -/
 
 #check Type → Nat -- `Type 1`
 
--- If `B : Prop`, then `A → B : Prop`. This is called *impredicativity*.
+-- If `β : Prop`, then `α → β : Prop`. This is called *impredicativity*.
 
 #check Nat → True -- `Prop`
 #check Type → True -- `Prop`
@@ -82,39 +82,39 @@
 
 -- Here are some identity functions for different universes:
 
-def id_prop (T : Prop) (x : T) := x
-def id_type (T : Type) (x : T) := x
+def id_prop (α : Prop) (x : α) := x
+def id_type (α : Type) (x : α) := x
 
 -- Because `Prop` is impredicative, we can apply `id_prop` to itself.
 
--- `id_prop (∀ (T : Prop), T → T) id_prop : ∀ (T : Prop), T → T`
-#check id_prop (∀ T : Prop, T → T) id_prop
+-- `id_prop (∀ (α : Prop), α → α) id_prop : ∀ (α : Prop), α → α`
+#check id_prop (∀ α : Prop, α → α) id_prop
 
 /-
   But `Type` is predicative, so we can't apply `id_type` to itself:
 
   ```
-  #check id_type (∀ T : Type, T → T) id_type
+  #check id_type (∀ α : Type, α → α) id_type
   ```
 
   ```
   Application type mismatch: The argument
-    (T : Type) → T → T
+    (α : Type) → α → α
   has type
     Type 1
   of sort `Type 2` but is expected to have type
     Type
   of sort `Type 1` in the application
-    id_type ((T : Type) → T → T)
+    id_type ((α : Type) → α → α)
   ```
 
   We saw in Lesson 1 that we can create definitions that are polymorphic over
   universes, like so:
 -/
 
-def id_universal.{u} (T : Sort u) (x : T) := x
+def id_universal.{u} (α : Sort u) (x : α) := x
 
-#check id_universal -- `id_universal.{u} (T : Sort u) (x : T) : T`
+#check id_universal -- `id_universal.{u} (α : Sort u) (x : α) : α`
 
 -- At first glance, it seems as though we can apply it to itself:
 
@@ -125,18 +125,18 @@ def id_universal.{u} (T : Sort u) (x : T) := x
   lower universe. It fails if we force the two universes to be the same:
 
   ```
-  def bad.{u} := id_universal.{u} (∀ T : Sort u, T → T) id_universal.{u}
+  def bad.{u} := id_universal.{u} (∀ α : Sort u, α → α) id_universal.{u}
   ```
 
   ```
   Application type mismatch: The argument
-    (T : Sort u) → T → T
+    (α : Sort u) → α → α
   has type
     Sort (imax (u + 1) u)
   of sort `Type (imax (u + 1) u)` but is expected to have type
     Sort u
   of sort `Type u` in the application
-    id_universal ((T : Sort u) → T → T)
+    id_universal ((α : Sort u) → α → α)
   ```
 -/
 
@@ -146,7 +146,7 @@ def id_universal.{u} (T : Sort u) (x : T) := x
 
 /-
   If an inductive type in `Type i` has a constructor which takes an argument of
-  type `T` in universe `Type j`, `i` must be at least as large as `j`.
+  type `α` in universe `Type j`, `i` must be at least as large as `j`.
   Parameter arguments are not considered.
 -/
 
@@ -183,11 +183,11 @@ inductive Foo4 : Prop where
   universes of its parameters.
 -/
 
-inductive Foo5 (T : Type 1) : Type where
-| make_foo5 : Foo5 T
+inductive Foo5 (α : Type 1) : Type where
+| make_foo5 : Foo5 α
 
-inductive Foo6 (T : Type 1) : Prop where
-| make_foo6 : Foo6 T
+inductive Foo6 (α : Type 1) : Prop where
+| make_foo6 : Foo6 α
 
 /-
   There are no constraints between the universe of an inductive type and the

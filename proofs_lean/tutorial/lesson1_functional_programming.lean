@@ -163,7 +163,7 @@ def polymorphic_id (α : Type) (x : α) := x
 /-
   The actual type of `polymorphic_id` is `(α : Type) → α → α`.
 
-  `A → B` is actually just shorthand for `(_ : A) → B`, where `_` is an
+  `α → β` is actually just shorthand for `(_ : α) → β`, where `_` is an
   inaccessible variable. We can write the type of `polymorphic_id` in any of
   the following equivalent ways:
 
