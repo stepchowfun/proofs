@@ -43,15 +43,15 @@ def my_variable := 42
 
 def parabola := fun x => 2 * x * x
 
+-- For function definitions, `#check` prints the signature like this:
+
 #check parabola -- `parabola (x : Nat) : Nat`
 
-/-
-  Even though the `#check` command above produced `parabola (x : Nat) : Nat`,
-  the actual type of the function is just `Nat → Nat`. Lean printed some extra
-  information that isn't part of the type, like the name of the function.
+-- We can get the actual type by prepending the function name with `@`:
 
-  Here's a more convenient syntax for defining a function:
--/
+#check @parabola -- `Nat → Nat`
+
+-- Here's a more convenient syntax for defining a function:
 
 def better_parabola x := 2 * x * x
 
