@@ -10,7 +10,7 @@ We're fortunate to have good tooling around enforcing a consistent style through
 
 ### Case
 
-**Rule:** Things which are statically known to be types should be named with `UpperCamelCase`. This extends to types with parameters or indices (or both), and it also extends to functions which are statically known to return types (e.g., a predicate that returns a proposition). Type classes, sections, namespaces (Lean), modules (Rocq), functors (Rocq), and module types (Rocq) should also be named with `UpperCamelCase`. Everything else should be in `snake_case`, including file and directory names.
+**Rule:** Things which are statically known to be types should be named with `UpperCamelCase` (Lean or Rocq) or lowercase Greek letters like `α` (Lean only). This extends to types with parameters or indices (or both), and it also extends to functions which are statically known to return types (e.g., a predicate that returns a proposition). Type classes, sections, namespaces (Lean), modules (Rocq), functors (Rocq), and module types (Rocq) should also be named with `UpperCamelCase` (Lean or Rocq) or lowercase Greek letters like `α` (Lean only). Everything else should be in `snake_case`, including file and directory names.
 
 ### Comments
 

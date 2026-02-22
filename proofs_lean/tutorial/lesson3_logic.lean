@@ -56,23 +56,23 @@
 
   Note that `False` has no constructors and therefore no proofs!
 
-  We don't need to define *implication*, since "A implies B" is just `A → B`.
-  In other words, a proof of "A implies B" is a function which transforms a
-  proof of "A" into a proof of "B".
+  We don't need to define *implication*, since "α implies β" is just `α → β`.
+  In other words, a proof of "α implies β" is a function which transforms a
+  proof of "α" into a proof of "β".
 -/
 
-theorem modus_ponens (A B : Prop) : (A → B) → A → B :=
+theorem modus_ponens (α β : Prop) : (α → β) → α → β :=
   fun h1 h2 => h1 h2
 
-example : ∀ A B : Prop, (A → B) → A → B := by
+example : ∀ α β : Prop, (α → β) → α → β := by
   intro _ _ h1 _ -- `intro` moves premises of the goal into the context.
   apply h1
   assumption -- `assumption` looks for a proof of the goal in the context.
 
 /-
   One of the most familiar logical concepts is *conjunction*, also known as
-  "and". To prove "A and B", we need to provide a proof of "A" and a proof of
-  "B". We can define this in Lean as follows:
+  "and". To prove "α and β", we need to provide a proof of "α" and a proof of
+  "β". We can define this in Lean as follows:
 
   ```
   structure And (a b : Prop) : Prop where
@@ -81,8 +81,8 @@ example : ∀ A B : Prop, (A → B) → A → B := by
     right : b
   ```
 
-  The following specifies that the notation `A ∧ B` will be used as shorthand
-  for `And A B`.
+  The following specifies that the notation `α ∧ β` will be used as shorthand
+  for `And α β`.
 
   ```
   infixr:35 " ∧ " => And
@@ -146,24 +146,24 @@ theorem true_and_true_3 : True ∧ True := by
   ```
 -/
 
-theorem conjunction_symmetric A B : A ∧ B → B ∧ A :=
+theorem conjunction_symmetric α β : α ∧ β → β ∧ α :=
   fun h1 =>
     match h1 with
     | .intro h2 h3 => ⟨h3, h2⟩
 
-example : ∀ A B : Prop, A ∧ B → B ∧ A := by
+example : ∀ α β : Prop, α ∧ β → β ∧ α := by
   intro _ _ h1
 
   /-
-    `cases` does pattern matching. We can use it to destruct a proof of `A ∧ B`
-    to get access to the proofs of `A` and `B`.
+    `cases` does pattern matching. We can use it to destruct a proof of `α ∧ β`
+    to get access to the proofs of `α` and `β`.
   -/
   cases h1
   constructor <;> assumption -- `constructor` applies the relevant constructor.
 
 /-
-  To prove the *disjunction* "A or B", we must provide either a proof of "A" or
-  a proof of "B".
+  To prove the *disjunction* "α or β", we must provide either a proof of "α" or
+  a proof of "β".
 
   ```
   inductive Or (a b : Prop) : Prop where
@@ -174,13 +174,13 @@ example : ∀ A B : Prop, A ∧ B → B ∧ A := by
   ```
 -/
 
-theorem disjunction_symmetric A B : (A ∨ B) → (B ∨ A) :=
+theorem disjunction_symmetric α β : (α ∨ β) → (β ∨ α) :=
   fun h1 =>
     match h1 with
     | .inl h2 => .inr h2
     | .inr h2 => .inl h2
 
-example : ∀ A B, (A ∨ B) → (B ∨ A) := by
+example : ∀ α β, (α ∨ β) → (β ∨ α) := by
   intro _ _ h
   cases h -- This generates a subgoal for each case.
   . right -- We could also use `apply Or.inr`.
@@ -189,7 +189,7 @@ example : ∀ A B, (A ∨ B) → (B ∨ A) := by
     assumption
 
 /-
-  To prove the *equivalence* "A if and only if B", we have to prove "A" and "B"
+  To prove the *equivalence* "α if and only if β", we have to prove "α" and "β"
   imply each other.
 
   ```
@@ -202,16 +202,16 @@ example : ∀ A B, (A ∨ B) → (B ∨ A) := by
   ```
 -/
 
-theorem iff_symmetric A B : (A ↔ B) → (B ↔ A) :=
+theorem iff_symmetric α β : (α ↔ β) → (β ↔ α) :=
   fun h => Iff.intro h.mpr h.mp
 
-example : ∀ A B, (A ↔ B) → (B ↔ A) := by
+example : ∀ α β, (α ↔ β) → (β ↔ α) := by
   intro _ _ h
   cases h
   apply Iff.intro <;> assumption
 
 /-
-  In Lean, the *negation* "not A" is defined as "A implies False".
+  In Lean, the *negation* "not α" is defined as "α implies False".
 
   ```
   def Not (a : Prop) : Prop := a → False
@@ -227,13 +227,13 @@ example : ¬False := by
   intro _
   assumption
 
-theorem explosion (A : Prop) : False → A :=
+theorem explosion (α : Prop) : False → α :=
   fun h =>
     nomatch h -- No cases to worry about!
 
-#check explosion -- `explosion (A : Prop) : False → A`
+#check explosion -- `explosion (α : Prop) : False → α`
 
-example : ∀ A : Prop, False → A := by
+example : ∀ α : Prop, False → α := by
   intro _ h
   cases h
 
@@ -269,48 +269,48 @@ theorem one_plus_one_equals_two : 1 + 1 = 2 := Eq.refl 2
 
 example : 1 + 1 = 2 := by rfl -- Equivalent to `apply Eq.refl`
 
-theorem eq_symmetric A (x y : A) : x = y → y = x :=
+theorem eq_symmetric α (x y : α) : x = y → y = x :=
   fun h =>
     match h with
     | Eq.refl _ => Eq.refl x
 
-example : ∀ A (x y : A), x = y → y = x := by
+example : ∀ α (x y : α), x = y → y = x := by
   intro _ _ _ h
   rw [h] -- Replace `x` with `y` in the goal (and solve it).
 
-example : ∀ A (x y : A), x = y → y = x := by
+example : ∀ α (x y : α), x = y → y = x := by
   intro _ _ _ h
   rw [← h] -- Replace `y` with `x` in the goal (and solve it).
 
-example : ∀ A (x y : A), x = y → y = x := by
+example : ∀ α (x y : α), x = y → y = x := by
   intro _ _ _ _
   symm -- Turn `y = x` into `x = y` in the goal.
   assumption
 
-example : ∀ A (x y : A), x = y → y = x := by
+example : ∀ α (x y : α), x = y → y = x := by
   intro _ _ _ h
   symm at h -- Turn `y = x` into `x = y` in hypothesis `h`.
   assumption
 
-theorem eq_transitive A (x y z : A) : x = y → y = z → x = z :=
+theorem eq_transitive α (x y z : α) : x = y → y = z → x = z :=
   fun h1 h2 =>
     match h2 with
     | .refl _ => h1
 
-example : ∀ A (x y z : A), x = y → y = z → x = z := by
+example : ∀ α (x y z : α), x = y → y = z → x = z := by
   intro _ _ _ _ h1 h2
   rw [h1, h2]
 
-example : ∀ A (x y z : A), x = y → y = z → x = z := by
+example : ∀ α (x y z : α), x = y → y = z → x = z := by
   intro _ _ _ _ h1 h2
   rw [← h2, ← h1]
 
-example : ∀ A (x y z : A), x = y → y = z → x = z := by
+example : ∀ α (x y z : α), x = y → y = z → x = z := by
   intro _ _ _ _ h1 h2
   rw [h2] at h1 -- Replace `y` with `z` in hypothesis `h1`.
   assumption
 
-example : ∀ A (x y z : A), x = y → y = z → x = z := by
+example : ∀ α (x y z : α), x = y → y = z → x = z := by
   intro _ _ _ _ h1 h2
   rw [← h1] at h2 -- Replace `y` with `x` in hypothesis `h2`.
   assumption
@@ -387,11 +387,11 @@ example : ∀ x, (∃ y, 4 * y = x) → (∃ z, 2 * z = x) := by
 /-===========-/
 
 /-
-  1. Prove `∀ (A B C : Prop), (A → B) → (A → C) → A → B ∧ C` both manually and
+  1. Prove `∀ (α β γ : Prop), (α → β) → (α → γ) → α → β ∧ γ` both manually and
      using tactic mode.
-  2. Prove `∀ (A B : Prop), (A ∧ B) → (A ∨ B)` both manually and using tactic
+  2. Prove `∀ (α β : Prop), (α ∧ β) → (α ∨ β)` both manually and using tactic
      mode.
-  3. Prove `∀ A : Prop, ¬(A ∧ ¬A)` both manually and using tactic mode.
-  4. Prove `∀ A : Prop, ¬¬¬A → ¬A` both manually and using tactic mode.
+  3. Prove `∀ α : Prop, ¬(α ∧ ¬α)` both manually and using tactic mode.
+  4. Prove `∀ α : Prop, ¬¬¬α → ¬α` both manually and using tactic mode.
   5. Prove `∀ x, x = 0 ∨ ∃ y, y + 1 = x` both manually and using tactic mode.
 -/
