@@ -82,19 +82,19 @@
 
 -- Here are some identity functions for different universes:
 
-def idProp (T : Prop) (x : T) := x
-def idType (T : Type) (x : T) := x
+def id_prop (T : Prop) (x : T) := x
+def id_type (T : Type) (x : T) := x
 
--- Because `Prop` is impredicative, we can apply `idProp` to itself.
+-- Because `Prop` is impredicative, we can apply `id_prop` to itself.
 
--- `idProp (∀ (T : Prop), T → T) idProp : ∀ (T : Prop), T → T`
-#check idProp (∀ T : Prop, T → T) idProp
+-- `id_prop (∀ (T : Prop), T → T) id_prop : ∀ (T : Prop), T → T`
+#check id_prop (∀ T : Prop, T → T) id_prop
 
 /-
-  But `Type` is predicative, so we can't apply `idType` to itself:
+  But `Type` is predicative, so we can't apply `id_type` to itself:
 
   ```
-  #check idType (∀ T : Type, T → T) idType
+  #check id_type (∀ T : Type, T → T) id_type
   ```
 
   ```
@@ -105,27 +105,27 @@ def idType (T : Type) (x : T) := x
   of sort `Type 2` but is expected to have type
     Type
   of sort `Type 1` in the application
-    idType ((T : Type) → T → T)
+    id_type ((T : Type) → T → T)
   ```
 
   We saw in Lesson 1 that we can create definitions that are polymorphic over
   universes, like so:
 -/
 
-def idUniversal.{u} (T : Sort u) (x : T) := x
+def id_universal.{u} (T : Sort u) (x : T) := x
 
-#check idUniversal -- `idUniversal.{u} (T : Sort u) (x : T) : T`
+#check id_universal -- `id_universal.{u} (T : Sort u) (x : T) : T`
 
 -- At first glance, it seems as though we can apply it to itself:
 
-#check idUniversal _ idUniversal
+#check id_universal _ id_universal
 
 /-
   But we're actually applying one version of it to another version of it in a
   lower universe. It fails if we force the two universes to be the same:
 
   ```
-  def bad.{u} := idUniversal.{u} (∀ T : Sort u, T → T) idUniversal.{u}
+  def bad.{u} := id_universal.{u} (∀ T : Sort u, T → T) id_universal.{u}
   ```
 
   ```
@@ -136,7 +136,7 @@ def idUniversal.{u} (T : Sort u) (x : T) := x
   of sort `Type (imax (u + 1) u)` but is expected to have type
     Sort u
   of sort `Type u` in the application
-    idUniversal ((T : Sort u) → T → T)
+    id_universal ((T : Sort u) → T → T)
   ```
 -/
 
