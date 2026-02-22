@@ -6,9 +6,9 @@ This is my personal repository of formally verified mathematics, including resul
 
 If you want to set up your own repository of formally verified mathematics, you can simply fork this repository and replace the contents of the [`proofs_lean`](https://github.com/stepchowfun/proofs/tree/main/proofs_lean)<!-- [dir:proofs_lean] --> or the [`proofs_rocq`](https://github.com/stepchowfun/proofs/tree/main/proofs_rocq)<!-- [dir:proofs_rocq] --> directories with your own proofs. Setting up a Rocq project from scratch isn't particularly straightforward, so this scaffolding can save you time.
 
-If you're new to Lean, start with the tutorial [here](https://github.com/stepchowfun/proofs/tree/main/proofs_lean/tutorial)<!-- [dir:proofs_lean/tutorial] -->. I recommend [Theorem Proving in Lean 4](https://lean-lang.org/theorem_proving_in_lean4/) and [Functional Programming in Lean](https://lean-lang.org/functional_programming_in_lean/) for further learning.
+For people who are new to Lean, I have a tutorial [here](https://github.com/stepchowfun/proofs/tree/main/proofs_lean/tutorial)<!-- [dir:proofs_lean/tutorial] -->. [Theorem Proving in Lean 4](https://lean-lang.org/theorem_proving_in_lean4/) and [Functional Programming in Lean](https://lean-lang.org/functional_programming_in_lean/) are great resources for further learning.
 
-If you're new to Rocq, start with the tutorial [here](https://github.com/stepchowfun/proofs/tree/main/proofs_rocq/tutorial)<!-- [dir:proofs_rocq/tutorial] -->. I recommend [Software Foundations](https://softwarefoundations.cis.upenn.edu/) and [Certified Programming with Dependent Types](http://adam.chlipala.net/cpdt/) for further learning.
+I also have a Rocq tutorial [here](https://github.com/stepchowfun/proofs/tree/main/proofs_rocq/tutorial)<!-- [dir:proofs_rocq/tutorial] -->. Check out [Software Foundations](https://softwarefoundations.cis.upenn.edu/) and [Certified Programming with Dependent Types](http://adam.chlipala.net/cpdt/) as well.
 
 ## Instructions
 

@@ -112,20 +112,21 @@ def id_type (α : Type) (x : α) := x
   universes, like so:
 -/
 
-def id_universal.{u} (α : Sort u) (x : α) := x
-
-#check id_universal -- `id_universal.{u} (α : Sort u) (x : α) : α`
+def universe_polymorphic_id.{u} (α : Sort u) (x : α) := x
 
 -- At first glance, it seems as though we can apply it to itself:
 
-#check id_universal _ id_universal
+#check universe_polymorphic_id _ universe_polymorphic_id
 
 /-
   But we're actually applying one version of it to another version of it in a
   lower universe. It fails if we force the two universes to be the same:
 
   ```
-  def bad.{u} := id_universal.{u} (∀ α : Sort u, α → α) id_universal.{u}
+  def bad.{u} :=
+    universe_polymorphic_id.{u}
+      (∀ α : Sort u, α → α)
+      universe_polymorphic_id.{u}
   ```
 
   ```
@@ -136,7 +137,7 @@ def id_universal.{u} (α : Sort u) (x : α) := x
   of sort `Type (imax (u + 1) u)` but is expected to have type
     Sort u
   of sort `Type u` in the application
-    id_universal ((α : Sort u) → α → α)
+    universe_polymorphic_id ((α : Sort u) → α → α)
   ```
 -/
 
@@ -274,6 +275,76 @@ example : Weirder → False := by
   defined.
 -/
 
+/-===============================================-/
+/- Information cannot leave the `Prop` universe. -/
+/-===============================================-/
+
+/-
+  Everything in `Prop` is considered a proposition, and the inhabitants of
+  those propositions are considered proofs. For example, the following
+  proposition has two proofs:
+-/
+
+inductive MyProp : Prop where
+| proof1 : MyProp
+| proof2 : MyProp
+
+-- Since `MyProp` is an inductive type, it supports pattern matching.
+
+theorem flip_flop (proof : MyProp) : MyProp :=
+  match proof with
+  | .proof1 => .proof2
+  | .proof2 => .proof1
+
+/-
+  Lean embraces *proof irrelevance*. `proof1` and `proof2` are actually
+  provably equal:
+-/
+
+example : MyProp.proof1 = MyProp.proof2 := by rfl
+
+/-
+  In order for that to make sense, Lean must prevent non-proof code from making
+  decisions based on proofs. Lean guarantees this with a restriction on pattern
+  matching. The following is rejected because the return type is not in `Prop`:
+
+  ```
+  def my_prop_to_nat (proof : MyProp) : Nat :=
+    match proof with
+    | .proof1 => 0
+    | .proof2 => 1
+  ```
+
+  ```
+  Tactic `cases` failed with a nested error:
+  Tactic `induction` failed: recursor `MyProp.casesOn` can only eliminate into
+  `Prop`
+  ```
+
+  If the `my_prop_to_nat` function were allowed, we could use it to prove
+  `0 = 1`, which of course would be unacceptable.
+
+  However, if a proposition has zero constructors or one constructor for which
+  the non-parameter arguments are proofs, then pattern matching on it doesn't
+  result in any decisions being made based on the proof. Thus, Lean allows the
+  following:
+-/
+
+def false_to_nat (proof : False) : Nat :=
+  nomatch proof
+
+def true_to_nat (proof : True) : Nat :=
+  match proof with
+  | .intro => 0
+
+def false_and_true_to_nat (proof : False ∧ True) : Nat :=
+  match proof with
+  | .intro _ _ => 0
+
+def eq_to_nat (proof : false = false) : Nat :=
+  match proof with
+  | .refl _ => 0
+
 /-===========-/
 /- Exercises -/
 /-===========-/
@@ -283,4 +354,7 @@ example : Weirder → False := by
      does Lean enforce this?
   2. Describe impredicativity. Does `Type i` have it? Does `Prop` have it?
   3. Describe the restrictions Lean imposes on inductive data types.
+  4. Explain why Lean doesn't generally let us pattern match on a proof to
+     produce something which is not a proof. What are the exceptions to this
+     rule?
 -/
