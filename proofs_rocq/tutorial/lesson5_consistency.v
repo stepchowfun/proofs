@@ -81,19 +81,20 @@ Check Prop -> True. (* `Prop` *)
 
 (* Here are some identity functions for different universes: *)
 
-Definition idProp (T : Prop) (x : T) := x.
-Definition idSet (T : Set) (x : T) := x.
+Definition id_prop (T : Prop) (x : T) := x.
+Definition id_set (T : Set) (x : T) := x.
 
-(* Because `Prop` is impredicative, we can apply `idProp` to itself. *)
+(* Because `Prop` is impredicative, we can apply `id_prop` to itself. *)
 
-Check idProp (forall T : Prop, T -> T) idProp. (* `forall t : Prop, t -> t` *)
+(* `forall T : Prop, T -> T` *)
+Check id_prop (forall T : Prop, T -> T) id_prop.
 
 (*
-  But `Set` (a.k.a. `Type_0`) is predicative, so we can't apply `idSet` to
+  But `Set` (a.k.a. `Type_0`) is predicative, so we can't apply `id_set` to
   itself:
 *)
 
-Fail Check idSet (forall T : Set, T -> T) idSet.
+Fail Check id_set (forall T : Set, T -> T) id_set.
 
 (*
   ```
@@ -113,11 +114,11 @@ Definition U := Type.
 
 (* Here's an identity function for that universe: *)
 
-Definition idU (T : U) (x : T) := x.
+Definition id_u (T : U) (x : T) := x.
 
-(* Like with `idSet`, predicativity forbids the following: *)
+(* Like with `id_set`, predicativity forbids the following: *)
 
-Fail Check idU (forall T : U, T -> T) idU.
+Fail Check id_u (forall T : U, T -> T) id_u.
 
 (*
   ```
