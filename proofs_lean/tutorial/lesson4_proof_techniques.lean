@@ -224,7 +224,7 @@ example : ∀ n1 n2 n3 : Nat, n1 + n2 + n3 - n2 - n3 = n1 := by
 /- Automation with the `grind` tactic -/
 /-====================================-/
 
--- The `grind` tactic can solve many goals by looking for contradictions.
+-- The `grind` tactic can solve many goals automatically.
 
 example :
   ∀ (f : Nat → Nat) (n1 n2 n3 : Nat), f n1 = n2 → f n2 = n3 → f (f n1) = n3 :=
@@ -234,10 +234,26 @@ by
 example : ∀ n1 n2 n3 : Nat, n1 * (n2 + n3) = n1 * n2 + n1 * n3 := by
   grind
 
--- We can also extend the database of facts that `grind` uses. See
---   https://lean-lang.org/doc/reference/latest/The--grind--tactic
---   /Annotating-Libraries-for--grind/#grind-annotation
--- for details.
+-- We can also extend the database of facts that `grind` uses.
+
+axiom T : Type
+axiom human : T → Prop
+axiom mortal : T → Prop
+
+@[grind .] axiom humans_are_mortal : ∀ x, human x → mortal x
+
+example : ∀ socrates, human socrates → mortal socrates := by
+  grind
+
+example : ∀ rock, ¬ mortal rock → ¬ human rock := by
+  grind
+
+/-
+  See
+    https://lean-lang.org/doc/reference/latest/The--grind--tactic
+    /Annotating-Libraries-for--grind/#grind-annotation
+  for more ways to annotate theorems for use by `grind`.
+-/
 
 /-===========-/
 /- Exercises -/
