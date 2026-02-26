@@ -47,9 +47,9 @@ def parabola := fun x => 2 * x * x
 
 #check parabola -- `parabola (x : Nat) : Nat`
 
--- We can get the actual type by prepending the function name with `@`:
+-- We can get the actual type by wrapping the function in parentheses:
 
-#check @parabola -- `Nat → Nat`
+#check (parabola) -- `Nat → Nat`
 
 -- Here's a more convenient syntax for defining a function:
 
