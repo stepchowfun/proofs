@@ -130,6 +130,7 @@ tasks:
 
       # Check references with Tagref.
       tagref
+      tagref list-unused --fail-if-any
 
       # Run the linters.
       ./linters/lint-general.rb $(
