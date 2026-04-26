@@ -1,4 +1,4 @@
-image: ubuntu:24.04
+image: ubuntu:26.04
 default: verify
 user: user
 command_prefix: |
@@ -89,7 +89,7 @@ tasks:
       # Install Rocq via opam.
       opam init --disable-sandboxing --yes
       eval "$(opam env)"
-      opam pin add rocq-prover 9.0.0 --yes
+      opam pin add rocq-prover 9.2.0 --yes
 
   install_tools:
     description: Install the tools needed to verify the Rocq proofs.
