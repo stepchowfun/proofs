@@ -1,4 +1,4 @@
-image: ubuntu:24.04
+image: ubuntu:26.04
 default: verify
 user: user
 command_prefix: |
