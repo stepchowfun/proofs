@@ -86,9 +86,13 @@ tasks:
       - install_packages
     user: user
     command: |
-      # Install Rocq via opam.
+      # Install Rocq via opam. The `rocq-prover` package is a virtual package
+      # with unversioned dependencies on `rocq-core` and `rocq-stdlib`, so
+      # those two packages must be pinned explicitly.
       opam init --disable-sandboxing --yes
       eval "$(opam env)"
+      opam pin add --no-action rocq-core 9.0.0 --yes
+      opam pin add --no-action rocq-stdlib 9.0.0 --yes
       opam pin add rocq-prover 9.0.0 --yes
 
   install_tools:
