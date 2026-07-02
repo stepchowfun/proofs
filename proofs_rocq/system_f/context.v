@@ -6,7 +6,6 @@
 (*****************************)
 (*****************************)
 
-Require Import Stdlib.Bool.Bool.
 Require Import Stdlib.Lists.List.
 Require Import main.system_f.free_var.
 Require Import main.system_f.local_closure.

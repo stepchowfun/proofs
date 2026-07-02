@@ -88,12 +88,13 @@ tasks:
     command: |
       # Install Rocq via opam. The `rocq-prover` package is a virtual package
       # with unversioned dependencies on `rocq-core` and `rocq-stdlib`, so
-      # those two packages must be pinned explicitly.
+      # those two packages must be pinned explicitly. Note that `rocq-stdlib`
+      # is versioned independently of `rocq-core`.
       opam init --disable-sandboxing --yes
       eval "$(opam env)"
-      opam pin add --no-action rocq-core 9.0.0 --yes
-      opam pin add --no-action rocq-stdlib 9.0.0 --yes
-      opam pin add rocq-prover 9.0.0 --yes
+      opam pin add --no-action rocq-core 9.2.0 --yes
+      opam pin add --no-action rocq-stdlib 9.1.0 --yes
+      opam pin add rocq-prover meta.1 --yes
 
   install_tools:
     description: Install the tools needed to verify the Rocq proofs.
@@ -169,10 +170,10 @@ tasks:
         '^\s*Require (Import )?(Stdlib|main)\.' \
         "rocq compile \
           -set 'Default Goal Selector=!' \
-          -set 'Loose Hint Behavior=Strict' \
           -set 'Primitive Projections' \
           -set 'Printing Projections' \
           -unset 'Printing Primitive Projection Parameters' \
+          -w +implicit-create-hint-db,+implicit-create-rewrite-hint-db \
           -Q proofs_rocq main ?" \
         $(
           find . -type d \( \
@@ -188,10 +189,10 @@ tasks:
         '^\s*Import ' \
         "rocq compile \
           -set 'Default Goal Selector=!' \
-          -set 'Loose Hint Behavior=Strict' \
           -set 'Primitive Projections' \
           -set 'Printing Projections' \
           -unset 'Printing Primitive Projection Parameters' \
+          -w +implicit-create-hint-db,+implicit-create-rewrite-hint-db \
           -Q proofs_rocq main ?" \
         $(
           find . -type d \( \

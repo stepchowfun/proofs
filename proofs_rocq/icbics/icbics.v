@@ -23,6 +23,7 @@ Require Import Stdlib.Arith.Compare_dec.
 Require Import Stdlib.Lists.List.
 Require Import Stdlib.Sorting.Permutation.
 Require Import Stdlib.Sorting.Sorted.
+Require Import Stdlib.Vectors.FinFun.
 Require Import main.tactics.
 
 Import Stdlib.Arith.PeanoNat.Nat.
@@ -156,7 +157,6 @@ Proof.
   induction l; search; intros.
   - destruct j; search.
   - destruct i; destruct j; search.
-    apply IHl; search.
 Qed.
 
 #[local] Hint Resolve nth_firstn : main.
@@ -169,9 +169,6 @@ Proof.
   intros.
   outro i.
   induction l; intros; destruct i; search.
-  change (firstn (S i) (a :: l) ++ [nth (S i) (a :: l) d])
-    with (a :: firstn i l ++ [nth i l d]).
-  rewrite IHl; search.
 Qed.
 
 #[local] Hint Resolve cons_firstn_nth : main.
@@ -439,8 +436,6 @@ Proof.
   unfold for_loop.
   change (length l1) with n1.
   induction n1; search.
-  apply H0; search.
-  apply IHn1; search.
 Qed.
 
 (* Facts about `sort` *)

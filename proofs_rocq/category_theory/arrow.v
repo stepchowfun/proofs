@@ -6,8 +6,6 @@
 (********************)
 (********************)
 
-Require Import Stdlib.Classes.Morphisms.
-Require Import Stdlib.Classes.Morphisms_Prop.
 Require Import main.category_theory.category.
 Require Import main.tactics.
 

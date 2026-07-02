@@ -6,7 +6,6 @@
 (*******************************************)
 (*******************************************)
 
-Require Import Stdlib.Arith.Peano_dec.
 Require Import Stdlib.Lists.List.
 Require Import main.tactics.
 

@@ -8,9 +8,10 @@
 
 Require Import Stdlib.micromega.Lia.
 
-(* Ensure this hint database exists. *)
+(* Ensure these hint databases exist. *)
 
 Create HintDb main.
+Create Rewrite HintDb main.
 
 (*
   This tactic does a variety of simplifications on the goal and hypotheses.

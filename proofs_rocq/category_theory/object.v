@@ -6,7 +6,6 @@
 (*********************)
 (*********************)
 
-Require Import Stdlib.Classes.Morphisms.
 Require Import main.category_theory.arrow.
 Require Import main.category_theory.category.
 Require Import main.tactics.

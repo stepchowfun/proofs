@@ -1,7 +1,7 @@
 # [tag:flags]
 -arg "-set 'Default Goal Selector=!'"
--arg "-set 'Loose Hint Behavior=Strict'"
 -arg "-set 'Primitive Projections'"
 -arg "-set 'Printing Projections'"
 -arg "-unset 'Printing Primitive Projection Parameters'"
+-arg "-w +implicit-create-hint-db,+implicit-create-rewrite-hint-db"
 -Q proofs_rocq main
