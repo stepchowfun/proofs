@@ -279,6 +279,13 @@ Inductive eq [A] (x : A) : A -> Prop :=
 Notation "x = y" := (eq x y) : type_scope.
 Notation "x <> y" := (~ (x = y)) : type_scope.
 
+(*
+  The `rewrite` tactic used below requires some machinery to work with our
+  new notion of equality. The following command generates it.
+*)
+
+Scheme Rewriting for eq.
+
 Definition one_plus_one_equals_two : 1 + 1 = 2 := eq_refl 2.
 
 Goal 1 + 1 = 2.
@@ -426,7 +433,8 @@ Definition divisible_by_4_implies_even x :
     | ex_intro y h2 =>
       ex_intro
         (2 * y)
-        match eq_sym (Nat.mul_assoc 2 2 y) in Logic.eq _ z return z = x with
+        match Logic.eq_sym (Nat.mul_assoc 2 2 y) in Logic.eq _ z return z = x
+        with
         | Logic.eq_refl _ => h2
         end
     end.

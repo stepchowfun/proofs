@@ -6,6 +6,8 @@
 (****************************************************************)
 (****************************************************************)
 
+Require Import main.tactics.
+
 Module Type KleeneData.
   (*
     Assumption: Let (`T`, `Leq`) be a partially ordered set, or poset. A poset

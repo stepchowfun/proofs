@@ -70,7 +70,6 @@ Theorem t_local_closure_monotonic :
   TLocallyClosed t i2.
 Proof.
   clean. outro i2 H. induction H0; search.
-  clean. apply tlc_for_all. apply IHTLocallyClosed. search.
 Qed.
 
 (* Don't add a resolve hint because `eapply` has a hard time guessing `i1`. *)
@@ -85,8 +84,6 @@ Proof.
   clean. outro ie2 it2 H H0.
   induction H1; search; constructor; search; clean.
   - apply t_local_closure_monotonic with (i1 := nt); search.
-  - apply IHELocallyClosed; search.
-  - apply IHELocallyClosed; search.
   - apply t_local_closure_monotonic with (i1 := nt); search.
 Qed.
 

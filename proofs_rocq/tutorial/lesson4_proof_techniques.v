@@ -6,7 +6,6 @@
 (******************************)
 (******************************)
 
-Require Import Stdlib.Arith.Arith. (* For facts in the `arith` hint database *)
 Require Import Stdlib.micromega.Lia. (* For the `lia` tactic *)
 
 (****************************)
