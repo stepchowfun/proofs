@@ -94,7 +94,7 @@ tasks:
       eval "$(opam env)"
       opam pin add --no-action rocq-core 9.2.0 --yes
       opam pin add --no-action rocq-stdlib 9.1.0 --yes
-      opam pin add rocq-prover meta.1 --yes
+      opam pin add --kind version rocq-prover meta.1 --yes
 
   install_tools:
     description: Install the tools needed to verify the Rocq proofs.
