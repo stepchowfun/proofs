@@ -172,7 +172,6 @@ tasks:
           -set 'Default Goal Selector=!' \
           -set 'Primitive Projections' \
           -set 'Printing Projections' \
-          -unset 'Printing Primitive Projection Parameters' \
           -w +default \
           -Q proofs_rocq main ?" \
         $(
@@ -191,7 +190,6 @@ tasks:
           -set 'Default Goal Selector=!' \
           -set 'Primitive Projections' \
           -set 'Printing Projections' \
-          -unset 'Printing Primitive Projection Parameters' \
           -w +default \
           -Q proofs_rocq main ?" \
         $(
