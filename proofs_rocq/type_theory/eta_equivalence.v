@@ -92,7 +92,7 @@ Check fun (x : nat) => x.
 Check fun (y : nat) => (fun x => x) y.
 
 (*
-  For products, we have an analagous issue with non-normalization, and we can
+  For products, we have an analogous issue with non-normalization, and we can
   restrict eta expansion in a similar way to fix it.
 
   But unfortunately, with these restrictions on eta expansion, evaluation is no
