@@ -128,7 +128,6 @@ tasks:
     input_paths:
       - .gitignore # So Tagref skips `.lake`
       - linters
-      - tagref.yml
       - toast.yml # To lint the tag references
     user: user
     command: |
