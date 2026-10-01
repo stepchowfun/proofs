@@ -199,6 +199,7 @@ Inductive Weird :=
 | make_weird : Weird -> Weird.
 
 Goal Weird -> False.
+Proof.
   intro.
   induction H.
   auto.
@@ -210,6 +211,7 @@ Inductive Weirder :=
 | make_weirder : (nat -> Weirder) -> Weirder.
 
 Goal Weirder -> False.
+Proof.
   intro.
   induction H.
   apply H.
