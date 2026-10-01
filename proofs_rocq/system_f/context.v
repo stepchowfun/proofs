@@ -28,7 +28,8 @@ Inductive Context :=
 Fixpoint e_lookup c1 x1 :=
   match c1 with
   | c_empty => None
-  | c_e_extend c2 x2 t => if name_eq x1 x2 then Some t else e_lookup c2 x1
+  | c_e_extend c2 x2 t =>
+    if name_eq x1 x2 is left _ then Some t else e_lookup c2 x1
   | c_t_extend c2 _ => e_lookup c2 x1
   end.
 
@@ -36,7 +37,8 @@ Fixpoint t_lookup c1 x1 :=
   match c1 with
   | c_empty => false
   | c_e_extend c2 _ _ => t_lookup c2 x1
-  | c_t_extend c2 x2 => if name_eq x1 x2 then true else t_lookup c2 x1
+  | c_t_extend c2 x2 =>
+    if name_eq x1 x2 is left _ then true else t_lookup c2 x1
   end.
 
 (***********)

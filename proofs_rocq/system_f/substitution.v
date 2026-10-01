@@ -15,7 +15,7 @@ Require Import main.tactics.
 
 Fixpoint ee_sub e1 x1 e2 :=
   match e1 with
-  | e_free_var x2 => if name_eq x1 x2 then e2 else e1
+  | e_free_var x2 => if name_eq x1 x2 is left _ then e2 else e1
   | e_bound_var _ => e1
   | e_abs t e3 => e_abs t (ee_sub e3 x1 e2)
   | e_app e3 e4 => e_app (ee_sub e3 x1 e2) (ee_sub e4 x1 e2)
@@ -25,7 +25,7 @@ Fixpoint ee_sub e1 x1 e2 :=
 
 Fixpoint tt_sub t1 x1 t2 :=
   match t1 with
-  | t_free_var x2 => if name_eq x1 x2 then t2 else t1
+  | t_free_var x2 => if name_eq x1 x2 is left _ then t2 else t1
   | t_bound_var _ => t1
   | t_arrow t3 t4 => t_arrow (tt_sub t3 x1 t2) (tt_sub t4 x1 t2)
   | t_for_all t3 => t_for_all (tt_sub t3 x1 t2)

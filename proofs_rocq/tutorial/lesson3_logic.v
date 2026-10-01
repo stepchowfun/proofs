@@ -414,7 +414,7 @@ Arguments ex_intro [_ _] _ _.
 *)
 
 Notation "'exists' x .. y , p" := (ex (fun x => .. (ex (fun y => p)) ..))
-  (at level 200, x binder, right associativity) : type_scope.
+  (at level 10, x binder, p at level 200) : type_scope.
 
 Definition half_of_6_exists : exists x, 2 * x = 6 := ex_intro 3 (eq_refl 6).
 

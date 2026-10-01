@@ -92,8 +92,8 @@ tasks:
       # is versioned independently of `rocq-core`.
       opam init --disable-sandboxing --yes
       eval "$(opam env)"
-      opam pin add --no-action rocq-core 9.2.0 --yes
-      opam pin add --no-action rocq-stdlib 9.1.0 --yes
+      opam pin add --no-action rocq-core 9.3.0 --yes
+      opam pin add --no-action rocq-stdlib 9.2.0 --yes
       opam pin add --kind version rocq-prover meta.1 --yes
 
   install_tools:
