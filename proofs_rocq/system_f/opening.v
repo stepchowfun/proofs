@@ -18,7 +18,7 @@ Import Stdlib.Arith.PeanoNat.Nat.
 Fixpoint ee_open e1 i1 e2 :=
   match e1 with
   | e_free_var _ => e1
-  | e_bound_var i2 => if eq_nat_dec i1 i2 then e2 else e1
+  | e_bound_var i2 => if eq_nat_dec i1 i2 is left _ then e2 else e1
   | e_abs t e3 => e_abs t (ee_open e3 (S i1) e2)
   | e_app e3 e4 => e_app (ee_open e3 i1 e2) (ee_open e4 i1 e2)
   | e_t_abs e3 => e_t_abs (ee_open e3 i1 e2)
@@ -28,7 +28,7 @@ Fixpoint ee_open e1 i1 e2 :=
 Fixpoint tt_open t1 i1 t2 :=
   match t1 with
   | t_free_var _ => t1
-  | t_bound_var i2 => if eq_nat_dec i1 i2 then t2 else t1
+  | t_bound_var i2 => if eq_nat_dec i1 i2 is left _ then t2 else t1
   | t_arrow t3 t4 => t_arrow (tt_open t3 i1 t2) (tt_open t4 i1 t2)
   | t_for_all t3 => t_for_all (tt_open t3 (S i1) t2)
   end.

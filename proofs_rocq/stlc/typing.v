@@ -16,7 +16,8 @@ Inductive Context :=
 Fixpoint lookup c1 x1 :=
   match c1 with
   | c_empty => None
-  | c_extend c2 x2 t => if name_eq x1 x2 then Some t else lookup c2 x1
+  | c_extend c2 x2 t =>
+    if name_eq x1 x2 is left _ then Some t else lookup c2 x1
   end.
 
 Inductive HasType : Context -> Term -> Ty -> Prop :=
