@@ -3,7 +3,7 @@
 # This script applies basic general linting to a list of source files.
 #
 # Usage:
-#   ./lint-general.rb path1 path2 path3 ...
+#   ./lint_general.rb path1 path2 path3 ...
 
 # Keep track of whether we failed.
 failed = false
