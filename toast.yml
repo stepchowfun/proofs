@@ -139,7 +139,7 @@ tasks:
       tagref list-unused --fail-if-any
 
       # Run the linters.
-      ./linters/lint-general.rb $(
+      ./linters/lint_general.rb $(
         find . -type d \( \
           -path ./.git -o \
           -path ./.lake \
@@ -153,7 +153,7 @@ tasks:
           -name 'Makefile' \
         \) -print
       )
-      ./linters/lint-imports.rb \
+      ./linters/lint_imports.rb \
         '^\s*import ' \
         '^\s*import ' \
         "lake env lean ?" \
@@ -166,7 +166,7 @@ tasks:
           \) -print
         )
       # [ref:flags]
-      ./linters/lint-imports.rb \
+      ./linters/lint_imports.rb \
         '^\s*Require ' \
         '^\s*Require (Import )?(Stdlib|main)\.' \
         "rocq compile \
@@ -184,7 +184,7 @@ tasks:
           \) -print
         )
       # [ref:flags]
-      ./linters/lint-imports.rb \
+      ./linters/lint_imports.rb \
         '^\s*Import ' \
         '^\s*Import ' \
         "rocq compile \

@@ -4,7 +4,7 @@
 # have a '?' indicating where the path should be inserted.
 #
 # Usage:
-#   ./lint-imports.rb
+#   ./lint_imports.rb
 #     import-matching-regex
 #     import-validation-regex
 #     build-command
@@ -16,7 +16,7 @@ require 'securerandom'
 # Make sure we got enough arguments.
 if ARGV.size < 3
   STDERR.puts(
-    'Usage: ./lint-imports.rb ' +
+    'Usage: ./lint_imports.rb ' +
       'import-matching-regex ' +
       'import-validation-regex ' +
       'build-command ' +
